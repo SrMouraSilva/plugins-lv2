@@ -1,0 +1,311 @@
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#>.
+@prefix doap: <http://usefulinc.com/ns/doap#>.
+@prefix epp: <http://lv2plug.in/ns/ext/port-props#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix mod: <http://moddevices.com/ns/mod#>.
+@prefix modgui: <http://moddevices.com/ns/modgui#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix atom: <http://lv2plug.in/ns/ext/atom#> .
+@prefix midi: <http://lv2plug.in/ns/ext/midi#> .
+@prefix urid: <http://lv2plug.in/ns/ext/urid#> .
+@prefix units:  <http://lv2plug.in/ns/extensions/units#> .
+
+<http://http://srmourasilva.github.io/plugins/tetr4-switch>
+a lv2:Plugin, mod:ControlVoltagePlugin;
+
+doap:name "Tetr4 switch";
+doap:license "GPL v2+";
+doap:developer [
+    foaf:name "Paulo Mateus";
+    foaf:homepage <>;
+    foaf:mbox <mailto:mateus.moura@hotmail.com>;
+    ];
+
+doap:maintainer [
+    foaf:name "SrMouraSilva";
+    foaf:homepage <https://github.com/SrMouraSilva/tetr4-switch-lv2>;
+    foaf:mbox <mailto:mateus.moura@hotmail.com>;
+    ];
+
+    lv2:minorVersion 3;
+    lv2:microVersion 0;
+
+rdfs:comment """
+Tetr4 switch is a switch inspired on switches like Pedrone Penta Switch, Pedrone Yet, Carl Martin Octa Switch and others, but adaptable for the MOD Devices universe.
+With it, is possible to define four presets of active CV and change between then. 
+""";
+
+# Outputs
+lv2:port
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 0;
+    lv2:symbol "Cvoutput1";
+    lv2:name "CV Output 1";
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 0;
+    lv2:symbol "Cvoutput2";
+    lv2:name "CV Output 2";
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 0;
+    lv2:symbol "Cvoutput3";
+    lv2:name "CV Output 3";
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 0;
+    lv2:symbol "Cvoutput4";
+    lv2:name "CV Output 4";
+],
+# Selectors
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_selector_1" ;
+    lv2:name "Preset 1" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_selector_2" ;
+    lv2:name "Preset 2" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_selector_3" ;
+    lv2:name "Preset 3" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_selector_4" ;
+    lv2:name "Preset 4" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+# Preset 1 - Dip Switches
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_1_1" ;
+    lv2:name "Preset 1 - Output 1" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_1_2" ;
+    lv2:name "Preset 1 - Output 2" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_1_3" ;
+    lv2:name "Preset 1 - Output 3" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_1_4" ;
+    lv2:name "Preset 1 - Output 4" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+# Preset 2 - Dip Switches
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_2_1" ;
+    lv2:name "Preset 2 - Output 1" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_2_2" ;
+    lv2:name "Preset 2 - Output 2" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_2_3" ;
+    lv2:name "Preset 2 - Output 3" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_2_4" ;
+    lv2:name "Preset 2 - Output 4" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+# Preset 3 - Dip Switches
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_3_1" ;
+    lv2:name "Preset 3 - Output 1" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_3_2" ;
+    lv2:name "Preset 3 - Output 2" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_3_3" ;
+    lv2:name "Preset 3 - Output 3" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_3_4" ;
+    lv2:name "Preset 3 - Output 4" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+# Preset 4 - Dip Switches
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_4_1" ;
+    lv2:name "Preset 4 - Output 1" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_4_2" ;
+    lv2:name "Preset 4 - Output 2" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_4_3" ;
+    lv2:name "Preset 4 - Output 3" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "P_4_4" ;
+    lv2:name "Preset 4 - Output 4" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+# Output inverters
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "Inverter_1" ;
+    lv2:name "Output signal inverter 1" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "Inverter_2" ;
+    lv2:name "Output signal inverter 2" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "Inverter_3" ;
+    lv2:name "Output signal inverter 3" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 2;
+    lv2:symbol "Inverter_4" ;
+    lv2:name "Output signal inverter 4" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+]
+.
