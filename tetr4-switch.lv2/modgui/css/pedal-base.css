@@ -1,0 +1,102 @@
+:root {
+  --pedal-background-base: url('../images/boxy-middle.png');
+  --pedal-background: #aaa;
+  --pedal-width: 230px;
+  --pedal-height: 431px;
+
+  /* --knob-background: url('../images/knob/boxy/aluminium.png'); */
+  --knob-size: 55px;
+}
+
+body {
+  margin: 0;
+}
+
+.pedal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+
+  background: var(--pedal-background-base), var(--pedal-background);
+
+  background-repeat: no-repeat;
+  background-size: var(--pedal-width), var(--pedal-height), auto;
+  height: var(--pedal-height);
+  width: var(--pedal-width);
+  min-width: var(--pedal-width);
+  border-radius: 18px;
+
+  font-family: "cooper hewitt", Sans-serif;
+  font-weight: 500;
+  text-align: center;
+}
+
+.knobs {
+  width: 100%;
+
+  flex-wrap: wrap;
+  display: flex;
+  justify-content: space-around;
+
+  font-size: 15px;
+  word-wrap: break-word;
+}
+
+.knobs span {
+  width: var(--knob-size);
+  height: calc(var(--knob-size) + 20px);
+
+  font-family: "cooper hewitt", Sans-serif !important;
+
+  background: var(--knob-background);
+  background-repeat: no-repeat;
+  background-size: auto var(--knob-size);
+  background-position: 0px 20px;
+}
+.knobs.big span,
+.knobs span.big {
+  --knob-size: 90px;
+}
+.knobs.little span,
+.knobs span.little {
+  --knob-size: 45px;
+}
+
+.knobs span.bottom {
+  background-position: 0px 0px;
+  padding-top: var(--knob-size);
+}
+
+.pedal .logo {
+  margin: 0 auto;
+
+  font-size: 32px;
+  padding: 3px 9px 0;
+}
+
+.pedal .name {
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.led {
+  background-image: url('../images/red-light-on.png');
+  background-position: center center;
+  background-repeat: no-repeat;
+  height: 32px;
+}
+.led.off {
+  background-image: url('../images/red-light-off.png');
+}
+
+.footswitch {
+  background: url('../images/footswitch.png');
+  background-position: bottom center;
+  background-repeat: no-repeat;
+  background-size: auto 176px;
+
+  cursor: pointer;
+  height: 88px;
+  width: 88px;
+  margin: 0 auto;
+}
