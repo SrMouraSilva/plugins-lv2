@@ -15,7 +15,15 @@
 
 .dip-switch {
   display: inline-block;
+  padding-top: 0;
   border: 2px solid var(--tetr4-switch-slider-background-on);
+}
+
+.dip-switch legend {
+  font-size: .8em;
+  margin-bottom: -4px;
+  margin-left: -4px;
+  padding: 0 4px;
 }
 
 .switch-controller {
@@ -50,6 +58,7 @@
   background-color: var(--tetr4-switch-slider-background-off);
   -webkit-transition: .4s;
   transition: .4s;
+  box-shadow: inset 0 0 2px black;
 }
 
 .slider:before {
@@ -64,6 +73,7 @@
   background-color: var(--tetr4-switch-slider-tick-off);
   transition: .2s;
   transition-timing-function: ease;
+  box-shadow: 0 0 2px #ccc; 
 }
 input:checked + .slider:before {
   background-color: var(--tetr4-switch-slider-tick-on);
@@ -71,11 +81,13 @@ input:checked + .slider:before {
 
 input:checked + .slider {
   background-color: var(--tetr4-switch-slider-background-on);
+  box-shadow: inset 0 0 2px black,
+              0 0 2px var(--tetr4-switch-slider-background-on);
 }
 
-input:focus + .slider {
+/* input:focus + .slider {
   box-shadow: 0 0 1px var(--tetr4-switch-slider-background-on);
-}
+} */
 
 input:checked + .slider:before {
   --height-size: calc(var(--tetr4-switch-slider-height) / 2);
