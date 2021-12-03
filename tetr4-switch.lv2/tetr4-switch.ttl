@@ -1,18 +1,18 @@
 @prefix lv2:  <http://lv2plug.in/ns/lv2core#>.
 @prefix doap: <http://usefulinc.com/ns/doap#>.
-@prefix epp: <http://lv2plug.in/ns/ext/port-props#>.
+@prefix epp:  <http://lv2plug.in/ns/ext/port-props#>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
-@prefix mod: <http://moddevices.com/ns/mod#>.
+@prefix mod:  <http://moddevices.com/ns/mod#>.
 @prefix modgui: <http://moddevices.com/ns/modgui#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix atom: <http://lv2plug.in/ns/ext/atom#> .
 @prefix midi: <http://lv2plug.in/ns/ext/midi#> .
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
-@prefix units:  <http://lv2plug.in/ns/extensions/units#> .
+@prefix units: <http://lv2plug.in/ns/extensions/units#> .
 
 <http://http://srmourasilva.github.io/plugins/tetr4-switch>
-a lv2:Plugin, mod:ControlVoltagePlugin;
+    a lv2:Plugin, mod:ControlVoltagePlugin, mod:UtilityPlugin ;
 
 doap:name "Tetr4 switch";
 doap:license "GPL v2+";
@@ -41,32 +41,32 @@ lv2:port
 [
     a lv2:OutputPort, lv2:CVPort, mod:CVPort;
     lv2:index 0;
-    lv2:symbol "Cvoutput1";
+    lv2:symbol "Cv_output_1";
     lv2:name "CV Output 1";
 ],
 [
     a lv2:OutputPort, lv2:CVPort, mod:CVPort;
-    lv2:index 0;
-    lv2:symbol "Cvoutput2";
+    lv2:index 1;
+    lv2:symbol "Cv_output_2";
     lv2:name "CV Output 2";
 ],
 [
     a lv2:OutputPort, lv2:CVPort, mod:CVPort;
-    lv2:index 0;
-    lv2:symbol "Cvoutput3";
+    lv2:index 2;
+    lv2:symbol "Cv_output_3";
     lv2:name "CV Output 3";
 ],
 [
     a lv2:OutputPort, lv2:CVPort, mod:CVPort;
-    lv2:index 0;
-    lv2:symbol "Cvoutput4";
+    lv2:index 3;
+    lv2:symbol "Cv_output_4";
     lv2:name "CV Output 4";
 ],
-# Selectors
+# Preset selectors (footswitch selectors)
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_selector_1" ;
+    lv2:index 4;
+    lv2:symbol "Preset_selector_1" ;
     lv2:name "Preset 1" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -75,8 +75,8 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_selector_2" ;
+    lv2:index 5;
+    lv2:symbol "Preset_selector_2" ;
     lv2:name "Preset 2" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -85,8 +85,8 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_selector_3" ;
+    lv2:index 6;
+    lv2:symbol "Preset_selector_3" ;
     lv2:name "Preset 3" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -95,8 +95,8 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_selector_4" ;
+    lv2:index 7;
+    lv2:symbol "Preset_selector_4" ;
     lv2:name "Preset 4" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -106,8 +106,8 @@ lv2:port
 # Preset 1 - Dip Switches
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_1_1" ;
+    lv2:index 8;
+    lv2:symbol "Preset_1_output_1" ;
     lv2:name "Preset 1 - Output 1" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -116,8 +116,8 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_1_2" ;
+    lv2:index 9;
+    lv2:symbol "Preset_1_output_2" ;
     lv2:name "Preset 1 - Output 2" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -126,8 +126,8 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_1_3" ;
+    lv2:index 10;
+    lv2:symbol "Preset_1_output_3" ;
     lv2:name "Preset 1 - Output 3" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -136,8 +136,8 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_1_4" ;
+    lv2:index 11;
+    lv2:symbol "Preset_1_output_4" ;
     lv2:name "Preset 1 - Output 4" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -147,8 +147,8 @@ lv2:port
 # Preset 2 - Dip Switches
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_2_1" ;
+    lv2:index 12;
+    lv2:symbol "Preset_2_output_1" ;
     lv2:name "Preset 2 - Output 1" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -157,8 +157,8 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_2_2" ;
+    lv2:index 13;
+    lv2:symbol "Preset_2_output_2" ;
     lv2:name "Preset 2 - Output 2" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -167,8 +167,8 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_2_3" ;
+    lv2:index 14;
+    lv2:symbol "Preset_2_output_3" ;
     lv2:name "Preset 2 - Output 3" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -177,8 +177,8 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_2_4" ;
+    lv2:index 15;
+    lv2:symbol "Preset_2_output_4" ;
     lv2:name "Preset 2 - Output 4" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -188,8 +188,8 @@ lv2:port
 # Preset 3 - Dip Switches
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_3_1" ;
+    lv2:index 16;
+    lv2:symbol "Preset_3_output_1" ;
     lv2:name "Preset 3 - Output 1" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -198,8 +198,8 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_3_2" ;
+    lv2:index 17;
+    lv2:symbol "Preset_3_output_2" ;
     lv2:name "Preset 3 - Output 2" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -208,8 +208,8 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_3_3" ;
+    lv2:index 18;
+    lv2:symbol "Preset_3_output_3" ;
     lv2:name "Preset 3 - Output 3" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -218,8 +218,8 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_3_4" ;
+    lv2:index 19;
+    lv2:symbol "Preset_3_output_4" ;
     lv2:name "Preset 3 - Output 4" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -229,8 +229,8 @@ lv2:port
 # Preset 4 - Dip Switches
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_4_1" ;
+    lv2:index 20;
+    lv2:symbol "Preset_4_output_1" ;
     lv2:name "Preset 4 - Output 1" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -239,8 +239,8 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_4_2" ;
+    lv2:index 21;
+    lv2:symbol "Preset_4_output_2" ;
     lv2:name "Preset 4 - Output 2" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -249,8 +249,8 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_4_3" ;
+    lv2:index 22;
+    lv2:symbol "Preset_4_output_3" ;
     lv2:name "Preset 4 - Output 3" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -259,8 +259,8 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
-    lv2:symbol "P_4_4" ;
+    lv2:index 23;
+    lv2:symbol "Preset_4_output_4" ;
     lv2:name "Preset 4 - Output 4" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
@@ -270,7 +270,7 @@ lv2:port
 # Output inverters
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
+    lv2:index 24;
     lv2:symbol "Inverter_1" ;
     lv2:name "Output signal inverter 1" ;
     lv2:default 1.0 ;
@@ -280,7 +280,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
+    lv2:index 25;
     lv2:symbol "Inverter_2" ;
     lv2:name "Output signal inverter 2" ;
     lv2:default 1.0 ;
@@ -290,7 +290,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
+    lv2:index 26;
     lv2:symbol "Inverter_3" ;
     lv2:name "Output signal inverter 3" ;
     lv2:default 1.0 ;
@@ -300,7 +300,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 2;
+    lv2:index 27;
     lv2:symbol "Inverter_4" ;
     lv2:name "Output signal inverter 4" ;
     lv2:default 1.0 ;
