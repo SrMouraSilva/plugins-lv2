@@ -5,6 +5,7 @@
  :root {
   --tetr4-switch-slider-background-on: #2196F3;
   --tetr4-switch-slider-background-off: #ccc;
+  --tetr4-switch-slider-background-off-disabled: #666;
   --tetr4-switch-slider-tick-on: white;
   --tetr4-switch-slider-tick-off: white;
   --tetr4-switch-slider-front: #fff;
@@ -16,6 +17,10 @@
 .dip-switch {
   display: inline-block;
   padding-top: 0;
+  border: 2px solid var(--tetr4-switch-slider-background-off);
+  transition: border .4s;
+}
+.dip-switch.active {
   border: 2px solid var(--tetr4-switch-slider-background-on);
 }
 
@@ -79,6 +84,11 @@ input:checked + .slider:before {
 }
 
 input:checked + .slider {
+  background-color: var(--tetr4-switch-slider-background-off-disabled);
+  box-shadow: inset 0 0 2px black;
+}
+
+.active input:checked + .slider {
   background-color: var(--tetr4-switch-slider-background-on);
   box-shadow: inset 0 0 2px black,
               0 0 2px var(--tetr4-switch-slider-background-on);

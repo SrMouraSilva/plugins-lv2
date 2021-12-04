@@ -10,6 +10,7 @@
             <modgui/css/pedal-base.css> ,
             <modgui/css/pedal-boxy.css>
             ;
+        modgui:javascript <modgui/js/js.js> ;
         modgui:screenshot <modgui/screenshot-.png> ;
         modgui:thumbnail <modgui/thumbnail-.png> ;
         modgui:brand "Pedal Pi" ;
