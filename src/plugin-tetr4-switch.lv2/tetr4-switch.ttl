@@ -331,9 +331,9 @@ patch:writable plug:preset_label_1 ,
                plug:preset_label_4 ;
 state:state [
     plug:preset_label_1 "Preset 1" ;
-    plug:preset_label_1 "Preset 2" ;
-    plug:preset_label_1 "Preset 3" ;
-    plug:preset_label_1 "Preset 4"
-] .
+    plug:preset_label_2 "Preset 2" ;
+    plug:preset_label_3 "Preset 3" ;
+    plug:preset_label_4 "Preset 4"
+]
 
 .
