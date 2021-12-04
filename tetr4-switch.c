@@ -3,6 +3,10 @@
 #include <stdlib.h>
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
+#include "lv2/core/lv2_util.h"
+#include "lv2/log/log.h"
+#include "lv2/log/logger.h"
+#include "lv2-hmi.h"
 
 #define PLUGIN_URI "http://srmourasilva.github.io/plugins/tetr4-switch"
 
@@ -78,6 +82,11 @@ typedef struct {
 
     bool* inverters[TOTAL_OUTPUTS];
     char* preset_labels[TOTAL_PRESETS];
+
+    // Features
+    LV2_HMI_WidgetControl* hmi;
+    LV2_Log_Logger logger;
+    LV2_URID_Map* map;
 } Tetr4Switch;
 
 static LV2_Handle
@@ -87,6 +96,23 @@ instantiate(const LV2_Descriptor*     descriptor,
             const LV2_Feature* const* features)
 {
     Tetr4Switch* self = (Tetr4Switch*) malloc(sizeof(Tetr4Switch));
+
+    // Get host features
+    const char* missing = lv2_features_query(
+            features,
+            LV2_LOG__log,           &self->logger.log, false,
+            LV2_URID__map,          &self->map,        true,
+            LV2_HMI__WidgetControl, &self->hmi,        true,
+            NULL
+    );
+
+    lv2_log_logger_set_map(&self->logger, self->map);
+
+    if (missing) {
+        lv2_log_error(&self->logger, "Missing feature <%s>\n", missing);
+        free(self);
+        return NULL;
+    }
 
     return (LV2_Handle) self;
 }
