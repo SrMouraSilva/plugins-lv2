@@ -56,7 +56,6 @@
   right: 0;
   bottom: 0;
   background-color: var(--tetr4-switch-slider-background-off);
-  -webkit-transition: .4s;
   transition: .4s;
   box-shadow: inset 0 0 2px black;
 }
@@ -73,7 +72,7 @@
   background-color: var(--tetr4-switch-slider-tick-off);
   transition: .2s;
   transition-timing-function: ease;
-  box-shadow: 0 0 2px #ccc; 
+  box-shadow: 0 0 2px #888;
 }
 input:checked + .slider:before {
   background-color: var(--tetr4-switch-slider-tick-on);

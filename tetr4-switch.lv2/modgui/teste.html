@@ -31,6 +31,20 @@
   font-family: monospace;
   margin: 10px 2px;
 }
+
+#tetr4-switch .group1 {
+  --tetr4-switch-slider-background-on: #ff6667;
+}
+#tetr4-switch .group2 {
+  --tetr4-switch-slider-background-on: #ffff67;
+}
+#tetr4-switch .group3 {
+  --tetr4-switch-slider-background-on: #66ffff;
+}
+#tetr4-switch .group4 {
+  --tetr4-switch-slider-background-on: #bb7cd2;
+}
+
 </style>
 </head>
 
@@ -80,7 +94,7 @@
   </section>
 
   <section class="dips">
-  <fieldset class="dip-switch">
+  <fieldset class="dip-switch group1">
     <legend>Config 1</legend>
     <div class="switch-controller">
       <span class="content">1</span>
@@ -115,7 +129,7 @@
     </div>
   </fieldset>
 
-  <fieldset class="dip-switch">
+  <fieldset class="dip-switch group2">
     <legend>Config 2</legend>
     <div class="switch-controller">
       <span class="content">1</span>
@@ -150,7 +164,7 @@
     </div>
   </fieldset>
 
-  <fieldset class="dip-switch">
+  <fieldset class="dip-switch group3">
     <legend>Config 3</legend>
     <div class="switch-controller">
       <span class="content">1</span>
@@ -185,7 +199,7 @@
     </div>
   </fieldset>
 
-  <fieldset class="dip-switch">
+  <fieldset class="dip-switch group4">
     <legend>Config 4</legend>
     <div class="switch-controller">
       <span class="content">1</span>
@@ -222,35 +236,39 @@
   </section>
 
   <section class="footer">
-    <div>
+    <div class="group1">
       <!-- <div class="led"></div> -->
       <label class="footswitch">
-        <input type="checkbox" class="footswitch" />
-        <span><span class="footswitch-label">Preset 1</span></span>
+        <input type="radio" name="preset" value="1" class="footswitch" checked/>
+        <!-- <input type="checkbox" class="footswitch" /> -->
+        <span><input class="footswitch-label" value="Preset 1" maxlength="10" /></span>
       </label>
     </div>
 
-    <div>
+    <div class="group2">
       <!-- <div class="led"></div> -->
       <label class="footswitch">
-        <input type="checkbox" class="footswitch" />
-        <span><span class="footswitch-label">Preset 2</span></span>
+        <input type="radio" name="preset" value="2" class="footswitch" />
+        <!-- <input type="checkbox" class="footswitch" /> -->
+        <span><input class="footswitch-label" value="Preset 2" maxlength="10" /></span>
       </label>
     </div>
 
-    <div>
+    <div class="group3">
       <!-- <div class="led"></div> -->
       <label class="footswitch">
-        <input type="checkbox" class="footswitch" />
-        <span><span class="footswitch-label">Preset 3</span></span>
+        <input type="radio" name="preset" value="3" class="footswitch" />
+        <!-- <input type="checkbox" class="footswitch" /> -->
+        <span><input class="footswitch-label" value="Preset 3" maxlength="10" /></span>
       </label>
     </div>
 
-    <div>
+    <div class="group4">
       <!-- <div class="led"></div> -->
       <label class="footswitch">
-        <input type="checkbox" class="footswitch" />
-        <span><span class="footswitch-label">Preset 4</span></span>
+        <input type="radio" name="preset" value="4" class="footswitch" />
+        <!-- <input type="checkbox" class="footswitch" /> -->
+        <span><input class="footswitch-label" value="Preset 4" maxlength="10" /></span>
       </label>
     </div>
   </footer>

@@ -100,19 +100,20 @@ body {
   flex-direction: row;
 }
 
-.footswitch input[type="checkbox"] {
+.footswitch input[type="radio"] {
   position: absolute;
   opacity: 0;
   z-index: -1;
 }
 
-.footswitch input[type="checkbox"] + span::before {
+.footswitch input[type="radio"] + span::before {
   display: block;
   content: "";
   background: url('../images/footswitch.png');
   background-position: bottom center;
   background-repeat: no-repeat;
   background-size: auto 176px;
+  background-position-y: top;
 
   cursor: pointer;
   height: 88px;
@@ -123,21 +124,28 @@ body {
   border-right: 2px solid;
   border-top: 2px solid;
   border-radius: 50%;
+  transition: border-color .4s;
 }
 
-.footswitch input[type="checkbox"]:not(:checked) + span::before {
-  background-position-y: top;
+.footswitch input[type="radio"]:checked + span::before {
+  background-position-y: bottom;
+  border-color: var(--tetr4-switch-slider-background-on);
 }
 
 .footswitch-label {
+  width: 80px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
   margin-top: -6px;
   display: block;
   background-color: var(--tetr4-switch-slider-background-off);
   color: #222;
   text-shadow: none;
   box-shadow: inset 0 0 2px black;
+  border: none;
 }
 
-.footswitch input[type="checkbox"]:checked + .footswitch-label {
-  background-color: var(--tetr4-switch-slider-background-on); 
+.footswitch input[type="radio"]:checked + .footswitch-label {
+  background-color: var(--tetr4-switch-slider-background-on);
 }
