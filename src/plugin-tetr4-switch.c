@@ -3,10 +3,13 @@
 #include <math.h>
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
+#include "lv2/atom/atom.h"
 #include "lv2-hmi.h"
 
 #include "model/tetr4-switch.h"
 #include "extension/lv2-hmi-extension.h"
+#include "utils/state_map.h"
+
 
 #define PLUGIN_URI "http://srmourasilva.github.io/plugins/tetr4-switch"
 
@@ -67,6 +70,16 @@ instantiate(const LV2_Descriptor*     descriptor,
     Tetr4Switch* self = (Tetr4Switch*) malloc(sizeof(Tetr4Switch));
 
     Tetr4Switch_instantiate(self);
+
+    State* state = &self->state;
+    state_map_init(
+        self->props, self->map, self->map->handle,
+        PLUGIN_URI "#preset_label_1", STATE_MAP_INIT(String, &state->preset_label_1),
+        PLUGIN_URI "#preset_label_2", STATE_MAP_INIT(String, &state->preset_label_1),
+        PLUGIN_URI "#preset_label_3", STATE_MAP_INIT(String, &state->preset_label_1),
+        PLUGIN_URI "#preset_label_4", STATE_MAP_INIT(String, &state->preset_label_1),
+    NULL);
+
 
     const char* missing = LV2_HMI_instantiate(self, features);
 

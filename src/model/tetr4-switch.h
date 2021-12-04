@@ -8,8 +8,15 @@
 /** How many CV outputs there are */
 #define TOTAL_OUTPUTS 4
 /** Tension when is on */
-#define MAX_TENSION 10; // volts
+#define MAX_TENSION 10 // volts
+#define PRESET_LABEL_SIZE 11
 
+typedef struct {
+    char preset_label_1[PRESET_LABEL_SIZE];
+    char preset_label_2[PRESET_LABEL_SIZE];
+    char preset_label_3[PRESET_LABEL_SIZE];
+    char preset_label_4[PRESET_LABEL_SIZE];
+} State;
 
 typedef struct {
     // Attributes
@@ -20,6 +27,9 @@ typedef struct {
 
     bool* inverters[TOTAL_OUTPUTS];
     char* preset_labels[TOTAL_PRESETS];
+
+    // State
+    State state;
 
     // Features
     LV2_HMI_Addressing hmi_led_addressing;
