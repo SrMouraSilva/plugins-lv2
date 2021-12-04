@@ -2,11 +2,32 @@
 #include <math.h>
 #include <stdlib.h>
 
-// #define bool unsigned int
-
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 
 #define PLUGIN_URI "http://srmourasilva.github.io/plugins/tetr4-switch"
+
+
+/************************************************
+ * utils */
+static unsigned int make_mask(bool* vector[], unsigned int size) {
+    unsigned int mask = 0b00000000;
+
+    for (unsigned int i=0; i<size; i++) {
+        mask |= *vector[i] << i;
+    }
+
+    return mask;
+}
+/************************************************/
+
+
+/** Total of presets. The number of footswitches is also related */
+#define TOTAL_PRESETS 4
+/** How many CV outputs there are */
+#define TOTAL_OUTPUTS 4
+/** Tension when is on */
+#define MAX_TENSION 10; // volts
+
 
 typedef enum {
     // Outputs
@@ -50,41 +71,13 @@ typedef enum {
 } PortIndex;
 
 typedef struct {
-    float* output_cv_1;
-    float* output_cv_2;
-    float* output_cv_3;
-    float* output_cv_4;
+    float* output_cvs[TOTAL_PRESETS];
+    bool* preset_selectors[TOTAL_PRESETS];
 
-    bool* preset_selector_1;
-    bool* preset_selector_2;
-    bool* preset_selector_3;
-    bool* preset_selector_4;
+    bool* preset_outputs[TOTAL_PRESETS][TOTAL_OUTPUTS];
 
-    bool* preset_1_output_1;
-    bool* preset_1_output_2;
-    bool* preset_1_output_3;
-    bool* preset_1_output_4;
-
-    bool* preset_2_output_1;
-    bool* preset_2_output_2;
-    bool* preset_2_output_3;
-    bool* preset_2_output_4;
-
-    bool* preset_3_output_1;
-    bool* preset_3_output_2;
-    bool* preset_3_output_3;
-    bool* preset_3_output_4;
-
-    bool* preset_4_output_1;
-    bool* preset_4_output_2;
-    bool* preset_4_output_3;
-    bool* preset_4_output_4;
-
-
-    bool* inverter_1;
-    bool* inverter_2;
-    bool* inverter_3;
-    bool* inverter_4;
+    bool* inverters[TOTAL_OUTPUTS];
+    char* preset_labels[TOTAL_PRESETS];
 } Tetr4Switch;
 
 static LV2_Handle
@@ -103,67 +96,67 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
 
     switch ((PortIndex) port) {
         case OUTPUT_CV_1:
-            self->output_cv_1 = (float*) data; break;
+            self->output_cvs[0] = (float*) data; break;
         case OUTPUT_CV_2:
-            self->output_cv_2 = (float*) data; break;
+            self->output_cvs[1] = (float*) data; break;
         case OUTPUT_CV_3:
-            self->output_cv_3 = (float*) data; break;
+            self->output_cvs[2] = (float*) data; break;
         case OUTPUT_CV_4:
-            self->output_cv_4 = (float*) data; break;
+            self->output_cvs[3] = (float*) data; break;
         
         case PRESET_SELECTOR_1:
-            self->preset_selector_1 = (bool*) data; break;
+            self->preset_selectors[0] = (bool*) data; break;
         case PRESET_SELECTOR_2:
-            self->preset_selector_2 = (bool*) data; break;
+            self->preset_selectors[1] = (bool*) data; break;
         case PRESET_SELECTOR_3:
-            self->preset_selector_3 = (bool*) data; break;
+            self->preset_selectors[2] = (bool*) data; break;
         case PRESET_SELECTOR_4:
-            self->preset_selector_4 = (bool*) data; break;
+            self->preset_selectors[3] = (bool*) data; break;
 
         case PRESET_1_OUTPUT_1:
-            self->preset_1_output_1 = (bool*) data; break;
+            self->preset_outputs[0][0] = (bool*) data; break;
         case PRESET_1_OUTPUT_2:
-            self->preset_1_output_2 = (bool*) data; break;
+            self->preset_outputs[0][1] = (bool*) data; break;
         case PRESET_1_OUTPUT_3:
-            self->preset_1_output_3 = (bool*) data; break;
+            self->preset_outputs[0][2] = (bool*) data; break;
         case PRESET_1_OUTPUT_4:
-            self->preset_1_output_4 = (bool*) data; break;
+            self->preset_outputs[0][3] = (bool*) data; break;
 
         case PRESET_2_OUTPUT_1:
-            self->preset_2_output_1 = (bool*) data; break;
+            self->preset_outputs[1][0] = (bool*) data; break;
         case PRESET_2_OUTPUT_2:
-            self->preset_2_output_2 = (bool*) data; break;
+            self->preset_outputs[1][1] = (bool*) data; break;
         case PRESET_2_OUTPUT_3:
-            self->preset_2_output_3 = (bool*) data; break;
+            self->preset_outputs[1][2] = (bool*) data; break;
         case PRESET_2_OUTPUT_4:
-            self->preset_2_output_4 = (bool*) data; break;
+            self->preset_outputs[1][3] = (bool*) data; break;
 
         case PRESET_3_OUTPUT_1:
-            self->preset_3_output_1 = (bool*) data; break;
+            self->preset_outputs[2][0] = (bool*) data; break;
         case PRESET_3_OUTPUT_2:
-            self->preset_3_output_2 = (bool*) data; break;
+            self->preset_outputs[2][1] = (bool*) data; break;
         case PRESET_3_OUTPUT_3:
-            self->preset_3_output_3 = (bool*) data; break;
+            self->preset_outputs[2][2] = (bool*) data; break;
         case PRESET_3_OUTPUT_4:
-            self->preset_3_output_4 = (bool*) data; break;
+            self->preset_outputs[2][3] = (bool*) data; break;
 
         case PRESET_4_OUTPUT_1:
-            self->preset_4_output_1 = (bool*) data; break;
+            self->preset_outputs[3][0] = (bool*) data; break;
         case PRESET_4_OUTPUT_2:
-            self->preset_4_output_2 = (bool*) data; break;
+            self->preset_outputs[3][1] = (bool*) data; break;
         case PRESET_4_OUTPUT_3:
-            self->preset_4_output_3 = (bool*) data; break;
+            self->preset_outputs[3][2] = (bool*) data; break;
         case PRESET_4_OUTPUT_4:
-            self->preset_4_output_4 = (bool*) data; break;
+            self->preset_outputs[3][3] = (bool*) data; break;
 
         case INVERTER_1:
-            self->inverter_1 = (bool*) data; break;
+            self->inverters[0] = (bool*) data; break;
         case INVERTER_2:
-            self->inverter_2 = (bool*) data; break;
+            self->inverters[1] = (bool*) data; break;
         case INVERTER_3:
-            self->inverter_3 = (bool*) data; break;
+            self->inverters[2] = (bool*) data; break;
         case INVERTER_4:
-            self->inverter_4 = (bool*) data; break;
+            self->inverters[3] = (bool*) data; break;
     }
 }
 
@@ -171,49 +164,34 @@ static void activate(LV2_Handle instance) {}
 
 
 static unsigned int get_current_preset(Tetr4Switch* self) {
-    unsigned int preset_mask = 0b0000
-      | *self->preset_selector_1 << 0
-      | *self->preset_selector_2 << 1
-      | *self->preset_selector_3 << 2
-      | *self->preset_selector_4 << 3;
-    
+    // Get the preset index based on the highest bit
+    const unsigned int preset_mask = make_mask(self->preset_selectors, TOTAL_PRESETS);
     unsigned int index_current_preset = log2(preset_mask & -preset_mask);
 
-    const unsigned int presets[4] = {
-        *self->preset_1_output_1 << 0 | *self->preset_1_output_2 << 1 | *self->preset_1_output_3 << 2 | *self->preset_1_output_4 << 3,
-        *self->preset_2_output_1 << 0 | *self->preset_2_output_2 << 1 | *self->preset_2_output_3 << 2 | *self->preset_2_output_4 << 3,
-        *self->preset_3_output_1 << 0 | *self->preset_3_output_2 << 1 | *self->preset_3_output_3 << 2 | *self->preset_3_output_4 << 3,
-        *self->preset_4_output_1 << 0 | *self->preset_4_output_2 << 1 | *self->preset_4_output_3 << 2 | *self->preset_4_output_4 << 3,
-    };
-
-    return presets[index_current_preset];
+    return make_mask(self->preset_outputs[index_current_preset], TOTAL_OUTPUTS);
 }
 
 static unsigned int get_current_inverter(Tetr4Switch* self) {
-    return 0b0000
-      | *self->inverter_1 << 0
-      | *self->inverter_2 << 1
-      | *self->inverter_3 << 2
-      | *self->inverter_4 << 3;
+    return make_mask(self->inverters, TOTAL_OUTPUTS);
 }
 
 static void run(LV2_Handle instance, uint32_t n_samples) {
-    const unsigned int MAX_TENSION = 10; // volts
-
     Tetr4Switch* self = (Tetr4Switch*) instance;
     
-    unsigned int output = get_current_preset(self) ^ get_current_inverter(self);
+    // Calculate output values
+    unsigned int output_coded = get_current_preset(self) ^ get_current_inverter(self);
 
-    const unsigned int output_cv_1 = output >> 0 * MAX_TENSION;
-    const unsigned int output_cv_2 = output >> 1 * MAX_TENSION;
-    const unsigned int output_cv_3 = output >> 2 * MAX_TENSION;
-    const unsigned int output_cv_4 = output >> 3 * MAX_TENSION;
+    float output_cv_values[TOTAL_OUTPUTS];
 
+    for (unsigned int n = 0; n < TOTAL_OUTPUTS; n++) {
+        output_cv_values[n] = output_coded >> n * MAX_TENSION;
+    }
+
+    // Update values
     for (uint32_t i = 0; i < n_samples; i++) {
-        self->output_cv_1[i] = output_cv_1 * MAX_TENSION;
-        self->output_cv_2[i] = output_cv_2 * MAX_TENSION;
-        self->output_cv_3[i] = output_cv_3 * MAX_TENSION;
-        self->output_cv_4[i] = output_cv_4 * MAX_TENSION;
+        for (unsigned int id_output = 0; id_output < TOTAL_OUTPUTS; id_output++) {
+            self->output_cvs[id_output][i] = output_cv_values[id_output];
+        }
     }
 }
 
