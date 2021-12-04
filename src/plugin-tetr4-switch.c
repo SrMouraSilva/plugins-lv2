@@ -1,36 +1,14 @@
+#include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
-#include <stdlib.h>
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
-#include "lv2/core/lv2_util.h"
-#include "lv2/log/log.h"
-#include "lv2/log/logger.h"
 #include "lv2-hmi.h"
 
+#include "model/tetr4-switch.h"
+#include "extension/lv2-hmi-extension.h"
+
 #define PLUGIN_URI "http://srmourasilva.github.io/plugins/tetr4-switch"
-
-
-/************************************************
- * utils */
-static unsigned int make_mask(bool* vector[], unsigned int size) {
-    unsigned int mask = 0b00000000;
-
-    for (unsigned int i=0; i<size; i++) {
-        mask |= *vector[i] << i;
-    }
-
-    return mask;
-}
-/************************************************/
-
-
-/** Total of presets. The number of footswitches is also related */
-#define TOTAL_PRESETS 4
-/** How many CV outputs there are */
-#define TOTAL_OUTPUTS 4
-/** Tension when is on */
-#define MAX_TENSION 10; // volts
 
 
 typedef enum {
@@ -72,22 +50,13 @@ typedef enum {
     INVERTER_2 = 25,
     INVERTER_3 = 26,
     INVERTER_4 = 27,
+
+    PRESET_LABEL_1 = 28,
+    PRESET_LABEL_2 = 29,
+    PRESET_LABEL_3 = 30,
+    PRESET_LABEL_4 = 31,
 } PortIndex;
 
-typedef struct {
-    float* output_cvs[TOTAL_PRESETS];
-    bool* preset_selectors[TOTAL_PRESETS];
-
-    bool* preset_outputs[TOTAL_PRESETS][TOTAL_OUTPUTS];
-
-    bool* inverters[TOTAL_OUTPUTS];
-    char* preset_labels[TOTAL_PRESETS];
-
-    // Features
-    LV2_HMI_WidgetControl* hmi;
-    LV2_Log_Logger logger;
-    LV2_URID_Map* map;
-} Tetr4Switch;
 
 static LV2_Handle
 instantiate(const LV2_Descriptor*     descriptor,
@@ -97,19 +66,11 @@ instantiate(const LV2_Descriptor*     descriptor,
 {
     Tetr4Switch* self = (Tetr4Switch*) malloc(sizeof(Tetr4Switch));
 
-    // Get host features
-    const char* missing = lv2_features_query(
-            features,
-            LV2_LOG__log,           &self->logger.log, false,
-            LV2_URID__map,          &self->map,        true,
-            LV2_HMI__WidgetControl, &self->hmi,        true,
-            NULL
-    );
+    Tetr4Switch_instantiate(self);
 
-    lv2_log_logger_set_map(&self->logger, self->map);
+    const char* missing = LV2_HMI_instantiate(self, features);
 
     if (missing) {
-        lv2_log_error(&self->logger, "Missing feature <%s>\n", missing);
         free(self);
         return NULL;
     }
@@ -183,30 +144,28 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
             self->inverters[2] = (bool*) data; break;
         case INVERTER_4:
             self->inverters[3] = (bool*) data; break;
+
+        case PRESET_LABEL_1:
+            self->preset_labels[0] = (char*) data; break;
+        case PRESET_LABEL_2:
+            self->preset_labels[1] = (char*) data; break;
+        case PRESET_LABEL_3:
+            self->preset_labels[2] = (char*) data; break;
+        case PRESET_LABEL_4:
+            self->preset_labels[3] = (char*) data; break;
     }
 }
 
 static void activate(LV2_Handle instance) {}
 
 
-static unsigned int get_current_preset(Tetr4Switch* self) {
-    // Get the preset index based on the highest bit
-    const unsigned int preset_mask = make_mask(self->preset_selectors, TOTAL_PRESETS);
-    unsigned int index_current_preset = log2(preset_mask & -preset_mask);
-
-    return make_mask(self->preset_outputs[index_current_preset], TOTAL_OUTPUTS);
-}
-
-static unsigned int get_current_inverter(Tetr4Switch* self) {
-    return make_mask(self->inverters, TOTAL_OUTPUTS);
-}
-
 static void run(LV2_Handle instance, uint32_t n_samples) {
     Tetr4Switch* self = (Tetr4Switch*) instance;
+
+    LV2_HMI_run(self);
     
     // Calculate output values
-    unsigned int output_coded = get_current_preset(self) ^ get_current_inverter(self);
-
+    unsigned int output_coded = self->get_output_signal(self);
     float output_cv_values[TOTAL_OUTPUTS];
 
     for (unsigned int n = 0; n < TOTAL_OUTPUTS; n++) {
@@ -228,6 +187,9 @@ static void cleanup(LV2_Handle instance) {
 }
 
 static const void* extension_data(const char* uri) {
+    if (LV2_HMI_is_extension_data_appliable(uri))
+        return LV2_HMI_extension_data();
+    
     return NULL;
 }
 

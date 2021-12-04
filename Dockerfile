@@ -18,7 +18,7 @@ RUN cd /tmp \
  && ./waf install \
  && rm -r /tmp/lv2
 
-COPY . /app
+COPY src/ /app
 WORKDIR /app
 
 RUN make build

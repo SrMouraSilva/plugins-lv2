@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# Makefile for tetr4-switch.lv2 #
+# Makefile for plugin-tetr4-switch.lv2 #
 # ----------------------- #
 #
 

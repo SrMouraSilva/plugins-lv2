@@ -1,10 +1,14 @@
 #!/usr/bin/make -f
-# Makefile for mod-cd-switch1.lv2 #
+# Makefile for plugin-tetr4-switch.lv2 #
 # --------------------------------- #
 
 include Makefile.mk
 
-NAME = tetr4-switch
+NAME = plugin-tetr4-switch
+
+HEADERS=$(shell find -type f -name '*.h')
+SOURCES=$(shell find -type f -name '*.c')
+OBJECTS=$(shell find -type f -name '*.o')
 
 # --------------------------------------------------------------
 # Installation path
@@ -16,15 +20,19 @@ COMPLETE_INSTALL_PATH = $(DESTDIR)$(INSTALL_PATH)/$(NAME).lv2
 # Default target is to build all plugins
 
 all: build
-build: $(NAME)-build
+build: $(SOURCES:.c=.o) $(NAME)-build
 
 # --------------------------------------------------------------
 # Build rules
 
+%.o: %.c $(HEADERS)
+	$(CC) -c $< $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o $@
+
 $(NAME)-build: $(NAME).lv2/$(NAME)$(LIB_EXT)
 
 $(NAME).lv2/$(NAME)$(LIB_EXT): $(NAME).c
-	$(CC) $^ $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o $@
+	$(CC) -c $< $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o $@ 
+#$(CC) $^ $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o $@
 
 # --------------------------------------------------------------
 
