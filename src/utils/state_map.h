@@ -1,3 +1,4 @@
+// https://lv2plug.in/book/#_state_map_h
 #ifndef STATE_MAP_H
 #define	STATE_MAP_H
 

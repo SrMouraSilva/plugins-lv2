@@ -22,6 +22,8 @@ With it, is possible to define four presets of active CV and change between then
 * [ ] Custom HMI - https://github.com/moddevices/plugin-examples/tree/main/hmi-widgets-individual-tests
    * [ ] Led colour
    * [ ] Custom label
+     * Atom sample 1: https://github.com/moddevices/mod-cv-plugins/blob/master/source/mod-cv-clock/mod-cv-clock.c
+     * Atom sample 2: https://lv2plug.in/book/#_state_map_h
 
 ## Development
 

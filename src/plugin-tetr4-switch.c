@@ -75,11 +75,11 @@ instantiate(const LV2_Descriptor*     descriptor,
     state_map_init(
         self->props, self->map, self->map->handle,
         PLUGIN_URI "#preset_label_1", STATE_MAP_INIT(String, &state->preset_label_1),
-        PLUGIN_URI "#preset_label_2", STATE_MAP_INIT(String, &state->preset_label_1),
-        PLUGIN_URI "#preset_label_3", STATE_MAP_INIT(String, &state->preset_label_1),
-        PLUGIN_URI "#preset_label_4", STATE_MAP_INIT(String, &state->preset_label_1),
-    NULL);
-
+        PLUGIN_URI "#preset_label_2", STATE_MAP_INIT(String, &state->preset_label_2),
+        PLUGIN_URI "#preset_label_3", STATE_MAP_INIT(String, &state->preset_label_3),
+        PLUGIN_URI "#preset_label_4", STATE_MAP_INIT(String, &state->preset_label_4),
+        NULL
+    );
 
     const char* missing = LV2_HMI_instantiate(self, features);
 

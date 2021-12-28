@@ -1,6 +1,7 @@
 #ifndef TETR4_SWITCH_H
 #define	TETR4_SWITCH_H
 
+#include "../utils/state_map.h"
 #include "lv2/log/logger.h"
 
 /** Total of presets. The number of footswitches is also related */
@@ -29,6 +30,7 @@ typedef struct {
     char* preset_labels[TOTAL_PRESETS];
 
     // State
+    StateMapItem props[TOTAL_PRESETS];
     State state;
 
     // Features
