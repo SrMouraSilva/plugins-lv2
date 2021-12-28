@@ -27,11 +27,11 @@ const char* LV2_HMI_instantiate(
 ) {
     // Get host features
     const char* missing = lv2_features_query(
-            features,
-            LV2_LOG__log,           &self->logger.log, false,
-            LV2_URID__map,          &self->map,        true,
-            LV2_HMI__WidgetControl, &self->hmi,        true,
-            NULL
+        features,
+        LV2_LOG__log,           &self->logger.log, false,
+        LV2_URID__map,          &self->map,        true,
+        LV2_HMI__WidgetControl, &self->hmi,        true,
+        NULL
     );
 
     lv2_log_logger_set_map(&self->logger, self->map);
@@ -91,7 +91,7 @@ void LV2_HMI_run(Tetr4Switch* self) {
     LV2_HMI_LED_Colour led_colous[] = { LV2_HMI_LED_Colour_Red, LV2_HMI_LED_Colour_Yellow, LV2_HMI_LED_Colour_Cyan, LV2_HMI_LED_Colour_Magenta };
     LV2_HMI_LED_Colour current_led_colour = led_colous[current_preset];
 
-    self->hmi->set_led(self->hmi->handle, self->hmi_led_addressing, current_led_colour, 0, 0);
+    self->hmi->set_led_with_brightness(self->hmi->handle, self->hmi_led_addressing, current_led_colour, LV2_HMI_LED_Brightness_Normal);
 
     self->hmi->set_label(self->hmi->handle, self->hmi_label_addressing, self->preset_labels[current_preset]);
 }
