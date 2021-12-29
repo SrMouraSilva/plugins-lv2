@@ -21,4 +21,13 @@ extern unsigned int make_mask(bool* vector[], unsigned int size);
  */
 extern unsigned int highest_on_bit(unsigned int number);
 
+/**
+ * Covert integer into string.
+ * Remember to free it!
+ * 
+ * @param number that will be converted into string
+ * 
+ * @return string generated
+ */
+extern char* integer_to_string(unsigned int number);
 #endif

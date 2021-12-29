@@ -3,15 +3,11 @@
 #include <math.h>
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
-#include "lv2/atom/atom.h"
 #include "lv2-hmi.h"
 
 #include "model/tetr4-switch.h"
 #include "extension/lv2-hmi-extension.h"
-#include "utils/state_map.h"
-
-
-#define PLUGIN_URI "http://srmourasilva.github.io/plugins/tetr4-switch"
+#include "extension/atom-extension.h"
 
 
 typedef enum {
@@ -71,22 +67,14 @@ instantiate(const LV2_Descriptor*     descriptor,
 
     Tetr4Switch_instantiate(self);
 
-    State* state = &self->state;
-    state_map_init(
-        self->props, self->map, self->map->handle,
-        PLUGIN_URI "#preset_label_1", STATE_MAP_INIT(String, &state->preset_label_1),
-        PLUGIN_URI "#preset_label_2", STATE_MAP_INIT(String, &state->preset_label_2),
-        PLUGIN_URI "#preset_label_3", STATE_MAP_INIT(String, &state->preset_label_3),
-        PLUGIN_URI "#preset_label_4", STATE_MAP_INIT(String, &state->preset_label_4),
-        NULL
-    );
-
     const char* missing = LV2_HMI_instantiate(self, features);
 
     if (missing) {
         free(self);
         return NULL;
     }
+
+    Atom_instantiate(self);
 
     return (LV2_Handle) self;
 }
@@ -176,6 +164,7 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
     Tetr4Switch* self = (Tetr4Switch*) instance;
 
     LV2_HMI_run(self);
+    Atom_run(self);
     
     // Calculate output values
     unsigned int output_coded = self->get_output_signal(self);

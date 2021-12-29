@@ -1,8 +1,16 @@
 #ifndef TETR4_SWITCH_H
 #define	TETR4_SWITCH_H
 
-#include "../utils/state_map.h"
+#include <stdbool.h>
+
 #include "lv2/log/logger.h"
+#include "lv2/atom/atom.h"
+
+#include "../lv2-hmi.h"
+
+
+#define PLUGIN_URI "http://srmourasilva.github.io/plugins/tetr4-switch"
+
 
 /** Total of presets. The number of footswitches is also related */
 #define TOTAL_PRESETS 4
@@ -10,13 +18,18 @@
 #define TOTAL_OUTPUTS 4
 /** Tension when is on */
 #define MAX_TENSION 10 // volts
-#define PRESET_LABEL_SIZE 11
+#define PRESET_LABEL_MAX_SIZE 11
 
 typedef struct {
-    char preset_label_1[PRESET_LABEL_SIZE];
-    char preset_label_2[PRESET_LABEL_SIZE];
-    char preset_label_3[PRESET_LABEL_SIZE];
-    char preset_label_4[PRESET_LABEL_SIZE];
+    // Types
+    LV2_URID atom_String;
+
+    // Values
+    LV2_URID atom_Presets_label[TOTAL_PRESETS];
+} URIs;
+
+typedef struct {
+    char presets_label[TOTAL_PRESETS][PRESET_LABEL_MAX_SIZE];
 } State;
 
 typedef struct {
@@ -29,8 +42,11 @@ typedef struct {
     bool* inverters[TOTAL_OUTPUTS];
     char* preset_labels[TOTAL_PRESETS];
 
+    // Atom feature - Preset labels
+    const LV2_Atom_Sequence* events_in;
+
     // State
-    StateMapItem props[TOTAL_PRESETS];
+    URIs uris;
     State state;
 
     // Features
@@ -46,6 +62,7 @@ typedef struct {
      * Note: The first corresponds to '0' (zero)
      * 
      * @param void * Tetr4Switch
+     * 
      * @return Index of current preset
      */
     unsigned int (* get_index_current_preset)(void* self);
@@ -89,6 +106,27 @@ typedef struct {
      * @return Current preset as the masked way
      */
     unsigned int (* get_output_signal)(void* self);
+
+    /**
+     * Get the label of the specified preset or NULL if send a invalid preset
+     * 
+     * @param void * Tetr4Switch
+     * @param index: Index of the preset
+     * 
+     * @return Label of the specified preset or NULL if index is invalid
+     */
+    char* (* get_preset_label)(void* self, unsigned int index);
+
+    /**
+     * Rename the label of the specified preset
+     * 
+     * @param void * Tetr4Switch
+     * @param index Index of the patch where will be renamed
+     * @param new_label New label with max size PRESET_LABEL_MAX_SIZE-1
+     * 
+     * @return Current preset as the masked way
+     */
+    char* (* set_preset_label)(void* self, unsigned int index, char* new_label);
 } Tetr4Switch;
 
 
