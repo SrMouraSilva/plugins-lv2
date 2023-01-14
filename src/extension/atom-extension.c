@@ -24,22 +24,26 @@ void LV2_HMI_instantiate(Tetr4Switch* self) {
     }
 }
 
+void Atom_instantiate(Tetr4Switch* self) {
+    // FIXME
+}
 
 void Atom_run(Tetr4Switch* self) {
-    const URIs* uris = &self->uris;
+    // FIXME
+    // const URIs* uris = &self->uris;
 
-    for (int i=0; i<TOTAL_PRESETS; i++) {
-        LV2_Atom* preset_label = NULL;
+    // for (int i=0; i<TOTAL_PRESETS; i++) {
+    //     LV2_Atom* preset_label = NULL;
         
-        lv2_atom_object_get(
-            obj, // FIXME
-            uris->atom_Presets_label[i], &preset_label,
-            NULL
-        );
+    //     lv2_atom_object_get(
+    //         obj, // FIXME
+    //         uris->atom_Presets_label[i], &preset_label,
+    //         NULL
+    //     );
 
-        char* new_preset_label = get_new_preset_label(self, preset_label, i);
-        self->set_preset_label(self, i, new_preset_label);
-    }
+    //     char* new_preset_label = get_new_preset_label(self, preset_label, i);
+    //     self->set_preset_label(self, i, new_preset_label);
+    // }
 
     // LV2_ATOM_SEQUENCE_FOREACH(self->events_in, ev) {
     // }
@@ -49,11 +53,12 @@ void Atom_run(Tetr4Switch* self) {
 char* get_new_preset_label(Tetr4Switch* self, LV2_Atom* atom, unsigned int index_preset) {
     const URIs* uris = &self->uris;
 
-    if (atom != NULL && atom->type == uris->atom_String) {
-        LV2_Atom_String* string = (LV2_Atom_String*) atom;
-        char* new_value_string = string->body;
-        return new_value_string;
-    }
+    // FIXME
+    // if (atom != NULL && atom->type == uris->atom_String) {
+    //     LV2_Atom_String* string = (LV2_Atom_String*) atom;
+    //     char* new_value_string = string->body;
+    //     return new_value_string;
+    // }
 
     return self->get_preset_label(self, index_preset);
 }
