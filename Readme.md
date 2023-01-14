@@ -28,5 +28,13 @@ With it, is possible to define four presets of active CV and change between then
 ## Development
 
 ```bash
-docker build .
+docker build . -t builder
+```
+
+## Build
+
+```bash
+#docker run -ti --name mpb -p 9000:9000 -v $(pwd)/src:/tmp/local-mod-folder cbix/mod-plugin-builder:moddwarf
+docker run --rm -ti --name mpb -p 9000:9000 -v $(pwd)/src:/home/builder/mod-plugin-builder/plugins/package/tetr4-switch cbix/mod-plugin-builder:moddwarf
+./build moddwarf tetr4-switch
 ```
