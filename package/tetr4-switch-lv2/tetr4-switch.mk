@@ -9,7 +9,7 @@
 # TETR4_SWITCH_DEPENDENCIES = juce6
 # TETR4_SWITCH_CONF_ENV = DESTDIR="$(TARGET_DIR)"
 # TETR4_SWITCH_CONF_OPTS = -DCMAKE_TOOLCHAIN_FILE=$(JUCE6_TOOLCHAIN_FILE) -DSKIP_LV2_TTL_GENERATOR=ON
-# remove underline from: TETR4_SWITCH_BUNDLE_S = tetr4-switch.lv2
+# TETR4_SWITCH_BUNDLES = tetr4-switch.lv2
 
 # $(eval $(generic-package))
 
@@ -34,12 +34,11 @@ TETR4_SWITCH_VERSION = 1
 TETR4_SWITCH_DEPENDENCIES =
 
 # LV2 bundles that this package generates (space separated list)
-TETR4_SWITCH_BUNDLES = tetr4-switch.lv2
+TETR4_SWITCH_BUNDLES = eg-amp.lv2
 
 # call make with the current arguments and path. "$(@D)" is the build directory.
 #TETR4_SWITCH_TARGET_MAKE = $(TARGET_MAKE_ENV) $(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D)/source
-#TETR4_SWITCH_TARGET_MAKE = $(TARGET_MAKE_ENV) $(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D)/src/tetr4-switch.lv2/
-TETR4_SWITCH_TARGET_MAKE = $(TARGET_MAKE_ENV) $(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D)/
+TETR4_SWITCH_TARGET_MAKE = $(TARGET_MAKE_ENV) $(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D)/src/tetr4-switch.lv2/
 
 
 # build command

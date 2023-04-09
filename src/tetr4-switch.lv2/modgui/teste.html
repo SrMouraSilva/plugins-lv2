@@ -2,66 +2,20 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="js/js.js"></script>
+<script src="js/tetr4-switch.js"></script>
 
-<link rel="stylesheet" href="css/pedal-base.css">
-<link rel="stylesheet" href="css/pedal-boxy.css">
-<link rel="stylesheet" href="css/dip-switch.css">
-<style>
-#tetr4-switch {
-  text-shadow: 0 0 1px black;
-  --pedal-background: #333;
-  --pedal-width: 850px;
-  --pedal-height: 300px;
-
-  display: block;
-  color: #ddd;
-}
-
-#tetr4-switch .footer,
-#tetr4-switch .dips {
-  display: flex;
-  justify-content: space-around;
-}
-
-#tetr4-switch .footer {
-  margin-top: 8px;
-}
-
-#tetr4-switch .name {
-  text-shadow: 0 0 2px black;
-  font-weight: bold;
-
-  position: absolute;
-  width: 95px;
-  font-family: monospace;
-  margin: 10px 2px;
-}
-
-#tetr4-switch .group1 {
-  --tetr4-switch-slider-background-on: #ff6667;
-}
-#tetr4-switch .group2 {
-  --tetr4-switch-slider-background-on: #ffff67;
-}
-#tetr4-switch .group3 {
-  --tetr4-switch-slider-background-on: #66ffff;
-}
-#tetr4-switch .group4 {
-  --tetr4-switch-slider-background-on: #bb7cd2;
-}
-
-</style>
+<link rel="stylesheet" href="css/tetr4-switch.css">
 </head>
 
 <body>
 
-<div id="tetr4-switch" class="pedal boxy">
+<div id="tetr4-switch" class="tetr4-switch">
   <!-- <div class="logo">Pedal Pi</div> -->
   <div class="name">Tetr4 switch</div>
 
   <!-- Header -->
-  <section class="dips active">
+  <!--
+  <section class="inverter dips active">
     <div class="switch-controller">
       <span class="content">+10v</span>
       <label class="switch">
@@ -98,6 +52,7 @@
       <span class="content">0v</span>
     </div>
   </section>
+  -->
 
   <section class="dips">
   <fieldset class="dip-switch group1 active">
@@ -241,39 +196,31 @@
   </fieldset>
   </section>
 
-  <section class="footer">
+  <footer class="footer">
     <div class="group1">
-      <!-- <div class="led"></div> -->
       <label class="footswitch">
-        <input type="radio" name="preset" value="1" class="footswitch" checked onchange="set_current(1)"/>
-        <!-- <input type="checkbox" class="footswitch" /> -->
+        <input type="radio" name="preset" value="1" class="footswitch" checked onchange="tetr4_switch_set_current(1)"/>
         <span><input class="footswitch-label" value="Preset 1" maxlength="10" /></span>
       </label>
     </div>
 
     <div class="group2">
-      <!-- <div class="led"></div> -->
       <label class="footswitch">
-        <input type="radio" name="preset" value="2" class="footswitch" onchange="set_current(2)" />
-        <!-- <input type="checkbox" class="footswitch" /> -->
+        <input type="radio" name="preset" value="2" class="footswitch" onchange="tetr4_switch_set_current(2)" />
         <span><input class="footswitch-label" value="Preset 2" maxlength="10" /></span>
       </label>
     </div>
 
     <div class="group3">
-      <!-- <div class="led"></div> -->
       <label class="footswitch">
-        <input type="radio" name="preset" value="3" class="footswitch" onchange="set_current(3)" />
-        <!-- <input type="checkbox" class="footswitch" /> -->
+        <input type="radio" name="preset" value="3" class="footswitch" onchange="tetr4_switch_set_current(3)" />
         <span><input class="footswitch-label" value="Preset 3" maxlength="10" /></span>
       </label>
     </div>
 
     <div class="group4">
-      <!-- <div class="led"></div> -->
       <label class="footswitch">
-        <input type="radio" name="preset" value="4" class="footswitch" onchange="set_current(4)" />
-        <!-- <input type="checkbox" class="footswitch" /> -->
+        <input type="radio" name="preset" value="4" class="footswitch" onchange="tetr4_switch_set_current(4)" />
         <span><input class="footswitch-label" value="Preset 4" maxlength="10" /></span>
       </label>
     </div>

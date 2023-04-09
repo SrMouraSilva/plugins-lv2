@@ -9,23 +9,21 @@
 
 char* get_new_preset_label(Tetr4Switch* self, LV2_Atom* atom, unsigned int current_value);
 
-void LV2_HMI_instantiate(Tetr4Switch* self) {
-    URIs* const uris = &self->uris;
-
-    for (int i=0; i<TOTAL_PRESETS; i++) {
-        char* index_as_string = integer_to_string(i);
-
-        uris->atom_Presets_label[i] = self->map->map(
-            self->map->handle,
-            strcat(PLUGIN_URI "#preset_label_", index_as_string)
-        );
-
-        free(index_as_string);
-    }
-}
 
 void Atom_instantiate(Tetr4Switch* self) {
     // FIXME
+    // URIs* const uris = &self->uris;
+
+    // for (int i=0; i<TOTAL_PRESETS; i++) {
+    //     char* index_as_string = integer_to_string(i);
+
+    //     uris->atom_Presets_label[i] = self->map->map(
+    //         self->map->handle,
+    //         strcat(PLUGIN_URI "#preset_label_", index_as_string)
+    //     );
+
+    //     free(index_as_string);
+    // }
 }
 
 void Atom_run(Tetr4Switch* self) {

@@ -1,57 +1,61 @@
-@prefix lv2:  <http://lv2plug.in/ns/lv2core#>.
-@prefix doap: <http://usefulinc.com/ns/doap#>.
-@prefix epp:  <http://lv2plug.in/ns/ext/port-props#>.
-@prefix foaf: <http://xmlns.com/foaf/0.1/>.
-@prefix mod:  <http://moddevices.com/ns/mod#>.
-@prefix modgui: <http://moddevices.com/ns/modgui#>.
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix epp:  <http://lv2plug.in/ns/ext/port-props#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix mod:  <http://moddevices.com/ns/mod#> .
+@prefix modgui: <http://moddevices.com/ns/modgui#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix atom: <http://lv2plug.in/ns/ext/atom#> .
 @prefix midi: <http://lv2plug.in/ns/ext/midi#> .
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
 @prefix units: <http://lv2plug.in/ns/extensions/units#> .
 
-plug:preset_label_1
-    a lv2:Parameter ;
-    rdfs:label "Preset label 1" ;
-    rdfs:range atom:String .
-plug:preset_label_2
-    a lv2:Parameter ;
-    rdfs:label "Preset label 2" ;
-    rdfs:range atom:String .
-plug:preset_label_2
-    a lv2:Parameter ;
-    rdfs:label "Preset label 3" ;
-    rdfs:range atom:String .
-plug:preset_label_4
-    a lv2:Parameter ;
-    rdfs:label "Preset label 4" ;
-    rdfs:range atom:String .
+# plug:preset_label_1
+#     a lv2:Parameter ;
+#     rdfs:label "Preset label 1" ;
+#     rdfs:range atom:String .
 
-<http://http://srmourasilva.github.io/plugins/tetr4-switch>
+# plug:preset_label_2
+#     a lv2:Parameter ;
+#     rdfs:label "Preset label 2" ;
+#     rdfs:range atom:String .
+
+# plug:preset_label_2
+#     a lv2:Parameter ;
+#     rdfs:label "Preset label 3" ;
+#     rdfs:range atom:String .
+    
+# plug:preset_label_4
+#     a lv2:Parameter ;
+#     rdfs:label "Preset label 4" ;
+#     rdfs:range atom:String .
+
+<http://srmourasilva.github.io/plugins/tetr4-switch>
     a lv2:Plugin, mod:ControlVoltagePlugin, mod:UtilityPlugin ;
 
-doap:name "Tetr4 switch";
-doap:license "GPL v2+";
+doap:name "Tetr4 switch" ;
+doap:license "GPL v2+" ;
 doap:developer [
-    foaf:name "Paulo Mateus";
-    foaf:homepage <>;
-    foaf:mbox <mailto:mateus.moura@hotmail.com>;
+    foaf:name "Paulo Mateus" ;
+    foaf:homepage <> ;
+    foaf:mbox <mailto:mateus.moura@hotmail.com> ;
     ];
 
 doap:maintainer [
-    foaf:name "SrMouraSilva";
-    foaf:homepage <https://github.com/SrMouraSilva/tetr4-switch-lv2>;
-    foaf:mbox <mailto:mateus.moura@hotmail.com>;
+    foaf:name "SrMouraSilva" ;
+    foaf:homepage <https://github.com/SrMouraSilva/tetr4-switch-lv2> ;
+    foaf:mbox <mailto:mateus.moura@hotmail.com> ;
     ];
 
-    lv2:minorVersion 3;
-    lv2:microVersion 0;
+    lv2:minorVersion 3 ;
+    lv2:microVersion 0 ;
 
 rdfs:comment """
 Tetr4 switch is a switch inspired on switches like Pedrone Penta Switch, Pedrone Yet, Carl Martin Octa Switch and others, but adaptable for the MOD Devices universe.
 With it, is possible to define four presets of active CV and change between then. 
-""";
+""" ;
+
 
 # Outputs
 lv2:port
@@ -325,15 +329,15 @@ lv2:port
     lv2:maximum 1 ;
     lv2:portProperty lv2:toggled;
 ] ;
-patch:writable plug:preset_label_1 ,
-               plug:preset_label_2 ,
-               plug:preset_label_3 ,
-               plug:preset_label_4 ;
-state:state [
-    plug:preset_label_1 "Preset 1" ;
-    plug:preset_label_2 "Preset 2" ;
-    plug:preset_label_3 "Preset 3" ;
-    plug:preset_label_4 "Preset 4"
-]
+# patch:writable plug:preset_label_1 ,
+#                plug:preset_label_2 ,
+#                plug:preset_label_3 ,
+#                plug:preset_label_4 ;
+# state:state [
+#     plug:preset_label_1 "Preset 1" ;
+#     plug:preset_label_2 "Preset 2" ;
+#     plug:preset_label_3 "Preset 3" ;
+#     plug:preset_label_4 "Preset 4"
+# ]
 
 .
