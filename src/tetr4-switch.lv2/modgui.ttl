@@ -1,5 +1,5 @@
 @prefix modgui: <http://moddevices.com/ns/modgui#> .
-@prefix lv2:    <http://lv2plug.in/ns/lv2core#> .
+@prefix lv2:    <http://lv2plug.ipngn/ns/lv2core#> .
 
 <http://srmourasilva.github.io/plugins/tetr4-switch>
     modgui:gui [
@@ -13,7 +13,7 @@
         modgui:javascript <modgui/js/js.js> ;
         modgui:screenshot <modgui/screenshot-.png> ;
         modgui:thumbnail <modgui/thumbnail-.png> ;
-        modgui:brand "Pedal Pi" ;
+        modgui:brand "SrMouraSilva" ;
         modgui:label "Tetr4 switch" ;
         modgui:model "boxy-small" ;
         modgui:panel "1-footswitch" ;

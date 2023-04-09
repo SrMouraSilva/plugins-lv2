@@ -47,7 +47,7 @@ bool LV2_HMI_is_extension_data_appliable(const char* uri) {
   return (!strcmp(uri, LV2_HMI__PluginNotification));
 }
 
-static const void* LV2_HMI_extension_data() {
+const void* LV2_HMI_extension_data() {
     static const LV2_HMI_PluginNotification hmiNotif = {
         LV2_HMI_addressed,
         LV2_HMI_unaddressed,

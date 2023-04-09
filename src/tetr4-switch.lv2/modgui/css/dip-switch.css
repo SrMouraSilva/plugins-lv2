@@ -15,13 +15,13 @@
 }
 
 .dip-switch {
-  display: inline-block;
+  display: flex;
   padding-top: 0;
-  border: 2px solid var(--tetr4-switch-slider-background-off);
+  border: 1px solid var(--tetr4-switch-slider-background-off);
   transition: border .4s;
 }
 .dip-switch.active {
-  border: 2px solid var(--tetr4-switch-slider-background-on);
+  border: 1px solid var(--tetr4-switch-slider-background-on);
 }
 
 .dip-switch legend {

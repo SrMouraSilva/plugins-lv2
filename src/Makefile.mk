@@ -1,6 +1,8 @@
 #!/usr/bin/make -f
-# Makefile for plugin-tetr4-switch.lv2 #
+# Makefile for tetr4-switch.lv2 #
+# Based on https://github.com/moddevices/mod-lv2-examples/blob/76653e0/examples/eg-amp.lv2/Makefile.mk
 # ----------------------- #
+# Created by falkTX
 #
 
 AR  ?= ar

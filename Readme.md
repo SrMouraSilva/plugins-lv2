@@ -3,6 +3,8 @@
 LV2 audio plugin inspired on switches like Pedrone Penta Switch, Pedrone Yet, Carl Martin Octa Switch and others, but adaptable for the MOD Devices universe.
 With it, is possible to define four presets of active CV and change between then. 
 
+![Web gui sample](./docs/sample.gif)
+
 ## TODO
 
 ### v1.0.0
@@ -27,6 +29,24 @@ With it, is possible to define four presets of active CV and change between then
 
 ## Development
 
+Requirements
+```bash
+sudo apt install lv2-dev
+```
+
+Compile
+```bash
+make build
+```
+
+Install
+```bash
+make install-user
+# uninstalling
+#make uninstall-user
+```
+
+Alternatively, compile on docker environment
 ```bash
 docker build . -t builder
 ```

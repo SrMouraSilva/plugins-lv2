@@ -3,7 +3,7 @@
 #include <math.h>
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
-#include "lv2-hmi.h"
+//#include "lv2-hmi.h"
 
 #include "model/tetr4-switch.h"
 #include "extension/lv2-hmi-extension.h"
@@ -67,14 +67,14 @@ instantiate(const LV2_Descriptor*     descriptor,
 
     Tetr4Switch_instantiate(self);
 
-    const char* missing = LV2_HMI_instantiate(self, features);
+    // const char* missing = LV2_HMI_instantiate(self, features);
 
-    if (missing) {
-        free(self);
-        return NULL;
-    }
+    // if (missing) {
+    //     free(self);
+    //     return NULL;
+    // }
 
-    Atom_instantiate(self);
+    //Atom_instantiate(self);
 
     return (LV2_Handle) self;
 }
@@ -163,7 +163,7 @@ static void activate(LV2_Handle instance) {}
 static void run(LV2_Handle instance, uint32_t n_samples) {
     Tetr4Switch* self = (Tetr4Switch*) instance;
 
-    LV2_HMI_run(self);
+    //LV2_HMI_run(self);
     Atom_run(self);
     
     // Calculate output values
@@ -189,8 +189,8 @@ static void cleanup(LV2_Handle instance) {
 }
 
 static const void* extension_data(const char* uri) {
-    if (LV2_HMI_is_extension_data_appliable(uri))
-        return LV2_HMI_extension_data();
+    // if (LV2_HMI_is_extension_data_appliable(uri))
+    //     return LV2_HMI_extension_data();
     
     return NULL;
 }
