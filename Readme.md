@@ -56,5 +56,18 @@ docker build . -t builder
 ```bash
 #docker run -ti --name mpb -p 9000:9000 -v $(pwd)/src:/tmp/local-mod-folder cbix/mod-plugin-builder:moddwarf
 docker run --rm -ti --name mpb -p 9000:9000 -v $(pwd)/src:/home/builder/mod-plugin-builder/plugins/package/tetr4-switch cbix/mod-plugin-builder:moddwarf
+sudo apt install iputils-ping --yes
 ./build moddwarf tetr4-switch
+./build moddwarf tetr4-switch-publish
+
+# Forçar o build sem ter que aumentar a versão em tetr4-switch.mk
+rm -r /home/builder/mod-workdir/moddwarf/build/tetr4-switch-*
+
 ```
+
+
+About 
+
+* https://wiki.mod.audio/wiki/How_To_Build_and_Deploy_LV2_Plugin_to_MOD_Duo
+* https://wiki.mod.audio/wiki/Preparing_the_Bundle
+* https://wiki.mod.audio/wiki/Creating_the_GUI
