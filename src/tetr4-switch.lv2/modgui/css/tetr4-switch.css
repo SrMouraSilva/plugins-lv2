@@ -1,6 +1,10 @@
 :root {
-  --tetr4-switch-width: 550px;
-  --tetr4-switch-height: 230px;
+  --tetr4-switch-width: 600px;
+  --tetr4-switch-height: 268px;
+}
+
+.tetr4-switch-base.mod-pedal .mod-pedal-output {
+  top: 0px;
 }
 
 .tetr4-switch {
@@ -34,6 +38,8 @@
 
   font-family: monospace;
   margin-top: -10px;
+  margin-bottom: -4px;
+  font-size: large;
   text-align: center;
   width: 100%;
 }
@@ -119,7 +125,7 @@
   margin-left: auto;
   margin-right: auto;
   text-align: center;
-  margin-top: 4px;
+  margin-top: 8px;
   display: block;
   background-color: var(--tetr4-switch-slider-background-off);
   color: #222;
@@ -162,8 +168,7 @@
 
 .tetr4-switch .dip-switch legend {
   font-size: .8em;
-  margin-bottom: -4px;
-  margin-left: -4px;
+  margin-bottom: 5px;
   padding: 0 4px;
 
   color: #ccc;
