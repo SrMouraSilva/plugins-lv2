@@ -3,12 +3,12 @@
 #include <math.h>
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
+
 //#include "lv2-hmi.h"
 
 #include "model/tetr4-switch.h"
 #include "extension/lv2-hmi-extension.h"
 #include "extension/atom-extension.h"
-
 
 typedef enum {
     // Outputs
@@ -67,12 +67,12 @@ instantiate(const LV2_Descriptor*     descriptor,
 
     Tetr4Switch_instantiate(self);
 
-    // const char* missing = LV2_HMI_instantiate(self, features);
+    const char* missing = LV2_HMI_instantiate(self, features);
 
-    // if (missing) {
-    //     free(self);
-    //     return NULL;
-    // }
+    if (missing) {
+        free(self);
+        return NULL;
+    }
 
     //Atom_instantiate(self);
 
@@ -93,58 +93,58 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
             self->output_cvs[3] = (float*) data; break;
         
         case PRESET_SELECTOR_1:
-            self->preset_selectors[0] = (bool*) data; break;
+            self->preset_selectors[0] = (float*) data; break;
         case PRESET_SELECTOR_2:
-            self->preset_selectors[1] = (bool*) data; break;
+            self->preset_selectors[1] = (float*) data; break;
         case PRESET_SELECTOR_3:
-            self->preset_selectors[2] = (bool*) data; break;
+            self->preset_selectors[2] = (float*) data; break;
         case PRESET_SELECTOR_4:
-            self->preset_selectors[3] = (bool*) data; break;
+            self->preset_selectors[3] = (float*) data; break;
 
         case PRESET_1_OUTPUT_1:
-            self->preset_outputs[0][0] = (bool*) data; break;
+            self->preset_outputs[0][0] = (float*) data; break;
         case PRESET_1_OUTPUT_2:
-            self->preset_outputs[0][1] = (bool*) data; break;
+            self->preset_outputs[0][1] = (float*) data; break;
         case PRESET_1_OUTPUT_3:
-            self->preset_outputs[0][2] = (bool*) data; break;
+            self->preset_outputs[0][2] = (float*) data; break;
         case PRESET_1_OUTPUT_4:
-            self->preset_outputs[0][3] = (bool*) data; break;
+            self->preset_outputs[0][3] = (float*) data; break;
 
         case PRESET_2_OUTPUT_1:
-            self->preset_outputs[1][0] = (bool*) data; break;
+            self->preset_outputs[1][0] = (float*) data; break;
         case PRESET_2_OUTPUT_2:
-            self->preset_outputs[1][1] = (bool*) data; break;
+            self->preset_outputs[1][1] = (float*) data; break;
         case PRESET_2_OUTPUT_3:
-            self->preset_outputs[1][2] = (bool*) data; break;
+            self->preset_outputs[1][2] = (float*) data; break;
         case PRESET_2_OUTPUT_4:
-            self->preset_outputs[1][3] = (bool*) data; break;
+            self->preset_outputs[1][3] = (float*) data; break;
 
         case PRESET_3_OUTPUT_1:
-            self->preset_outputs[2][0] = (bool*) data; break;
+            self->preset_outputs[2][0] = (float*) data; break;
         case PRESET_3_OUTPUT_2:
-            self->preset_outputs[2][1] = (bool*) data; break;
+            self->preset_outputs[2][1] = (float*) data; break;
         case PRESET_3_OUTPUT_3:
-            self->preset_outputs[2][2] = (bool*) data; break;
+            self->preset_outputs[2][2] = (float*) data; break;
         case PRESET_3_OUTPUT_4:
-            self->preset_outputs[2][3] = (bool*) data; break;
+            self->preset_outputs[2][3] = (float*) data; break;
 
         case PRESET_4_OUTPUT_1:
-            self->preset_outputs[3][0] = (bool*) data; break;
+            self->preset_outputs[3][0] = (float*) data; break;
         case PRESET_4_OUTPUT_2:
-            self->preset_outputs[3][1] = (bool*) data; break;
+            self->preset_outputs[3][1] = (float*) data; break;
         case PRESET_4_OUTPUT_3:
-            self->preset_outputs[3][2] = (bool*) data; break;
+            self->preset_outputs[3][2] = (float*) data; break;
         case PRESET_4_OUTPUT_4:
-            self->preset_outputs[3][3] = (bool*) data; break;
+            self->preset_outputs[3][3] = (float*) data; break;
 
         case INVERTER_1:
-            self->inverters[0] = (bool*) data; break;
+            self->inverters[0] = (float*) data; break;
         case INVERTER_2:
-            self->inverters[1] = (bool*) data; break;
+            self->inverters[1] = (float*) data; break;
         case INVERTER_3:
-            self->inverters[2] = (bool*) data; break;
+            self->inverters[2] = (float*) data; break;
         case INVERTER_4:
-            self->inverters[3] = (bool*) data; break;
+            self->inverters[3] = (float*) data; break;
 
         case PRESET_LABEL_1:
             self->preset_labels[0] = (char*) data; break;
@@ -171,8 +171,11 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
     float output_cv_values[TOTAL_OUTPUTS];
 
     for (unsigned int n = 0; n < TOTAL_OUTPUTS; n++) {
-        output_cv_values[n] = output_coded >> n * MAX_TENSION;
+        unsigned int mask = 1 << n;
+        output_cv_values[n] = ((output_coded & mask) >> n) * MAX_TENSION;
     }
+
+    unsigned int index = self->get_index_current_preset(self);
 
     // Update values
     for (uint32_t i = 0; i < n_samples; i++) {

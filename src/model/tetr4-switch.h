@@ -35,11 +35,11 @@ typedef struct {
 typedef struct {
     // Attributes
     float* output_cvs[TOTAL_PRESETS];
-    bool* preset_selectors[TOTAL_PRESETS];
+    float* preset_selectors[TOTAL_PRESETS];
 
-    bool* preset_outputs[TOTAL_PRESETS][TOTAL_OUTPUTS];
+    float* preset_outputs[TOTAL_PRESETS][TOTAL_OUTPUTS];
 
-    bool* inverters[TOTAL_OUTPUTS];
+    float* inverters[TOTAL_OUTPUTS];
     char* preset_labels[TOTAL_PRESETS];
 
     // Atom feature - Preset labels

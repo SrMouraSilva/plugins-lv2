@@ -5,7 +5,7 @@
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 #include "lv2/core/lv2_util.h"
-#include "lv2/log/log.h"
+#include <lv2/lv2plug.in/ns/ext/log/log.h>
 
 #include "../lv2-hmi.h"
 #include "../model/tetr4-switch.h"

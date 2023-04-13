@@ -4,11 +4,16 @@
 #include <math.h>
 
 
-unsigned int make_mask(bool* vector[], unsigned int size) {
+bool is_zero(float a) {
+    return fabs(a) <= 0.000001;
+}
+
+unsigned int make_mask(float* vector[], unsigned int size) {
     unsigned int mask = 0b00000000;
 
     for (unsigned int i=0; i<size; i++) {
-        mask |= *vector[i] << i;
+        bool binary = !is_zero(*vector[i]);
+        mask |= binary << i;
     }
 
     return mask;

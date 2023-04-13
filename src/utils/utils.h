@@ -11,7 +11,7 @@
  * 
  * @return unsigned int Mask
  */
-extern unsigned int make_mask(bool* vector[], unsigned int size);
+extern unsigned int make_mask(float* vector[], unsigned int size);
 
 /**
  * Returns the bit with the highest significative bit on

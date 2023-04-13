@@ -71,3 +71,4 @@ About
 * https://wiki.mod.audio/wiki/How_To_Build_and_Deploy_LV2_Plugin_to_MOD_Duo
 * https://wiki.mod.audio/wiki/Preparing_the_Bundle
 * https://wiki.mod.audio/wiki/Creating_the_GUI
+* https://wiki.mod.audio/wiki/LV2#Logging

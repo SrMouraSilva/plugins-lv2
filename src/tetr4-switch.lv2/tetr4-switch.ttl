@@ -294,7 +294,7 @@ lv2:port
     lv2:index 24;
     lv2:symbol "Inverter_1" ;
     lv2:name "Output signal inverter 1" ;
-    lv2:default 1.0 ;
+    lv2:default 0.0 ;
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:toggled;
@@ -304,7 +304,7 @@ lv2:port
     lv2:index 25;
     lv2:symbol "Inverter_2" ;
     lv2:name "Output signal inverter 2" ;
-    lv2:default 1.0 ;
+    lv2:default 0.0 ;
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:toggled;
@@ -314,7 +314,7 @@ lv2:port
     lv2:index 26;
     lv2:symbol "Inverter_3" ;
     lv2:name "Output signal inverter 3" ;
-    lv2:default 1.0 ;
+    lv2:default 0.0 ;
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:toggled;
@@ -324,7 +324,7 @@ lv2:port
     lv2:index 27;
     lv2:symbol "Inverter_4" ;
     lv2:name "Output signal inverter 4" ;
-    lv2:default 1.0 ;
+    lv2:default 0.0 ;
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:toggled;

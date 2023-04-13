@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "lv2/log/logger.h"
+#include <lv2/lv2plug.in/ns/ext/log/log.h>
 
 #include "../lv2-hmi.h"
 
