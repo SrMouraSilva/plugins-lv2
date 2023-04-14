@@ -42,6 +42,10 @@ typedef struct {
     float* inverters[TOTAL_OUTPUTS];
     char* preset_labels[TOTAL_PRESETS];
 
+    unsigned int current_preset_mask;
+    /** Preset changed at this cycle */
+    bool preset_changed;
+
     // Atom feature - Preset labels
     const LV2_Atom_Sequence* events_in;
 
@@ -58,7 +62,26 @@ typedef struct {
     LV2_URID_Map* map;
 
     /**
+     * Calculate necessary internal operations
+     * 
+     * @param void * Tetr4Switch
+     * 
+     * Run just once at cycle
+     */
+    void (* run)(void* self);
+
+    /**
      * Get the index of current preset.
+     * Note: The first corresponds to '0' (zero)
+     * 
+     * @param void * Tetr4Switch
+     * 
+     * @return Index of current preset
+     */
+    bool (* is_valid_index_preset)(void* self);
+
+    /**
+     * Calculate the index of current preset and save it locally
      * Note: The first corresponds to '0' (zero)
      * 
      * @param void * Tetr4Switch

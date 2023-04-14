@@ -10,6 +10,8 @@
 #include "../utils/utils.h"
 
 
+void Tetr4Switch_run(void* self);
+
 unsigned int Tetr4Switch_get_index_current_preset(void* self);
 unsigned int Tetr4Switch_get_current_preset(void* self);
 unsigned int Tetr4Switch_get_inverter(void* self);
@@ -18,8 +20,9 @@ unsigned int Tetr4Switch_get_output_signal(void* self);
 char* Tetr4Switch_get_preset_label(void* self, unsigned int index);
 char* Tetr4Switch_set_preset_label(void* self, unsigned int index, char* new_label);
 
-
 void Tetr4Switch_instantiate(Tetr4Switch* self) {
+    self->run = &Tetr4Switch_run;
+
     self->get_index_current_preset = &Tetr4Switch_get_index_current_preset;
     self->get_current_preset = &Tetr4Switch_get_current_preset;
     self->get_inverter = &Tetr4Switch_get_inverter;
@@ -28,14 +31,37 @@ void Tetr4Switch_instantiate(Tetr4Switch* self) {
 
     self->get_preset_label = &Tetr4Switch_get_preset_label;
     self->set_preset_label = &Tetr4Switch_set_preset_label;
+
+    self->preset_labels[0] = "Prst 1";
+    self->preset_labels[1] = "Prst 2";
+    self->preset_labels[2] = "Prst 3";
+    self->preset_labels[3] = "Prst 4";
+
+    self->current_preset_mask = 0b0000001;
+    self->preset_changed = false;
 }
 
+void Tetr4Switch_run(void* self) {
+    Tetr4Switch* this = (Tetr4Switch*) self;
+
+    unsigned int preset_mask = make_mask(this->preset_selectors, TOTAL_PRESETS);
+
+    this->preset_changed = (preset_mask & this->current_preset_mask) != 0;
+
+    if (this->preset_changed) {
+        unsigned int new_index_current_preset = preset_mask ^ this->current_preset_mask;
+        preset_mask = new_index_current_preset;
+    }
+
+    // If there more than one active, consider the highest as the current preset
+    int index = highest_on_bit(preset_mask);
+    this->current_preset_mask = 0b1 << index;
+}
 
 unsigned int Tetr4Switch_get_index_current_preset(void* self) {
     Tetr4Switch* this = (Tetr4Switch*) self;
 
-    const unsigned int preset_mask = make_mask(this->preset_selectors, TOTAL_PRESETS);
-    return highest_on_bit(preset_mask);
+    return highest_on_bit(this->current_preset_mask);
 }
 
 unsigned int Tetr4Switch_get_current_preset(void* self) {

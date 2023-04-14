@@ -163,8 +163,10 @@ static void activate(LV2_Handle instance) {}
 static void run(LV2_Handle instance, uint32_t n_samples) {
     Tetr4Switch* self = (Tetr4Switch*) instance;
 
+    self->run(self);
+
     //LV2_HMI_run(self);
-    Atom_run(self);
+    //Atom_run(self);
     
     // Calculate output values
     unsigned int output_coded = self->get_output_signal(self);
@@ -177,7 +179,12 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
 
     unsigned int index = self->get_index_current_preset(self);
 
-    // Update values
+    // Update footswitch values
+    for (unsigned int i = 0; i < TOTAL_PRESETS; i++) {
+        *self->preset_selectors[i] = i == index ? 0.0f : 1.0f;
+    }
+
+    // Update CV values
     for (uint32_t i = 0; i < n_samples; i++) {
         for (unsigned int id_output = 0; id_output < TOTAL_OUTPUTS; id_output++) {
             self->output_cvs[id_output][i] = output_cv_values[id_output];
