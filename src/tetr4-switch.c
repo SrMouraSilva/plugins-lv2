@@ -165,7 +165,7 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
 
     self->run(self);
 
-    //LV2_HMI_run(self);
+    LV2_HMI_run(self);
     //Atom_run(self);
     
     // Calculate output values
