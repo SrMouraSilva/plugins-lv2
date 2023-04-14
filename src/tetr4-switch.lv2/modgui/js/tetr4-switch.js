@@ -18,6 +18,10 @@ function (event, funcs) {
   const eventFootswitch = (id) => {
     const current = event.icon.find(`input[type=radio][checked]`).prop("value");
 
+    if (id == current) {
+      return;
+    }
+
     event.icon.find(`.dip-switch.active`)?.removeClass("active");
     event.icon.find(`.dip-switch.group${id}`).addClass("active");
 
