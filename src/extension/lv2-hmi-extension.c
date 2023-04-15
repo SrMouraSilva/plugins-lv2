@@ -20,7 +20,7 @@ static void LV2_HMI_addressed(LV2_Handle handle, uint32_t index, LV2_HMI_Address
 static void LV2_HMI_unaddressed(LV2_Handle handle, uint32_t index);
 static void LV2_HMI_assign(Tetr4Switch* self, HmiAdressing index, LV2_HMI_Addressing addressing);
 
-
+// TODO - https://github.com/moddevices/mod-cv-plugins/blob/5b175482a32094f39eb46d569ffbc718b157a0ee/source/mod-button-to-cv/mod-button-to-cv.c
 const char* LV2_HMI_instantiate(
     Tetr4Switch* self,
     const LV2_Feature* const* features
@@ -88,19 +88,20 @@ void LV2_HMI_assign(Tetr4Switch* self, HmiAdressing index, LV2_HMI_Addressing ad
 void LV2_HMI_run(Tetr4Switch* self) {
     unsigned int current_preset = self->get_index_current_preset(self);
 
-    LV2_HMI_LED_Colour led_colous[] = {
-        LV2_HMI_LED_Colour_Red, LV2_HMI_LED_Colour_Yellow, LV2_HMI_LED_Colour_Cyan, LV2_HMI_LED_Colour_Magenta,
-        LV2_HMI_LED_Colour_Magenta, LV2_HMI_LED_Colour_Yellow, LV2_HMI_LED_Colour_White
-    };
-    LV2_HMI_LED_Colour current_led_colour = led_colous[current_preset];
+    // LV2_HMI_LED_Colour led_colous[] = {
+    //     LV2_HMI_LED_Colour_Red, LV2_HMI_LED_Colour_Yellow, LV2_HMI_LED_Colour_Cyan, LV2_HMI_LED_Colour_Magenta,
+    //     LV2_HMI_LED_Colour_Magenta, LV2_HMI_LED_Colour_Yellow, LV2_HMI_LED_Colour_White
+    // };
+    // LV2_HMI_LED_Colour current_led_colour = led_colous[current_preset];
 
-    self->hmi->set_led_with_brightness(self->hmi->handle, self->hmi_led_addressing, current_led_colour, LV2_HMI_LED_Brightness_Normal);
-
-    self->hmi->set_label(self->hmi->handle, self->hmi_label_addressing, self->preset_labels[current_preset]);
+    // self->hmi->set_led_with_brightness(self->hmi->handle, self->hmi_led_addressing, current_led_colour, LV2_HMI_LED_Brightness_Normal);
+    // self->hmi->set_label(self->hmi->handle, self->hmi_label_addressing, self->preset_labels[current_preset]);
 
     if (self->preset_changed) {
-        char message[10];
-        sprintf(message, "Preset %d", self->get_current_preset(self));
+        lv2_log_error(&self->logger, "Mudou o preset para %d\n", current_preset);
+
+        char message[10] = "mudou";
+        //sprintf(message, "Preset %d", self->get_current_preset(self));
 
         self->hmi->popup_message(
             self->hmi->handle,

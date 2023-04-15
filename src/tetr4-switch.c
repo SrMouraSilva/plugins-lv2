@@ -180,8 +180,10 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
     unsigned int index = self->get_index_current_preset(self);
 
     // Update footswitch values
-    for (unsigned int i = 0; i < TOTAL_PRESETS; i++) {
-        *self->preset_selectors[i] = i == index ? 0.0f : 1.0f;
+    if (self->preset_changed) {
+        for (unsigned int i = 0; i < TOTAL_PRESETS; i++) {
+            *self->preset_selectors[i] = i == index ? 1.0f : 0.0f;
+        }
     }
 
     // Update CV values

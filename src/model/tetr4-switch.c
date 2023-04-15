@@ -32,10 +32,12 @@ void Tetr4Switch_instantiate(Tetr4Switch* self) {
     self->get_preset_label = &Tetr4Switch_get_preset_label;
     self->set_preset_label = &Tetr4Switch_set_preset_label;
 
-    self->preset_labels[0] = "Prst 1";
-    self->preset_labels[1] = "Prst 2";
-    self->preset_labels[2] = "Prst 3";
-    self->preset_labels[3] = "Prst 4";
+    for (unsigned int i = 0; i<TOTAL_PRESETS; i++) {
+        char message[10];
+        sprintf(message, "Prst %d", i+1);
+
+        self->preset_labels[i] = message;
+    }
 
     self->current_preset_mask = 0b0000001;
     self->preset_changed = false;
@@ -46,11 +48,10 @@ void Tetr4Switch_run(void* self) {
 
     unsigned int preset_mask = make_mask(this->preset_selectors, TOTAL_PRESETS);
 
-    this->preset_changed = (preset_mask & this->current_preset_mask) != 0;
-
+    this->preset_changed = preset_mask != this->current_preset_mask;
     if (this->preset_changed) {
-        unsigned int new_index_current_preset = preset_mask ^ this->current_preset_mask;
-        preset_mask = new_index_current_preset;
+        unsigned int new_mask_current_preset = preset_mask ^ this->current_preset_mask;
+        preset_mask = new_mask_current_preset;
     }
 
     // If there more than one active, consider the highest as the current preset
