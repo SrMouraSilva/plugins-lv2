@@ -64,12 +64,19 @@ void Tetr4Switch_run(void* self) {
     Tetr4Switch* this = (Tetr4Switch*) self;
 
     unsigned int preset_mask = make_mask(this->preset_selectors, TOTAL_PRESETS);
+    unsigned int current_preset = (int) *this->current_preset_index;
 
-    this->preset_changed = preset_mask != this->current_preset_mask;
+    bool slider_changed = preset_mask != this->current_preset_mask;
+    bool combobox_changed = this->get_index_current_preset(this) != current_preset;
+
+    this->preset_changed = slider_changed || combobox_changed;
     if (this->preset_changed) {
         Tetr4Switch_set_index_previous_preset_by_mask(this, this->current_preset_mask);
 
-        unsigned int new_mask_current_preset = preset_mask ^ this->current_preset_mask;
+        unsigned int new_mask_current_preset = slider_changed
+            ? (preset_mask ^ this->current_preset_mask)
+            : (new_mask_current_preset = 0b1 << current_preset);
+
         Tetr4Switch_set_index_current_preset_by_mask(this, new_mask_current_preset);
     }
 }

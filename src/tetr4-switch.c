@@ -23,37 +23,40 @@ typedef enum {
     PRESET_SELECTOR_3 = 6,
     PRESET_SELECTOR_4 = 7,
 
+    PRESET_COMBOBOX = 8,
+    ASSIGN_TO_NOTIFY = 9,
+
     // DIP Switches
-    PRESET_1_OUTPUT_1 = 8,
-    PRESET_1_OUTPUT_2 = 9,
-    PRESET_1_OUTPUT_3 = 10,
-    PRESET_1_OUTPUT_4 = 11,
+    PRESET_1_OUTPUT_1 = 10,
+    PRESET_1_OUTPUT_2 = 11,
+    PRESET_1_OUTPUT_3 = 12,
+    PRESET_1_OUTPUT_4 = 13,
 
-    PRESET_2_OUTPUT_1 = 12,
-    PRESET_2_OUTPUT_2 = 13,
-    PRESET_2_OUTPUT_3 = 14,
-    PRESET_2_OUTPUT_4 = 15,
+    PRESET_2_OUTPUT_1 = 14,
+    PRESET_2_OUTPUT_2 = 15,
+    PRESET_2_OUTPUT_3 = 16,
+    PRESET_2_OUTPUT_4 = 17,
 
-    PRESET_3_OUTPUT_1 = 16,
-    PRESET_3_OUTPUT_2 = 17,
-    PRESET_3_OUTPUT_3 = 18,
-    PRESET_3_OUTPUT_4 = 19,
+    PRESET_3_OUTPUT_1 = 18,
+    PRESET_3_OUTPUT_2 = 19,
+    PRESET_3_OUTPUT_3 = 20,
+    PRESET_3_OUTPUT_4 = 21,
 
-    PRESET_4_OUTPUT_1 = 20,
-    PRESET_4_OUTPUT_2 = 21,
-    PRESET_4_OUTPUT_3 = 22,
-    PRESET_4_OUTPUT_4 = 23,
+    PRESET_4_OUTPUT_1 = 22,
+    PRESET_4_OUTPUT_2 = 23,
+    PRESET_4_OUTPUT_3 = 24,
+    PRESET_4_OUTPUT_4 = 25,
 
     // Inverters
-    INVERTER_1 = 24,
-    INVERTER_2 = 25,
-    INVERTER_3 = 26,
-    INVERTER_4 = 27,
+    INVERTER_1 = 26,
+    INVERTER_2 = 27,
+    INVERTER_3 = 28,
+    INVERTER_4 = 29,
 
-    PRESET_LABEL_1 = 28,
-    PRESET_LABEL_2 = 29,
-    PRESET_LABEL_3 = 30,
-    PRESET_LABEL_4 = 31,
+    // PRESET_LABEL_1 = 28,
+    // PRESET_LABEL_2 = 29,
+    // PRESET_LABEL_3 = 30,
+    // PRESET_LABEL_4 = 31,
 } PortIndex;
 
 
@@ -101,6 +104,12 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
         case PRESET_SELECTOR_4:
             self->preset_selectors[3] = (float*) data; break;
 
+        // TODO
+        case PRESET_COMBOBOX:
+            self->current_preset_index = (float*) data; break;
+        // case ASSIGN_TO_NOTIFY:
+        //     self->preset_selectors[3] = (float*) data; break;
+
         case PRESET_1_OUTPUT_1:
             self->preset_outputs[0][0] = (float*) data; break;
         case PRESET_1_OUTPUT_2:
@@ -146,14 +155,14 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
         case INVERTER_4:
             self->inverters[3] = (float*) data; break;
 
-        case PRESET_LABEL_1:
-            self->preset_labels[0] = (char*) data; break;
-        case PRESET_LABEL_2:
-            self->preset_labels[1] = (char*) data; break;
-        case PRESET_LABEL_3:
-            self->preset_labels[2] = (char*) data; break;
-        case PRESET_LABEL_4:
-            self->preset_labels[3] = (char*) data; break;
+        // case PRESET_LABEL_1:
+        //     self->preset_labels[0] = (char*) data; break;
+        // case PRESET_LABEL_2:
+        //     self->preset_labels[1] = (char*) data; break;
+        // case PRESET_LABEL_3:
+        //     self->preset_labels[2] = (char*) data; break;
+        // case PRESET_LABEL_4:
+        //     self->preset_labels[3] = (char*) data; break;
     }
 }
 
@@ -186,8 +195,12 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
         *self->preset_selectors[previous_index] = 0.0f;
         *self->preset_selectors[index] = 1.0f;
 
+        *self->current_preset_index = index;
+
         self->control_input_port->request_change(self->control_input_port->handle, PRESET_SELECTOR_1 + previous_index, 0.0f);
         self->control_input_port->request_change(self->control_input_port->handle, PRESET_SELECTOR_1 + index, 1.0f);
+
+        self->control_input_port->request_change(self->control_input_port->handle, PRESET_COMBOBOX, index);
     }
 
     // Update CV values

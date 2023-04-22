@@ -38,6 +38,8 @@ typedef struct {
     float* output_cvs[TOTAL_PRESETS];
     float* preset_selectors[TOTAL_PRESETS];
 
+    float* current_preset_index;
+
     float* preset_outputs[TOTAL_PRESETS][TOTAL_OUTPUTS];
 
     float* inverters[TOTAL_OUTPUTS];

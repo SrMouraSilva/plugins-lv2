@@ -10,18 +10,15 @@ With it, is possible to define four presets of active CV and change between then
 ### v1.0.0
 
 * [x] Ttls
-* [?] Source code
-* [ ] Mod Gui
-   * [x] Prototype
-   * [ ] `html`
-   * [ ] `stylesheet`
-   * [ ] `js?`
+* [x] Mod Gui
+* [ ] Device (footswitch assignment)
 * [ ] Publish
 
 ### v1.1.0
 
 * [ ] Custom preset names - https://pedalboards.moddevices.com/plugins/aHR0cDovL29wZW4tbXVzaWMta29udHJvbGxlcnMuY2gvbHYyL25vdGVzI25vdGVz
 * [ ] Custom HMI - https://github.com/moddevices/plugin-examples/tree/main/hmi-widgets-individual-tests
+   * [ ] Notification
    * [ ] Led colour
    * [ ] Custom label
      * Atom sample 1: https://github.com/moddevices/mod-cv-plugins/blob/master/source/mod-cv-clock/mod-cv-clock.c
