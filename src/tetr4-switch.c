@@ -181,9 +181,13 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
 
     // Update footswitch values
     if (self->preset_changed) {
-        for (unsigned int i = 0; i < TOTAL_PRESETS; i++) {
-            *self->preset_selectors[i] = i == index ? 1.0f : 0.0f;
-        }
+        unsigned int previous_index = self->get_index_previous_preset(self);
+
+        *self->preset_selectors[previous_index] = 0.0f;
+        *self->preset_selectors[index] = 1.0f;
+
+        self->control_input_port->request_change(self->control_input_port->handle, PRESET_SELECTOR_1 + previous_index, 0.0f);
+        self->control_input_port->request_change(self->control_input_port->handle, PRESET_SELECTOR_1 + index, 1.0f);
     }
 
     // Update CV values

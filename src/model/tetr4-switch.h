@@ -6,7 +6,8 @@
 #include "lv2/log/logger.h"
 #include "lv2/atom/atom.h"
 
-#include "../lv2-hmi.h"
+#include "../extension/lv2-hmi.h"
+#include "../extension/control-input-port-change-request.h"
 
 
 #define PLUGIN_URI "http://srmourasilva.github.io/plugins/tetr4-switch"
@@ -42,9 +43,12 @@ typedef struct {
     float* inverters[TOTAL_OUTPUTS];
     char* preset_labels[TOTAL_PRESETS];
 
-    unsigned int current_preset_mask;
+
     /** Preset changed at this cycle */
     bool preset_changed;
+    /** Preset activated on previous cycle */
+    unsigned int previous_preset_mask;
+    unsigned int current_preset_mask;
 
     // Atom feature - Preset labels
     const LV2_Atom_Sequence* events_in;
@@ -60,6 +64,7 @@ typedef struct {
     LV2_HMI_WidgetControl* hmi;
     LV2_Log_Logger logger;
     LV2_URID_Map* map;
+    LV2_ControlInputPort_Change_Request* control_input_port;
 
     /**
      * Calculate necessary internal operations
@@ -71,17 +76,21 @@ typedef struct {
     void (* run)(void* self);
 
     /**
-     * Get the index of current preset.
+     * Calculate the index of previous preset
+     * 
+     * If self->preset_changed == true, previous preset != current preset
+     * else previous preset == current preset
+     * 
      * Note: The first corresponds to '0' (zero)
      * 
      * @param void * Tetr4Switch
      * 
-     * @return Index of current preset
+     * @return Index of previous preset
      */
-    bool (* is_valid_index_preset)(void* self);
+    unsigned int (* get_index_previous_preset)(void* self);
 
     /**
-     * Calculate the index of current preset and save it locally
+     * Calculate the index of current preset
      * Note: The first corresponds to '0' (zero)
      * 
      * @param void * Tetr4Switch

@@ -7,7 +7,8 @@
 #include "lv2/core/lv2_util.h"
 #include <lv2/lv2plug.in/ns/ext/log/log.h>
 
-#include "../lv2-hmi.h"
+#include "../extension/lv2-hmi.h"
+#include "./control-input-port-change-request.h"
 #include "../model/tetr4-switch.h"
 
 typedef enum {
@@ -28,9 +29,10 @@ const char* LV2_HMI_instantiate(
     // Get host features
     const char* missing = lv2_features_query(
         features,
-        LV2_LOG__log,           &self->logger.log, false,
-        LV2_URID__map,          &self->map,        true,
-        LV2_HMI__WidgetControl, &self->hmi,        true,
+        LV2_LOG__log,                              &self->logger.log,         false,
+        LV2_URID__map,                             &self->map,                true,
+        LV2_HMI__WidgetControl,                    &self->hmi,                true,
+        LV2_CONTROL_INPUT_PORT_CHANGE_REQUEST_URI, &self->control_input_port, true,
         NULL
     );
 

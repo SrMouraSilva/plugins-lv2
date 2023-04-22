@@ -29,7 +29,7 @@ function (event, funcs) {
     event.icon.find(`input[type=radio][value=${id}]`).attr("checked", "checked");
 
     funcs.set_port_value(`Preset_selector_${id}`, 1);
-    funcs.set_port_value(`Preset_selector_${current}`, 0);
+    //funcs.set_port_value(`Preset_selector_${current}`, 0);
   }
 
   const eventSwitch = (group, toggle) => {
