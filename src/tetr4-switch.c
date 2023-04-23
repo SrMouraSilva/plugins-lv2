@@ -53,10 +53,7 @@ typedef enum {
     INVERTER_3 = 28,
     INVERTER_4 = 29,
 
-    // PRESET_LABEL_1 = 28,
-    // PRESET_LABEL_2 = 29,
-    // PRESET_LABEL_3 = 30,
-    // PRESET_LABEL_4 = 31,
+    EVENTS_IN = 30,
 } PortIndex;
 
 
@@ -77,7 +74,7 @@ instantiate(const LV2_Descriptor*     descriptor,
         return NULL;
     }
 
-    //Atom_instantiate(self);
+    // Atom_instantiate(self);
 
     return (LV2_Handle) self;
 }
@@ -104,11 +101,12 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
         case PRESET_SELECTOR_4:
             self->preset_selectors[3] = (float*) data; break;
 
-        // TODO
         case PRESET_COMBOBOX:
             self->current_preset_index = (float*) data; break;
-        // case ASSIGN_TO_NOTIFY:
-        //     self->preset_selectors[3] = (float*) data; break;
+
+        case ASSIGN_TO_NOTIFY:
+        //     self->preset_selectors[3] = (float*) data;
+            break;
 
         case PRESET_1_OUTPUT_1:
             self->preset_outputs[0][0] = (float*) data; break;
@@ -155,19 +153,16 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
         case INVERTER_4:
             self->inverters[3] = (float*) data; break;
 
-        // case PRESET_LABEL_1:
-        //     self->preset_labels[0] = (char*) data; break;
-        // case PRESET_LABEL_2:
-        //     self->preset_labels[1] = (char*) data; break;
-        // case PRESET_LABEL_3:
-        //     self->preset_labels[2] = (char*) data; break;
-        // case PRESET_LABEL_4:
-        //     self->preset_labels[3] = (char*) data; break;
+        case EVENTS_IN:
+            self->events_in = (const LV2_Atom_Sequence*) data; break;
     }
 }
 
 static void activate(LV2_Handle instance) {}
 
+
+void update_assignables(Tetr4Switch* self, uint32_t n_samples);
+void update_output_cvs(Tetr4Switch* self, uint32_t n_samples);
 
 static void run(LV2_Handle instance, uint32_t n_samples) {
     Tetr4Switch* self = (Tetr4Switch*) instance;
@@ -177,6 +172,29 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
     LV2_HMI_run(self);
     //Atom_run(self);
     
+    update_assignables(self, n_samples);
+    update_output_cvs(self, n_samples);
+}
+
+void update_assignables(Tetr4Switch* self, uint32_t n_samples) {
+    unsigned int index = self->get_index_current_preset(self);
+
+    if (self->preset_changed) {
+        unsigned int previous_index = self->get_index_previous_preset(self);
+
+        *self->preset_selectors[previous_index] = 0.0f;
+        *self->preset_selectors[index] = 1.0f;
+
+        self->control_input_port->request_change(self->control_input_port->handle, PRESET_SELECTOR_1 + previous_index, 0.0f);
+        self->control_input_port->request_change(self->control_input_port->handle, PRESET_SELECTOR_1 + index, 1.0f);
+
+        *self->current_preset_index = index;
+
+        self->control_input_port->request_change(self->control_input_port->handle, PRESET_COMBOBOX, index);
+    }
+}
+
+void update_output_cvs(Tetr4Switch* self, uint32_t n_samples) {
     // Calculate output values
     unsigned int output_coded = self->get_output_signal(self);
     float output_cv_values[TOTAL_OUTPUTS];
@@ -184,23 +202,6 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
     for (unsigned int n = 0; n < TOTAL_OUTPUTS; n++) {
         unsigned int mask = 1 << n;
         output_cv_values[n] = ((output_coded & mask) >> n) * MAX_TENSION;
-    }
-
-    unsigned int index = self->get_index_current_preset(self);
-
-    // Update footswitch values
-    if (self->preset_changed) {
-        unsigned int previous_index = self->get_index_previous_preset(self);
-
-        *self->preset_selectors[previous_index] = 0.0f;
-        *self->preset_selectors[index] = 1.0f;
-
-        *self->current_preset_index = index;
-
-        self->control_input_port->request_change(self->control_input_port->handle, PRESET_SELECTOR_1 + previous_index, 0.0f);
-        self->control_input_port->request_change(self->control_input_port->handle, PRESET_SELECTOR_1 + index, 1.0f);
-
-        self->control_input_port->request_change(self->control_input_port->handle, PRESET_COMBOBOX, index);
     }
 
     // Update CV values
@@ -218,8 +219,9 @@ static void cleanup(LV2_Handle instance) {
 }
 
 static const void* extension_data(const char* uri) {
-    // if (LV2_HMI_is_extension_data_appliable(uri))
-    //     return LV2_HMI_extension_data();
+    if (LV2_HMI_is_extension_data_appliable(uri)) {
+        return LV2_HMI_extension_data();
+    }
     
     return NULL;
 }

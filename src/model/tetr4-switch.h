@@ -23,10 +23,10 @@
 
 typedef struct {
     // Types
-    LV2_URID atom_String;
+    //LV2_URID atom_String;
 
     // Values
-    LV2_URID atom_Presets_label[TOTAL_PRESETS];
+    LV2_URID atom_presets_label[TOTAL_PRESETS];
 } URIs;
 
 typedef struct {
@@ -43,8 +43,6 @@ typedef struct {
     float* preset_outputs[TOTAL_PRESETS][TOTAL_OUTPUTS];
 
     float* inverters[TOTAL_OUTPUTS];
-    char* preset_labels[TOTAL_PRESETS];
-
 
     /** Preset changed at this cycle */
     bool preset_changed;
@@ -60,12 +58,17 @@ typedef struct {
     State state;
 
     // Features
-    LV2_HMI_Addressing hmi_led_addressing;
-    LV2_HMI_Addressing hmi_label_addressing;
+    LV2_URID_Map* map;
+    LV2_Log_Logger logger;
 
     LV2_HMI_WidgetControl* hmi;
-    LV2_Log_Logger logger;
-    LV2_URID_Map* map;
+
+    LV2_HMI_Addressing hmi_preset_addressing[TOTAL_PRESETS];
+    LV2_HMI_Addressing hmi_combobox_addressing;
+    LV2_HMI_Addressing hmi_notification_addressing;
+    // LV2_HMI_Addressing hmi_led_addressing;
+    // LV2_HMI_Addressing hmi_label_addressing;
+
     LV2_ControlInputPort_Change_Request* control_input_port;
 
     /**

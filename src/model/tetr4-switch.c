@@ -48,16 +48,15 @@ void Tetr4Switch_instantiate(Tetr4Switch* self) {
     self->get_preset_label = &Tetr4Switch_get_preset_label;
     self->set_preset_label = &Tetr4Switch_set_preset_label;
 
-    for (unsigned int i = 0; i<TOTAL_PRESETS; i++) {
-        char message[10];
-        sprintf(message, "Prst %d", i+1);
-
-        self->preset_labels[i] = message;
-    }
-
     self->current_preset_mask = 0b0000001;
     self->previous_preset_mask = self->current_preset_mask;
     self->preset_changed = false;
+
+    for (unsigned int i = 0; i<TOTAL_PRESETS; i++) {
+        self->hmi_preset_addressing[i] = NULL;
+    }
+    self->hmi_combobox_addressing = NULL;
+    self->hmi_notification_addressing = NULL;
 }
 
 void Tetr4Switch_run(void* self) {

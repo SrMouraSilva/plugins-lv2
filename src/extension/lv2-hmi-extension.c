@@ -1,8 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "lv2/log/logger.h"
-
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 #include "lv2/core/lv2_util.h"
 #include <lv2/lv2plug.in/ns/ext/log/log.h>
@@ -12,16 +10,26 @@
 #include "../model/tetr4-switch.h"
 
 typedef enum {
-    LED = 0,
-    LABEL = 1,
+    PRESET_SELECTOR_1 = 4,
+    PRESET_SELECTOR_2 = 5,
+    PRESET_SELECTOR_3 = 6,
+    PRESET_SELECTOR_4 = 7,
+
+    PRESET_COMBOBOX = 8,
+    ASSIGN_TO_NOTIFY = 9,
 } HmiAdressing;
+
+LV2_HMI_LED_Colour led_colours[] = {
+    LV2_HMI_LED_Colour_Red, LV2_HMI_LED_Colour_Yellow, LV2_HMI_LED_Colour_Cyan, LV2_HMI_LED_Colour_Magenta,
+    LV2_HMI_LED_Colour_Magenta, LV2_HMI_LED_Colour_Yellow, LV2_HMI_LED_Colour_White
+};
 
 
 static void LV2_HMI_addressed(LV2_Handle handle, uint32_t index, LV2_HMI_Addressing addressing, const LV2_HMI_AddressingInfo* info);
 static void LV2_HMI_unaddressed(LV2_Handle handle, uint32_t index);
 static void LV2_HMI_assign(Tetr4Switch* self, HmiAdressing index, LV2_HMI_Addressing addressing);
 
-// TODO - https://github.com/moddevices/mod-cv-plugins/blob/5b175482a32094f39eb46d569ffbc718b157a0ee/source/mod-button-to-cv/mod-button-to-cv.c
+
 const char* LV2_HMI_instantiate(
     Tetr4Switch* self,
     const LV2_Feature* const* features
@@ -58,16 +66,16 @@ const void* LV2_HMI_extension_data() {
     return &hmiNotif;
 }
 
-void LV2_HMI_addressed(LV2_Handle handle, uint32_t index, LV2_HMI_Addressing addressing, const LV2_HMI_AddressingInfo* info) {
+static void LV2_HMI_addressed(LV2_Handle handle, uint32_t index, LV2_HMI_Addressing addressing, const LV2_HMI_AddressingInfo* info) {
     Tetr4Switch* self = (Tetr4Switch*) handle;
-
+    
     LV2_HMI_assign(self, (HmiAdressing) index, addressing);
 
     // self->infos[index] = *info;
     // self->infos[index].label = strdup(info->label);
 }
 
-void LV2_HMI_unaddressed(LV2_Handle handle, uint32_t index) {
+static void LV2_HMI_unaddressed(LV2_Handle handle, uint32_t index) {
     Tetr4Switch* self = (Tetr4Switch*) handle;
 
     LV2_HMI_assign(self, (HmiAdressing) index, NULL);
@@ -78,36 +86,81 @@ void LV2_HMI_unaddressed(LV2_Handle handle, uint32_t index) {
 
 void LV2_HMI_assign(Tetr4Switch* self, HmiAdressing index, LV2_HMI_Addressing addressing) {
     switch (index) {
-        case LED:
-            self->hmi_led_addressing = addressing; break;
-        case LABEL:
-            self->hmi_label_addressing = addressing; break;
+        case PRESET_SELECTOR_1:
+        case PRESET_SELECTOR_2:
+        case PRESET_SELECTOR_3:
+        case PRESET_SELECTOR_4:
+            self->hmi_preset_addressing[index-PRESET_SELECTOR_1] = addressing; break;
+        case ASSIGN_TO_NOTIFY:
+            self->hmi_notification_addressing = addressing; break;
+        case PRESET_COMBOBOX:
+            self->hmi_combobox_addressing = addressing; break;
     }
 }
 
 
+void run_footswitches(Tetr4Switch* self, unsigned int current_preset);
+void run_combobox(Tetr4Switch* self, unsigned int current_preset);
+void run_notification(Tetr4Switch* self, unsigned int current_preset);
 
 void LV2_HMI_run(Tetr4Switch* self) {
     unsigned int current_preset = self->get_index_current_preset(self);
 
-    // LV2_HMI_LED_Colour led_colous[] = {
-    //     LV2_HMI_LED_Colour_Red, LV2_HMI_LED_Colour_Yellow, LV2_HMI_LED_Colour_Cyan, LV2_HMI_LED_Colour_Magenta,
-    //     LV2_HMI_LED_Colour_Magenta, LV2_HMI_LED_Colour_Yellow, LV2_HMI_LED_Colour_White
-    // };
-    // LV2_HMI_LED_Colour current_led_colour = led_colous[current_preset];
+    run_footswitches(self, current_preset);
+    run_combobox(self, current_preset);
+    run_notification(self, current_preset);
+}
 
-    // self->hmi->set_led_with_brightness(self->hmi->handle, self->hmi_led_addressing, current_led_colour, LV2_HMI_LED_Brightness_Normal);
-    // self->hmi->set_label(self->hmi->handle, self->hmi_label_addressing, self->preset_labels[current_preset]);
+void run_footswitches(Tetr4Switch* self, unsigned int current_preset) {
+    for (unsigned int i = 0; i<TOTAL_PRESETS; i++) {
+        if (self->hmi_preset_addressing[i] != NULL) {
+            LV2_HMI_LED_Brightness brightness = i == current_preset
+                ? LV2_HMI_LED_Brightness_Normal
+                : LV2_HMI_LED_Brightness_None;
+            
+            char message[11];
+            sprintf(message, "%d - %s", i+1, i == current_preset ? "ON" : "OFF");
 
-    if (self->preset_changed) {
-        lv2_log_error(&self->logger, "Mudou o preset para %d\n", current_preset);
+            self->hmi->set_led_with_brightness(
+                self->hmi->handle,
+                self->hmi_preset_addressing[i],
+                led_colours[i],
+                brightness
+            );
+            self->hmi->set_label(self->hmi->handle, self->hmi_preset_addressing[i], message);
+        }
+    }
+}
 
-        char message[10] = "mudou";
-        //sprintf(message, "Preset %d", self->get_current_preset(self));
+void run_combobox(Tetr4Switch* self, unsigned int current_preset) {
+    if (self->hmi_combobox_addressing != NULL) {
+        LV2_HMI_LED_Colour current_led_colour = led_colours[current_preset];
+
+        self->hmi->set_led_with_brightness(self->hmi->handle, self->hmi_combobox_addressing, current_led_colour, LV2_HMI_LED_Brightness_Normal);
+
+
+        char short_message[10];
+        //sprintf(short_message, "%d PRESET", current_preset+1);
+        sprintf(short_message, "%d", current_preset+1);
+
+        //self->hmi->set_label(self->hmi->handle, self->hmi_combobox_addressing, "");
+        self->hmi->set_label(self->hmi->handle, self->hmi_combobox_addressing, short_message);
+        //self->hmi->set_indicator(self->hmi->handle, self->hmi_combobox_addressing, current_preset+1/TOTAL_PRESETS);
+
+        if (self->preset_changed) {
+            lv2_log_error(&self->logger, "Changed to <%s>\n", short_message);
+        }
+    }
+}
+
+void run_notification(Tetr4Switch* self, unsigned int current_preset) {
+    if (self->preset_changed && self->hmi_notification_addressing != NULL) {
+        char message[10];
+        sprintf(message, "Preset %d", current_preset+1);
 
         self->hmi->popup_message(
             self->hmi->handle,
-            self->hmi_label_addressing,
+            self->hmi_notification_addressing,
             LV2_HMI_Popup_Style_Inverted,
             "Tetr4 Switch",
             message

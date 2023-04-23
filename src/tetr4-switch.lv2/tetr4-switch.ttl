@@ -51,7 +51,11 @@ doap:maintainer [
     foaf:mbox <mailto:mateus.moura@hotmail.com> ;
     ];
 
-    lv2:minorVersion 3 ;
+    lv2:requiredFeature urid:map;
+    lv2:optionalFeature lv2:hardRTCapable, state:loadDefaultState, <http://moddevices.com/ns/hmi#WidgetControl>;
+    lv2:extensionData <http://moddevices.com/ns/hmi#PluginNotification>, state:interface;
+
+    lv2:minorVersion 4 ;
     lv2:microVersion 0 ;
 
 rdfs:comment """
@@ -93,9 +97,12 @@ lv2:port
     lv2:symbol "Preset_selector_1" ;
     lv2:name "Preset 1" ;
     lv2:default 1.0 ;
+    #lv2:default 0.0 ;
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
+    #lv2:portProperty lv2:toggled, epp:trigger;
+    #lv2:portProperty lv2:toggled;
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
@@ -105,7 +112,9 @@ lv2:port
     lv2:default 0.0 ;
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
+    #lv2:portProperty lv2:toggled, epp:trigger;
+    #lv2:portProperty lv2:toggled;
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
@@ -115,7 +124,9 @@ lv2:port
     lv2:default 0.0 ;
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
+    #lv2:portProperty lv2:toggled, epp:trigger;
+    #lv2:portProperty lv2:toggled;
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
@@ -125,7 +136,9 @@ lv2:port
     lv2:default 0.0 ;
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
+    #lv2:portProperty lv2:toggled, epp:trigger;
+    #lv2:portProperty lv2:toggled;
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
 ],
 # Based on
 # https://github.com/moddevices/mod-utilities/blob/b8a9d4558efc136c4ce90657a5958064640074f1/SwitchBox_2-1/switchbox_2-1.lv2/switchbox_2-1.ttl
@@ -133,7 +146,7 @@ lv2:port
     a lv2:ControlPort, lv2:InputPort;
     lv2:index 8;
     lv2:symbol "Preset_combobox";
-    lv2:name "Curent preset";
+    lv2:name "Current preset";
     lv2:portProperty lv2:integer, lv2:enumeration ;
         lv2:scalePoint [rdfs:label "Prst 1"; rdf:value 0];
         lv2:scalePoint [rdfs:label "Prst 2"; rdf:value 1];
@@ -146,8 +159,8 @@ lv2:port
 [
     a lv2:InputPort, lv2:ControlPort;
     lv2:index 9;
-    lv2:symbol "Assign_2_notify";
-    lv2:name "Assign 2 notify";
+    lv2:symbol "Assign_to_notify";
+    lv2:name "Assign to notify";
     lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
     lv2:default 0;
     lv2:minimum 0;
@@ -357,6 +370,17 @@ lv2:port
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:toggled;
+],
+
+[
+    a lv2:InputPort, atom:AtomPort ;
+    lv2:index 20 ;
+    lv2:symbol "events_in" ;
+    lv2:name "Events In" ;
+    atom:bufferType atom:Sequence ;
+    atom:supports patch:Message ;
+    lv2:designation lv2:control ;
+       
 ] ;
 
 patch:writable plug:preset_label_1 ,
