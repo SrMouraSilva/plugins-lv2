@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "control-input-port-change-request.h": "c"
+        "control-input-port-change-request.h": "c",
+        "lv2-hmi.h": "c",
+        "tetr4-switch.h": "c",
+        "controller.h": "c"
     }
 }

@@ -4,57 +4,12 @@
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 
-//#include "lv2-hmi.h"
-
 #include "model/tetr4-switch.h"
-#include "extension/lv2-hmi-extension.h"
-#include "extension/atom-extension.h"
+#include "model/controller.h"
 
-typedef enum {
-    // Outputs
-    OUTPUT_CV_1 = 0,
-    OUTPUT_CV_2 = 1,
-    OUTPUT_CV_3 = 2,
-    OUTPUT_CV_4 = 3,
-
-    // Preset selectors (footswitch selectors)
-    PRESET_SELECTOR_1 = 4,
-    PRESET_SELECTOR_2 = 5,
-    PRESET_SELECTOR_3 = 6,
-    PRESET_SELECTOR_4 = 7,
-
-    PRESET_COMBOBOX = 8,
-    ASSIGN_TO_NOTIFY = 9,
-
-    // DIP Switches
-    PRESET_1_OUTPUT_1 = 10,
-    PRESET_1_OUTPUT_2 = 11,
-    PRESET_1_OUTPUT_3 = 12,
-    PRESET_1_OUTPUT_4 = 13,
-
-    PRESET_2_OUTPUT_1 = 14,
-    PRESET_2_OUTPUT_2 = 15,
-    PRESET_2_OUTPUT_3 = 16,
-    PRESET_2_OUTPUT_4 = 17,
-
-    PRESET_3_OUTPUT_1 = 18,
-    PRESET_3_OUTPUT_2 = 19,
-    PRESET_3_OUTPUT_3 = 20,
-    PRESET_3_OUTPUT_4 = 21,
-
-    PRESET_4_OUTPUT_1 = 22,
-    PRESET_4_OUTPUT_2 = 23,
-    PRESET_4_OUTPUT_3 = 24,
-    PRESET_4_OUTPUT_4 = 25,
-
-    // Inverters
-    INVERTER_1 = 26,
-    INVERTER_2 = 27,
-    INVERTER_3 = 28,
-    INVERTER_4 = 29,
-
-    EVENTS_IN = 30,
-} PortIndex;
+#include "lv2/lv2-controller.h"
+#include "lv2/lv2-hmi-extension.h"
+#include "lv2/atom-extension.h"
 
 
 static LV2_Handle
@@ -63,13 +18,14 @@ instantiate(const LV2_Descriptor*     descriptor,
             const char*               bundle_path,
             const LV2_Feature* const* features)
 {
-    Tetr4Switch* self = (Tetr4Switch*) malloc(sizeof(Tetr4Switch));
+    Controller* self = Controller_instantiate();
 
-    Tetr4Switch_instantiate(self);
+    self->lv2 = LV2_Controller_instantiate();
 
-    const char* missing = LV2_HMI_instantiate(self, features);
+    const char* missing = self->lv2->initialize(self->lv2, features);
 
     if (missing) {
+        //cleanup(self);
         free(self);
         return NULL;
     }
@@ -80,7 +36,7 @@ instantiate(const LV2_Descriptor*     descriptor,
 }
 
 static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
-    Tetr4Switch* self = (Tetr4Switch*) instance;
+    Controller* self = (Controller*) instance;
 
     switch ((PortIndex) port) {
         case OUTPUT_CV_1:
@@ -101,11 +57,10 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
         case PRESET_SELECTOR_4:
             self->preset_selectors[3] = (float*) data; break;
 
-        case PRESET_COMBOBOX:
+        case PRESET_SELECT:
             self->current_preset_index = (float*) data; break;
 
         case ASSIGN_TO_NOTIFY:
-        //     self->preset_selectors[3] = (float*) data;
             break;
 
         case PRESET_1_OUTPUT_1:
@@ -144,78 +99,52 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
         case PRESET_4_OUTPUT_4:
             self->preset_outputs[3][3] = (float*) data; break;
 
-        case INVERTER_1:
-            self->inverters[0] = (float*) data; break;
-        case INVERTER_2:
-            self->inverters[1] = (float*) data; break;
-        case INVERTER_3:
-            self->inverters[2] = (float*) data; break;
-        case INVERTER_4:
-            self->inverters[3] = (float*) data; break;
-
         case EVENTS_IN:
-            self->events_in = (const LV2_Atom_Sequence*) data; break;
+            self->lv2->atom.events_in = (const LV2_Atom_Sequence*) data; break;
     }
 }
 
 static void activate(LV2_Handle instance) {}
 
 
-void update_assignables(Tetr4Switch* self, uint32_t n_samples);
-void update_output_cvs(Tetr4Switch* self, uint32_t n_samples);
+void update_assignables(Controller* self);
 
 static void run(LV2_Handle instance, uint32_t n_samples) {
-    Tetr4Switch* self = (Tetr4Switch*) instance;
+    Controller* self = (Controller*) instance;
 
-    self->run(self);
+    self->run(self, n_samples);
 
     LV2_HMI_run(self);
     //Atom_run(self);
     
-    update_assignables(self, n_samples);
-    update_output_cvs(self, n_samples);
+    update_assignables(self);
 }
 
-void update_assignables(Tetr4Switch* self, uint32_t n_samples) {
+void update_assignables(Controller* self) {
     unsigned int index = self->get_index_current_preset(self);
 
-    if (self->preset_changed) {
+    if (self->is_preset_changed(self)) {
         unsigned int previous_index = self->get_index_previous_preset(self);
 
-        *self->preset_selectors[previous_index] = 0.0f;
-        *self->preset_selectors[index] = 1.0f;
+        LV2_ControlInputPort_Change_Request* control_input_port = self->lv2->control_input_port;
 
-        self->control_input_port->request_change(self->control_input_port->handle, PRESET_SELECTOR_1 + previous_index, 0.0f);
-        self->control_input_port->request_change(self->control_input_port->handle, PRESET_SELECTOR_1 + index, 1.0f);
+        control_input_port->request_change(control_input_port->handle, PRESET_SELECTOR_1 + previous_index, 0.0f);
+        control_input_port->request_change(control_input_port->handle, PRESET_SELECTOR_1 + index, 1.0f);
 
-        *self->current_preset_index = index;
-
-        self->control_input_port->request_change(self->control_input_port->handle, PRESET_COMBOBOX, index);
+        control_input_port->request_change(control_input_port->handle, PRESET_SELECT, index);
     }
 }
 
-void update_output_cvs(Tetr4Switch* self, uint32_t n_samples) {
-    // Calculate output values
-    unsigned int output_coded = self->get_output_signal(self);
-    float output_cv_values[TOTAL_OUTPUTS];
-
-    for (unsigned int n = 0; n < TOTAL_OUTPUTS; n++) {
-        unsigned int mask = 1 << n;
-        output_cv_values[n] = ((output_coded & mask) >> n) * MAX_TENSION;
-    }
-
-    // Update CV values
-    for (uint32_t i = 0; i < n_samples; i++) {
-        for (unsigned int id_output = 0; id_output < TOTAL_OUTPUTS; id_output++) {
-            self->output_cvs[id_output][i] = output_cv_values[id_output];
-        }
-    }
-}
 
 static void deactivate(LV2_Handle instance) {}
 
 static void cleanup(LV2_Handle instance) {
-    free(instance);
+    Controller* self = (Controller*) instance;
+
+    free(self->lv2);
+    self->lv2 = NULL;
+
+    free(self);
 }
 
 static const void* extension_data(const char* uri) {

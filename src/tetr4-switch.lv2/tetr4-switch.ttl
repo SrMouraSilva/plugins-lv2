@@ -330,51 +330,10 @@ lv2:port
     lv2:maximum 1 ;
     lv2:portProperty lv2:toggled;
 ],
-# Output inverters
-[
-    a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 26;
-    lv2:symbol "Inverter_1" ;
-    lv2:name "Output signal inverter 1" ;
-    lv2:default 0.0 ;
-    lv2:minimum 0.0 ;
-    lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
-],
-[
-    a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 27;
-    lv2:symbol "Inverter_2" ;
-    lv2:name "Output signal inverter 2" ;
-    lv2:default 0.0 ;
-    lv2:minimum 0.0 ;
-    lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
-],
-[
-    a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 28;
-    lv2:symbol "Inverter_3" ;
-    lv2:name "Output signal inverter 3" ;
-    lv2:default 0.0 ;
-    lv2:minimum 0.0 ;
-    lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
-],
-[
-    a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 29;
-    lv2:symbol "Inverter_4" ;
-    lv2:name "Output signal inverter 4" ;
-    lv2:default 0.0 ;
-    lv2:minimum 0.0 ;
-    lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
-],
 
 [
     a lv2:InputPort, atom:AtomPort ;
-    lv2:index 20 ;
+    lv2:index 26 ;
     lv2:symbol "events_in" ;
     lv2:name "Events In" ;
     atom:bufferType atom:Sequence ;

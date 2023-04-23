@@ -25,7 +25,7 @@ COMPLETE_INSTALL_PATH = $(DESTDIR)$(INSTALL_PATH)/$(NAME).lv2
 
 all: build
 build:
-	$(CC) utils/utils.c extension/atom-extension.c extension/lv2-hmi-extension.c model/tetr4-switch.c tetr4-switch.c $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o $(NAME).lv2/$(NAME).so
+	$(CC) utils/utils.c lv2/lv2-controller.c lv2/atom-extension.c lv2/lv2-hmi-extension.c model/controller.c tetr4-switch.c $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o $(NAME).lv2/$(NAME).so
 
 # --------------------------------------------------------------
 
