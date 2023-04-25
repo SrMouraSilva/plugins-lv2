@@ -1,11 +1,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "lv2/atom/atom.h"
-#include "lv2/atom/util.h"
+#include <lv2/atom/atom.h>
+#include <lv2/atom/util.h>
 
-#include "../model/controller.h"
-#include "../utils/utils.h"
+#include "../../model/controller.h"
+#include "../../utils/utils.h"
 
 
 // #define PRESET_LABEL_1_URI PLUGIN_URI "#preset_label_1"

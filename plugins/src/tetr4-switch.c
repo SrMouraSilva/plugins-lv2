@@ -7,9 +7,9 @@
 #include "model/tetr4-switch.h"
 #include "model/controller.h"
 
-#include "lv2/lv2-controller.h"
-#include "lv2/lv2-hmi-extension.h"
-#include "lv2/atom-extension.h"
+#include "lv2/controller/lv2-controller.h"
+#include "lv2/controller/lv2-hmi-extension.h"
+#include "lv2/controller/atom-extension.h"
 
 
 static LV2_Handle
@@ -26,6 +26,7 @@ instantiate(const LV2_Descriptor*     descriptor,
 
     if (missing) {
         //cleanup(self);
+        free(self->lv2);
         free(self);
         return NULL;
     }

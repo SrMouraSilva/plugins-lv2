@@ -4,10 +4,10 @@
 #include "lv2/log/logger.h"
 #include "lv2/atom/atom.h"
 
-#include "../include/lv2-hmi.h"
-#include "../include/control-input-port-change-request.h"
+#include "../extension/lv2-hmi.h"
+#include "../extension/control-input-port-change-request.h"
 
-#include "../config.h"
+#include "../../config.h"
 
 typedef struct {
     LV2_HMI_WidgetControl* widgetControl;

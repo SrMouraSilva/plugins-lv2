@@ -1,7 +1,7 @@
 #ifndef LV2_HMI_EXTENSION_H
 #define	LV2_HMI_EXTENSION_H
 
-#include "../model/controller.h"
+#include "../../model/controller.h"
 
 
 

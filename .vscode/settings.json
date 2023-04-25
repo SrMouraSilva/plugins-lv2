@@ -3,6 +3,10 @@
         "control-input-port-change-request.h": "c",
         "lv2-hmi.h": "c",
         "tetr4-switch.h": "c",
-        "controller.h": "c"
+        "controller.h": "c",
+        "lv2-controller.h": "c",
+        "lv2-gossiper.h": "c",
+        "gossiper.h": "c",
+        "lv2-hmi-gossiper.h": "c"
     }
 }

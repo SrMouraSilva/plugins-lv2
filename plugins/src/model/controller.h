@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "../config.h"
 
-#include "../lv2/lv2-controller.h"
+#include "../lv2/controller/lv2-controller.h"
 
 /** Tension when is on */
 #define MAX_TENSION 10 // volts

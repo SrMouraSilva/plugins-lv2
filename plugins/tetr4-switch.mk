@@ -1,6 +1,6 @@
 # TETR4_SWITCH_VERSION = b1fa1349
 # #1.0.0
-# TETR4_SWITCH_SITE = https://github.com/SrMouraSilva/tetr4-switch-lv2
+# TETR4_SWITCH_SITE = https://github.com/SrMouraSilva/plugins
 # TETR4_SWITCH_SITE_METHOD = git
 # # TETR4_SWITCH_SOURCE = calf-$(CALF_LABS_VERSION).tar.gz
 # # TETR4_SWITCH_DEPENDENCIES = cairo expat libglib2
@@ -34,7 +34,7 @@ TETR4_SWITCH_VERSION = 1
 TETR4_SWITCH_DEPENDENCIES =
 
 # LV2 bundles that this package generates (space separated list)
-TETR4_SWITCH_BUNDLES = tetr4-switch.lv2
+TETR4_SWITCH_BUNDLES = gossiper.lv2 tetr4-switch.lv2 
 
 # call make with the current arguments and path. "$(@D)" is the build directory.
 #TETR4_SWITCH_TARGET_MAKE = $(TARGET_MAKE_ENV) $(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D)/source

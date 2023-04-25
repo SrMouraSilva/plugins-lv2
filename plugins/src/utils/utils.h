@@ -1,6 +1,12 @@
 #ifndef UTILS_H
 #define	UTILS_H
 
+
+/**
+ * @return is @param a (sufficient) equals to zero?
+ */
+extern bool is_zero(float a);
+
 /**
  * Transfor a bool 'vector' of 'size' into a mask where
  * the least significative bit corresponds to the first element of the 'vector'

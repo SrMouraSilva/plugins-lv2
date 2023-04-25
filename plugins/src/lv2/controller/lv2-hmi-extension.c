@@ -1,14 +1,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "lv2/lv2plug.in/ns/lv2core/lv2.h"
-#include "lv2/core/lv2_util.h"
+#include <lv2/core/lv2.h>
+#include <lv2/core/lv2_util.h>
 #include <lv2/lv2plug.in/ns/ext/log/log.h>
 
-#include "../include/lv2-hmi.h"
-#include "../include/control-input-port-change-request.h"
+#include "../extension/lv2-hmi.h"
+#include "../extension/control-input-port-change-request.h"
 
-#include "../model/controller.h"
+#include "../../model/controller.h"
 
 typedef enum {
     PRESET_SELECTOR_1 = 4,
@@ -172,7 +172,7 @@ void run_notification(Controller* self, unsigned int current_preset, bool force_
             hmi->widgetControl->handle,
             hmi->notification,
             LV2_HMI_Popup_Style_Inverted,
-            "PLUGIN_NAME",
+            PLUGIN_NAME,
             message
         );
     }

@@ -1,0 +1,207 @@
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix epp:  <http://lv2plug.in/ns/ext/port-props#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix mod:  <http://moddevices.com/ns/mod#> .
+@prefix modgui: <http://moddevices.com/ns/modgui#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix atom: <http://lv2plug.in/ns/ext/atom#> .
+@prefix midi: <http://lv2plug.in/ns/ext/midi#> .
+@prefix urid: <http://lv2plug.in/ns/ext/urid#> .
+@prefix units: <http://lv2plug.in/ns/extensions/units#> .
+@prefix state: <http://lv2plug.in/ns/ext/state#> .
+@prefix patch: <http://lv2plug.in/ns/ext/patch#> .
+@prefix plug: <http://srmourasilva.github.io/plugins/tetr4-switch#> .
+
+# plug:footswitch_label_1
+#     a lv2:Parameter ;
+#     rdfs:label "Footswitch label 1" ;
+#     rdfs:range atom:String .
+
+# plug:footswitch_label_2
+#     a lv2:Parameter ;
+#     rdfs:label "Footswitch label 2" ;
+#     rdfs:range atom:String .
+
+# plug:footswitch_label_3
+#     a lv2:Parameter ;
+#     rdfs:label "Footswitch label 3" ;
+#     rdfs:range atom:String .
+    
+# plug:footswitch_label_4
+#     a lv2:Parameter ;
+#     rdfs:label "Footswitch label 4" ;
+#     rdfs:range atom:String .
+
+<http://srmourasilva.github.io/plugins/tetr4-switch>
+    a lv2:Plugin, mod:ControlVoltagePlugin, mod:UtilityPlugin ;
+
+doap:name "Tetr4 switch" ;
+doap:license "GPL v2+" ;
+doap:developer [
+    foaf:name "Paulo Mateus" ;
+    foaf:homepage <> ;
+    foaf:mbox <mailto:mateus.moura@hotmail.com> ;
+    ];
+
+doap:maintainer [
+    foaf:name "SrMouraSilva" ;
+    foaf:homepage <https://github.com/SrMouraSilva/tetr4-switch-lv2> ;
+    foaf:mbox <mailto:mateus.moura@hotmail.com> ;
+    ];
+
+    lv2:requiredFeature urid:map;
+    lv2:optionalFeature lv2:hardRTCapable, state:loadDefaultState, <http://moddevices.com/ns/hmi#WidgetControl>;
+    lv2:extensionData <http://moddevices.com/ns/hmi#PluginNotification>, state:interface;
+
+    lv2:minorVersion 4 ;
+    lv2:microVersion 0 ;
+
+rdfs:comment """
+Gossiper shows a notification when a button is turned on or turned off.
+
+It is useful if you are using an external MIDI controller that doesn't
+have feedback resources like LED.
+
+As an educated gossiper, it will only gossipes if you are looking to it:
+in other words, the notification only appears on devices screen if
+a parameter with name "assign to notify" is been showing on device screen.
+There are more than one "assign to notify" because you maybe want to
+show messages on different pages.
+""" ;
+
+
+# Outputs
+lv2:port
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 0;
+    lv2:symbol "Cv_output_1";
+    lv2:name "CV Output 1";
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 1;
+    lv2:symbol "Cv_output_2";
+    lv2:name "CV Output 2";
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 2;
+    lv2:symbol "Cv_output_3";
+    lv2:name "CV Output 3";
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 3;
+    lv2:symbol "Cv_output_4";
+    lv2:name "CV Output 4";
+],
+# Preset selectors (footswitch selectors)
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 4;
+    lv2:symbol "Footswitch_1" ;
+    lv2:name "Footswitch 1" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 5;
+    lv2:symbol "Footswitch_2" ;
+    lv2:name "Footswitch 2" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 6;
+    lv2:symbol "Footswitch_3" ;
+    lv2:name "Footswitch 3" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 7;
+    lv2:symbol "Footswitch_4" ;
+    lv2:name "Footswitch 4" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort;
+    lv2:index 8;
+    lv2:symbol "Assign_to_notify_1";
+    lv2:name "Assign to notify 1";
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+],
+[
+    a lv2:InputPort, lv2:ControlPort;
+    lv2:index 9;
+    lv2:symbol "Assign_to_notify_2";
+    lv2:name "Assign to notify 2";
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+],
+[
+    a lv2:InputPort, lv2:ControlPort;
+    lv2:index 10;
+    lv2:symbol "Assign_to_notify_3";
+    lv2:name "Assign to notify 3";
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+],
+[
+    a lv2:InputPort, lv2:ControlPort;
+    lv2:index 11;
+    lv2:symbol "Assign_to_notify_4";
+    lv2:name "Assign to notify 4";
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+]
+# ,
+# [
+#     a lv2:InputPort, atom:AtomPort ;
+#     lv2:index 26 ;
+#     lv2:symbol "events_in" ;
+#     lv2:name "Events In" ;
+#     atom:bufferType atom:Sequence ;
+#     atom:supports patch:Message ;
+#     lv2:designation lv2:control ;
+       
+# ]
+;
+
+# patch:writable plug:preset_label_1 ,
+#                plug:preset_label_2 ,
+#                plug:preset_label_3 ,
+#                plug:preset_label_4 ;
+
+# state:state [
+#     plug:preset_label_1 "Preset 1" ;
+#     plug:preset_label_2 "Preset 2" ;
+#     plug:preset_label_3 "Preset 3" ;
+#     plug:preset_label_4 "Preset 4" ;
+# ]
+
+.
