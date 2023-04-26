@@ -29,7 +29,7 @@ Gossiper* Gossiper_instantiate() {
     // self->internal_state.get_preset_label = &Controller_get_preset_label;
     // self->internal_state.set_preset_label = &Controller_set_preset_label;
 
-    //self->lv2 = NULL;
+    self->lv2 = NULL;
 
     return self;
 }
@@ -48,9 +48,9 @@ void Gossiper_run(void* self, uint32_t n_samples) {
 void Gossiper_update_switches(Gossiper* this) {
     for (unsigned int i=0; i<TOTAL_GOSSIPER_FOOTSWITCHES; i++) {
         bool current_state = this->switches[i].activated;
-        bool new_state = !is_zero(*this->switches->input);
+        bool new_state = !is_zero(*this->switches[i].input);
 
-        this->switches[i].updated = current_state == new_state;
+        this->switches[i].updated = current_state != new_state;
         this->switches[i].activated = new_state;
     }
 }

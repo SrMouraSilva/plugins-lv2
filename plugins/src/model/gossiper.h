@@ -3,7 +3,7 @@
 
 #define PLUGIN_URI "http://srmourasilva.github.io/plugins/gossiper"
 
-#define TOTAL_GOSSIPER_FOOTSWITCHES 4
+#define TOTAL_GOSSIPER_FOOTSWITCHES 7
 #define TOTAL_GOSSIPER_NOTIFIERS 4
 
 #define MAX_TENSION 10
@@ -18,19 +18,25 @@ typedef enum {
     OUTPUT_CV_2 = 1,
     OUTPUT_CV_3 = 2,
     OUTPUT_CV_4 = 3,
+    OUTPUT_CV_5 = 4,
+    OUTPUT_CV_6 = 5,
+    OUTPUT_CV_7 = 6,
 
     // Preset selectors (footswitch selectors)
-    FOOTSWITCH_1 = 4,
-    FOOTSWITCH_2 = 5,
-    FOOTSWITCH_3 = 6,
-    FOOTSWITCH_4 = 7,
+    FOOTSWITCH_1 = 7,
+    FOOTSWITCH_2 = 8,
+    FOOTSWITCH_3 = 9,
+    FOOTSWITCH_4 = 10,
+    FOOTSWITCH_5 = 11,
+    FOOTSWITCH_6 = 12,
+    FOOTSWITCH_7 = 13,
 
-    ASSIGN_TO_NOTIFY_1 = 8,
-    ASSIGN_TO_NOTIFY_2 = 9,
-    ASSIGN_TO_NOTIFY_3 = 10,
-    ASSIGN_TO_NOTIFY_4 = 11,
+    ASSIGN_TO_NOTIFY_1 = 14,
+    ASSIGN_TO_NOTIFY_2 = 15,
+    ASSIGN_TO_NOTIFY_3 = 16,
+    ASSIGN_TO_NOTIFY_4 = 17,
 
-    //EVENTS_IN = 12,
+    //EVENTS_IN = 18,
 } PortIndex;
 
 // -----------------------------------------------
@@ -50,7 +56,7 @@ typedef struct {
     /** LV2 input */
     float* input;
 
-    LV2_HMI_Addressing* hmi_addressing;
+    LV2_HMI_Addressing hmi_addressing;
 } Notifier;
 
 typedef struct {

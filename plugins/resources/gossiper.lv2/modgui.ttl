@@ -4,10 +4,9 @@
 <http://srmourasilva.github.io/plugins/gossiper>
     modgui:gui [
         modgui:resourcesDirectory <modgui> ;
-        modgui:iconTemplate <modgui/icon.html> ;
-        modgui:stylesheet
-            <modgui/css/gossiper.css> ;
-        modgui:javascript <modgui/js/gossiper.js> ;
+        modgui:iconTemplate <modgui/gossiper.html> ;
+        modgui:stylesheet <modgui/gossiper.css> ;
+        modgui:javascript <modgui/gossiper.js> ;
         modgui:screenshot <modgui/screenshot.png> ;
         modgui:thumbnail <modgui/thumbnail.png> ;
         modgui:brand "Pedal Pi" ;

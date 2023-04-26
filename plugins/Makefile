@@ -30,10 +30,18 @@ all: build
 build: build-gossiper build-tetr4-switch
 
 build-tetr4-switch:
-	$(CC) src/utils/utils.c src/lv2/controller/lv2-controller.c src/lv2/controller/atom-extension.c src/lv2/controller/lv2-hmi-extension.c src/model/controller.c src/tetr4-switch.c $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(TETR4_SWITCH).lv2/$(TETR4_SWITCH).so
+	$(CC) src/utils/utils.c \
+		  src/lv2/controller/lv2-controller.c src/lv2/controller/atom-extension.c src/lv2/controller/lv2-hmi-extension.c \
+		  src/model/controller.c \
+		  src/tetr4-switch.c \
+		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(TETR4_SWITCH).lv2/$(TETR4_SWITCH).so
 
 build-gossiper:
-	$(CC) src/utils/utils.c src/lv2/gossiper/lv2-gossiper.c src/lv2/gossiper/lv2-hmi-gossiper.c src/model/gossiper.c src/gossiper.c $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(GOSSIPER).lv2/$(GOSSIPER).so
+	$(CC) src/utils/utils.c \
+		  src/lv2/gossiper/lv2-gossiper.c src/lv2/gossiper/lv2-hmi-gossiper.c \
+		  src/model/gossiper.c \
+		  src/gossiper.c \
+		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(GOSSIPER).lv2/$(GOSSIPER).so
 
 # --------------------------------------------------------------
 

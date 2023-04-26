@@ -60,13 +60,13 @@ docker build . -t builder
 ## Build
 
 ```bash
-docker run --rm -ti --name mpb -p 9000:9000 -v $(pwd)/plugins:/home/builder/mod-plugin-builder/plugins/package/tetr4-switch cbix/mod-plugin-builder:moddwarf
+docker run --rm -ti --name mpb -p 9000:9000 -v $(pwd)/plugins:/home/builder/mod-plugin-builder/plugins/package/pedal-pi-plugins cbix/mod-plugin-builder:moddwarf
 sudo apt install iputils-ping --yes
-./build moddwarf tetr4-switch
-./build moddwarf tetr4-switch-publish
+./build moddwarf pedal-pi-plugins
+./build moddwarf pedal-pi-plugins-publish
 
-# Forçar o build sem ter que aumentar a versão em tetr4-switch.mk
-rm -r /home/builder/mod-workdir/moddwarf/build/tetr4-switch-*
+# Forçar o build sem ter que aumentar a versão em pedal-pi-plugins.mk
+rm -r /home/builder/mod-workdir/moddwarf/build/pedal-pi-plugins-*
 
 ```
 

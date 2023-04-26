@@ -46,8 +46,8 @@ doap:developer [
     ];
 
 doap:maintainer [
-    foaf:name "SrMouraSilva" ;
-    foaf:homepage <https://github.com/SrMouraSilva/tetr4-switch-lv2> ;
+    foaf:name "Pedal Pi" ;
+    foaf:homepage <https://github.com/SrMouraSilva/plugins-lv2> ;
     foaf:mbox <mailto:mateus.moura@hotmail.com> ;
     ];
 

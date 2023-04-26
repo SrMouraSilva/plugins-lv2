@@ -4,10 +4,9 @@
 <http://srmourasilva.github.io/plugins/tetr4-switch>
     modgui:gui [
         modgui:resourcesDirectory <modgui> ;
-        modgui:iconTemplate <modgui/icon.html> ;
-        modgui:stylesheet
-            <modgui/css/tetr4-switch.css> ;
-        modgui:javascript <modgui/js/tetr4-switch.js> ;
+        modgui:iconTemplate <modgui/tetr4-switch.html> ;
+        modgui:stylesheet <modgui/tetr4-switch.css> ;
+        modgui:javascript <modgui/tetr4-switch.js> ;
         modgui:screenshot <modgui/screenshot.png> ;
         modgui:thumbnail <modgui/thumbnail.png> ;
         modgui:brand "Pedal Pi" ;

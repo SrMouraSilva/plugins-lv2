@@ -12,7 +12,7 @@
 @prefix units: <http://lv2plug.in/ns/extensions/units#> .
 @prefix state: <http://lv2plug.in/ns/ext/state#> .
 @prefix patch: <http://lv2plug.in/ns/ext/patch#> .
-@prefix plug: <http://srmourasilva.github.io/plugins/tetr4-switch#> .
+@prefix plug: <http://srmourasilva.github.io/plugins/gossiper#> .
 
 # plug:footswitch_label_1
 #     a lv2:Parameter ;
@@ -34,10 +34,25 @@
 #     rdfs:label "Footswitch label 4" ;
 #     rdfs:range atom:String .
 
-<http://srmourasilva.github.io/plugins/tetr4-switch>
+# plug:footswitch_label_5
+#     a lv2:Parameter ;
+#     rdfs:label "Footswitch label 5" ;
+#     rdfs:range atom:String .
+
+# plug:footswitch_label_6
+#     a lv2:Parameter ;
+#     rdfs:label "Footswitch label 6" ;
+#     rdfs:range atom:String .
+    
+# plug:footswitch_label_7
+#     a lv2:Parameter ;
+#     rdfs:label "Footswitch label 7" ;
+#     rdfs:range atom:String .
+
+<http://srmourasilva.github.io/plugins/gossiper>
     a lv2:Plugin, mod:ControlVoltagePlugin, mod:UtilityPlugin ;
 
-doap:name "Tetr4 switch" ;
+doap:name "Gossiper" ;
 doap:license "GPL v2+" ;
 doap:developer [
     foaf:name "Paulo Mateus" ;
@@ -46,8 +61,8 @@ doap:developer [
     ];
 
 doap:maintainer [
-    foaf:name "SrMouraSilva" ;
-    foaf:homepage <https://github.com/SrMouraSilva/tetr4-switch-lv2> ;
+    foaf:name "Pedal Pi" ;
+    foaf:homepage <https://github.com/SrMouraSilva/plugins-lv2> ;
     foaf:mbox <mailto:mateus.moura@hotmail.com> ;
     ];
 
@@ -55,7 +70,7 @@ doap:maintainer [
     lv2:optionalFeature lv2:hardRTCapable, state:loadDefaultState, <http://moddevices.com/ns/hmi#WidgetControl>;
     lv2:extensionData <http://moddevices.com/ns/hmi#PluginNotification>, state:interface;
 
-    lv2:minorVersion 4 ;
+    lv2:minorVersion 2 ;
     lv2:microVersion 0 ;
 
 rdfs:comment """
@@ -98,10 +113,28 @@ lv2:port
     lv2:symbol "Cv_output_4";
     lv2:name "CV Output 4";
 ],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 4;
+    lv2:symbol "Cv_output_5";
+    lv2:name "CV Output 5";
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 5;
+    lv2:symbol "Cv_output_6";
+    lv2:name "CV Output 6";
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 6;
+    lv2:symbol "Cv_output_7";
+    lv2:name "CV Output 7";
+],
 # Preset selectors (footswitch selectors)
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 4;
+    lv2:index 7;
     lv2:symbol "Footswitch_1" ;
     lv2:name "Footswitch 1" ;
     lv2:default 0.0 ;
@@ -111,7 +144,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 5;
+    lv2:index 8;
     lv2:symbol "Footswitch_2" ;
     lv2:name "Footswitch 2" ;
     lv2:default 0.0 ;
@@ -121,7 +154,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 6;
+    lv2:index 9;
     lv2:symbol "Footswitch_3" ;
     lv2:name "Footswitch 3" ;
     lv2:default 0.0 ;
@@ -131,7 +164,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 7;
+    lv2:index 10;
     lv2:symbol "Footswitch_4" ;
     lv2:name "Footswitch 4" ;
     lv2:default 0.0 ;
@@ -140,41 +173,71 @@ lv2:port
     lv2:portProperty lv2:toggled;
 ],
 [
-    a lv2:InputPort, lv2:ControlPort;
-    lv2:index 8;
-    lv2:symbol "Assign_to_notify_1";
-    lv2:name "Assign to notify 1";
-    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
-    lv2:default 0;
-    lv2:minimum 0;
-    lv2:maximum 1;
-],
-[
-    a lv2:InputPort, lv2:ControlPort;
-    lv2:index 9;
-    lv2:symbol "Assign_to_notify_2";
-    lv2:name "Assign to notify 2";
-    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
-    lv2:default 0;
-    lv2:minimum 0;
-    lv2:maximum 1;
-],
-[
-    a lv2:InputPort, lv2:ControlPort;
-    lv2:index 10;
-    lv2:symbol "Assign_to_notify_3";
-    lv2:name "Assign to notify 3";
-    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
-    lv2:default 0;
-    lv2:minimum 0;
-    lv2:maximum 1;
-],
-[
-    a lv2:InputPort, lv2:ControlPort;
+    a lv2:InputPort, lv2:ControlPort ;
     lv2:index 11;
+    lv2:symbol "Footswitch_5" ;
+    lv2:name "Footswitch 5" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 12;
+    lv2:symbol "Footswitch_6" ;
+    lv2:name "Footswitch 6" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 13;
+    lv2:symbol "Footswitch_7" ;
+    lv2:name "Footswitch 7" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort;
+    lv2:index 14;
+    lv2:symbol "Assign_to_notify_1";
+    lv2:name "Assign to notfy1";
+    lv2:portProperty lv2:integer, lv2:toggled ;
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+],
+[
+    a lv2:InputPort, lv2:ControlPort;
+    lv2:index 15;
+    lv2:symbol "Assign_to_notify_2";
+    lv2:name "Assign to notfy2";
+    lv2:portProperty lv2:integer, lv2:toggled ;
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+],
+[
+    a lv2:InputPort, lv2:ControlPort;
+    lv2:index 16;
+    lv2:symbol "Assign_to_notify_3";
+    lv2:name "Assign to notfy3";
+    lv2:portProperty lv2:integer, lv2:toggled ;
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+],
+[
+    a lv2:InputPort, lv2:ControlPort;
+    lv2:index 17;
     lv2:symbol "Assign_to_notify_4";
-    lv2:name "Assign to notify 4";
-    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
+    lv2:name "Assign to notfy4";
+    lv2:portProperty lv2:integer, lv2:toggled ;
     lv2:default 0;
     lv2:minimum 0;
     lv2:maximum 1;
@@ -182,7 +245,7 @@ lv2:port
 # ,
 # [
 #     a lv2:InputPort, atom:AtomPort ;
-#     lv2:index 26 ;
+#     lv2:index 18 ;
 #     lv2:symbol "events_in" ;
 #     lv2:name "Events In" ;
 #     atom:bufferType atom:Sequence ;
@@ -195,13 +258,19 @@ lv2:port
 # patch:writable plug:preset_label_1 ,
 #                plug:preset_label_2 ,
 #                plug:preset_label_3 ,
-#                plug:preset_label_4 ;
+#                plug:preset_label_4 ,
+#                plug:preset_label_5 ,
+#                plug:preset_label_6 ,
+#                plug:preset_label_7 ;
 
 # state:state [
 #     plug:preset_label_1 "Preset 1" ;
 #     plug:preset_label_2 "Preset 2" ;
 #     plug:preset_label_3 "Preset 3" ;
 #     plug:preset_label_4 "Preset 4" ;
+#     plug:preset_label_2 "Preset 5" ;
+#     plug:preset_label_3 "Preset 6" ;
+#     plug:preset_label_4 "Preset 7" ;
 # ]
 
 .

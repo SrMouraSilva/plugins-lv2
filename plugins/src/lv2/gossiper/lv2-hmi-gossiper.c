@@ -48,7 +48,7 @@ void assign(Gossiper* this, PortIndex index, LV2_HMI_Addressing addressing) {
         case ASSIGN_TO_NOTIFY_2:
         case ASSIGN_TO_NOTIFY_3:
         case ASSIGN_TO_NOTIFY_4:
-            this->notifiers[i].hmi_addressing = &addressing;
+            this->notifiers[i].hmi_addressing = addressing;
             break;
     }
 }
@@ -64,7 +64,7 @@ void run_notification(Gossiper* this) {
     HMI* hmi = &this->lv2->hmi;
 
     for (unsigned int notifier=0; notifier<TOTAL_GOSSIPER_NOTIFIERS; notifier++) {
-        LV2_HMI_Addressing* addressing = this->notifiers[notifier].hmi_addressing;
+        LV2_HMI_Addressing addressing = this->notifiers[notifier].hmi_addressing;
 
         if (addressing == NULL) {
             continue;
@@ -78,11 +78,13 @@ void run_notification(Gossiper* this) {
             }
 
             char message[14];
-            sprintf(message, "Footswitch %d", i);
+            sprintf(message, "Footswitch %d", i+1);
+
+            lv2_log_error(&this->lv2->logger, "Vou notificar <%d notifier> <%d footswitch>: %s \n", notifier, i, message);
 
             hmi->widgetControl->popup_message(
                 hmi->widgetControl->handle,
-                &addressing,
+                addressing,
                 footswitch.activated ? LV2_HMI_Popup_Style_Inverted : LV2_HMI_Popup_Style_Normal,
                 "Gossiper",
                 message

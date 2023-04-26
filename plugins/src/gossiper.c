@@ -22,7 +22,7 @@ instantiate(const LV2_Descriptor*     descriptor,
 
     if (missing) {
         //cleanup(self);
-        free(self->lv2);
+        //free(self->lv2);
         free(self);
         return NULL;
     }
@@ -44,6 +44,12 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
             self->outputs[2].output = (float*) data; break;
         case OUTPUT_CV_4:
             self->outputs[3].output = (float*) data; break;
+        case OUTPUT_CV_5:
+            self->outputs[4].output = (float*) data; break;
+        case OUTPUT_CV_6:
+            self->outputs[5].output = (float*) data; break;
+        case OUTPUT_CV_7:
+            self->outputs[6].output = (float*) data; break;
         
         case FOOTSWITCH_1:
             self->switches[0].input = (float*) data; break;
@@ -53,6 +59,12 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
             self->switches[2].input = (float*) data; break;
         case FOOTSWITCH_4:
             self->switches[3].input = (float*) data; break;
+        case FOOTSWITCH_5:
+            self->switches[4].input = (float*) data; break;
+        case FOOTSWITCH_6:
+            self->switches[5].input = (float*) data; break;
+        case FOOTSWITCH_7:
+            self->switches[6].input = (float*) data; break;
 
         case ASSIGN_TO_NOTIFY_1:
         case ASSIGN_TO_NOTIFY_2:

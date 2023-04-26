@@ -1,0 +1,159 @@
+:root {
+  --gossiper-width: 250px;
+  --gossiper-height: 470px;
+
+  --gossiper-footswitch-background-off: #310a3f;
+  --gossiper-footswitch-background-off-disabled: #666;
+}
+
+.gossiper-base.mod-pedal .mod-pedal-output {
+  top: 0px;
+}
+
+.gossiper {
+  text-shadow: 0 0 1px black;
+
+  padding: 16px;
+  margin: 0px;
+
+  display: block;
+  color: #ddd;
+  position: relative;
+
+  font-family: monospace;
+
+  color: #eee;
+}
+
+.gossiper .footer {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap
+}
+
+.gossiper .footer {
+  margin-top: 8px;
+}
+
+.gossiper .name {
+  text-shadow: 0 0 2px black;
+  font-weight: bold;
+
+  font-family: monospace;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  font-size: x-large;
+  text-align: center;
+  width: 100%;
+}
+
+.gossiper .group1 {
+  --gossiper-footswitch-background-on: #ff6667;
+}
+.gossiper .group2 {
+  --gossiper-footswitch-background-on: #ffff67;
+}
+.gossiper .group3 {
+  --gossiper-footswitch-background-on: #66ffff;
+}
+.gossiper .group4 {
+  --gossiper-footswitch-background-on: #bb7cd2;
+}
+.gossiper .group5 {
+  --gossiper-footswitch-background-on: #f5a77e;
+}
+.gossiper .group6 {
+  --gossiper-footswitch-background-on: #6f6;
+}
+.gossiper .group7 {
+  --gossiper-footswitch-background-on: #f6f;
+}
+.gossiper .group8 {
+  --gossiper-footswitch-background-on: #8080ff;
+}
+
+.gossiper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+
+  background: #1e0431;
+
+  height: var(--gossiper-height);
+  width: var(--gossiper-width);
+  min-width: var(--gossiper-width);
+  border-radius: 18px;
+
+  font-family: "cooper hewitt", Sans-serif;
+  font-weight: 500;
+  text-align: center;
+}
+
+.gossiper .footswitch {
+  display: flex;
+  flex-direction: row;
+
+  /* z-index: 30; */
+  position: relative;
+}
+
+.gossiper .footswitch input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  z-index: -1;
+}
+
+.gossiper .footswitch input[type="checkbox"] + span::before {
+  /** Based on https://pedalboard.netlify.app/ */
+  -webkit-tap-highlight-color: transparent;
+  width: 60px;
+  height: 60px;
+  border-radius: 100%;
+  background: #FFF;
+  box-shadow: inset 0 0 0 10px #aaa;
+  overflow: hidden;
+  white-space: nowrap;
+  text-indent: 200%;
+  border: 1px solid #BBB;
+  display: block;
+  cursor: pointer;
+  
+  content: "";
+  cursor: pointer;
+
+  margin: 0 auto;
+  transition: box-shadow .4s;
+
+  cursor: help;
+}
+
+.gossiper .footswitch input[type="checkbox"]:disabled + span::before {
+  background: var(--gossiper-footswitch-background-off-disabled);
+}
+
+.gossiper .footswitch input[type="checkbox"]:checked + span::before {
+  background-position-y: bottom;
+  border-color: var(--gossiper-footswitch-background-on);
+  box-shadow: inset 0 0 0 10px var(--gossiper-footswitch-background-on);
+}
+
+.gossiper .footswitch-label {
+  width: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  
+  margin-top: 8px;
+  margin-bottom: 8px;
+
+  display: block;
+  background-color: #fff1;
+  color: #ff7de9;
+  text-shadow: none;
+  box-shadow: inset 0 0 2px black;
+  border: none;
+}
+
+.gossiper .footswitch input[type="radio"]:checked + .footswitch-label {
+  background-color: var(--gossiper-footswitch-background-on);
+}
