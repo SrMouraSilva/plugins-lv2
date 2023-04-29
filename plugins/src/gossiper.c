@@ -37,19 +37,19 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
 
     switch ((PortIndex) port) {
         case OUTPUT_CV_1:
-            self->outputs[0].output = (float*) data; break;
+            self->switches[0].output = (float*) data; break;
         case OUTPUT_CV_2:
-            self->outputs[1].output = (float*) data; break;
+            self->switches[1].output = (float*) data; break;
         case OUTPUT_CV_3:
-            self->outputs[2].output = (float*) data; break;
+            self->switches[2].output = (float*) data; break;
         case OUTPUT_CV_4:
-            self->outputs[3].output = (float*) data; break;
+            self->switches[3].output = (float*) data; break;
         case OUTPUT_CV_5:
-            self->outputs[4].output = (float*) data; break;
+            self->switches[4].output = (float*) data; break;
         case OUTPUT_CV_6:
-            self->outputs[5].output = (float*) data; break;
+            self->switches[5].output = (float*) data; break;
         case OUTPUT_CV_7:
-            self->outputs[6].output = (float*) data; break;
+            self->switches[6].output = (float*) data; break;
         
         case FOOTSWITCH_1:
             self->switches[0].input = (float*) data; break;
@@ -65,6 +65,42 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
             self->switches[5].input = (float*) data; break;
         case FOOTSWITCH_7:
             self->switches[6].input = (float*) data; break;
+
+        case POTENTIOMETER_1:
+            self->potentiometers[0].input = (float*) data; break;
+        case MINIMUM_1:
+            self->potentiometers[0].minimum = (float*) data; break;
+        case MAXIMUM_1:
+            self->potentiometers[0].maximum = (float*) data; break;
+        case OUTPUT_POTENTIOMETER_CV_1:
+            self->potentiometers[0].output = (float*) data; break;
+
+        case POTENTIOMETER_2:
+            self->potentiometers[1].input = (float*) data; break;
+        case MINIMUM_2:
+            self->potentiometers[1].minimum = (float*) data; break;
+        case MAXIMUM_2:
+            self->potentiometers[1].maximum = (float*) data; break;
+        case OUTPUT_POTENTIOMETER_CV_2:
+            self->potentiometers[1].output = (float*) data; break;
+
+        case POTENTIOMETER_3:
+            self->potentiometers[2].input = (float*) data; break;
+        case MINIMUM_3:
+            self->potentiometers[2].minimum = (float*) data; break;
+        case MAXIMUM_3:
+            self->potentiometers[2].maximum = (float*) data; break;
+        case OUTPUT_POTENTIOMETER_CV_3:
+            self->potentiometers[2].output = (float*) data; break;
+
+        case POTENTIOMETER_4:
+            self->potentiometers[3].input = (float*) data; break;
+        case MINIMUM_4:
+            self->potentiometers[3].minimum = (float*) data; break;
+        case MAXIMUM_4:
+            self->potentiometers[3].maximum = (float*) data; break;
+        case OUTPUT_POTENTIOMETER_CV_4:
+            self->potentiometers[3].output = (float*) data; break;
 
         case ASSIGN_TO_NOTIFY_1:
         case ASSIGN_TO_NOTIFY_2:

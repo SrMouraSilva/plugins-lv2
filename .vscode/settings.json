@@ -7,6 +7,8 @@
         "lv2-controller.h": "c",
         "lv2-gossiper.h": "c",
         "gossiper.h": "c",
-        "lv2-hmi-gossiper.h": "c"
+        "lv2-hmi-gossiper.h": "c",
+        "math.h": "c",
+        "stdbool.h": "c"
     }
 }

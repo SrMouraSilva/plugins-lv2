@@ -4,7 +4,7 @@ Lv2 Utilitary plugins focused on [Mod Dwarf](https://mod.audio/dwarf/) devices.
 
 ## Gossiper
 
-Shows a lv2-hmi notification when a button is turned on or off. Useful if you use an external midi controller that doesn't have feedback resources like LED. As an educated gossiper, it will only gossipes if you are looking to it (i.e., an "assignable" parameter is showing on device' screen).
+Shows a lv2-hmi notification when a button is turned on or turned off. Useful if you use an external midi controller that doesn't have feedback resources like LED. As an educated gossiper, it will only gossipes if you are looking to it (i.e., an "assignable" parameter is showing on device' screen).
 
 ## Tetr4 Switch
 
@@ -18,16 +18,12 @@ With it, is possible to define four presets of active CV and change between then
 
 #### v1.0.0
 
-* [x] Ttls
-* [x] Mod Gui
-* [x] Device (footswitch assignment)
 * [ ] Publish
 
 #### v1.1.0
 
 * [ ] Custom preset names - https://pedalboards.moddevices.com/plugins/aHR0cDovL29wZW4tbXVzaWMta29udHJvbGxlcnMuY2gvbHYyL25vdGVzI25vdGVz
 * [ ] Custom HMI - https://github.com/moddevices/plugin-examples/tree/main/hmi-widgets-individual-tests
-   * [ ] Notification
    * [ ] Led colour
    * [ ] Custom label
      * Atom sample 1: https://github.com/moddevices/mod-cv-plugins/blob/master/source/mod-cv-clock/mod-cv-clock.c
@@ -65,7 +61,7 @@ sudo apt install iputils-ping --yes
 ./build moddwarf pedal-pi-plugins
 ./build moddwarf pedal-pi-plugins-publish
 
-# Forçar o build sem ter que aumentar a versão em pedal-pi-plugins.mk
+# To force a build without changing the version number into pedal-pi-plugins.mk
 rm -r /home/builder/mod-workdir/moddwarf/build/pedal-pi-plugins-*
 
 ```

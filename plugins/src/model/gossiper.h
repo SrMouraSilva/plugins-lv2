@@ -4,6 +4,7 @@
 #define PLUGIN_URI "http://srmourasilva.github.io/plugins/gossiper"
 
 #define TOTAL_GOSSIPER_FOOTSWITCHES 7
+#define TOTAL_GOSSIPER_POTENTIOMETER 4
 #define TOTAL_GOSSIPER_NOTIFIERS 4
 
 #define MAX_TENSION 10
@@ -31,25 +32,71 @@ typedef enum {
     FOOTSWITCH_6 = 12,
     FOOTSWITCH_7 = 13,
 
+    // Assing to notify
     ASSIGN_TO_NOTIFY_1 = 14,
     ASSIGN_TO_NOTIFY_2 = 15,
     ASSIGN_TO_NOTIFY_3 = 16,
     ASSIGN_TO_NOTIFY_4 = 17,
 
-    //EVENTS_IN = 18,
+    // Potentiometer
+    POTENTIOMETER_1 = 18,
+    MINIMUM_1 = 19,
+    MAXIMUM_1 = 20,
+
+    POTENTIOMETER_2 = 21,
+    MINIMUM_2 = 22,
+    MAXIMUM_2 = 23,
+
+    POTENTIOMETER_3 = 24,
+    MINIMUM_3 = 25,
+    MAXIMUM_3 = 26,
+
+    POTENTIOMETER_4 = 27,
+    MINIMUM_4 = 28,
+    MAXIMUM_4 = 29,
+
+    OUTPUT_POTENTIOMETER_CV_1 = 30,
+    OUTPUT_POTENTIOMETER_CV_2 = 31,
+    OUTPUT_POTENTIOMETER_CV_3 = 32,
+    OUTPUT_POTENTIOMETER_CV_4 = 33,
+
+    //EVENTS_IN = 34,
 } PortIndex;
 
 // -----------------------------------------------
 
 typedef struct {
-    /** Is switch activated/on? */
-    bool activated;
+    /** Current value */
+    float value;
+
+    /** Minimum output value */
+    float* minimum;
+
+    /** Maximum output value */
+    float* maximum;
 
     /** Preset changed at this cycle */
     bool updated;
 
     /** LV2 input */
     float* input;
+
+    /** LV2 output */
+    float* output;
+} Potentiometer;
+
+typedef struct {
+    /** Is switch activated/on? */
+    bool activated;
+
+    /** Button changed at this cycle */
+    bool updated;
+
+    /** LV2 input */
+    float* input;
+
+    /** LV2 output */
+    float* output;
 } Switch;
 
 typedef struct {
@@ -59,16 +106,13 @@ typedef struct {
     LV2_HMI_Addressing hmi_addressing;
 } Notifier;
 
-typedef struct {
-    float* output;
-} CvOutput;
 
 typedef struct {
     // Attributes
     Switch switches[TOTAL_GOSSIPER_FOOTSWITCHES];
-    CvOutput outputs[TOTAL_GOSSIPER_FOOTSWITCHES];
-    Notifier notifiers[TOTAL_GOSSIPER_NOTIFIERS];
+    Potentiometer potentiometers[TOTAL_GOSSIPER_POTENTIOMETER];
 
+    Notifier notifiers[TOTAL_GOSSIPER_NOTIFIERS];
 
     LV2_Gossiper* lv2;
 

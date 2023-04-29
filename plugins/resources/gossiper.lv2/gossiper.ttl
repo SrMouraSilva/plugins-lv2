@@ -202,6 +202,7 @@ lv2:port
     lv2:maximum 1 ;
     lv2:portProperty lv2:toggled;
 ],
+
 [
     a lv2:InputPort, lv2:ControlPort;
     lv2:index 14;
@@ -241,7 +242,153 @@ lv2:port
     lv2:default 0;
     lv2:minimum 0;
     lv2:maximum 1;
+] ,
+#########################################################
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 18;
+    lv2:symbol "Potentiometer_1" ;
+    lv2:name "Pot 1" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1.0 ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 19;
+    lv2:symbol "minimum_1" ;
+    lv2:name "Minimum 1" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+    units:unit mod:volts ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 20;
+    lv2:symbol "maximum_1" ;
+    lv2:name "Maximum 1" ;
+    lv2:default 10.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+    units:unit mod:volts ;
+],
+
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 21;
+    lv2:symbol "Potentiometer_2" ;
+    lv2:name "Pot 2" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1.0 ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 22;
+    lv2:symbol "minimum_2" ;
+    lv2:name "Minimum 2" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+    units:unit mod:volts ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 23;
+    lv2:symbol "maximum_2" ;
+    lv2:name "Maximum 2" ;
+    lv2:default 10.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+    units:unit mod:volts ;
+],
+
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 24;
+    lv2:symbol "Potentiometer_3" ;
+    lv2:name "Pot 3" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1.0 ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 25;
+    lv2:symbol "minimum_3" ;
+    lv2:name "Minimum 3" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+    units:unit mod:volts ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 26;
+    lv2:symbol "maximum_3" ;
+    lv2:name "Maximum 3" ;
+    lv2:default 10.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+    units:unit mod:volts ;
+],
+
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 27;
+    lv2:symbol "Potentiometer_4" ;
+    lv2:name "Pot 4" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1.0 ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 28;
+    lv2:symbol "minimum_4" ;
+    lv2:name "Minimum 4" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+    units:unit mod:volts ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 29;
+    lv2:symbol "maximum_4" ;
+    lv2:name "Maximum 4" ;
+    lv2:default 10.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+    units:unit mod:volts ;
+],
+
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 30;
+    lv2:symbol "Cv_pot_output_1";
+    lv2:name "CV Potentiometer - Out 1";
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 31;
+    lv2:symbol "Cv_pot_output_2";
+    lv2:name "CV Potentiometer - Out 2";
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 32;
+    lv2:symbol "Cv_pot_output_3";
+    lv2:name "CV Potentiometer - Out 3";
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 33;
+    lv2:symbol "Cv_pot_output_4";
+    lv2:name "CV Potentiometer - Out 4";
 ]
+
 # ,
 # [
 #     a lv2:InputPort, atom:AtomPort ;

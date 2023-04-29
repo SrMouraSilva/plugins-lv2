@@ -48,12 +48,15 @@
 }
 
 .gossiper .group1 {
+  /* LV2_HMI_LED_Colour_Red */
   --gossiper-footswitch-background-on: #ff6667;
 }
 .gossiper .group2 {
+  /* LV2_HMI_LED_Colour_Yellow */
   --gossiper-footswitch-background-on: #ffff67;
 }
 .gossiper .group3 {
+  /* LV2_HMI_LED_Colour_Cyan */
   --gossiper-footswitch-background-on: #66ffff;
 }
 .gossiper .group4 {
@@ -63,12 +66,15 @@
   --gossiper-footswitch-background-on: #f5a77e;
 }
 .gossiper .group6 {
+  /* LV2_HMI_LED_Colour_Green */
   --gossiper-footswitch-background-on: #6f6;
 }
 .gossiper .group7 {
+  /* LV2_HMI_LED_Colour_Magenta */
   --gossiper-footswitch-background-on: #f6f;
 }
 .gossiper .group8 {
+  /* LV2_HMI_LED_Colour_Blue */
   --gossiper-footswitch-background-on: #8080ff;
 }
 

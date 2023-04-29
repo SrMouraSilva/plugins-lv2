@@ -60,9 +60,11 @@ void LV2_HMI_Gossiper_run(Gossiper* this) {
     run_notification(this);
 }
 
-void run_notification(Gossiper* this) {
-    HMI* hmi = &this->lv2->hmi;
 
+void notify_footswithes_updated(Gossiper* gossiper, LV2_HMI_Addressing addressing);
+void notify_potentiometers_updated(Gossiper* gossiper, LV2_HMI_Addressing addressing);
+
+void run_notification(Gossiper* this) {
     for (unsigned int notifier=0; notifier<TOTAL_GOSSIPER_NOTIFIERS; notifier++) {
         LV2_HMI_Addressing addressing = this->notifiers[notifier].hmi_addressing;
 
@@ -70,29 +72,66 @@ void run_notification(Gossiper* this) {
             continue;
         }
 
-        for (unsigned int i=0; i<TOTAL_GOSSIPER_FOOTSWITCHES; i++) {
-            Switch footswitch = this->switches[i];
+        notify_footswithes_updated(this, addressing);
+        notify_potentiometers_updated(this, addressing);
+    }
+}
 
-            if (!footswitch.updated) {
-                continue;
-            }
+void notify_footswithes_updated(Gossiper* gossiper, LV2_HMI_Addressing addressing) {
+    HMI* hmi = &gossiper->lv2->hmi;
 
-            char message[14];
-            sprintf(message, "Footswitch %d", i+1);
+    for (unsigned int i=0; i<TOTAL_GOSSIPER_FOOTSWITCHES; i++) {
+        Switch footswitch = gossiper->switches[i];
 
-            lv2_log_error(&this->lv2->logger, "Vou notificar <%d notifier> <%d footswitch>: %s \n", notifier, i, message);
-
-            hmi->widgetControl->popup_message(
-                hmi->widgetControl->handle,
-                addressing,
-                footswitch.activated ? LV2_HMI_Popup_Style_Inverted : LV2_HMI_Popup_Style_Normal,
-                "Gossiper",
-                message
-            );
-
-            // If more than one notification is updated at the same time,
-            // only shows the lowest 
-            break;
+        if (!footswitch.updated) {
+            continue;
         }
+
+        char message[14];
+        sprintf(message, "Footswitch %d", i+1);
+
+        hmi->widgetControl->popup_message(
+            hmi->widgetControl->handle,
+            addressing,
+            footswitch.activated ? LV2_HMI_Popup_Style_Inverted : LV2_HMI_Popup_Style_Normal,
+            "Gossiper",
+            message
+        );
+
+        // If more than one notification is updated at the same time,
+        // only shows the lowest 
+        break;
+    }
+}
+
+void notify_potentiometers_updated(Gossiper* gossiper, LV2_HMI_Addressing addressing) {
+    HMI* hmi = &gossiper->lv2->hmi;
+
+    for (unsigned int i=0; i<TOTAL_GOSSIPER_POTENTIOMETER; i++) {
+        Potentiometer potentiometer = gossiper->potentiometers[i];
+
+        if (!potentiometer.updated) {
+            continue;
+        }
+
+        //lv2_log_error(&gossiper->lv2->logger, "Updated pot %d value: <%f>\n", i, potentiometer.value);
+
+        char title[18];
+        sprintf(title, "Gossiper - Pot %d", i+1);
+
+        char message[6];
+        sprintf(message, "%3.2f%%", potentiometer.value * 100);
+
+        hmi->widgetControl->popup_message(
+            hmi->widgetControl->handle,
+            addressing,
+            LV2_HMI_Popup_Style_Normal,
+            title,
+            message
+        );
+
+        // If more than one notification is updated at the same time,
+        // only shows the lowest 
+        break;
     }
 }
