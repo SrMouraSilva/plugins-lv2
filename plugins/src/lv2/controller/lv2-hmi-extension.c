@@ -17,7 +17,11 @@ typedef enum {
     PRESET_SELECTOR_4 = 7,
 
     PRESET_SELECT = 8,
-    ASSIGN_TO_NOTIFY = 9,
+    
+    ASSIGN_TO_NOTIFY_1 = 9,
+    ASSIGN_TO_NOTIFY_2 = 10,
+    ASSIGN_TO_NOTIFY_3 = 11,
+    ASSIGN_TO_NOTIFY_4 = 12,
 } HmiAdressing;
 
 LV2_HMI_LED_Colour led_colours[] = {
@@ -70,22 +74,26 @@ void run_notification(Controller* self, unsigned int current_preset, bool force_
 void LV2_HMI_assign(Controller* self, HmiAdressing index, LV2_HMI_Addressing addressing) {
     unsigned int current_preset = self->get_index_current_preset(self);
 
-    unsigned int i = index - PRESET_SELECTOR_1;
+    unsigned int preset_index = index - PRESET_SELECTOR_1;
+    unsigned int notifier_index = index - ASSIGN_TO_NOTIFY_1;
 
     switch (index) {
         case PRESET_SELECTOR_1:
         case PRESET_SELECTOR_2:
         case PRESET_SELECTOR_3:
         case PRESET_SELECTOR_4:
-            self->lv2->hmi.preset[i] = addressing;
-            run_footswitch(self, i, i == current_preset, true);
+            self->lv2->hmi.preset[preset_index] = addressing;
+            run_footswitch(self, preset_index, preset_index == current_preset, true);
             break;
         case PRESET_SELECT:
             self->lv2->hmi.select = addressing;
             run_select(self, current_preset, true);
             break;
-        case ASSIGN_TO_NOTIFY:
-            self->lv2->hmi.notification = addressing;
+        case ASSIGN_TO_NOTIFY_1:
+        case ASSIGN_TO_NOTIFY_2:
+        case ASSIGN_TO_NOTIFY_3:
+        case ASSIGN_TO_NOTIFY_4:
+            self->lv2->hmi.notifiers[notifier_index] = addressing;
             run_notification(self, current_preset, true);
             break;
     }
@@ -164,16 +172,18 @@ void run_select(Controller* self, unsigned int current_preset, bool force_update
 void run_notification(Controller* self, unsigned int current_preset, bool force_update) {
     HMI* hmi = &self->lv2->hmi;
 
-    if (hmi->notification != NULL && (force_update || self->is_preset_changed(self))) {
+    if (hmi->notifiers != NULL && (force_update || self->is_preset_changed(self))) {
         char message[10];
         sprintf(message, "Preset %d", current_preset+1);
 
-        hmi->widgetControl->popup_message(
-            hmi->widgetControl->handle,
-            hmi->notification,
-            LV2_HMI_Popup_Style_Inverted,
-            PLUGIN_NAME,
-            message
-        );
+        for (unsigned int i=0; i<TOTAL_CONTROLLER_NOTIFIERS; i++) {
+            hmi->widgetControl->popup_message(
+                hmi->widgetControl->handle,
+                hmi->notifiers[i],
+                LV2_HMI_Popup_Style_Inverted,
+                PLUGIN_NAME,
+                message
+            );
+        }
     }
 }

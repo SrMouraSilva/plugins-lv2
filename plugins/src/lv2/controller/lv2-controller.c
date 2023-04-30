@@ -20,7 +20,10 @@ LV2_Controller* LV2_Controller_instantiate() {
         self->hmi.preset[i] = NULL;
     }
     self->hmi.select = NULL;
-    self->hmi.notification = NULL;
+    
+    for (unsigned int i=0; i<TOTAL_CONTROLLER_NOTIFIERS; i++) {
+        self->hmi.notifiers[i] = NULL;
+    }
 
     return self;
 }

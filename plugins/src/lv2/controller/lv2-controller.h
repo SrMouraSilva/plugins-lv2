@@ -14,7 +14,8 @@ typedef struct {
 
     LV2_HMI_Addressing preset[TOTAL_PRESETS];
     LV2_HMI_Addressing select;
-    LV2_HMI_Addressing notification;
+    
+    LV2_HMI_Addressing notifiers[TOTAL_CONTROLLER_NOTIFIERS];
 } HMI;
 
 typedef struct {

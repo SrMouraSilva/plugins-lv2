@@ -61,7 +61,10 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
         case PRESET_SELECT:
             self->current_preset_index = (float*) data; break;
 
-        case ASSIGN_TO_NOTIFY:
+        case ASSIGN_TO_NOTIFY_1:
+        case ASSIGN_TO_NOTIFY_2:
+        case ASSIGN_TO_NOTIFY_3:
+        case ASSIGN_TO_NOTIFY_4:
             break;
 
         case PRESET_1_OUTPUT_1:

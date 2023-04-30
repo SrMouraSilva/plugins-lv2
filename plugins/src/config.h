@@ -10,4 +10,6 @@
 
 #define PRESET_LABEL_MAX_SIZE 11
 
+#define TOTAL_CONTROLLER_NOTIFIERS 4
+
 #endif

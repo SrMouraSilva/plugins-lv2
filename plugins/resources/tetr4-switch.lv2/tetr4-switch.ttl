@@ -14,25 +14,25 @@
 @prefix patch: <http://lv2plug.in/ns/ext/patch#> .
 @prefix plug: <http://srmourasilva.github.io/plugins/tetr4-switch#> .
 
-plug:preset_label_1
-    a lv2:Parameter ;
-    rdfs:label "Preset label 1" ;
-    rdfs:range atom:String .
+# plug:preset_label_1
+#     a lv2:Parameter ;
+#     rdfs:label "Preset label 1" ;
+#     rdfs:range atom:String .
 
-plug:preset_label_2
-    a lv2:Parameter ;
-    rdfs:label "Preset label 2" ;
-    rdfs:range atom:String .
+# plug:preset_label_2
+#     a lv2:Parameter ;
+#     rdfs:label "Preset label 2" ;
+#     rdfs:range atom:String .
 
-plug:preset_label_3
-    a lv2:Parameter ;
-    rdfs:label "Preset label 3" ;
-    rdfs:range atom:String .
+# plug:preset_label_3
+#     a lv2:Parameter ;
+#     rdfs:label "Preset label 3" ;
+#     rdfs:range atom:String .
     
-plug:preset_label_4
-    a lv2:Parameter ;
-    rdfs:label "Preset label 4" ;
-    rdfs:range atom:String .
+# plug:preset_label_4
+#     a lv2:Parameter ;
+#     rdfs:label "Preset label 4" ;
+#     rdfs:range atom:String .
 
 <http://srmourasilva.github.io/plugins/tetr4-switch>
     a lv2:Plugin, mod:ControlVoltagePlugin, mod:UtilityPlugin ;
@@ -159,8 +159,38 @@ lv2:port
 [
     a lv2:InputPort, lv2:ControlPort;
     lv2:index 9;
-    lv2:symbol "Assign_to_notify";
-    lv2:name "Assign to notify";
+    lv2:symbol "Assign_to_notify_1";
+    lv2:name "Assign to notfy1";
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+],
+[
+    a lv2:InputPort, lv2:ControlPort;
+    lv2:index 10;
+    lv2:symbol "Assign_to_notify_2";
+    lv2:name "Assign to notfy2";
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+],
+[
+    a lv2:InputPort, lv2:ControlPort;
+    lv2:index 11;
+    lv2:symbol "Assign_to_notify_3";
+    lv2:name "Assign to notfy3";
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+],
+[
+    a lv2:InputPort, lv2:ControlPort;
+    lv2:index 12;
+    lv2:symbol "Assign_to_notify_4";
+    lv2:name "Assign to notfy4";
     lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
     lv2:default 0;
     lv2:minimum 0;
@@ -169,7 +199,7 @@ lv2:port
 # Preset 1 - Dip Switches
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 10;
+    lv2:index 13;
     lv2:symbol "Preset_1_output_1" ;
     lv2:name "Preset 1 - Output 1" ;
     lv2:default 1.0 ;
@@ -179,7 +209,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 11;
+    lv2:index 14;
     lv2:symbol "Preset_1_output_2" ;
     lv2:name "Preset 1 - Output 2" ;
     lv2:default 0.0 ;
@@ -189,7 +219,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 12;
+    lv2:index 15;
     lv2:symbol "Preset_1_output_3" ;
     lv2:name "Preset 1 - Output 3" ;
     lv2:default 0.0 ;
@@ -199,7 +229,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 13;
+    lv2:index 16;
     lv2:symbol "Preset_1_output_4" ;
     lv2:name "Preset 1 - Output 4" ;
     lv2:default 0.0 ;
@@ -210,7 +240,7 @@ lv2:port
 # Preset 2 - Dip Switches
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 14;
+    lv2:index 17;
     lv2:symbol "Preset_2_output_1" ;
     lv2:name "Preset 2 - Output 1" ;
     lv2:default 0.0 ;
@@ -220,7 +250,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 15;
+    lv2:index 18;
     lv2:symbol "Preset_2_output_2" ;
     lv2:name "Preset 2 - Output 2" ;
     lv2:default 1.0 ;
@@ -230,7 +260,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 16;
+    lv2:index 19;
     lv2:symbol "Preset_2_output_3" ;
     lv2:name "Preset 2 - Output 3" ;
     lv2:default 0.0 ;
@@ -240,7 +270,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 17;
+    lv2:index 20;
     lv2:symbol "Preset_2_output_4" ;
     lv2:name "Preset 2 - Output 4" ;
     lv2:default 0.0 ;
@@ -251,7 +281,7 @@ lv2:port
 # Preset 3 - Dip Switches
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 18;
+    lv2:index 21;
     lv2:symbol "Preset_3_output_1" ;
     lv2:name "Preset 3 - Output 1" ;
     lv2:default 0.0 ;
@@ -261,7 +291,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 19;
+    lv2:index 22;
     lv2:symbol "Preset_3_output_2" ;
     lv2:name "Preset 3 - Output 2" ;
     lv2:default 0.0 ;
@@ -271,7 +301,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 20;
+    lv2:index 23;
     lv2:symbol "Preset_3_output_3" ;
     lv2:name "Preset 3 - Output 3" ;
     lv2:default 1.0 ;
@@ -281,7 +311,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 21;
+    lv2:index 24;
     lv2:symbol "Preset_3_output_4" ;
     lv2:name "Preset 3 - Output 4" ;
     lv2:default 0.0 ;
@@ -292,7 +322,7 @@ lv2:port
 # Preset 4 - Dip Switches
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 22;
+    lv2:index 25;
     lv2:symbol "Preset_4_output_1" ;
     lv2:name "Preset 4 - Output 1" ;
     lv2:default 0.0 ;
@@ -302,7 +332,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 23;
+    lv2:index 26;
     lv2:symbol "Preset_4_output_2" ;
     lv2:name "Preset 4 - Output 2" ;
     lv2:default 0.0 ;
@@ -312,7 +342,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 24;
+    lv2:index 27;
     lv2:symbol "Preset_4_output_3" ;
     lv2:name "Preset 4 - Output 3" ;
     lv2:default 0.0 ;
@@ -322,7 +352,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 25;
+    lv2:index 28;
     lv2:symbol "Preset_4_output_4" ;
     lv2:name "Preset 4 - Output 4" ;
     lv2:default 1.0 ;
@@ -333,7 +363,7 @@ lv2:port
 
 [
     a lv2:InputPort, atom:AtomPort ;
-    lv2:index 26 ;
+    lv2:index 29 ;
     lv2:symbol "events_in" ;
     lv2:name "Events In" ;
     atom:bufferType atom:Sequence ;
@@ -342,16 +372,16 @@ lv2:port
        
 ] ;
 
-patch:writable plug:preset_label_1 ,
-               plug:preset_label_2 ,
-               plug:preset_label_3 ,
-               plug:preset_label_4 ;
+# patch:writable plug:preset_label_1 ,
+#                plug:preset_label_2 ,
+#                plug:preset_label_3 ,
+#                plug:preset_label_4 ;
 
-state:state [
-    plug:preset_label_1 "Preset 1" ;
-    plug:preset_label_2 "Preset 2" ;
-    plug:preset_label_3 "Preset 3" ;
-    plug:preset_label_4 "Preset 4" ;
-]
+# state:state [
+#     plug:preset_label_1 "Preset 1" ;
+#     plug:preset_label_2 "Preset 2" ;
+#     plug:preset_label_3 "Preset 3" ;
+#     plug:preset_label_4 "Preset 4" ;
+# ]
 
 .
