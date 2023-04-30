@@ -1,0 +1,17 @@
+@prefix modgui: <http://moddevices.com/ns/modgui#> .
+@prefix lv2:    <http://lv2plug.ipngn/ns/lv2core#> .
+
+<http://srmourasilva.github.io/plugins/gossiper>
+    modgui:gui [
+        modgui:resourcesDirectory <modgui> ;
+        modgui:iconTemplate <modgui/gossiper.html> ;
+        modgui:stylesheet <modgui/gossiper.css> ;
+        modgui:javascript <modgui/gossiper.js> ;
+        modgui:screenshot <modgui/screenshot.png> ;
+        modgui:thumbnail <modgui/thumbnail.png> ;
+        modgui:brand "Pedal Pi" ;
+        modgui:label "Gossiper" ;
+        modgui:model "boxy-small" ;
+        modgui:panel "1-footswitch" ;
+        modgui:color "black" ;
+    ] .

@@ -1,24 +1,26 @@
-# Tetr4 Switch
+# Pedal Pi - Plugins
 
-LV2 audio plugin inspired on switches like Pedrone Penta Switch, Pedrone Yet, Carl Martin Octa Switch and others, but adaptable for the MOD Devices universe.
+Lv2 Utilitary plugins focused on [Mod Dwarf](https://mod.audio/dwarf/) devices.
+
+## Gossiper
+
+Shows a lv2-hmi notification when a button is turned on or turned off. Useful if you use an external midi controller that doesn't have feedback resources like LED. As an educated gossiper, it will only gossipes if you are looking to it (i.e., an "assignable" parameter is showing on device' screen).
+
+## Tetr4 Switch
+
+LV2 audio plugin inspired on switches like Pedrone Penta Switch, Pedrone Yet, Carl Martin Octa Switch and others, but focused on the MOD Devices universe.
+
 With it, is possible to define four presets of active CV and change between then. 
 
 ![Web gui sample](./docs/sample.gif)
 
-## TODO
+### TODO
 
-### v1.0.0
+#### v1.0.0
 
-* [x] Ttls
-* [?] Source code
-* [ ] Mod Gui
-   * [x] Prototype
-   * [ ] `html`
-   * [ ] `stylesheet`
-   * [ ] `js?`
 * [ ] Publish
 
-### v1.1.0
+#### v1.1.0
 
 * [ ] Custom preset names - https://pedalboards.moddevices.com/plugins/aHR0cDovL29wZW4tbXVzaWMta29udHJvbGxlcnMuY2gvbHYyL25vdGVzI25vdGVz
 * [ ] Custom HMI - https://github.com/moddevices/plugin-examples/tree/main/hmi-widgets-individual-tests
@@ -54,14 +56,13 @@ docker build . -t builder
 ## Build
 
 ```bash
-#docker run -ti --name mpb -p 9000:9000 -v $(pwd)/src:/tmp/local-mod-folder cbix/mod-plugin-builder:moddwarf
-docker run --rm -ti --name mpb -p 9000:9000 -v $(pwd)/src:/home/builder/mod-plugin-builder/plugins/package/tetr4-switch cbix/mod-plugin-builder:moddwarf
+docker run --rm -ti --name mpb -p 9000:9000 -v $(pwd)/plugins:/home/builder/mod-plugin-builder/plugins/package/pedal-pi-plugins cbix/mod-plugin-builder:moddwarf
 sudo apt install iputils-ping --yes
-./build moddwarf tetr4-switch
-./build moddwarf tetr4-switch-publish
+./build moddwarf pedal-pi-plugins
+./build moddwarf pedal-pi-plugins-publish
 
-# Forçar o build sem ter que aumentar a versão em tetr4-switch.mk
-rm -r /home/builder/mod-workdir/moddwarf/build/tetr4-switch-*
+# To force a build without changing the version number into pedal-pi-plugins.mk
+rm -r /home/builder/mod-workdir/moddwarf/build/pedal-pi-plugins-*
 
 ```
 
@@ -71,3 +72,4 @@ About
 * https://wiki.mod.audio/wiki/How_To_Build_and_Deploy_LV2_Plugin_to_MOD_Duo
 * https://wiki.mod.audio/wiki/Preparing_the_Bundle
 * https://wiki.mod.audio/wiki/Creating_the_GUI
+* https://wiki.mod.audio/wiki/LV2#Logging

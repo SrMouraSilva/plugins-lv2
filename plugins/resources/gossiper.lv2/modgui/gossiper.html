@@ -1,0 +1,130 @@
+<div class="mod-pedal gossiper-base mod-no-shadow">
+    <div mod-role="drag-handle" class="mod-drag-handle"></div>
+
+    <div class="gossiper">
+      <div class="name">Gossiper</div>
+    
+      <section class="footer">
+        <div class="group1">
+          <label class="footswitch" title="Try it on plugin settings">
+            <input type="checkbox" name="{{{cns}}}-footswitch-1"  class="footswitch Footswitch_1" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Footswitch_1" disabled />
+            <span><input class="footswitch-label" disabled value="Footswitch 1" maxlength="10" /></span>
+          </label>
+        </div>
+    
+        <div class="group2">
+          <label class="footswitch" title="Try it on plugin settings">
+            <input type="checkbox" name="{{{cns}}}-footswitch-2" class="footswitch Footswitch_2" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Footswitch_2" disabled />
+            <span><input class="footswitch-label" disabled value="Footswitch 2" maxlength="10" /></span>
+          </label>
+        </div>
+
+        <div class="group3">
+          <label class="footswitch" title="Try it on plugin settings">
+            <input type="checkbox" name="{{{cns}}}-footswitch-3" class="footswitch Footswitch_3" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Footswitch_3" disabled />
+            <span><input class="footswitch-label" disabled value="Footswitch 3" maxlength="10" /></span>
+          </label>
+        </div>
+    
+        <div class="group4">
+          <label class="footswitch" title="Try it on plugin settings">
+            <input type="checkbox" name="{{{cns}}}-footswitch-4" class="footswitch Footswitch_4" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Footswitch_4" disabled />
+            <span><input class="footswitch-label" disabled value="Footswitch 4" maxlength="10" /></span>
+          </label>
+        </div>
+
+        <div class="group5">
+          <label class="footswitch" title="Try it on plugin settings">
+            <input type="checkbox" name="{{{cns}}}-footswitch-5" class="footswitch Footswitch_5" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Footswitch_5" disabled />
+            <span><input class="footswitch-label" disabled value="Footswitch 5" maxlength="10" /></span>
+          </label>
+        </div>
+
+        <div class="group6">
+          <label class="footswitch" title="Try it on plugin settings">
+            <input type="checkbox" name="{{{cns}}}-footswitch-6" class="footswitch Footswitch_6" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Footswitch_6" disabled />
+            <span><input class="footswitch-label" disabled value="Footswitch 6" maxlength="10" /></span>
+          </label>
+        </div>
+
+        <div class="group7">
+          <label class="footswitch" title="Try it on plugin settings">
+            <input type="checkbox" name="{{{cns}}}-footswitch-7" class="footswitch Footswitch_7" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Footswitch_7" disabled />
+            <span><input class="footswitch-label" disabled value="Footswitch 7" maxlength="10" /></span>
+          </label>
+        </div>
+      </section>
+
+      <section section="potentiometers">
+        <div>
+          <strong>Pot 1</strong>
+          <div class="potentiometer-values">
+            <label for="minimum_1">Min</label><input name="minimum_1" type="text" size="6" disabled />
+            —
+            <label for="maximum_1">Max</label><input name="maximum_1" type="text" size="6" disabled />
+          </div>
+        </div>
+        <div>
+          <strong>Pot 2</strong>
+          <div class="potentiometer-values">
+            <label for="minimum_2">Min</label><input name="minimum_2" type="text" size="6" disabled />
+            —
+            <label for="maximum_2">Max</label><input name="maximum_2" type="text" size="6" disabled />
+          </div>
+        </div>
+        <div>
+          <strong>Pot 3</strong>
+          <div class="potentiometer-values">
+            <label for="minimum_3">Min</label><input name="minimum_3" type="text" size="6" disabled />
+            —
+            <label for="maximum_3">Max</label><input name="maximum_3" type="text" size="6" disabled />
+          </div>
+        </div>
+        <div>
+          <strong>Pot 4</strong>
+          <div class="potentiometer-values">
+            <label for="minimum_4">Min</label><input name="minimum_4" type="text" size="6" disabled />
+            —
+            <label for="maximum_4">Max</label><input name="maximum_4" type="text" size="6" disabled />
+          </div>
+        </div>
+      </section>
+    </div>
+
+
+    <div class="mod-pedal-input">
+        {{#effect.ports.audio.input}}
+        <div class="mod-input mod-input-disconnected" title="{{name}}" mod-role="input-audio-port" mod-port-symbol="{{symbol}}">
+            <div class="mod-pedal-input-image"></div>
+        </div>
+        {{/effect.ports.audio.input}}
+        {{#effect.ports.midi.input}}
+        <div class="mod-input mod-input-disconnected" title="{{name}}" mod-role="input-midi-port" mod-port-symbol="{{symbol}}">
+            <div class="mod-pedal-input-image"></div>
+        </div>
+        {{/effect.ports.midi.input}}
+        {{#effect.ports.cv.input}}
+        <div class="mod-input mod-input-disconnected" title="{{name}}" mod-role="input-cv-port" mod-port-symbol="{{symbol}}">
+            <div class="mod-pedal-input-image"></div>
+        </div>
+        {{/effect.ports.cv.input}}
+    </div>
+
+    <div class="mod-pedal-output">
+        {{#effect.ports.audio.output}}
+        <div class="mod-output mod-output-disconnected" title="{{name}}" mod-role="output-audio-port" mod-port-symbol="{{symbol}}">
+            <div class="mod-pedal-output-image"></div>
+        </div>
+        {{/effect.ports.audio.output}}
+        {{#effect.ports.midi.output}}
+        <div class="mod-output mod-output-disconnected" title="{{name}}" mod-role="output-midi-port" mod-port-symbol="{{symbol}}">
+            <div class="mod-pedal-output-image"></div>
+        </div>
+        {{/effect.ports.midi.output}}
+        {{#effect.ports.cv.output}}
+        <div class="mod-output mod-output-disconnected" title="{{name}}" mod-role="output-cv-port" mod-port-symbol="{{symbol}}">
+            <div class="mod-pedal-output-image"></div>
+        </div>
+        {{/effect.ports.cv.output}}
+    </div>
+</div>
