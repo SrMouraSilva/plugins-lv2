@@ -7,10 +7,14 @@
 #define TOTAL_GOSSIPER_POTENTIOMETER 4
 #define TOTAL_GOSSIPER_NOTIFIERS 4
 
+#define DELAY_TO_SHOW_A_MESSAGE 20
+
 #define MAX_TENSION 10
 
 #include "../lv2/extension/lv2-hmi.h"
 #include "../lv2/gossiper/lv2-gossiper.h"
+
+#include "notifier.h"
 
 
 typedef enum {
@@ -78,6 +82,9 @@ typedef struct {
     /** Preset changed at this cycle */
     bool updated;
 
+    /** Time in cycles for showing the message */
+    unsigned int delay;
+
     /** LV2 input */
     float* input;
 
@@ -98,13 +105,6 @@ typedef struct {
     /** LV2 output */
     float* output;
 } Switch;
-
-typedef struct {
-    /** LV2 input */
-    float* input;
-
-    LV2_HMI_Addressing hmi_addressing;
-} Notifier;
 
 
 typedef struct {

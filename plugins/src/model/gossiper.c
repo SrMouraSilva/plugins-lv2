@@ -26,6 +26,7 @@ Gossiper* Gossiper_instantiate() {
     for (unsigned int i=0; i<TOTAL_GOSSIPER_POTENTIOMETER; i++) {
         self->potentiometers[i].updated = false;
         self->potentiometers[i].value = 0.0f;
+        self->potentiometers[i].delay = 0;
     }
 
     for (unsigned int i=0; i<TOTAL_GOSSIPER_NOTIFIERS; i++) {
@@ -68,7 +69,23 @@ void Gossiper_update_potentiometers(Gossiper* this) {
         float current_value = this->potentiometers[i].value;
         float new_value = *this->potentiometers[i].input;
 
-        this->potentiometers[i].updated = current_value != new_value;
+        bool updated = current_value != new_value;
+
+        // Finished count
+        if (this->potentiometers[i].delay == 0 && !updated) {
+            this->potentiometers[i].updated = false;
+
+        // Start counting
+        } else if (this->potentiometers[i].delay == 0 && updated) {
+            this->potentiometers[i].delay = DELAY_TO_SHOW_A_MESSAGE;
+            this->potentiometers[i].updated = true;
+
+        // When counting, decrease the counting
+        } else if (this->potentiometers[i].delay > 0) {
+            this->potentiometers[i].delay -= 1;
+            this->potentiometers[i].updated = true;
+        }
+
         this->potentiometers[i].value = new_value;
     }
 }

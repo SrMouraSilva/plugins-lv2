@@ -1,8 +1,14 @@
 function (event, funcs) {
   const handleEvent = (symbol, value) => {
+
     if (symbol.includes("Footswitch_")) {
-      const id = symbol.charAt(symbol.length - 1);
       event.icon.find(`.${symbol}`).prop("checked", value == 1);
+
+    } else if (symbol.includes("minimum_")) {
+      event.icon.find(`[name=${symbol}]`).prop("value", `${value.toFixed(2)} v`);
+
+    } else if (symbol.includes("maximum_")) {
+      event.icon.find(`[name=${symbol}]`).prop("value", `${value.toFixed(2)} v`);
     }
   }
 

@@ -1,6 +1,6 @@
 :root {
   --gossiper-width: 250px;
-  --gossiper-height: 470px;
+  --gossiper-height: 750px;
 
   --gossiper-footswitch-background-off: #310a3f;
   --gossiper-footswitch-background-off-disabled: #666;
@@ -162,4 +162,20 @@
 
 .gossiper .footswitch input[type="radio"]:checked + .footswitch-label {
   background-color: var(--gossiper-footswitch-background-on);
+}
+
+
+.gossiper .potentiometer-values {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 10px;
+  margin-bottom: 2px;
+}
+.gossiper .potentiometer-values label,
+.gossiper .potentiometer-values input {
+  margin: 0 2px;
+}
+
+.gossiper .potentiometer-values input {
+  color: black;
 }

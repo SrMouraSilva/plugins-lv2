@@ -98,7 +98,7 @@ void notify_footswithes_updated(Gossiper* gossiper, LV2_HMI_Addressing addressin
             message
         );
 
-        // If more than one notification is updated at the same time,
+        // If more than one notifiers is updated at the same time,
         // only shows the lowest 
         break;
     }
@@ -110,7 +110,8 @@ void notify_potentiometers_updated(Gossiper* gossiper, LV2_HMI_Addressing addres
     for (unsigned int i=0; i<TOTAL_GOSSIPER_POTENTIOMETER; i++) {
         Potentiometer potentiometer = gossiper->potentiometers[i];
 
-        if (!potentiometer.updated) {
+        bool show_message = potentiometer.updated && potentiometer.delay == 0;
+        if (!show_message) {
             continue;
         }
 
@@ -130,7 +131,7 @@ void notify_potentiometers_updated(Gossiper* gossiper, LV2_HMI_Addressing addres
             message
         );
 
-        // If more than one notification is updated at the same time,
+        // If more than one notifiers is updated at the same time,
         // only shows the lowest 
         break;
     }
