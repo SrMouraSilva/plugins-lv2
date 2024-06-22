@@ -56,14 +56,18 @@ docker build . -t builder
 ## Build
 
 ```bash
-docker run --rm -ti --name mpb -p 9000:9000 -v $(pwd)/plugins:/home/builder/mod-plugin-builder/plugins/package/pedal-pi-plugins cbix/mod-plugin-builder:moddwarf
+docker run --rm -ti --name mpb -p 9000:9000 -v $(pwd)/plugins:/root/mod-plugin-builder/plugins/package/pedal-pi-plugins cbix/mod-plugin-builder:moddwarf
 sudo apt install iputils-ping --yes
 ./build moddwarf pedal-pi-plugins
 ./build moddwarf pedal-pi-plugins-publish
 
 # To force a build without changing the version number into pedal-pi-plugins.mk
-rm -r /home/builder/mod-workdir/moddwarf/build/pedal-pi-plugins-*
+rm -r /root/mod-workdir/moddwarf/build/pedal-pi-plugins-*
 
+# Copy files from container
+# Note: open a new tab
+docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/tetr4-switch.lv2/ binaries/dwarf
+docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/gossiper.lv2/ binaries/dwarf
 ```
 
 
