@@ -61,7 +61,7 @@ doap:developer [
     ];
 
 doap:maintainer [
-    foaf:name "Pedal Pi" ;
+    foaf:name "SrMouraSilva" ;
     foaf:homepage <https://github.com/SrMouraSilva/plugins-lv2> ;
     foaf:mbox <mailto:mateus.moura@hotmail.com> ;
     ];

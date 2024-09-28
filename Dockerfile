@@ -19,7 +19,7 @@ RUN cd /tmp \
  && cd /tmp/lv2 && meson setup build && meson compile -C build && meson install -C build \
  && rm -r /tmp/lv2
 
-COPY src/ /app
+COPY plugins/ /app
 WORKDIR /app
 
 RUN make build

@@ -9,7 +9,7 @@
         modgui:javascript <modgui/tetr4-switch.js> ;
         modgui:screenshot <modgui/screenshot.png> ;
         modgui:thumbnail <modgui/thumbnail.png> ;
-        modgui:brand "Pedal Pi" ;
+        modgui:brand "SrMouraSilva" ;
         modgui:label "Tetr4 switch" ;
         modgui:model "boxy-small" ;
         modgui:panel "1-footswitch" ;

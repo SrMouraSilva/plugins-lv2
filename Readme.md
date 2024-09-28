@@ -1,4 +1,4 @@
-# Pedal Pi - Plugins
+# SrMouraSilva - Plugins
 
 Lv2 Utilitary plugins focused on [Mod Dwarf](https://mod.audio/dwarf/) devices.
 
@@ -38,6 +38,7 @@ sudo apt install lv2-dev
 
 Compile
 ```bash
+cd plugins
 make build
 ```
 
@@ -56,13 +57,13 @@ docker build . -t builder
 ## Build
 
 ```bash
-docker run --rm -ti --name mpb -p 9000:9000 -v $(pwd)/plugins:/root/mod-plugin-builder/plugins/package/pedal-pi-plugins cbix/mod-plugin-builder:moddwarf
+docker run --rm -ti --name mpb -p 9000:9000 -v $(pwd)/plugins:/root/mod-plugin-builder/plugins/package/srmourasilva-plugins cbix/mod-plugin-builder:moddwarf
 sudo apt install iputils-ping --yes
-./build moddwarf pedal-pi-plugins
-./build moddwarf pedal-pi-plugins-publish
+./build moddwarf srmourasilva-plugins
+./build moddwarf srmourasilva-plugins-publish
 
-# To force a build without changing the version number into pedal-pi-plugins.mk
-rm -r /root/mod-workdir/moddwarf/build/pedal-pi-plugins-*
+# To force a build without changing the version number into srmourasilva-plugins.mk
+rm -r /root/mod-workdir/moddwarf/build/srmourasilva-plugins-*
 
 # Copy files from container
 # Note: open a new tab
@@ -70,8 +71,7 @@ docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/tetr4-switch.l
 docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/gossiper.lv2/ binaries/dwarf
 ```
 
-
-About 
+## About 
 
 * https://wiki.mod.audio/wiki/How_To_Build_and_Deploy_LV2_Plugin_to_MOD_Duo
 * https://wiki.mod.audio/wiki/Preparing_the_Bundle
