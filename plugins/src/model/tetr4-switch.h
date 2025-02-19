@@ -50,7 +50,16 @@ typedef enum {
     PRESET_4_OUTPUT_3 = 27,
     PRESET_4_OUTPUT_4 = 28,
 
-    EVENTS_IN = 29,
-} PortIndex;
+    MIDI_1_CC = 29,
+    MIDI_2_CC = 30,
+    MIDI_3_CC = 31,
+    MIDI_4_CC = 32,
+    MIDI_CHN = 33,
+    MIDI_CHANGES_ONLY = 34,
+    
+
+    EVENTS_IN = 35,
+    MIDI_OUT = 36
+    } PortIndex;
 
 #endif

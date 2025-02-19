@@ -18,9 +18,14 @@ instantiate(const LV2_Descriptor*     descriptor,
             const char*               bundle_path,
             const LV2_Feature* const* features)
 {
+    
+    
     Controller* self = Controller_instantiate();
 
     self->lv2 = LV2_Controller_instantiate();
+
+    
+
 
     const char* missing = self->lv2->initialize(self->lv2, features);
 
@@ -31,6 +36,8 @@ instantiate(const LV2_Descriptor*     descriptor,
         return NULL;
     }
 
+    
+
     // Atom_instantiate(self);
 
     return (LV2_Handle) self;
@@ -38,6 +45,8 @@ instantiate(const LV2_Descriptor*     descriptor,
 
 static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
     Controller* self = (Controller*) instance;
+
+    lv2_log_note(&self->lv2->logger, "Reading port %u \n", port);
 
     switch ((PortIndex) port) {
         case OUTPUT_CV_1:
@@ -103,8 +112,23 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
         case PRESET_4_OUTPUT_4:
             self->preset_outputs[3][3] = (float*) data; break;
 
+        case MIDI_1_CC:
+            self->midi_cc[0] = (float*) data; break;
+        case MIDI_2_CC:
+            self->midi_cc[1] = (float*) data; break;
+        case MIDI_3_CC:
+            self->midi_cc[2] = (float*) data; break;    
+        case MIDI_4_CC:
+            self->midi_cc[3] = (float*) data; break;
+        case MIDI_CHN:
+            self->channel = (float*) data; break;
+        case MIDI_CHANGES_ONLY:
+            self->midi_changes_only = (float*) data; break;
+
         case EVENTS_IN:
             self->lv2->atom.events_in = (const LV2_Atom_Sequence*) data; break;
+        case MIDI_OUT:
+            self->midi_out = (LV2_Atom_Sequence*) data;
     }
 }
 

@@ -6,6 +6,8 @@
 
 
 
+
+
 const char* LV2_Controller_initialize(
     void* self,
     const LV2_Feature* const* features
@@ -24,6 +26,11 @@ LV2_Controller* LV2_Controller_instantiate() {
     for (unsigned int i=0; i<TOTAL_CONTROLLER_NOTIFIERS; i++) {
         self->hmi.notifiers[i] = NULL;
     }
+
+    
+
+
+    
 
     return self;
 }
@@ -47,9 +54,13 @@ const char* LV2_Controller_initialize(
 
     lv2_log_logger_set_map(&this->logger, this->map);
 
+    map_midi_uris(this->map, &this->uris);
+
     if (missing) {
         lv2_log_error(&this->logger, "Missing feature <%s>\n", missing);
     }
+
+
 
     return missing;
 }

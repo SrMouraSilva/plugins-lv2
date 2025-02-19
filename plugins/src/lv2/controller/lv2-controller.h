@@ -3,6 +3,7 @@
 
 #include "lv2/log/logger.h"
 #include "lv2/atom/atom.h"
+#include "lv2/midi/midi.h"
 
 #include "../extension/lv2-hmi.h"
 #include "../extension/control-input-port-change-request.h"
@@ -36,9 +37,24 @@ typedef struct {
     const LV2_Atom_Sequence* events_in;
 
     // State
-    URIs uris;
+    
     State state;
 } Controller_Atom;
+
+typedef struct {
+    LV2_URID atom_Sequence;
+    LV2_URID midi_Event;
+} MIDI_URIs;
+
+
+static inline void
+map_midi_uris( LV2_URID_Map* map, MIDI_URIs* uris)
+{
+  uris->atom_Sequence      = map->map(map->handle, LV2_ATOM__Sequence);
+  uris->midi_Event         = map->map(map->handle, LV2_MIDI__MidiEvent);
+}
+
+
 
 typedef struct {
     LV2_URID_Map* map;
@@ -47,6 +63,8 @@ typedef struct {
 
     /** LV2 Logging */
     LV2_Log_Logger logger;
+
+    MIDI_URIs uris;
 
     /** Mod HMI */
     HMI hmi;
