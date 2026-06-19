@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
+#include <stdio.h>
+#include <string.h>
 
 #include <lv2/lv2plug.in/ns/lv2core/lv2.h>
 
@@ -11,10 +13,17 @@
 
 void Gossiper_get_switches(void* self);
 
+static char* Gossiper_duplicate_string(const char* source);
+static char* Gossiper_make_default_footswitch_label(unsigned int index);
+
 void Gossiper_run(void* self, uint32_t n_samples);
 
 Gossiper* Gossiper_instantiate() {
-    Gossiper* self = (Gossiper*) malloc(sizeof(Gossiper));
+    Gossiper* self = (Gossiper*) calloc(1, sizeof(Gossiper));
+
+    if (self == NULL) {
+        return NULL;
+    }
 
     self->run = &Gossiper_run;
 
@@ -33,12 +42,59 @@ Gossiper* Gossiper_instantiate() {
         self->notifiers[i].hmi_addressing = NULL;
     }
 
+    for (unsigned int i=0; i<TOTAL_GOSSIPER_FOOTSWITCHES; i++) {
+        self->footswitch_labels[i] = Gossiper_make_default_footswitch_label(i);
+
+        if (self->footswitch_labels[i] == NULL) {
+            Gossiper_cleanup(self);
+            return NULL;
+        }
+    }
+
     // self->internal_state.get_preset_label = &Controller_get_preset_label;
     // self->internal_state.set_preset_label = &Controller_set_preset_label;
 
     self->lv2 = NULL;
 
     return self;
+}
+
+void Gossiper_cleanup(Gossiper* self) {
+    if (self == NULL) {
+        return;
+    }
+
+    for (unsigned int i=0; i<TOTAL_GOSSIPER_FOOTSWITCHES; i++) {
+        free(self->footswitch_labels[i]);
+        self->footswitch_labels[i] = NULL;
+    }
+}
+
+const char* Gossiper_get_footswitch_label(const Gossiper* self, unsigned int index) {
+    if (self == NULL || index >= TOTAL_GOSSIPER_FOOTSWITCHES) {
+        return NULL;
+    }
+
+    return self->footswitch_labels[index];
+}
+
+bool Gossiper_set_footswitch_label(Gossiper* self, unsigned int index, const char* new_label) {
+    if (self == NULL || index >= TOTAL_GOSSIPER_FOOTSWITCHES) {
+        return false;
+    }
+
+    char* next_label = (new_label == NULL || new_label[0] == '\0')
+        ? Gossiper_make_default_footswitch_label(index)
+        : Gossiper_duplicate_string(new_label);
+
+    if (next_label == NULL) {
+        return false;
+    }
+
+    free(self->footswitch_labels[index]);
+    self->footswitch_labels[index] = next_label;
+
+    return true;
 }
 
 
@@ -110,4 +166,24 @@ void Gossiper_update_output_cvs(Gossiper* this, uint32_t n_samples) {
             this->potentiometers[output].output[sample] = new_value;
         }
     }
+}
+
+static char* Gossiper_duplicate_string(const char* source) {
+    size_t length = strlen(source) + 1;
+    char* copy = (char*) malloc(length);
+
+    if (copy == NULL) {
+        return NULL;
+    }
+
+    memcpy(copy, source, length);
+
+    return copy;
+}
+
+static char* Gossiper_make_default_footswitch_label(unsigned int index) {
+    char label[32];
+    snprintf(label, sizeof(label), "Footswitch %u", index + 1);
+
+    return Gossiper_duplicate_string(label);
 }

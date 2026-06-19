@@ -10,7 +10,7 @@ SRMOURASILVA_PLUGINS_SITE = $($(PKG)_PKGDIR)/
 
 # even though this is a local build, we still need a version number
 # bump this number if you need to force a rebuild
-SRMOURASILVA_PLUGINS_VERSION = 1
+SRMOURASILVA_PLUGINS_VERSION = 2
 
 # dependencies (list of other buildroot packages, separated by space)
 #SRMOURASILVA_PLUGINS_DEPENDENCIES =

@@ -14,40 +14,40 @@
 @prefix patch: <http://lv2plug.in/ns/ext/patch#> .
 @prefix plug: <http://srmourasilva.github.io/plugins/gossiper#> .
 
-# plug:footswitch_label_1
-#     a lv2:Parameter ;
-#     rdfs:label "Footswitch label 1" ;
-#     rdfs:range atom:String .
+plug:footswitch_label_1
+    a lv2:Parameter ;
+    rdfs:label "Footswitch label 1" ;
+    rdfs:range atom:String .
 
-# plug:footswitch_label_2
-#     a lv2:Parameter ;
-#     rdfs:label "Footswitch label 2" ;
-#     rdfs:range atom:String .
+plug:footswitch_label_2
+    a lv2:Parameter ;
+    rdfs:label "Footswitch label 2" ;
+    rdfs:range atom:String .
 
-# plug:footswitch_label_3
-#     a lv2:Parameter ;
-#     rdfs:label "Footswitch label 3" ;
-#     rdfs:range atom:String .
+plug:footswitch_label_3
+    a lv2:Parameter ;
+    rdfs:label "Footswitch label 3" ;
+    rdfs:range atom:String .
     
-# plug:footswitch_label_4
-#     a lv2:Parameter ;
-#     rdfs:label "Footswitch label 4" ;
-#     rdfs:range atom:String .
+plug:footswitch_label_4
+    a lv2:Parameter ;
+    rdfs:label "Footswitch label 4" ;
+    rdfs:range atom:String .
 
-# plug:footswitch_label_5
-#     a lv2:Parameter ;
-#     rdfs:label "Footswitch label 5" ;
-#     rdfs:range atom:String .
+plug:footswitch_label_5
+    a lv2:Parameter ;
+    rdfs:label "Footswitch label 5" ;
+    rdfs:range atom:String .
 
-# plug:footswitch_label_6
-#     a lv2:Parameter ;
-#     rdfs:label "Footswitch label 6" ;
-#     rdfs:range atom:String .
+plug:footswitch_label_6
+    a lv2:Parameter ;
+    rdfs:label "Footswitch label 6" ;
+    rdfs:range atom:String .
     
-# plug:footswitch_label_7
-#     a lv2:Parameter ;
-#     rdfs:label "Footswitch label 7" ;
-#     rdfs:range atom:String .
+plug:footswitch_label_7
+    a lv2:Parameter ;
+    rdfs:label "Footswitch label 7" ;
+    rdfs:range atom:String .
 
 <http://srmourasilva.github.io/plugins/gossiper>
     a lv2:Plugin, mod:ControlVoltagePlugin, mod:UtilityPlugin ;
@@ -389,36 +389,34 @@ lv2:port
     lv2:symbol "Cv_pot_output_4";
     lv2:name "CV Pot - Out 4";
 ]
-
-# ,
-# [
-#     a lv2:InputPort, atom:AtomPort ;
-#     lv2:index 18 ;
-#     lv2:symbol "events_in" ;
-#     lv2:name "Events In" ;
-#     atom:bufferType atom:Sequence ;
-#     atom:supports patch:Message ;
-#     lv2:designation lv2:control ;
-       
-# ]
+, 
+[
+    a lv2:InputPort, atom:AtomPort ;
+    lv2:index 34 ;
+    lv2:symbol "events_in" ;
+    lv2:name "Events In" ;
+    atom:bufferType atom:Sequence ;
+    atom:supports patch:Message ;
+    lv2:designation lv2:control ;
+]
 ;
 
-# patch:writable plug:preset_label_1 ,
-#                plug:preset_label_2 ,
-#                plug:preset_label_3 ,
-#                plug:preset_label_4 ,
-#                plug:preset_label_5 ,
-#                plug:preset_label_6 ,
-#                plug:preset_label_7 ;
+patch:writable plug:footswitch_label_1 ,
+               plug:footswitch_label_2 ,
+               plug:footswitch_label_3 ,
+               plug:footswitch_label_4 ,
+               plug:footswitch_label_5 ,
+               plug:footswitch_label_6 ,
+               plug:footswitch_label_7 ;
 
-# state:state [
-#     plug:preset_label_1 "Preset 1" ;
-#     plug:preset_label_2 "Preset 2" ;
-#     plug:preset_label_3 "Preset 3" ;
-#     plug:preset_label_4 "Preset 4" ;
-#     plug:preset_label_2 "Preset 5" ;
-#     plug:preset_label_3 "Preset 6" ;
-#     plug:preset_label_4 "Preset 7" ;
-# ]
+state:state [
+    plug:footswitch_label_1 "Footswitch 1" ;
+    plug:footswitch_label_2 "Footswitch 2" ;
+    plug:footswitch_label_3 "Footswitch 3" ;
+    plug:footswitch_label_4 "Footswitch 4" ;
+    plug:footswitch_label_5 "Footswitch 5" ;
+    plug:footswitch_label_6 "Footswitch 6" ;
+    plug:footswitch_label_7 "Footswitch 7" ;
+]
 
 .
