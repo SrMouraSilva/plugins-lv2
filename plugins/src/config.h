@@ -8,7 +8,7 @@
 /** How many CV outputs there are */
 #define TOTAL_OUTPUTS 4
 
-#define PRESET_LABEL_MAX_SIZE 11
+#define PRESET_LABEL_MAX_SIZE 16
 
 #define TOTAL_CONTROLLER_NOTIFIERS 4
 

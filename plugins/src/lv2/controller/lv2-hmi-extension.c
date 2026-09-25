@@ -103,9 +103,9 @@ void LV2_HMI_assign(Controller* self, HmiAdressing index, LV2_HMI_Addressing add
 void LV2_HMI_run(Controller* self) {
     unsigned int current_preset = self->get_index_current_preset(self);
 
-    if (self->is_preset_changed(self)) {
-        lv2_log_error(&self->lv2->logger, "Changed to <PRESET %d>\n", current_preset);
-    }
+    //if (self->is_preset_changed(self)) {
+    //    lv2_log_error(&self->lv2->logger, "Changed to <PRESET %d>\n", current_preset);
+    //}
 
     run_footswitches(self, current_preset);
     run_select(self, current_preset, false);
