@@ -1,10 +1,17 @@
 function (event, funcs) {
+  const presetLabelUris = [
+    'http://srmourasilva.github.io/plugins/tetr4-switch#preset_label_1',
+    'http://srmourasilva.github.io/plugins/tetr4-switch#preset_label_2',
+    'http://srmourasilva.github.io/plugins/tetr4-switch#preset_label_3',
+    'http://srmourasilva.github.io/plugins/tetr4-switch#preset_label_4',
+  ];
+
   const handleEvent = (symbol, value) => {
-    if (symbol.includes("Preset_") && symbol.includes("_output_")) {
+    if (symbol && symbol.includes("Preset_") && symbol.includes("_output_")) {
       event.icon.find(`label[data-switch=${symbol}] input`).prop("checked", value == 1);
     }
 
-    if (symbol.includes("Preset_selector_")) {
+    if (symbol && symbol.includes("Preset_selector_")) {
       const id = symbol.charAt(symbol.length - 1);
       event.icon.find(`.${symbol}`).prop("checked", value == 1);
 
@@ -58,6 +65,8 @@ function (event, funcs) {
     for (let p in ports) {
       handleEvent(ports[p].symbol, ports[p].value);
     }
+
+    presetLabelUris.forEach((uri) => funcs.patch_get(uri));
 
   } else if (event.type == 'change') {
     handleEvent(event.symbol, event.value);

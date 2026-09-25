@@ -14,25 +14,25 @@
 @prefix patch: <http://lv2plug.in/ns/ext/patch#> .
 @prefix plug: <http://srmourasilva.github.io/plugins/tetr4-switch#> .
 
-# plug:preset_label_1
-#     a lv2:Parameter ;
-#     rdfs:label "Preset label 1" ;
-#     rdfs:range atom:String .
+plug:preset_label_1
+    a lv2:Parameter ;
+    rdfs:label "Preset label 1" ;
+    rdfs:range atom:String .
 
-# plug:preset_label_2
-#     a lv2:Parameter ;
-#     rdfs:label "Preset label 2" ;
-#     rdfs:range atom:String .
+plug:preset_label_2
+    a lv2:Parameter ;
+    rdfs:label "Preset label 2" ;
+    rdfs:range atom:String .
 
-# plug:preset_label_3
-#     a lv2:Parameter ;
-#     rdfs:label "Preset label 3" ;
-#     rdfs:range atom:String .
-    
-# plug:preset_label_4
-#     a lv2:Parameter ;
-#     rdfs:label "Preset label 4" ;
-#     rdfs:range atom:String .
+plug:preset_label_3
+    a lv2:Parameter ;
+    rdfs:label "Preset label 3" ;
+    rdfs:range atom:String .
+
+plug:preset_label_4
+    a lv2:Parameter ;
+    rdfs:label "Preset label 4" ;
+    rdfs:range atom:String .
 
 <http://srmourasilva.github.io/plugins/tetr4-switch>
     a lv2:Plugin, mod:ControlVoltagePlugin, mod:UtilityPlugin ;
@@ -373,16 +373,16 @@ lv2:port
        
 ] ;
 
-# patch:writable plug:preset_label_1 ,
-#                plug:preset_label_2 ,
-#                plug:preset_label_3 ,
-#                plug:preset_label_4 ;
+patch:writable plug:preset_label_1 ,
+               plug:preset_label_2 ,
+               plug:preset_label_3 ,
+               plug:preset_label_4 ;
 
-# state:state [
-#     plug:preset_label_1 "Preset 1" ;
-#     plug:preset_label_2 "Preset 2" ;
-#     plug:preset_label_3 "Preset 3" ;
-#     plug:preset_label_4 "Preset 4" ;
-# ]
+state:state [
+    plug:preset_label_1 "Preset 1" ;
+    plug:preset_label_2 "Preset 2" ;
+    plug:preset_label_3 "Preset 3" ;
+    plug:preset_label_4 "Preset 4" ;
+]
 
 .

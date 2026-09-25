@@ -173,8 +173,11 @@ void run_notification(Controller* self, unsigned int current_preset, bool force_
     HMI* hmi = &self->lv2->hmi;
 
     if (hmi->notifiers != NULL && (force_update || self->is_preset_changed(self))) {
-        char message[10];
-        sprintf(message, "Preset %d", current_preset+1);
+        const char* message = Controller_get_preset_label(self, current_preset);
+
+        if (message == NULL) {
+            return;
+        }
 
         for (unsigned int i=0; i<TOTAL_CONTROLLER_NOTIFIERS; i++) {
             hmi->widgetControl->popup_message(

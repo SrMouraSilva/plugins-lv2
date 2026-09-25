@@ -2,7 +2,6 @@
 #include <stdbool.h>
 #include <math.h>
 #include <stdio.h>
-#include <string.h>
 
 #include <lv2/lv2plug.in/ns/lv2core/lv2.h>
 
@@ -11,9 +10,10 @@
 
 
 
+#define FOOTSWITCH_LABEL_MAX_LENGTH 15
+
 void Gossiper_get_switches(void* self);
 
-static char* Gossiper_duplicate_string(const char* source);
 static char* Gossiper_make_default_footswitch_label(unsigned int index);
 
 void Gossiper_run(void* self, uint32_t n_samples);
@@ -85,7 +85,7 @@ bool Gossiper_set_footswitch_label(Gossiper* self, unsigned int index, const cha
 
     char* next_label = (new_label == NULL || new_label[0] == '\0')
         ? Gossiper_make_default_footswitch_label(index)
-        : Gossiper_duplicate_string(new_label);
+        : sanitize_label(new_label, FOOTSWITCH_LABEL_MAX_LENGTH);
 
     if (next_label == NULL) {
         return false;
@@ -168,22 +168,6 @@ void Gossiper_update_output_cvs(Gossiper* this, uint32_t n_samples) {
     }
 }
 
-static char* Gossiper_duplicate_string(const char* source) {
-    size_t length = strlen(source) + 1;
-    char* copy = (char*) malloc(length);
-
-    if (copy == NULL) {
-        return NULL;
-    }
-
-    memcpy(copy, source, length);
-
-    return copy;
-}
-
 static char* Gossiper_make_default_footswitch_label(unsigned int index) {
-    char label[32];
-    snprintf(label, sizeof(label), "Footswitch %u", index + 1);
-
-    return Gossiper_duplicate_string(label);
+    return make_default_label("Footswitch", index);
 }

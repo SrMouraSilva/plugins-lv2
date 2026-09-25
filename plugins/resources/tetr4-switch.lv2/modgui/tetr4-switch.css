@@ -132,6 +132,20 @@
   text-shadow: none;
   box-shadow: inset 0 0 2px black;
   border: none;
+  min-height: 2.4em;
+  padding: 4px 6px;
+  cursor: text;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.tetr4-switch .footswitch-label[contenteditable="true"]:focus {
+  outline: 1px solid #ff7de9;
+  background-color: #ffffff22;
+}
+
+.tetr4-switch .footswitch-label-control {
+  display: none;
 }
 
 .tetr4-switch .footswitch input[type="radio"]:checked + .footswitch-label {
