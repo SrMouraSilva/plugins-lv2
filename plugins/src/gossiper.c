@@ -14,6 +14,8 @@
 
 static void Gossiper_apply_patch_messages(Gossiper* self);
 static void Gossiper_apply_patch_set(Gossiper* self, const LV2_Atom_Object* obj);
+static void Gossiper_reply_patch_get(Gossiper* self, const LV2_Atom_Object* obj, int64_t frames);
+static void Gossiper_send_patch_set(Gossiper* self, int64_t frames, LV2_URID property_urid, const char* label);
 static LV2_State_Status save(LV2_Handle instance,
                              LV2_State_Store_Function store,
                              LV2_State_Handle handle,
@@ -142,14 +144,40 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
 
         case EVENTS_IN:
             self->lv2->events_in = (const LV2_Atom_Sequence*) data; break;
+        case EVENTS_OUT:
+            self->lv2->events_out = (LV2_Atom_Sequence*) data; break;
     }
 }
 
 static void activate(LV2_Handle instance) {}
 
 
+static void Gossiper_start_atom_forge(Gossiper* self, LV2_Atom_Forge_Frame* notify_frame) {
+    LV2_Atom_Sequence* out = self->lv2->events_out;
+
+    if (out == NULL) {
+        return;
+    }
+
+    const uint32_t out_capacity = out->atom.size;
+
+    lv2_atom_forge_set_buffer(&self->lv2->forge, (uint8_t*) out, out_capacity);
+    lv2_atom_forge_sequence_head(&self->lv2->forge, notify_frame, 0);
+}
+
+static void Gossiper_finish_atom_forge(Gossiper* self, LV2_Atom_Forge_Frame* notify_frame) {
+    if (self->lv2->events_out == NULL) {
+        return;
+    }
+
+    lv2_atom_forge_pop(&self->lv2->forge, notify_frame);
+}
+
 static void run(LV2_Handle instance, uint32_t n_samples) {
     Gossiper* self = (Gossiper*) instance;
+
+    LV2_Atom_Forge_Frame notify_frame;
+    Gossiper_start_atom_forge(self, &notify_frame);
 
     Gossiper_apply_patch_messages(self);
 
@@ -157,6 +185,8 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
 
     LV2_HMI_Gossiper_run(self);
     //Atom_run(self);
+
+    Gossiper_finish_atom_forge(self, &notify_frame);
 }
 
 
@@ -197,6 +227,8 @@ static void Gossiper_apply_patch_messages(Gossiper* self) {
         const LV2_Atom_Object* obj = (const LV2_Atom_Object*) &ev->body;
         if (obj->body.otype == self->lv2->uris.patch_Set) {
             Gossiper_apply_patch_set(self, obj);
+        } else if (obj->body.otype == self->lv2->uris.patch_Get) {
+            Gossiper_reply_patch_get(self, obj, ev->time.frames);
         }
     }
 }
@@ -238,6 +270,66 @@ static void Gossiper_apply_patch_set(Gossiper* self, const LV2_Atom_Object* obj)
     }
 
     lv2_log_error(&self->lv2->logger, "Gossiper: unknown patch property\n");
+}
+
+static void Gossiper_reply_patch_get(Gossiper* self, const LV2_Atom_Object* obj, int64_t frames) {
+    if (self->lv2->events_out == NULL) {
+        return;
+    }
+
+    const LV2_Atom* property = NULL;
+
+    lv2_atom_object_get(
+        obj,
+        self->lv2->uris.patch_property, &property,
+        0
+    );
+
+    // No property specified: reply with every footswitch label
+    if (property == NULL) {
+        for (unsigned int i=0; i<TOTAL_GOSSIPER_FOOTSWITCHES; i++) {
+            Gossiper_send_patch_set(self, frames, self->lv2->uris.footswitch_label[i], Gossiper_get_footswitch_label(self, i));
+        }
+        return;
+    }
+
+    if (property->type != self->lv2->uris.atom_URID) {
+        lv2_log_error(&self->lv2->logger, "Gossiper: malformed patch:Get property\n");
+        return;
+    }
+
+    LV2_URID property_urid = ((const LV2_Atom_URID*) property)->body;
+
+    for (unsigned int i=0; i<TOTAL_GOSSIPER_FOOTSWITCHES; i++) {
+        if (self->lv2->uris.footswitch_label[i] != property_urid) {
+            continue;
+        }
+
+        Gossiper_send_patch_set(self, frames, property_urid, Gossiper_get_footswitch_label(self, i));
+        return;
+    }
+
+    lv2_log_error(&self->lv2->logger, "Gossiper: unknown patch:Get property\n");
+}
+
+static void Gossiper_send_patch_set(Gossiper* self, int64_t frames, LV2_URID property_urid, const char* label) {
+    if (label == NULL) {
+        return;
+    }
+
+    LV2_Atom_Forge* forge = &self->lv2->forge;
+    LV2_Atom_Forge_Frame obj_frame;
+
+    lv2_atom_forge_frame_time(forge, frames);
+    lv2_atom_forge_object(forge, &obj_frame, 0, self->lv2->uris.patch_Set);
+
+    lv2_atom_forge_key(forge, self->lv2->uris.patch_property);
+    lv2_atom_forge_urid(forge, property_urid);
+
+    lv2_atom_forge_key(forge, self->lv2->uris.patch_value);
+    lv2_atom_forge_string(forge, label, strlen(label));
+
+    lv2_atom_forge_pop(forge, &obj_frame);
 }
 
 static LV2_State_Status save(LV2_Handle instance,

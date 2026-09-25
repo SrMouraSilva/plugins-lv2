@@ -65,6 +65,7 @@ typedef enum {
     OUTPUT_POTENTIOMETER_CV_4 = 33,
 
     EVENTS_IN = 34,
+    EVENTS_OUT = 35,
 } PortIndex;
 
 // -----------------------------------------------

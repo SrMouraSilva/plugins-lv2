@@ -17,6 +17,8 @@
 
 static void Controller_apply_patch_messages(Controller* self);
 static void Controller_apply_patch_set(Controller* self, const LV2_Atom_Object* obj);
+static void Controller_reply_patch_get(Controller* self, const LV2_Atom_Object* obj, int64_t frames);
+static void Controller_send_patch_set(Controller* self, int64_t frames, LV2_URID property_urid, const char* label);
 static LV2_State_Status save(LV2_Handle instance,
                              LV2_State_Store_Function store,
                              LV2_State_Handle handle,
@@ -136,6 +138,8 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
 
         case EVENTS_IN:
             self->lv2->events_in = (const LV2_Atom_Sequence*) data; break;
+        case EVENTS_OUT:
+            self->lv2->events_out = (LV2_Atom_Sequence*) data; break;
     }
 }
 
@@ -144,8 +148,32 @@ static void activate(LV2_Handle instance) {}
 
 void update_assignables(Controller* self);
 
+static void Controller_start_atom_forge(Controller* self, LV2_Atom_Forge_Frame* notify_frame) {
+    LV2_Atom_Sequence* out = self->lv2->events_out;
+
+    if (out == NULL) {
+        return;
+    }
+
+    const uint32_t out_capacity = out->atom.size;
+
+    lv2_atom_forge_set_buffer(&self->lv2->forge, (uint8_t*) out, out_capacity);
+    lv2_atom_forge_sequence_head(&self->lv2->forge, notify_frame, 0);
+}
+
+static void Controller_finish_atom_forge(Controller* self, LV2_Atom_Forge_Frame* notify_frame) {
+    if (self->lv2->events_out == NULL) {
+        return;
+    }
+
+    lv2_atom_forge_pop(&self->lv2->forge, notify_frame);
+}
+
 static void run(LV2_Handle instance, uint32_t n_samples) {
     Controller* self = (Controller*) instance;
+
+    LV2_Atom_Forge_Frame notify_frame;
+    Controller_start_atom_forge(self, &notify_frame);
 
     Controller_apply_patch_messages(self);
 
@@ -155,6 +183,8 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
     //Atom_run(self);
 
     update_assignables(self);
+
+    Controller_finish_atom_forge(self, &notify_frame);
 }
 
 void update_assignables(Controller* self) {
@@ -210,6 +240,8 @@ static void Controller_apply_patch_messages(Controller* self) {
         const LV2_Atom_Object* obj = (const LV2_Atom_Object*) &ev->body;
         if (obj->body.otype == self->lv2->uris.patch_Set) {
             Controller_apply_patch_set(self, obj);
+        } else if (obj->body.otype == self->lv2->uris.patch_Get) {
+            Controller_reply_patch_get(self, obj, ev->time.frames);
         }
     }
 }
@@ -251,6 +283,66 @@ static void Controller_apply_patch_set(Controller* self, const LV2_Atom_Object* 
     }
 
     lv2_log_error(&self->lv2->logger, "Tetr4-switch: unknown patch property\n");
+}
+
+static void Controller_reply_patch_get(Controller* self, const LV2_Atom_Object* obj, int64_t frames) {
+    if (self->lv2->events_out == NULL) {
+        return;
+    }
+
+    const LV2_Atom* property = NULL;
+
+    lv2_atom_object_get(
+        obj,
+        self->lv2->uris.patch_property, &property,
+        0
+    );
+
+    // No property specified: reply with every preset label
+    if (property == NULL) {
+        for (unsigned int i=0; i<TOTAL_PRESETS; i++) {
+            Controller_send_patch_set(self, frames, self->lv2->uris.preset_label[i], Controller_get_preset_label(self, i));
+        }
+        return;
+    }
+
+    if (property->type != self->lv2->uris.atom_URID) {
+        lv2_log_error(&self->lv2->logger, "Tetr4-switch: malformed patch:Get property\n");
+        return;
+    }
+
+    LV2_URID property_urid = ((const LV2_Atom_URID*) property)->body;
+
+    for (unsigned int i=0; i<TOTAL_PRESETS; i++) {
+        if (self->lv2->uris.preset_label[i] != property_urid) {
+            continue;
+        }
+
+        Controller_send_patch_set(self, frames, property_urid, Controller_get_preset_label(self, i));
+        return;
+    }
+
+    lv2_log_error(&self->lv2->logger, "Tetr4-switch: unknown patch:Get property\n");
+}
+
+static void Controller_send_patch_set(Controller* self, int64_t frames, LV2_URID property_urid, const char* label) {
+    if (label == NULL) {
+        return;
+    }
+
+    LV2_Atom_Forge* forge = &self->lv2->forge;
+    LV2_Atom_Forge_Frame obj_frame;
+
+    lv2_atom_forge_frame_time(forge, frames);
+    lv2_atom_forge_object(forge, &obj_frame, 0, self->lv2->uris.patch_Set);
+
+    lv2_atom_forge_key(forge, self->lv2->uris.patch_property);
+    lv2_atom_forge_urid(forge, property_urid);
+
+    lv2_atom_forge_key(forge, self->lv2->uris.patch_value);
+    lv2_atom_forge_string(forge, label, strlen(label));
+
+    lv2_atom_forge_pop(forge, &obj_frame);
 }
 
 static LV2_State_Status save(LV2_Handle instance,

@@ -398,6 +398,14 @@ lv2:port
     atom:bufferType atom:Sequence ;
     atom:supports patch:Message ;
     lv2:designation lv2:control ;
+],
+[
+    a lv2:OutputPort, atom:AtomPort ;
+    lv2:index 35 ;
+    lv2:symbol "events_out" ;
+    lv2:name "Events Out" ;
+    atom:bufferType atom:Sequence ;
+    atom:supports patch:Message ;
 ]
 ;
 

@@ -49,7 +49,6 @@ function (event, funcs) {
       input.val(sanitized);
     }
 
-    console.log(funcs)
     funcs.patch_set(uri, "s", sanitized);
   }
 
@@ -102,6 +101,10 @@ function (event, funcs) {
     }
 
     presetLabelUris.forEach((uri) => funcs.patch_get(uri));
+
+  } else if (event.type == 'change' && event.uri) {
+    // Reply to funcs.patch_get(uri): { type: 'change', uri, value }
+    handleLabelChanged(event.uri, event.value);
 
   } else if (event.type == 'change') {
     handleEvent(event.symbol, event.value);

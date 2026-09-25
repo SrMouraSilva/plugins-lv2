@@ -51,6 +51,7 @@ typedef enum {
     PRESET_4_OUTPUT_4 = 28,
 
     EVENTS_IN = 29,
+    EVENTS_OUT = 30,
 } PortIndex;
 
 #endif

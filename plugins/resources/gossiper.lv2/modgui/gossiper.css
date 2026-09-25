@@ -4,6 +4,8 @@
 
   --gossiper-footswitch-background-off: #310a3f;
   --gossiper-footswitch-background-off-disabled: #666;
+
+  --gossiper-background: #1e0431;
 }
 
 .gossiper-base.mod-pedal .mod-pedal-output {
@@ -83,7 +85,7 @@
   flex-direction: column;
   justify-content: space-around;
 
-  background: #1e0431;
+  background: var(--gossiper-background);
 
   height: var(--gossiper-height);
   width: var(--gossiper-width);
@@ -155,6 +157,11 @@
   border: none;
   padding: 4px 6px;
   cursor: text;
+}
+
+.gossiper .footswitch-label::selection {
+  background: var(--gossiper-background);
+  color: #ffffff;
 }
 
 .gossiper .footswitch-label:focus {

@@ -143,6 +143,11 @@
   transition: background-color .4s ease-in, border-color .4s ease-in;
 }
 
+.tetr4-switch .footswitch-label::selection {
+  background: var(--tetr4-switch-background);
+  color: #ffffff;
+}
+
 .tetr4-switch .footswitch-label:focus {
   border: 1px solid var(--tetr4-switch-slider-background-on);
   background-color: #ffffff;

@@ -61,6 +61,7 @@ const char* LV2_Controller_initialize(
     }
 
     map_uris(this->map, &this->uris);
+    lv2_atom_forge_init(&this->forge, this->map);
 
     return NULL;
 }
@@ -70,6 +71,7 @@ static void map_uris(LV2_URID_Map* map, Controller_URIs* uris) {
     uris->atom_URID = map->map(map->handle, LV2_ATOM__URID);
     uris->atom_String = map->map(map->handle, LV2_ATOM__String);
     uris->patch_Set = map->map(map->handle, LV2_PATCH__Set);
+    uris->patch_Get = map->map(map->handle, LV2_PATCH__Get);
     uris->patch_property = map->map(map->handle, LV2_PATCH__property);
     uris->patch_value = map->map(map->handle, LV2_PATCH__value);
 

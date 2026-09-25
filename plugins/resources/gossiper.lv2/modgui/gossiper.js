@@ -69,6 +69,10 @@ function (event, funcs) {
 
     footswitchLabelUris.forEach((uri) => funcs.patch_get(uri));
 
+  } else if (event.type == 'change' && event.uri) {
+    // Reply to funcs.patch_get(uri): { type: 'change', uri, value }
+    handleLabelChanged(event.uri, event.value);
+
   } else if (event.type == 'change') {
     handleEvent(event.symbol, event.value);
 
