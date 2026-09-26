@@ -103,9 +103,9 @@ void LV2_HMI_assign(Controller* self, HmiAdressing index, LV2_HMI_Addressing add
 void LV2_HMI_run(Controller* self) {
     unsigned int current_preset = self->get_index_current_preset(self);
 
-    if (self->is_preset_changed(self)) {
-        lv2_log_error(&self->lv2->logger, "Changed to <PRESET %d>\n", current_preset);
-    }
+    //if (self->is_preset_changed(self)) {
+    //    lv2_log_error(&self->lv2->logger, "Changed to <PRESET %d>\n", current_preset);
+    //}
 
     run_footswitches(self, current_preset);
     run_select(self, current_preset, false);
@@ -173,8 +173,11 @@ void run_notification(Controller* self, unsigned int current_preset, bool force_
     HMI* hmi = &self->lv2->hmi;
 
     if (hmi->notifiers != NULL && (force_update || self->is_preset_changed(self))) {
-        char message[10];
-        sprintf(message, "Preset %d", current_preset+1);
+        const char* message = Controller_get_preset_label(self, current_preset);
+
+        if (message == NULL) {
+            return;
+        }
 
         for (unsigned int i=0; i<TOTAL_CONTROLLER_NOTIFIERS; i++) {
             hmi->widgetControl->popup_message(

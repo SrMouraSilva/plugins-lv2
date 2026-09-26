@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" height="460" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="900" height="460" fill="#FFFFFF"/>
+  <text x="450" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="#2E0A45">Why Gossiper only "gossips" when you're looking</text>
+
+  <defs>
+    <marker id="arrow3" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#999999"/>
+    </marker>
+  </defs>
+
+  <!-- Step 1 -->
+  <g>
+    <rect x="20" y="70" width="240" height="80" rx="8" fill="#F6EEFB" stroke="#4B1D73"/>
+    <text x="140" y="98" text-anchor="middle" font-size="13" font-weight="700" fill="#2E0A45">1. Something changes</text>
+    <text x="140" y="118" text-anchor="middle" font-size="12" fill="#333333">A footswitch flips ON/OFF, or</text>
+    <text x="140" y="134" text-anchor="middle" font-size="12" fill="#333333">a potentiometer value moves.</text>
+  </g>
+
+  <line x1="260" y1="110" x2="320" y2="110" stroke="#999999" stroke-width="2" marker-end="url(#arrow3)"/>
+
+  <!-- Step 2 -->
+  <g>
+    <rect x="330" y="70" width="240" height="80" rx="8" fill="#F6EEFB" stroke="#4B1D73"/>
+    <text x="450" y="98" text-anchor="middle" font-size="13" font-weight="700" fill="#2E0A45">2. Is anyone assigned?</text>
+    <text x="450" y="118" text-anchor="middle" font-size="12" fill="#333333">Gossiper checks its 4 "Assign to</text>
+    <text x="450" y="134" text-anchor="middle" font-size="12" fill="#333333">notify" slots for an active one.</text>
+  </g>
+
+  <line x1="570" y1="110" x2="630" y2="110" stroke="#999999" stroke-width="2" marker-end="url(#arrow3)"/>
+
+  <!-- Step 3 -->
+  <g>
+    <rect x="640" y="70" width="240" height="80" rx="8" fill="#F6EEFB" stroke="#4B1D73"/>
+    <text x="760" y="98" text-anchor="middle" font-size="13" font-weight="700" fill="#2E0A45">3. Pop up, on that page</text>
+    <text x="760" y="118" text-anchor="middle" font-size="12" fill="#333333">A message appears only on the</text>
+    <text x="760" y="134" text-anchor="middle" font-size="12" fill="#333333">screen page/knob you assigned.</text>
+  </g>
+
+  <!-- branch: no assignment -->
+  <line x1="450" y1="150" x2="450" y2="190" stroke="#999999" stroke-width="2" marker-end="url(#arrow3)"/>
+  <text x="465" y="175" font-size="11" fill="#999999">none assigned</text>
+  <rect x="330" y="195" width="240" height="46" rx="8" fill="#FAFAFA" stroke="#CCCCCC"/>
+  <text x="450" y="223" text-anchor="middle" font-size="12" fill="#666666">Stays silent — no CPU spent on a popup nobody would see.</text>
+
+  <!-- mock device screen for step 3 -->
+  <g>
+    <rect x="660" y="200" width="200" height="130" rx="10" fill="#1a1a1a"/>
+    <rect x="672" y="212" width="176" height="106" rx="4" fill="#0d0d0d"/>
+    <rect x="682" y="222" width="156" height="30" rx="4" fill="#D81BE0" fill-opacity="0.85"/>
+    <text x="760" y="242" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">Gossiper</text>
+    <text x="760" y="278" text-anchor="middle" font-size="15" fill="#FFFFFF">Footswitch 7</text>
+    <text x="760" y="300" text-anchor="middle" font-size="11" fill="#AAAAAA">ON</text>
+  </g>
+
+  <!-- footswitch vs potentiometer message timing -->
+  <g>
+    <rect x="20" y="345" width="860" height="95" rx="8" fill="#F6EEFB" stroke="#4B1D73"/>
+    <text x="40" y="368" font-size="13" font-weight="700" fill="#2E0A45">Footswitches gossip immediately</text>
+    <text x="40" y="387" font-size="12" fill="#333333">Pop-up shows the footswitch's custom label the instant it changes —</text>
+    <text x="40" y="404" font-size="12" fill="#333333">inverted style when turning ON, normal style when turning OFF.</text>
+
+    <line x1="450" y1="360" x2="450" y2="420" stroke="#CCCCCC" stroke-width="1"/>
+
+    <text x="470" y="368" font-size="13" font-weight="700" fill="#2E0A45">Potentiometers gossip once you stop</text>
+    <text x="470" y="387" font-size="12" fill="#333333">Pop-up shows "Pot N — 63%" a short moment after the value settles,</text>
+    <text x="470" y="404" font-size="12" fill="#333333">so sweeping a knob doesn't spam a message on every step.</text>
+  </g>
+</svg>

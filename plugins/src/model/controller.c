@@ -1,12 +1,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
-#include <string.h>
 
 #include <lv2/lv2plug.in/ns/ext/log/log.h>
 
 #include "controller.h"
 #include "../utils/utils.h"
 
+#define PRESET_LABEL_MAX_LENGTH (PRESET_LABEL_MAX_SIZE - 1)
+
+static char* Controller_make_default_preset_label(unsigned int index);
 
 bool Controller_is_preset_changed(void* self);
 
@@ -16,9 +18,6 @@ unsigned int Controller_get_index_current_preset(void* self);
 unsigned int Controller_get_current_preset(void* self);
 
 unsigned int Controller_get_output_signal(void* self);
-
-// char* Controller_get_preset_label(void* self, unsigned int index);
-// char* Controller_set_preset_label(void* self, unsigned int index, char* new_label);
 
 void Controller_set_index_current_preset_by_mask(void* self, unsigned int index);
 void Controller_set_index_previous_preset_by_mask(void* self, unsigned int index);
@@ -36,29 +35,77 @@ unsigned int preset_index_by_mask(unsigned int mask) {
 
 
 Controller* Controller_instantiate() {
-    Controller* self = (Controller*) malloc(sizeof(Controller));
+    Controller* self = (Controller*) calloc(1, sizeof(Controller));
+
+    if (self == NULL) {
+        return NULL;
+    }
 
     self->is_preset_changed = &Controller_is_preset_changed;
 
     self->get_index_previous_preset = &Controller_get_index_previous_preset;
     self->get_index_current_preset = &Controller_get_index_current_preset;
-    
+
     self->get_current_preset = &Controller_get_current_preset;
 
     self->get_output_signal = &Controller_get_output_signal;
 
-    // self->get_preset_label = &Controller_get_preset_label;
-    // self->set_preset_label = &Controller_set_preset_label;
-
     self->run = &Controller_run;
-    
+
     self->internal_state.current_preset_mask = 0b0000001;
     self->internal_state.previous_preset_mask = self->internal_state.current_preset_mask;
     self->internal_state.preset_changed = false;
 
+    for (unsigned int i=0; i<TOTAL_PRESETS; i++) {
+        self->preset_labels[i] = Controller_make_default_preset_label(i);
+
+        if (self->preset_labels[i] == NULL) {
+            Controller_cleanup(self);
+            return NULL;
+        }
+    }
+
     self->lv2 = NULL;
 
     return self;
+}
+
+void Controller_cleanup(Controller* self) {
+    if (self == NULL) {
+        return;
+    }
+
+    for (unsigned int i=0; i<TOTAL_PRESETS; i++) {
+        free(self->preset_labels[i]);
+        self->preset_labels[i] = NULL;
+    }
+}
+
+const char* Controller_get_preset_label(const Controller* self, unsigned int index) {
+    if (self == NULL || index >= TOTAL_PRESETS) {
+        return NULL;
+    }
+
+    return self->preset_labels[index];
+}
+
+bool Controller_set_preset_label(Controller* self, unsigned int index, const char* new_label) {
+    if (self == NULL || index >= TOTAL_PRESETS) {
+        return false;
+    }
+
+    char* next_label = (new_label == NULL || new_label[0] == '\0')
+        ? Controller_make_default_preset_label(index)
+        : sanitize_label(new_label, PRESET_LABEL_MAX_LENGTH);
+
+    if (next_label == NULL) {
+        return false;
+    }
+
+    free(self->preset_labels[index]);
+    self->preset_labels[index] = next_label;
+
+    return true;
 }
 
 
@@ -107,28 +154,6 @@ unsigned int Controller_get_output_signal(void* self) {
 
     return this->get_current_preset(this);
 }
-
-// char* Controller_get_preset_label(void* self, unsigned int index) {
-//     Controller* this = (Controller*) self;
-
-//     if (index >= TOTAL_PRESETS) {
-//         return NULL;
-//     }
-
-//     return this->state.presets_label[index];
-// }
-
-// char* Controller_set_preset_label(void* self, unsigned int index, char* new_label) {
-//     Controller* this = (Controller*) self;
-
-//     if (index >= TOTAL_PRESETS) {
-//         return NULL;
-//     }
-
-//     strcpy(this->state.presets_label[index], new_label);
-    
-//     return this->state.presets_label[index];
-// }
 
 ///////////////////////////////////////////////////////
 // UPDATES
@@ -192,4 +217,8 @@ void Controller_update_output_cvs(Controller* self, uint32_t n_samples) {
             self->output_cvs[id_output][i] = output_cv_values[id_output];
         }
     }
+}
+
+static char* Controller_make_default_preset_label(unsigned int index) {
+    return make_default_label("Preset", index);
 }

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <pattern id="hatch" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <rect width="8" height="8" fill="#ec835a"/>
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#c8663f" stroke-width="2"/>
+    </pattern>
+  </defs>
+
+  <rect x="0" y="0" width="600" height="400" fill="#FFFFFF"/>
+  <text x="300" y="34" text-anchor="middle" font-size="15" font-weight="700" fill="#2E0A45">One host's CPU usage, reported on the forum</text>
+
+  <!-- axis reference lines (recessive) -->
+  <g stroke="#E6E6E6" stroke-width="1">
+    <line x1="100" y1="300" x2="500" y2="300"/>
+    <line x1="100" y1="170" x2="500" y2="170"/>
+    <line x1="100" y1="40" x2="500" y2="40"/>
+  </g>
+  <g font-size="11" fill="#8A8A8A" text-anchor="end">
+    <text x="92" y="304">0%</text>
+    <text x="92" y="174">50%</text>
+    <text x="92" y="44">100%</text>
+  </g>
+
+  <!-- baseline -->
+  <line x1="100" y1="300" x2="500" y2="300" stroke="#B5B5B5" stroke-width="1.5"/>
+
+  <!-- Bar 1: before, 17x Control to CV, 81% -->
+  <g>
+    <rect x="160" y="89.4" width="110" height="210.6" rx="4" fill="url(#hatch)" stroke="#c8663f" stroke-width="1"/>
+    <!-- warning triangle icon -->
+    <path d="M215,48 L227,68 L203,68 Z" fill="#ec835a" stroke="#a85732" stroke-width="1"/>
+    <text x="215" y="65" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF">!</text>
+    <text x="215" y="87" text-anchor="middle" font-size="17" font-weight="700" fill="#2E0A45">81%</text>
+    <text x="215" y="325" text-anchor="middle" font-size="12" font-weight="600" fill="#2E0A45">17× Control to CV</text>
+    <text x="215" y="341" text-anchor="middle" font-size="11" fill="#666666">(before)</text>
+  </g>
+
+  <!-- Bar 2: after, 1x Gossiper, 72% -->
+  <g>
+    <rect x="330" y="112.8" width="110" height="187.2" rx="4" fill="#0ca30c" stroke="#087d08" stroke-width="1"/>
+    <!-- check icon -->
+    <circle cx="385" cy="68" r="11" fill="#0ca30c" stroke="#087d08" stroke-width="1"/>
+    <path d="M380,68 L384,72 L391,63" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="385" y="98" text-anchor="middle" font-size="17" font-weight="700" fill="#2E0A45">72%</text>
+    <text x="385" y="325" text-anchor="middle" font-size="12" font-weight="600" fill="#2E0A45">1× Gossiper</text>
+    <text x="385" y="341" text-anchor="middle" font-size="11" fill="#666666">(after)</text>
+  </g>
+
+  <text x="300" y="372" text-anchor="middle" font-size="11" fill="#8A8A8A">Replacing seventeen "Control to CV" plugins with one Gossiper — community-reported result, your mileage will vary.</text>
+</svg>

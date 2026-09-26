@@ -33,6 +33,8 @@ typedef struct {
 
     float* inverters[TOTAL_OUTPUTS];
 
+    char* preset_labels[TOTAL_PRESETS];
+
     InternalState internal_state;
 
     LV2_Controller* lv2;
@@ -129,5 +131,8 @@ typedef struct {
 
 
 extern Controller* Controller_instantiate();
+extern void Controller_cleanup(Controller* self);
+extern const char* Controller_get_preset_label(const Controller* self, unsigned int index);
+extern bool Controller_set_preset_label(Controller* self, unsigned int index, const char* new_label);
 
 #endif

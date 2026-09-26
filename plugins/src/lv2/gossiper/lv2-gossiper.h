@@ -3,27 +3,42 @@
 
 #include "lv2/log/logger.h"
 #include "lv2/atom/atom.h"
+#include "lv2/atom/forge.h"
+#include "lv2/urid/urid.h"
 
 #include "../extension/lv2-hmi.h"
 
 #include "../../config.h"
+
+#define GOSSIPER_PLUGIN_URI "http://srmourasilva.github.io/plugins/gossiper"
+#define GOSSIPER_FOOTSWITCH_LABEL_COUNT 7
 
 typedef struct {
     LV2_HMI_WidgetControl* widgetControl;
 } HMI;
 
 
-// typedef struct {
-//     // Atom feature - Preset labels
-//     const LV2_Atom_Sequence* events_in;
-
-//     // State
-//     URIs uris;
-//     State state;
-// } Controller_Atom;
+typedef struct {
+    LV2_URID atom_Object;
+    LV2_URID atom_URID;
+    LV2_URID atom_String;
+    LV2_URID patch_Set;
+    LV2_URID patch_Get;
+    LV2_URID patch_property;
+    LV2_URID patch_value;
+    LV2_URID footswitch_label[GOSSIPER_FOOTSWITCH_LABEL_COUNT];
+} Gossiper_URIs;
 
 typedef struct {
     LV2_URID_Map* map;
+
+    const LV2_Atom_Sequence* events_in;
+    LV2_Atom_Sequence* events_out;
+
+    /** Used to write patch:Set replies to events_out */
+    LV2_Atom_Forge forge;
+
+    Gossiper_URIs uris;
 
     // Capabilities
 
@@ -32,10 +47,6 @@ typedef struct {
 
     /** Mod HMI */
     HMI hmi;
-
-    /** Atom */
-    // Controller_Atom atom;
-
 
     /**
      * Initialize the lv2 capabilities

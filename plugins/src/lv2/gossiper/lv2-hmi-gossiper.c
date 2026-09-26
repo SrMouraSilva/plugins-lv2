@@ -41,14 +41,17 @@ static void unaddressed(LV2_Handle handle, uint32_t index) {
 }
 
 void assign(Gossiper* this, PortIndex index, LV2_HMI_Addressing addressing) {
-    unsigned int i = index - ASSIGN_TO_NOTIFY_1;
-
     switch (index) {
         case ASSIGN_TO_NOTIFY_1:
         case ASSIGN_TO_NOTIFY_2:
         case ASSIGN_TO_NOTIFY_3:
-        case ASSIGN_TO_NOTIFY_4:
+        case ASSIGN_TO_NOTIFY_4: {
+            unsigned int i = index - ASSIGN_TO_NOTIFY_1;
             this->notifiers[i].hmi_addressing = addressing;
+            break;
+        }
+
+        default:
             break;
     }
 }
@@ -87,8 +90,11 @@ void notify_footswithes_updated(Gossiper* gossiper, LV2_HMI_Addressing addressin
             continue;
         }
 
-        char message[14];
-        sprintf(message, "Footswitch %d", i+1);
+        const char* message = Gossiper_get_footswitch_label(gossiper, i);
+
+        if (message == NULL) {
+            continue;
+        }
 
         hmi->widgetControl->popup_message(
             hmi->widgetControl->handle,

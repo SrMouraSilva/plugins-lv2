@@ -58,7 +58,16 @@ docker build . -t builder
 
 ```bash
 docker run --rm -ti --name mpb -p 9000:9000 -v $(pwd)/plugins:/root/mod-plugin-builder/plugins/package/srmourasilva-plugins cbix/mod-plugin-builder:moddwarf
-sudo apt install iputils-ping --yes
+#sudo apt install iputils-ping --yes
+# ping alternative
+cat > /usr/bin/ping << 'EOF'
+#!/bin/bash
+host="${@: -1}"
+timeout 2 bash -c "echo > /dev/tcp/$host/22" 2>/dev/null && echo "$host is alive" && exit 0
+exit 1
+EOF
+chmod +x /usr/bin/ping
+
 ./build moddwarf srmourasilva-plugins
 ./build moddwarf srmourasilva-plugins-publish
 

@@ -4,6 +4,8 @@
 
   --gossiper-footswitch-background-off: #310a3f;
   --gossiper-footswitch-background-off-disabled: #666;
+
+  --gossiper-background: #1e0431;
 }
 
 .gossiper-base.mod-pedal .mod-pedal-output {
@@ -83,7 +85,7 @@
   flex-direction: column;
   justify-content: space-around;
 
-  background: #1e0431;
+  background: var(--gossiper-background);
 
   height: var(--gossiper-height);
   width: var(--gossiper-width);
@@ -99,7 +101,7 @@
   display: flex;
   flex-direction: row;
 
-  /* z-index: 30; */
+  z-index: 30;
   position: relative;
 }
 
@@ -121,16 +123,11 @@
   white-space: nowrap;
   text-indent: 200%;
   border: 1px solid #BBB;
-  display: block;
-  cursor: pointer;
-  
+  display: block;  
   content: "";
-  cursor: pointer;
 
   margin: 0 auto;
   transition: box-shadow .4s;
-
-  cursor: help;
 }
 
 .gossiper .footswitch input[type="checkbox"]:disabled + span::before {
@@ -158,6 +155,18 @@
   text-shadow: none;
   box-shadow: inset 0 0 2px black;
   border: none;
+  padding: 4px 6px;
+  cursor: text;
+}
+
+.gossiper .footswitch-label::selection {
+  background: var(--gossiper-background);
+  color: #ffffff;
+}
+
+.gossiper .footswitch-label:focus {
+  outline: 1px solid #ff7de9;
+  background-color: #ffffff22;
 }
 
 .gossiper .footswitch input[type="radio"]:checked + .footswitch-label {
