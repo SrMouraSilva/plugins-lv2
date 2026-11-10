@@ -9,9 +9,11 @@
         modgui:javascript <modgui/tetr4-switch.js> ;
         modgui:screenshot <modgui/screenshot.png> ;
         modgui:thumbnail <modgui/thumbnail.png> ;
+        modgui:documentation <modgui/manual.pdf> ;
         modgui:brand "SrMouraSilva" ;
         modgui:label "Tetr4 switch" ;
         modgui:model "boxy-small" ;
         modgui:panel "1-footswitch" ;
-        modgui:color "black" ;
+        modgui:color "#02094e" ;
+        modgui:discussionURL <https://forum.mod.audio/t/tetr4-switch-plugin-in-beta-store/8998> ;
     ] .

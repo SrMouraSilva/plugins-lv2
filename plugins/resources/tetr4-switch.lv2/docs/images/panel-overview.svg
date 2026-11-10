@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" width="900" height="480" font-family="Helvetica, Arial, sans-serif">
+  <rect x="10" y="10" width="880" height="460" rx="14" fill="#02094E" stroke="#142073" stroke-width="2"/>
+
+  <text x="450" y="45" text-anchor="middle" font-size="26" font-weight="600" fill="#FFFFFF">Tetr4 switch</text>
+
+  <!-- active-preset highlight behind group 1 -->
+  <rect x="68" y="50" width="164" height="94" rx="10" fill="#FF6768" fill-opacity="0.14" stroke="#FF6768" stroke-width="2"/>
+
+  <!-- 4 config groups -->
+  <g font-size="14" fill="#FFFFFF">
+    <text x="150" y="66" text-anchor="middle" fill-opacity="0.85">Config 1</text>
+    <text x="350" y="66" text-anchor="middle" fill-opacity="0.85">Config 2</text>
+    <text x="550" y="66" text-anchor="middle" fill-opacity="0.85">Config 3</text>
+    <text x="750" y="66" text-anchor="middle" fill-opacity="0.85">Config 4</text>
+  </g>
+
+  <!-- toggle rows: 4 groups x 4 toggles -->
+  <g>
+    <!-- Group 1 (Preset 1): output 1 ON -->
+    <g transform="translate(83,90)">
+      <text x="13" y="-8" text-anchor="middle" font-size="11" fill="#FFFFFF" fill-opacity="0.6">1</text>
+      <rect x="0" y="0" width="26" height="42" rx="12" fill="#FF6768"/>
+      <text x="49" y="-8" text-anchor="middle" font-size="11" fill="#FFFFFF" fill-opacity="0.6">2</text>
+      <rect x="36" y="0" width="26" height="42" rx="12" fill="#0A1666" stroke="#4A5590"/>
+      <text x="85" y="-8" text-anchor="middle" font-size="11" fill="#FFFFFF" fill-opacity="0.6">3</text>
+      <rect x="72" y="0" width="26" height="42" rx="12" fill="#0A1666" stroke="#4A5590"/>
+      <text x="121" y="-8" text-anchor="middle" font-size="11" fill="#FFFFFF" fill-opacity="0.6">4</text>
+      <rect x="108" y="0" width="26" height="42" rx="12" fill="#0A1666" stroke="#4A5590"/>
+    </g>
+    <!-- Group 2 (Preset 2): output 2 ON -->
+    <g transform="translate(283,90)">
+      <rect x="0" y="0" width="26" height="42" rx="12" fill="#0A1666" stroke="#4A5590"/>
+      <rect x="36" y="0" width="26" height="42" rx="12" fill="#AAAAAA"/>
+      <rect x="72" y="0" width="26" height="42" rx="12" fill="#0A1666" stroke="#4A5590"/>
+      <rect x="108" y="0" width="26" height="42" rx="12" fill="#0A1666" stroke="#4A5590"/>
+    </g>
+    <!-- Group 3 (Preset 3): output 3 ON -->
+    <g transform="translate(483,90)">
+      <rect x="0" y="0" width="26" height="42" rx="12" fill="#0A1666" stroke="#4A5590"/>
+      <rect x="36" y="0" width="26" height="42" rx="12" fill="#0A1666" stroke="#4A5590"/>
+      <rect x="72" y="0" width="26" height="42" rx="12" fill="#AAAAAA"/>
+      <rect x="108" y="0" width="26" height="42" rx="12" fill="#0A1666" stroke="#4A5590"/>
+    </g>
+    <!-- Group 4 (Preset 4): output 4 ON -->
+    <g transform="translate(683,90)">
+      <rect x="0" y="0" width="26" height="42" rx="12" fill="#0A1666" stroke="#4A5590"/>
+      <rect x="36" y="0" width="26" height="42" rx="12" fill="#0A1666" stroke="#4A5590"/>
+      <rect x="72" y="0" width="26" height="42" rx="12" fill="#0A1666" stroke="#4A5590"/>
+      <rect x="108" y="0" width="26" height="42" rx="12" fill="#AAAAAA"/>
+    </g>
+  </g>
+
+  <!-- footswitches -->
+  <g>
+    <circle cx="150" cy="210" r="32" fill="#FFFFFF" stroke="#FF6768" stroke-width="6"/>
+    <circle cx="350" cy="210" r="32" fill="#FFFFFF" stroke="#AAAAAA" stroke-width="5"/>
+    <circle cx="550" cy="210" r="32" fill="#FFFFFF" stroke="#AAAAAA" stroke-width="5"/>
+    <circle cx="750" cy="210" r="32" fill="#FFFFFF" stroke="#AAAAAA" stroke-width="5"/>
+  </g>
+
+  <!-- editable preset-name fields -->
+  <g font-size="13" fill="#FFFFFF">
+    <rect x="90" y="256" width="120" height="27" rx="6" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.35"/>
+    <text x="150" y="274" text-anchor="middle">Preset 1</text>
+    <rect x="290" y="256" width="120" height="27" rx="6" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.35"/>
+    <text x="350" y="274" text-anchor="middle">Preset 2</text>
+    <rect x="490" y="256" width="120" height="27" rx="6" fill="#FFFFFF" fill-opacity="0.06" stroke="#FF6768" stroke-opacity="0.9"/>
+    <text x="546" y="274" text-anchor="middle">Solo</text>
+    <rect x="572" y="261" width="2" height="17" fill="#FF6768"/>
+    <rect x="690" y="256" width="120" height="27" rx="6" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.35"/>
+    <text x="750" y="274" text-anchor="middle">Preset 4</text>
+  </g>
+
+  <!-- callout leader lines -->
+  <g stroke="#FFD400" stroke-width="2" fill="none">
+    <line x1="52" y1="60" x2="90" y2="90"/>
+    <line x1="350" y1="150" x2="350" y2="176"/>
+    <line x1="612" y1="245" x2="588" y2="258"/>
+    <line x1="108" y1="188" x2="128" y2="200"/>
+  </g>
+
+  <!-- callout badges -->
+  <g font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">
+    <circle cx="42" cy="50" r="15" fill="#FFD400" stroke="#02094E" stroke-width="2"/>
+    <text x="42" y="55" fill="#02094E">A</text>
+
+    <circle cx="350" cy="140" r="15" fill="#FFD400" stroke="#02094E" stroke-width="2"/>
+    <text x="350" y="145" fill="#02094E">B</text>
+
+    <circle cx="626" cy="238" r="15" fill="#FFD400" stroke="#02094E" stroke-width="2"/>
+    <text x="626" y="243" fill="#02094E">C</text>
+
+    <circle cx="98" cy="180" r="15" fill="#FFD400" stroke="#02094E" stroke-width="2"/>
+    <text x="98" y="185" fill="#02094E">D</text>
+  </g>
+
+  <!-- legend -->
+  <g font-size="16" fill="#FFFFFF">
+    <circle cx="42" cy="332" r="11" fill="#FFD400"/>
+    <text x="42" y="337" text-anchor="middle" font-size="13" font-weight="700" fill="#02094E">A</text>
+    <text x="65" y="337">Preset matrix — toggles which CV outputs are ON for this preset</text>
+
+    <circle cx="42" cy="365" r="11" fill="#FFD400"/>
+    <text x="42" y="370" text-anchor="middle" font-size="13" font-weight="700" fill="#02094E">B</text>
+    <text x="65" y="370">Footswitch — taps activate this preset (only one is active at a time)</text>
+
+    <circle cx="42" cy="398" r="11" fill="#FFD400"/>
+    <text x="42" y="403" text-anchor="middle" font-size="13" font-weight="700" fill="#02094E">C</text>
+    <text x="65" y="403">Preset label — click and type a custom name (up to 15 characters)</text>
+
+    <circle cx="42" cy="431" r="11" fill="#FFD400"/>
+    <text x="42" y="436" text-anchor="middle" font-size="13" font-weight="700" fill="#02094E">D</text>
+    <text x="65" y="436">Active indicator — highlights the preset currently in use</text>
+  </g>
+</svg>

@@ -1,5 +1,5 @@
 @prefix modgui: <http://moddevices.com/ns/modgui#> .
-@prefix lv2:    <http://lv2plug.ipngn/ns/lv2core#> .
+@prefix lv2:    <http://lv2plug.in/ns/lv2core#> .
 
 <http://srmourasilva.github.io/plugins/gossiper>
     modgui:gui [
@@ -14,5 +14,6 @@
         modgui:label "Gossiper" ;
         modgui:model "boxy-small" ;
         modgui:panel "1-footswitch" ;
-        modgui:color "black" ;
+        modgui:color "#1e0431" ;
+        modgui:discussionURL <https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happening-when-you-are-looking-it/9660> ;
     ] .
