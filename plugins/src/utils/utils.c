@@ -1,3 +1,9 @@
+/*
+ * Copyright 2021-2026 Paulo Mateus
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>

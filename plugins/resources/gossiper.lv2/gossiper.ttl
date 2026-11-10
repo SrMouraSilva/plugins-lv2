@@ -94,7 +94,7 @@ plug:group_pot_cv
     a lv2:Plugin, mod:ControlVoltagePlugin, mod:UtilityPlugin ;
 
 doap:name "Gossiper" ;
-doap:license "GPL v2+" ;
+doap:license <http://opensource.org/licenses/Apache-2.0> ;
 doap:developer [
     foaf:name "Paulo Mateus" ;
     foaf:homepage <> ;

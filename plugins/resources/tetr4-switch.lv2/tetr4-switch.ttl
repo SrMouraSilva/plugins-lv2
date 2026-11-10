@@ -78,7 +78,7 @@ plug:group_preset_4
     a lv2:Plugin, mod:ControlVoltagePlugin, mod:UtilityPlugin ;
 
 doap:name "Tetr4 switch" ;
-doap:license "GPL v2+" ;
+doap:license <http://opensource.org/licenses/Apache-2.0> ;
 doap:developer [
     foaf:name "Paulo Mateus" ;
     foaf:homepage <> ;

@@ -1,0 +1,15 @@
+SrMouraSilva Plugins (Gossiper, Tetr4 Switch)
+Copyright 2021-2026 Paulo Mateus
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product includes third-party software, which remains under its
+original license:
+
+  * plugins/src/lv2/extension/lv2-hmi.h
+  * plugins/src/lv2/extension/control-input-port-change-request.h
+    Copyright 2020-2021 Filipe Coelho <falktx@falktx.com>
+    ISC License (see the notice at the top of each file).
+
+  * plugins/src/utils/state_map.h
+    Adapted from the LV2 Book examples, https://lv2plug.in/book/#_state_map_h

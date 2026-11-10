@@ -1,3 +1,9 @@
+/*
+ * Copyright 2021-2026 Paulo Mateus
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #ifndef TETR4_SWITCH_H
 #define	TETR4_SWITCH_H
 

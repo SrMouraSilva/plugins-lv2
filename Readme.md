@@ -86,3 +86,7 @@ docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/gossiper.lv2/ 
 * https://wiki.mod.audio/wiki/Preparing_the_Bundle
 * https://wiki.mod.audio/wiki/Creating_the_GUI
 * https://wiki.mod.audio/wiki/LV2#Logging
+
+## License
+
+Licensed under the [Apache License, Version 2.0](./LICENSE). See [NOTICE](./NOTICE) for third-party components that keep their original licenses.

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# Copyright 2021-2026 Paulo Mateus
+#
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Builds modgui/manual.pdf from docs/manual.md (+ docs/images/*).
 
