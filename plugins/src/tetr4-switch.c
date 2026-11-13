@@ -25,6 +25,7 @@ static void Controller_apply_patch_messages(Controller* self);
 static void Controller_apply_patch_set(Controller* self, const LV2_Atom_Object* obj);
 static void Controller_reply_patch_get(Controller* self, const LV2_Atom_Object* obj, int64_t frames);
 static void Controller_send_patch_set(Controller* self, int64_t frames, LV2_URID property_urid, const char* label);
+static void Controller_send_restored_labels(Controller* self);
 static LV2_State_Status save(LV2_Handle instance,
                              LV2_State_Store_Function store,
                              LV2_State_Handle handle,
@@ -181,6 +182,9 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
     LV2_Atom_Forge_Frame notify_frame;
     Controller_start_atom_forge(self, &notify_frame);
 
+    // Frame 0, before any patch:Get reply, so the output events stay in time order
+    Controller_send_restored_labels(self);
+
     Controller_apply_patch_messages(self);
 
     self->run(self, n_samples);
@@ -331,6 +335,18 @@ static void Controller_reply_patch_get(Controller* self, const LV2_Atom_Object* 
     lv2_log_error(&self->lv2->logger, "Tetr4-switch: unknown patch:Get property\n");
 }
 
+static void Controller_send_restored_labels(Controller* self) {
+    if (!self->lv2->labels_restored || self->lv2->events_out == NULL) {
+        return;
+    }
+
+    self->lv2->labels_restored = false;
+
+    for (unsigned int i=0; i<TOTAL_PRESETS; i++) {
+        Controller_send_patch_set(self, 0, self->lv2->uris.preset_label[i], Controller_get_preset_label(self, i));
+    }
+}
+
 static void Controller_send_patch_set(Controller* self, int64_t frames, LV2_URID property_urid, const char* label) {
     if (label == NULL) {
         return;
@@ -408,7 +424,10 @@ static LV2_State_Status restore(LV2_Handle instance,
 
         if (!Controller_set_preset_label(self, i, (const char*) value)) {
             lv2_log_error(&self->lv2->logger, "Tetr4-switch: could not restore preset label\n");
+            continue;
         }
+
+        self->lv2->labels_restored = true;
     }
 
     return LV2_STATE_SUCCESS;
