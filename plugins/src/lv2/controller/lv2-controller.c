@@ -85,8 +85,8 @@ static void map_uris(LV2_URID_Map* map, Controller_URIs* uris) {
 
     // <plugin uri>#preset_label_1 ... #preset_label_<TOTAL_PRESETS>
     for (unsigned int i = 0; i < TOTAL_PRESETS; i++) {
-        char uri[sizeof(PLUGIN_URI) + 32];
-        snprintf(uri, sizeof(uri), PLUGIN_URI "#preset_label_%u", i + 1);
+        char uri[sizeof(SWITCH_PLUGIN_URI) + 32];
+        snprintf(uri, sizeof(uri), SWITCH_PLUGIN_URI "#preset_label_%u", i + 1);
 
         uris->preset_label[i] = map->map(map->handle, uri);
     }

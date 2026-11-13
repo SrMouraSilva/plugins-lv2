@@ -14,7 +14,7 @@
 #ifdef HEPT7_SWITCH
 
 #define PLUGIN_NAME "Hept7 Switch"
-#define PLUGIN_URI "http://srmourasilva.github.io/plugins/hept7-switch"
+#define SWITCH_PLUGIN_URI "http://srmourasilva.github.io/plugins/hept7-switch"
 
 /** Total of presets. The number of footswitches is also related (7: one per HMI LED colour) */
 #define TOTAL_PRESETS 7
@@ -29,7 +29,7 @@
 #else
 
 #define PLUGIN_NAME "Tetr4 Switch"
-#define PLUGIN_URI "http://srmourasilva.github.io/plugins/tetr4-switch"
+#define SWITCH_PLUGIN_URI "http://srmourasilva.github.io/plugins/tetr4-switch"
 
 /** Total of presets. The number of footswitches is also related */
 #define TOTAL_PRESETS 4

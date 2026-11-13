@@ -387,7 +387,7 @@ static LV2_State_Status restore(LV2_Handle instance,
 }
 
 static const LV2_Descriptor descriptor = {
-    PLUGIN_URI,
+    SWITCH_PLUGIN_URI,
     instantiate,
     connect_port,
     activate,
