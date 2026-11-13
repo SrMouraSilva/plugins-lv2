@@ -29,6 +29,19 @@ With it, is possible to define four presets of active CV and change between then
      * Atom sample 1: https://github.com/moddevices/mod-cv-plugins/blob/master/source/mod-cv-clock/mod-cv-clock.c
      * Atom sample 2: https://lv2plug.in/book/#_state_map_h
 
+## Download
+
+Binaries for **MOD Duo**, **MOD Duo X** and **MOD Dwarf** are built by [GitHub Actions](./.github/workflows/release.yml) on every push and published on the [Releases](../../releases) page. Releases have no version number; they are named after the commit they were built from:
+
+```
+<commit date UTC>-<branch>-<commit hash>
+20261113-1530-master-87a3e32
+```
+
+Each release has one archive per plugin and device (`gossiper-duo.lv2.tar.gz`, `tetr4-switch-duo-x.lv2.tar.gz`, `gossiper-dwarf.lv2.tar.gz`, ...); each one contains the `.lv2` bundle folder.
+
+The release marked **Latest** is the most recent build of `master`. Builds from other branches are published as pre-releases.
+
 ## Development
 
 Requirements

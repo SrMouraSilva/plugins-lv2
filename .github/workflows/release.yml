@@ -1,0 +1,130 @@
+name: Build and release
+
+# Every push to a branch builds the bundles for MOD Duo, Duo X and Dwarf and
+# publishes a single release named after the commit: <date>-<branch>-<hash>
+# (e.g. 20261113-1530-master-87a3e32).
+# Pull requests only build, so broken builds are caught before merging.
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PLUGINS: gossiper tetr4-switch
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.v.outputs.tag }}
+      branch: ${{ steps.v.outputs.branch }}
+      sha: ${{ steps.v.outputs.sha }}
+      date: ${{ steps.v.outputs.date }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute version
+        id: v
+        env:
+          TZ: UTC
+        run: |
+          branch="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+          branch="$(printf '%s' "$branch" | tr -c 'A-Za-z0-9._\n-' '-' | sed 's/^-*//; s/-*$//')"
+          sha="$(git rev-parse --short=7 HEAD)"
+          date="$(git log -1 --format=%cd --date=format-local:'%Y%m%d-%H%M')"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "tag=$date-$branch-$sha" >> "$GITHUB_OUTPUT"
+          echo "date=$(git log -1 --format=%cd --date=format-local:'%Y-%m-%d %H:%M')" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: version
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # device: name used on the release assets
+          # platform: mod-plugin-builder platform (also the cbix/mod-plugin-builder image tag)
+          - { device: duo, platform: modduo }
+          - { device: duo-x, platform: modduox }
+          - { device: dwarf, platform: moddwarf }
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build for ${{ matrix.device }}
+        run: |
+          mkdir -p out
+          docker run --rm \
+            -v "$PWD/plugins:/root/mod-plugin-builder/plugins/package/srmourasilva-plugins" \
+            -v "$PWD/out:/out" \
+            "cbix/mod-plugin-builder:${{ matrix.platform }}" bash -euxc '
+              # `build` needs ping to reach a device, which is not needed here
+              printf "#!/bin/bash\nexit 0\n" > /usr/bin/ping && chmod +x /usr/bin/ping
+              ./build ${{ matrix.platform }} srmourasilva-plugins
+              cp -r /root/mod-workdir/${{ matrix.platform }}/target/usr/local/lib/lv2/*.lv2 /out/
+            '
+
+      - name: Package bundles
+        run: |
+          mkdir -p dist
+          for plugin in $PLUGINS; do
+            test -f "out/$plugin.lv2/$plugin.so"
+            tar -czf "dist/$plugin-${{ matrix.device }}.lv2.tar.gz" -C out "$plugin.lv2"
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bundles-${{ matrix.device }}
+          path: dist/*.tar.gz
+
+  release:
+    needs: [version, build]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create releases and tags
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: bundles-*
+          path: dist
+          merge-multiple: true
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.version.outputs.tag }}
+          BRANCH: ${{ needs.version.outputs.branch }}
+          SHA: ${{ needs.version.outputs.sha }}
+          DATE: ${{ needs.version.outputs.date }}
+        run: |
+          # Only the default branch is a regular release ("Latest");
+          # other branches are pre-releases so they never replace it.
+          flags="--prerelease"
+          if [ "$BRANCH" = "${{ github.event.repository.default_branch }}" ]; then
+            flags="--latest"
+          fi
+
+          cat > notes.md <<NOTES
+          Bundles for **MOD Duo**, **MOD Duo X** and **MOD Dwarf**
+          (\`<plugin>-duo\`, \`<plugin>-duo-x\` and \`<plugin>-dwarf\`).
+
+          | | |
+          |---|---|
+          | Branch | \`$BRANCH\` |
+          | Commit | [\`$SHA\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}) |
+          | Commit date | $DATE UTC |
+          NOTES
+
+          gh release create "$TAG" dist/*.tar.gz \
+            --target "$GITHUB_SHA" \
+            --title "$BRANCH @ $SHA ($DATE UTC)" \
+            --notes-file notes.md \
+            $flags
