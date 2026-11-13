@@ -4,26 +4,39 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """
-Previews the modgui of Hept7 Switch in a browser, without installing anything on a device.
+Previews the modgui of the plugins of this repository in a browser, without installing anything on a device.
 
 It serves, side by side:
-  /modui/   the web interface of MOD UI (its real stylesheets and scripts: jQuery, Mustache, pedals.css...)
-  /plugin/  plugins/resources/hept7-switch.lv2/modgui (read from disk on every request, just reload the page)
-  /         this folder (the preview page)
+  /modui/            the web interface of MOD UI (its real stylesheets and scripts: jQuery, Mustache, pedals.css...)
+  /plugin/<name>/    plugins/resources/<name>.lv2/modgui (read from disk on every request, just reload the page)
+  /api/plugins       the bundles found in plugins/resources
+  /api/plugin/<name> what the preview needs from a bundle: ports, parameters, state, factory presets, modgui files
+  /                  this folder (the preview page)
 
 Usage: python3 tools/modgui-preview/serve.py [--mod-ui PATH_TO/mod-ui/html] [--port 8000]
 """
 import argparse
 import http.server
+import json
 import os
 import pathlib
 import posixpath
 import sys
 import urllib.parse
 
+# Importing ttl.py must not leave a __pycache__ in the repository
+sys.dont_write_bytecode = True
+
 HERE = pathlib.Path(__file__).resolve().parent
 REPO = HERE.parents[1]
-PLUGIN_MODGUI = REPO / "plugins" / "resources" / "hept7-switch.lv2" / "modgui"
+RESOURCES = REPO / "plugins" / "resources"
+
+sys.path.insert(0, str(HERE))
+import ttl  # noqa: E402
+
+
+def bundles():
+    return sorted(p.name[: -len(".lv2")] for p in RESOURCES.glob("*.lv2") if (p / "modgui").is_dir())
 
 
 def find_mod_ui(argument):
@@ -41,17 +54,41 @@ def find_mod_ui(argument):
 
 
 def make_handler(mod_ui):
-    roots = {"modui": mod_ui, "plugin": PLUGIN_MODGUI}
-
     class Handler(http.server.SimpleHTTPRequestHandler):
+        def send_json(self, payload, status=200):
+            body = json.dumps(payload).encode()
+            self.send_response(status)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def do_GET(self):
+            path = urllib.parse.urlparse(self.path).path
+
+            if path == "/api/plugins":
+                return self.send_json(bundles())
+
+            if path.startswith("/api/plugin/"):
+                name = path[len("/api/plugin/"):]
+                if name not in bundles():
+                    return self.send_json({"error": "unknown plugin"}, 404)
+                try:
+                    return self.send_json(ttl.load_bundle(RESOURCES / f"{name}.lv2"))
+                except Exception as error:  # a TTL that this small reader does not understand
+                    return self.send_json({"error": f"could not read the TTL of {name}: {error}"}, 500)
+
+            return super().do_GET()
+
         def translate_path(self, path):
             path = posixpath.normpath(urllib.parse.unquote(urllib.parse.urlparse(path).path))
             parts = [part for part in path.split("/") if part and part not in (".", "..")]
             root = HERE
 
-            if parts and parts[0] in roots:
-                root = roots[parts[0]]
-                parts = parts[1:]
+            if parts and parts[0] == "modui":
+                root, parts = mod_ui, parts[1:]
+            elif len(parts) > 1 and parts[0] == "plugin" and parts[1] in bundles():
+                root, parts = RESOURCES / f"{parts[1]}.lv2" / "modgui", parts[2:]
 
             return str(root.joinpath(*parts))
 
@@ -75,7 +112,7 @@ def main():
     server = http.server.ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(mod_ui))
 
     print(f"MOD UI:  {mod_ui}")
-    print(f"Plugin:  {PLUGIN_MODGUI}")
+    print(f"Plugins: {', '.join(bundles())}")
     print(f"Open http://localhost:{args.port}/   (Ctrl+C to stop)")
 
     try:

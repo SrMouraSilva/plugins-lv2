@@ -21,99 +21,86 @@
 /*
  * A stand-in for what modgui.js (MOD UI) does with a plugin: it renders the icon and settings templates with
  * Mustache, loads the stylesheet, and runs the plugin javascript with the same events and functions.
- * It does not talk to a host: the log of what the plugin asks for is in window.__log.
+ * There is no plugin behind it: ports and parameters only hold the values it is given (their defaults, the ones
+ * of a factory preset, or what the page around it sends), and what the interface asks the plugin to do is
+ * logged in window.__log.
  *
- * Query: view=icon|settings|shot  dips=rig  active=N  edit=N  addressed=Symbol,Symbol  test=1
+ * Query:  plugin=NAME   view=icon|settings|shot   preset=INDEX   addressed=Symbol,Symbol   click=CSS selector
+ * Outside: window.send(event) sends an event to the plugin javascript, window.portValues holds the ports.
  */
 const q = new URLSearchParams(location.search);
 const view = q.get('view') || 'icon';
-const URI = 'http://srmourasilva.github.io/plugins/hept7-switch';
-const TOTAL = 7;
-const RIG = [[1,0,0,0,0,1,0],[1,0,0,1,0,1,0],[0,1,0,0,0,0,0],[0,1,0,0,1,0,1],[0,0,1,0,1,1,1],[1,0,0,1,1,1,0],[0,0,0,0,0,0,0]];
-const NAMES = ['Clean', 'Chorus', 'Crunch', 'Lead', 'Solo', 'Ambient', 'Kill'];
-
-const effect = {
-  name: 'Hept7 switch',
-  ports: {
-    audio: { input: [], output: [] }, midi: { input: [], output: [] },
-    cv: { input: [], output: Array.from({ length: TOTAL }, (_, i) => ({ symbol: 'Cv_output_' + (i + 1), name: 'CV Output ' + (i + 1) })) },
-  },
-};
 const log = (...a) => (window.__log = window.__log || []).push(a);
-const get = (file) => fetch('/plugin/' + file).then((r) => r.text());
+const get = (plugin, file) => fetch(`/plugin/${plugin}/${file}`).then((r) => r.text());
 
-Promise.all(['hept7-switch.css', 'hept7-switch.html', 'hept7-switch-settings.html', 'hept7-switch.js'].map(get)).then(([css, iconTemplate, settingsTemplate, js]) => {
-  $('<style>').text(Mustache.render(css, { ns: '', cns: '_x' })).appendTo('head');
+fetch('/api/plugin/' + q.get('plugin')).then((r) => r.json()).then(async (model) => {
+  if (model.error) { document.body.textContent = model.error; return; }
 
-  const icon = $('<div class="mod-pedal" mod-instance="/graph/hept7">').html(Mustache.render(iconTemplate, { effect, ns: '', cns: '_x' }));
-  // What MOD UI adds around every plugin icon
+  const preset = q.get('preset') === null || q.get('preset') === '' ? null : model.presets[Number(q.get('preset'))];
+  const [css, iconTemplate, settingsTemplate, js] = await Promise.all([
+    get(model.name, model.gui.stylesheet), get(model.name, model.gui.iconTemplate),
+    model.gui.settingsTemplate ? get(model.name, model.gui.settingsTemplate) : '', get(model.name, model.gui.javascript),
+  ]);
+
+  const effect = { name: model.title, label: model.label, brand: model.brand, color: model.color, ports: model.ports, parameters: model.parameters };
+  const templateData = { effect, brand: model.brand, label: model.label, color: model.color, ns: '', cns: '_x' };
+  $('<style>').text(Mustache.render(css, templateData)).appendTo('head');
+
+  // Values of the ports and of the parameters (the state): defaults, then the factory preset
+  const portValues = window.portValues = {};
+  [...model.ports.control.input, ...model.ports.control.output].forEach((p) => portValues[p.symbol] = p.default);
+  const parameterValues = Object.assign({}, model.state);
+  if (preset) { Object.assign(portValues, preset.ports); Object.assign(parameterValues, preset.state); }
+
+  const icon = $('<div class="mod-pedal" mod-instance="/graph/plugin">').html(Mustache.render(iconTemplate, templateData));
+  const settings = $('<div class="mod-settings" mod-instance="/graph/plugin">');
+
+  // What MOD UI adds around every plugin icon, and to its ports
   const actions = $('<div class="mod-actions">').appendTo(icon);
   $('<div class="mod-settings">').click(() => settings.show()).appendTo(actions);
-  icon.find('[mod-role=output-cv-port]').each(function () {
-    $(this).addClass('mod-output mod-cv-output output-disconnected');
-    $('<div class="mod-output-jack jack-disconnected">').appendTo(this);
+  icon.find('[mod-role$="-port"]').each(function () {
+    const [, direction, type] = $(this).attr('mod-role').match(/^(input|output)-(\w+)-port$/) || [];
+    if (!direction) return;
+    $(this).addClass(`mod-${direction} mod-${type}-${direction} ${direction}-disconnected`);
+    if (direction === 'output') $('<div class="mod-output-jack jack-disconnected">').appendTo(this);
   });
   icon.css({ position: 'absolute', left: 40, top: 70 }).appendTo('#pedalboard-dashboard');
 
-  const settings = $('<div class="mod-settings" mod-instance="/graph/hept7">').html(Mustache.render(settingsTemplate, {
-    effect,
-    presets: {
-      factory: [{ uri: 'u1', label: 'One-of-seven selector' }, { uri: 'u2', label: 'Seven-scene guitar rig' }, { uri: 'u3', label: 'Layer builder' }],
-      user: [{ uri: 'u4', label: 'My gig', path: '/p' }],
-    },
-  })).appendTo('body');
-  settings.find('.js-close').click(() => { settings.hide(); return false; });
+  if (model.gui.settingsTemplate) {
+    settings.html(Mustache.render(settingsTemplate, Object.assign({
+      presets: { factory: model.presets.map((p, i) => ({ uri: 'preset' + i, label: p.label })), user: [{ uri: 'user0', label: 'A user preset', path: '/p' }] },
+    }, templateData)));
+  }
+  settings.appendTo('body').find('.js-close').click(() => { settings.hide(); return false; });
 
-  if (view === 'settings') { $('#pedalboard-dashboard').hide(); } else { settings.hide(); }
+  if (view === 'settings' && model.gui.settingsTemplate) { $('#pedalboard-dashboard').hide(); } else { settings.hide(); }
   if (view === 'shot') {
     $('html, body, #pedalboard-dashboard').css({ background: 'transparent', padding: 0 });
-    icon.css({ position: 'fixed', left: 20, top: 20 }).find('.mod-actions, .mod-pedal-output').hide();
+    icon.css({ position: 'fixed', left: 20, top: 20 }).find('.mod-actions, .mod-pedal-output, .mod-pedal-input').hide();
   }
 
   let method; eval('method = ' + js);
-  const ports = [{ symbol: 'Preset_combobox', value: 0 }];
-  for (let p = 1; p <= TOTAL; p++) {
-    ports.push({ symbol: 'Preset_selector_' + p, value: p === 1 ? 1 : 0 });
-    for (let o = 1; o <= TOTAL; o++) ports.push({ symbol: `Preset_${p}_output_${o}`, value: q.get('dips') === 'rig' ? RIG[p - 1][o - 1] : (p === o ? 1 : 0) });
-    ports.push({ symbol: `Preset_${p}_popup`, value: 1 });
-  }
   const data = {};
   const funcs = {
-    set_port_value: (s, v) => log('set_port_value', s, v),
-    patch_get: (u) => log('patch_get', u),
-    patch_set: (u, t, v) => log('patch_set', u, t, v),
+    set_port_value: (symbol, value) => { portValues[symbol] = value; log('set_port_value', symbol, value); parent.portChanged && parent.portChanged(symbol, value); },
+    // The plugin answers a patch:Get with a 'change' event that has a uri
+    patch_get: (uri) => { log('patch_get', uri); setTimeout(() => send({ type: 'change', uri, value: parameterValues[uri] }), 0); },
+    patch_set: (uri, type, value) => { parameterValues[uri] = value; log('patch_set', uri, type, value); },
+    get_custom_resource_filename: (file) => `/plugin/${model.name}/${file}`,
+    get_port_index_for_symbol: (s) => ([...model.ports.control.input, ...model.ports.control.output].find((p) => p.symbol === s) || { index: -1 }).index,
   };
-  const send = window.send = (e) => method(Object.assign({ data, icon, settings, api_version: 3 }, e), funcs);
+  const send = window.send = (event) => {
+    if (event.symbol !== undefined) portValues[event.symbol] = event.value;
+    method(Object.assign({ data, icon, settings, api_version: 3 }, event), funcs);
+  };
 
-  send({ type: 'start', ports, parameters: [] });
-  NAMES.forEach((name, i) => send({ type: 'change', uri: URI + '#preset_label_' + (i + 1), value: name }));
+  const ports = [{ symbol: ':bypass', value: 0 }, ...[...model.ports.control.input, ...model.ports.control.output].map((p) => ({ symbol: p.symbol, value: portValues[p.symbol] }))];
+  send({ type: 'start', ports, parameters: Object.entries(parameterValues).map(([uri, value]) => ({ uri, value })) });
 
-  const active = Number(q.get('active') || 1);
-  if (active !== 1) send({ type: 'change', symbol: 'Preset_selector_' + active, value: 1 });
   (q.get('addressed') || '').split(',').filter(Boolean).forEach((s) => settings.find(`.mod-address[mod-port-symbol=${s}]`).addClass('addressed'));
-  if (q.get('edit')) settings.find(`.h7s-chip[data-preset=${q.get('edit')}]`).click();
-  if (q.get('toast') === 'off') clearTimeout(data.toastTimer), icon.find('.h7-display').removeClass('is-changed');
-
-  if (q.get('test')) {
-    const out = [];
-    const snap = (t) => out.push(t + ' => ' + JSON.stringify({ active: data.state.active, editing: data.state.editing, label: icon.find('.h7-label').val(), toast: icon.find('.h7-display').hasClass('is-changed'), on: icon.find('.h7-out.is-on').map(function () { return $(this).data('output'); }).get().join(',') }));
-    snap('start');
-    settings.find('.h7s-cell[data-preset=3][data-output=4]').click(); snap('toggle P3/O4');
-    settings.find('.h7s-cell[data-preset=3][data-output=8]').click(); snap('toggle P3 pop-up');
-    icon.find('.h7-pad.p5').click(); snap('pedal button 5');
-    settings.find('.h7s-chip[data-preset=2]').click(); snap('chip 2 (edit only)');
-    settings.find('.h7s-activate[data-preset=2]').click(); snap('activate 2');
-    icon.find('.h7-label').val('Wow #1 é!!! very long name').trigger('input'); snap('label typed on the pedal display');
-    settings.find('.h7s-label[data-preset=4]').val('Four').trigger('input'); snap('label of 4 typed on the settings page');
-    send({ type: 'change', symbol: 'Preset_selector_6', value: 1 }); snap('host: selector 6');
-    send({ type: 'change', symbol: 'Preset_selector_6', value: 1 }); snap('host: selector 6 again');
-    send({ type: 'change', symbol: 'Preset_combobox', value: 3 }); snap('host: combobox 3');
-    send({ type: 'change', symbol: 'Preset_4_popup', value: 0 }); snap('host: pop-up of 4 off');
-    send({ type: 'patch_set', uri: URI + '#preset_label_4', value: 'From state' }); snap('host: label 4');
-    icon.find('.h7-open').click();
-    out.push('LOG ' + JSON.stringify(window.__log));
-    $('<pre id="result">').text(out.join('\n')).appendTo('body');
-  }
+  if (q.get('click')) $(q.get('click')).click();
+  window.ready = true;
+  parent.frameReady && parent.frameReady(model);
 });
 </script>
 </body>

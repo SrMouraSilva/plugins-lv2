@@ -3,25 +3,36 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hept7 Switch - modgui preview</title>
+<title>modgui preview</title>
 <style>
   html, body { height: 100%; margin: 0; }
   body { display: flex; flex-direction: column; font: 14px system-ui, sans-serif; background: #2b2b2b; color: #ddd; }
   header { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center; padding: 8px 12px; background: #111; }
   header div { display: flex; gap: 4px; align-items: center; }
   header b { color: #888; font-weight: 600; margin-right: 4px; }
-  button { font: inherit; color: #ddd; background: #333; border: 1px solid #555; border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  button, select, input { font: inherit; color: #ddd; background: #333; border: 1px solid #555; border-radius: 6px; padding: 4px 10px; }
+  button { cursor: pointer; }
   button:hover { background: #444; }
   button[aria-pressed="true"] { background: #2a9fac; border-color: #7fdee5; color: #06232a; }
-  main { flex: 1; min-height: 0; overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 10px; }
+  button:disabled { opacity: 0.4; cursor: default; }
+  .layout { flex: 1; min-height: 0; display: flex; }
+  main { flex: 1; min-width: 0; overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 10px; }
   iframe { border: 0; background: #fff; height: 100%; max-width: 100%; box-shadow: 0 0 0 1px #555; }
+  aside { width: 300px; overflow: auto; background: #1a1a1a; padding: 8px 10px; display: none; }
+  aside.open { display: block; }
+  aside h2 { font-size: 13px; margin: 4px 0 8px; color: #888; }
+  aside input[type="search"] { width: 100%; box-sizing: border-box; margin-bottom: 8px; }
+  .port { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 2px 0; font-size: 12px; }
+  .port span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .port input[type="number"], .port select { width: 90px; padding: 2px 4px; }
 </style>
 </head>
 <body>
 <header>
+  <div><b>Plugin</b> <select id="plugin"></select></div>
   <div><b>View</b>
     <button data-view="icon">Pedalboard</button>
-    <button data-view="settings">Settings page</button>
+    <button data-view="settings" id="settings">Settings page</button>
   </div>
   <div><b>Screen</b>
     <button data-width="390">Phone 390</button>
@@ -30,41 +41,96 @@
     <button data-width="1366">1366</button>
     <button data-width="0">Fit</button>
   </div>
-  <div><b>Data</b>
-    <button data-dips="">One-of-seven</button>
-    <button data-dips="rig">Guitar rig</button>
-  </div>
-  <div><b>The host selects preset</b>
-    <span id="presets"></span>
-  </div>
+  <div><b>Preset</b> <select id="preset"></select></div>
+  <div><button id="ports-toggle" aria-pressed="false">Ports</button></div>
 </header>
-<main><iframe id="frame" title="plugin"></iframe></main>
+<div class="layout">
+  <main><iframe id="frame" title="plugin"></iframe></main>
+  <aside id="ports">
+    <h2>What the host tells the plugin: change a control port, as a footswitch or a knob would</h2>
+    <input type="search" id="filter" placeholder="Filter ports (e.g. selector)">
+    <div id="port-list"></div>
+  </aside>
+</div>
 <script>
-  const state = { view: 'icon', width: 0, dips: 'rig' };
-  const frame = document.getElementById('frame');
+  const params = new URLSearchParams(location.search);
+  const state = { plugin: params.get('plugin') || '', view: 'icon', width: 0, preset: '' };
+  const $ = (id) => document.getElementById(id);
+  const frame = $('frame');
+  let model = null;
+
+  // Called by the frame
+  window.frameReady = (loaded) => { model = loaded; renderPorts(); $('settings').disabled = !model.gui.settingsTemplate; };
+  window.portChanged = (symbol, value) => {
+    const input = document.querySelector(`[data-symbol="${symbol}"]`);
+    if (input) input.type === 'checkbox' ? input.checked = value == 1 : input.value = value;
+  };
 
   const reload = () => {
-    const query = new URLSearchParams({ view: state.view, dips: state.dips });
+    const query = new URLSearchParams({ plugin: state.plugin, view: state.view, preset: state.preset });
     frame.style.width = state.width ? state.width + 'px' : '100%';
     frame.src = 'frame.html?' + query;
     document.querySelectorAll('[data-view]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.view === state.view));
     document.querySelectorAll('[data-width]').forEach((b) => b.setAttribute('aria-pressed', Number(b.dataset.width) === state.width));
-    document.querySelectorAll('[data-dips]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.dips === state.dips));
+  };
+
+  const renderPorts = () => {
+    const filter = $('filter').value.toLowerCase();
+    const list = $('port-list');
+    list.textContent = '';
+
+    model.ports.control.input.filter((p) => p.symbol.toLowerCase().includes(filter)).forEach((port) => {
+      const row = document.createElement('label');
+      row.className = 'port';
+      row.title = port.comment || port.name;
+      const value = frame.contentWindow.portValues[port.symbol];
+      let input;
+
+      if (port.enumeration && port.scalePoints.length) {
+        input = document.createElement('select');
+        port.scalePoints.forEach((s) => input.add(new Option(s.label, s.value)));
+        input.value = value;
+      } else if (port.toggled) {
+        input = document.createElement('input');
+        input.type = 'checkbox';
+        input.checked = value == 1;
+      } else {
+        input = document.createElement('input');
+        input.type = 'number';
+        Object.assign(input, { min: port.minimum, max: port.maximum, step: port.integer ? 1 : 0.01, value });
+      }
+
+      input.dataset.symbol = port.symbol;
+      input.onchange = () => frame.contentWindow.send({ type: 'change', symbol: port.symbol, value: input.type === 'checkbox' ? Number(input.checked) : Number(input.value) });
+      row.innerHTML = `<span>${port.symbol}</span>`;
+      row.appendChild(input);
+      list.appendChild(row);
+    });
   };
 
   document.querySelectorAll('[data-view]').forEach((b) => b.onclick = () => { state.view = b.dataset.view; reload(); });
   document.querySelectorAll('[data-width]').forEach((b) => b.onclick = () => { state.width = Number(b.dataset.width); reload(); });
-  document.querySelectorAll('[data-dips]').forEach((b) => b.onclick = () => { state.dips = b.dataset.dips; reload(); });
+  $('preset').onchange = () => { state.preset = $('preset').value; reload(); };
+  $('filter').oninput = () => frame.contentWindow.portValues && model && renderPorts();
+  $('ports-toggle').onclick = () => { const open = $('ports').classList.toggle('open'); $('ports-toggle').setAttribute('aria-pressed', open); };
 
-  // What a footswitch / the host does: it tells MOD UI the new value of the selector port
-  for (let p = 1; p <= 7; p++) {
-    const b = document.createElement('button');
-    b.textContent = p;
-    b.onclick = () => frame.contentWindow.send({ type: 'change', symbol: 'Preset_selector_' + p, value: 1 });
-    document.getElementById('presets').appendChild(b);
-  }
+  const choosePlugin = (name) => {
+    state.plugin = name;
+    state.preset = '';
+    state.view = 'icon';
+    fetch('/api/plugin/' + name).then((r) => r.json()).then((m) => {
+      $('preset').innerHTML = '<option value="">Defaults</option>' + (m.presets || []).map((p, i) => `<option value="${i}">${p.label}</option>`).join('');
+      $('preset').disabled = !(m.presets || []).length;
+      reload();
+    });
+  };
+  $('plugin').onchange = () => choosePlugin($('plugin').value);
 
-  reload();
+  fetch('/api/plugins').then((r) => r.json()).then((names) => {
+    $('plugin').innerHTML = names.map((n) => `<option>${n}</option>`).join('');
+    choosePlugin(names.includes(state.plugin) ? state.plugin : names[names.length - 1]);
+    $('plugin').value = state.plugin;
+  });
 </script>
 </body>
 </html>
