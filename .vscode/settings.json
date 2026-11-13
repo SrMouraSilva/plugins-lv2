@@ -2,7 +2,7 @@
     "files.associations": {
         "control-input-port-change-request.h": "c",
         "lv2-hmi.h": "c",
-        "tetr4-switch.h": "c",
+        "ports.h": "c",
         "controller.h": "c",
         "lv2-controller.h": "c",
         "lv2-gossiper.h": "c",
