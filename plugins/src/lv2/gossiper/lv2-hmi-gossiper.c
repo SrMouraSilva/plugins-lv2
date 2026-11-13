@@ -74,6 +74,10 @@ void notify_footswithes_updated(Gossiper* gossiper, LV2_HMI_Addressing addressin
 void notify_potentiometers_updated(Gossiper* gossiper, LV2_HMI_Addressing addressing);
 
 void run_notification(Gossiper* this) {
+    if (this->lv2->hmi.widgetControl == NULL) {
+        return;
+    }
+
     for (unsigned int notifier=0; notifier<TOTAL_GOSSIPER_NOTIFIERS; notifier++) {
         LV2_HMI_Addressing addressing = this->notifiers[notifier].hmi_addressing;
 

@@ -44,7 +44,8 @@ const char* instantiate(
         features,
         LV2_LOG__log,                              &this->logger.log,         false,
         LV2_URID__map,                             &this->map,                true,
-        LV2_HMI__WidgetControl,                    &this->hmi,                true,
+        // Optional (as in the TTL): hosts without it, such as the MOD Duo, still load the plugin, without notifications
+        LV2_HMI__WidgetControl,                    &this->hmi,                false,
         NULL
     );
 
