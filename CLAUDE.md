@@ -87,6 +87,10 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   the closure. Events: `start` (ports and parameters), `change` (`symbol` or, for a `patch:Get` reply, `uri`),
   `patch_set`. Talk to the plugin with `funcs.set_port_value`, `patch_get`, `patch_set`. Update the UI optimistically
   and let the host's events correct it. `event.icon` and `event.settings` are the two DOM roots.
+* **MOD UI covers the whole icon with `.mod-drag-handle` (absolute, `z-index: 20`)** so the plugin can be dragged.
+  Every clickable element of the icon (buttons, inputs) needs `position: relative; z-index: 30`, or it cannot be
+  clicked on a real pedalboard. A script's `.click()` does not notice this; the preview shows a red bar for it.
+  The settings window is opened by MOD UI with `z-index: 1000`, above the pedals.
 * The icon must not rely on MOD UI's film/knob widgets; draw it yourself. Outputs are laid out by MOD UI
   (`.mod-pedal-output`, 56 px per jack): with many outputs use a CSS grid with several columns.
 * **A custom settings page** (`modgui:settingsTemplate`): root absolutely positioned over the whole window, a

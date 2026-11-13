@@ -22,6 +22,12 @@ every request, so edit `plugins/resources/<plugin>.lv2/modgui/*` and reload. Onl
 * **Ports**: change a control port as the host would (a footswitch, a knob, MIDI...), to see how the interface
   reacts, for instance the display of Hept7 Switch announcing a change of preset (filter `selector`, tick one)
 
+* **Clickable check**: after loading, the frame tests (`elementFromPoint`) that every button/input of the visible view
+  can actually be reached, and shows a red bar listing the ones that something covers. MOD UI puts a drag handle
+  (`z-index: 20`) over the whole icon, so a control without `position: relative; z-index: 30` cannot be clicked on a
+  real pedalboard, even though a script's `.click()` works. The frame also gives the plugin icon and the settings
+  window the same `z-index` MOD UI gives them (30 and 1000)
+
 It loads MOD UI's own CSS, jQuery and Mustache and renders the templates the way `modgui.js` does, but there is no
 plugin behind it: the ports only hold the values they are given, and what the interface asks the plugin to do is
 only logged (`__log` in the frame's console). So the plugin does not react to its own controls (for example, a

@@ -57,14 +57,14 @@ fetch('/api/plugin/' + q.get('plugin')).then((r) => r.json()).then(async (model)
 
   // What MOD UI adds around every plugin icon, and to its ports
   const actions = $('<div class="mod-actions">').appendTo(icon);
-  $('<div class="mod-settings">').click(() => settings.show()).appendTo(actions);
+  $('<div class="mod-settings">').click(() => { settings.css('z-index', 1000).show(); }).appendTo(actions);
   icon.find('[mod-role$="-port"]').each(function () {
     const [, direction, type] = $(this).attr('mod-role').match(/^(input|output)-(\w+)-port$/) || [];
     if (!direction) return;
     $(this).addClass(`mod-${direction} mod-${type}-${direction} ${direction}-disconnected`);
     if (direction === 'output') $('<div class="mod-output-jack jack-disconnected">').appendTo(this);
   });
-  icon.css({ position: 'absolute', left: 40, top: 70 }).appendTo('#pedalboard-dashboard');
+  icon.css({ position: 'absolute', left: 40, top: 70, 'z-index': 30 }).appendTo('#pedalboard-dashboard');
 
   if (model.gui.settingsTemplate) {
     settings.html(Mustache.render(settingsTemplate, Object.assign({
@@ -73,7 +73,7 @@ fetch('/api/plugin/' + q.get('plugin')).then((r) => r.json()).then(async (model)
   }
   settings.appendTo('body').find('.js-close').click(() => { settings.hide(); return false; });
 
-  if (view === 'settings' && model.gui.settingsTemplate) { $('#pedalboard-dashboard').hide(); } else { settings.hide(); }
+  if (view === 'settings' && model.gui.settingsTemplate) { settings.css('z-index', 1000); } else { settings.hide(); }
   if (view === 'shot') {
     $('html, body, #pedalboard-dashboard').css({ background: 'transparent', padding: 0 });
     icon.css({ position: 'fixed', left: 20, top: 20 }).find('.mod-actions, .mod-pedal-output, .mod-pedal-input').hide();
@@ -99,6 +99,30 @@ fetch('/api/plugin/' + q.get('plugin')).then((r) => r.json()).then(async (model)
 
   (q.get('addressed') || '').split(',').filter(Boolean).forEach((s) => settings.find(`.mod-address[mod-port-symbol=${s}]`).addClass('addressed'));
   if (q.get('click')) $(q.get('click')).click();
+  // Whatever is meant to be clicked must not be covered by something else. MOD UI puts a drag handle over the
+  // whole icon (z-index 20): controls need position: relative and a higher z-index, or they cannot be clicked.
+  const covered = (root) => [...root.querySelectorAll('button, input, select, a, [role=switch]')].filter((el) => {
+    const r = el.getBoundingClientRect();
+    const style = getComputedStyle(el);
+    // Not checked: invisible by design (a hidden radio/checkbox behind its label) or disabled
+    if (!r.width || !r.height || style.visibility === 'hidden' || style.opacity === '0' || el.disabled) return false;
+    const x = r.left + r.width / 2, y = r.top + r.height / 2;
+    if (x < 0 || y < 0 || x > innerWidth || y > innerHeight) return false;   // scrolled out: not checked
+    const hit = document.elementFromPoint(x, y);
+    return hit !== el && !el.contains(hit) && !(hit && hit.contains(el));
+  });
+  window.checkClickable = () => {
+    const root = (view === 'settings' ? settings : icon)[0];
+    const bad = $(root).is(':visible') ? covered(root) : [];
+    $('#hit-warning').remove();
+    if (bad.length) {
+      $('<div id="hit-warning">').css({ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 99999, background: '#b00020', color: '#fff', font: '13px system-ui', padding: '8px 12px' })
+        .text(`${bad.length} control(s) cannot be clicked, something covers them: ` + bad.slice(0, 4).map((e) => (e.className || e.tagName) + ' (under ' + (document.elementFromPoint(e.getBoundingClientRect().left + e.getBoundingClientRect().width / 2, e.getBoundingClientRect().top + e.getBoundingClientRect().height / 2).className || '?') + ')').join(', '))
+        .appendTo('body');
+    }
+    return bad.length;
+  };
+  setTimeout(window.checkClickable, 300);
   window.ready = true;
   parent.frameReady && parent.frameReady(model);
 });
