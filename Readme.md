@@ -52,7 +52,8 @@ The big sibling of Tetr4 Switch, in turquoise: **7 presets** (one footswitch eac
 * **Custom preset labels**, **custom HMI** (LED colours, active preset pop-up) and the optional HMI `WidgetControl` feature work as in Tetr4 Switch
 * The CV jacks are laid out in two columns (1-4 and 5-7) on the pedalboard
 * 3 factory presets: *One-of-seven selector*, *Seven-scene guitar rig* and *Layer builder*
-* Try the interface in a browser, without a device: [tools/modgui-preview](./tools/modgui-preview/README.md)
+* [User manual (PDF)](./plugins/resources/hept7-switch.lv2/modgui/manual.pdf)
+* Try the interface of any plugin in a browser, without a device: [tools/modgui-preview](./tools/modgui-preview/README.md)
 
 ## Download
 

@@ -11,6 +11,7 @@
         modgui:javascript <modgui/hept7-switch.js> ;
         modgui:screenshot <modgui/screenshot.png> ;
         modgui:thumbnail <modgui/thumbnail.png> ;
+        modgui:documentation <modgui/manual.pdf> ;
         modgui:brand "SrMouraSilva" ;
         modgui:label "Hept7 switch" ;
         modgui:model "boxy-small" ;
