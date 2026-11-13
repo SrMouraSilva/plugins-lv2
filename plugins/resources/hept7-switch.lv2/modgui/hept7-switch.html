@@ -2,22 +2,23 @@
     <div mod-role="drag-handle" class="mod-drag-handle"></div>
 
     <div class="hept7">
-      <div class="h7-head">
-        <span class="h7-brand">Hept7 switch</span>
-        <button type="button" class="h7-open">Edit scenes</button>
-      </div>
-
-      <!-- Mini display: shows the preset and, for a moment, announces every change of preset. It is the only
-           feedback on devices that cannot show a plugin pop-up (MOD Duo) -->
-      <div class="h7-display" data-preset="1">
-        <div class="h7-num">1</div>
-
-        <div class="h7-info">
-          <span class="h7-caption">Preset <b class="h7-caption-num">1</b> of 7</span>
-          <input type="text" class="h7-label" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of the active preset" value="Preset 1" />
+      <div class="h7-main">
+        <div class="h7-head">
+          <span class="h7-brand">Hept7 switch</span>
+          <button type="button" class="h7-open">Edit scenes</button>
         </div>
 
-        <ol class="h7-outs" aria-label="CV outputs of the active preset">
+        <!-- Mini display: shows the preset and, for a moment, announces every change of preset. It is the only
+             feedback on devices that cannot show a plugin pop-up (MOD Duo) -->
+        <div class="h7-display" data-preset="1">
+          <div class="h7-num">1</div>
+
+          <div class="h7-info">
+            <span class="h7-caption">Preset <b class="h7-caption-num">1</b> of 8</span>
+            <input type="text" class="h7-label" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of the active preset" value="Preset 1" />
+          </div>
+
+          <ol class="h7-outs" aria-label="CV outputs of the active preset">
           <li><button type="button" class="h7-out" data-output="1" role="switch" aria-checked="false" aria-label="CV output 1 in the active preset" title="CV Output 1: click to turn it on or off in this preset"><i></i><b>1</b></button></li>
           <li><button type="button" class="h7-out" data-output="2" role="switch" aria-checked="false" aria-label="CV output 2 in the active preset" title="CV Output 2: click to turn it on or off in this preset"><i></i><b>2</b></button></li>
           <li><button type="button" class="h7-out" data-output="3" role="switch" aria-checked="false" aria-label="CV output 3 in the active preset" title="CV Output 3: click to turn it on or off in this preset"><i></i><b>3</b></button></li>
@@ -25,15 +26,16 @@
           <li><button type="button" class="h7-out" data-output="5" role="switch" aria-checked="false" aria-label="CV output 5 in the active preset" title="CV Output 5: click to turn it on or off in this preset"><i></i><b>5</b></button></li>
           <li><button type="button" class="h7-out" data-output="6" role="switch" aria-checked="false" aria-label="CV output 6 in the active preset" title="CV Output 6: click to turn it on or off in this preset"><i></i><b>6</b></button></li>
           <li><button type="button" class="h7-out" data-output="7" role="switch" aria-checked="false" aria-label="CV output 7 in the active preset" title="CV Output 7: click to turn it on or off in this preset"><i></i><b>7</b></button></li>
-        </ol>
+          <li><button type="button" class="h7-out" data-output="8" role="switch" aria-checked="false" aria-label="CV output 8 in the active preset" title="CV Output 8: click to turn it on or off in this preset"><i></i><b>8</b></button></li>
+          </ol>
 
-        <div class="h7-toast" aria-live="polite" aria-atomic="true">
-          <span class="h7-toast-num">1</span>
-          <span class="h7-toast-label">Preset 1</span>
+          <div class="h7-toast" aria-live="polite" aria-atomic="true">
+            <span class="h7-toast-num">1</span>
+            <span class="h7-toast-label">Preset 1</span>
+          </div>
         </div>
-      </div>
 
-      <div class="h7-pads">
+        <div class="h7-pads">
         <button type="button" class="h7-pad p1" data-preset="1" aria-pressed="false" title="Preset 1"><i></i><span>1</span></button>
         <button type="button" class="h7-pad p2" data-preset="2" aria-pressed="false" title="Preset 2"><i></i><span>2</span></button>
         <button type="button" class="h7-pad p3" data-preset="3" aria-pressed="false" title="Preset 3"><i></i><span>3</span></button>
@@ -41,7 +43,13 @@
         <button type="button" class="h7-pad p5" data-preset="5" aria-pressed="false" title="Preset 5"><i></i><span>5</span></button>
         <button type="button" class="h7-pad p6" data-preset="6" aria-pressed="false" title="Preset 6"><i></i><span>6</span></button>
         <button type="button" class="h7-pad p7" data-preset="7" aria-pressed="false" title="Preset 7"><i></i><span>7</span></button>
+        <button type="button" class="h7-pad p8" data-preset="8" aria-pressed="false" title="Preset 8"><i></i><span>8</span></button>
+        </div>
       </div>
+
+      <!-- The back plate of the CV jacks: the jacks themselves (below, .mod-pedal-output) are placed over it, so
+           they are part of the device instead of floating next to it -->
+      <div class="h7-jacks" aria-hidden="true"></div>
     </div>
 
     <div class="mod-pedal-input">

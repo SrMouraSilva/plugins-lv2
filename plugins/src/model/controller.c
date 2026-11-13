@@ -115,19 +115,6 @@ bool Controller_set_preset_label(Controller* self, unsigned int index, const cha
 }
 
 
-bool Controller_is_popup_enabled(const Controller* self, unsigned int index) {
-#if HAS_POPUP_SWITCH
-    if (self == NULL || index >= TOTAL_PRESETS || self->preset_outputs[index][TOTAL_OUTPUTS] == NULL) {
-        return true;
-    }
-
-    return !is_zero(*self->preset_outputs[index][TOTAL_OUTPUTS]);
-#else
-    return true;
-#endif
-}
-
-
 bool Controller_is_preset_changed(void* self) {
     Controller* this = (Controller*) self;
 

@@ -1,7 +1,7 @@
 # Hept7 Switch — User Manual
 
-Hept7 Switch turns **one footswitch press into seven CV signals at once**. You
-choose, for each of its **7 presets**, which of its **7 CV outputs** are on
+Hept7 Switch turns **one footswitch press into eight CV signals at once**. You
+choose, for each of its **8 presets**, which of its **8 CV outputs** are on
 (10 V) or off (0 V), and then change between presets with a footswitch, a
 knob or the screen. Route the CV outputs to the on/off (or any CV-addressable)
 parameters of your plugins and a single press can turn a whole scene on.
@@ -17,10 +17,10 @@ a **display** that shows the preset (and announces every change of it), and a
 | Item | What it does |
 |---|---|
 | **Display, big number and name** | The active preset. **The name is editable**: click it and type (up to 15 characters). It is also the text the device screen pop-up shows (see section 4). |
-| **Display, seven squares** | The CV outputs that are on in the active preset. **They are buttons**: click one to turn that output on or off in the active preset, without opening the settings page (the other presets are edited on the settings page). |
-| **Seven buttons** | Select the preset. The button of the active preset lights up in its colour; each preset has the same colour as its footswitch LED on the device (red, yellow, green, cyan, blue, magenta, white). |
+| **Display, eight squares** | The CV outputs that are on in the active preset. **They are buttons**: click one to turn that output on or off in the active preset, without opening the settings page (the other presets are edited on the settings page). |
+| **Eight buttons** | Select the preset. The button of the active preset lights up in its colour. The colours are those of the footswitch LEDs on the device (red, yellow, green, cyan, blue, magenta, white); the device has only seven, so preset 8 shows orange here and reuses red on the device LED. |
 | **Edit scenes** | Opens the settings page (section 2). The gear icon above the plugin opens it too. |
-| **Seven CV jacks** | `CV Output 1`–`7`, in two columns. |
+| **Eight CV jacks** | `CV Output 1`–`8`, on the back plate at the right, in two columns (1–4 and 5–8). |
 
 ### The display announces every change of preset
 
@@ -46,8 +46,6 @@ screen and is made for touch: big cells, nothing smaller than a fingertip.
   CV output. A lit cell means that output is **on** while that preset is active.
   The row of the active preset is highlighted, and its lit cells are the CV
   signals actually leaving the plugin right now.
-* **Pop-up** (last column): turns the device screen pop-up on or off for that
-  preset (see section 4). It is on by default.
 * **Hardware**: tiles to assign a footswitch, a knob or a device screen page to
   the plugin's controls (section 3). A tile shows a check mark once it is assigned.
 * **Saved presets**: the factory presets (section 5) and your own presets.
@@ -64,8 +62,8 @@ assignment dialog) to the control you want to use:
 
 | Control | Use |
 |---|---|
-| `Preset 1`–`7` | One footswitch per preset. Turning one on turns the others off. |
-| `Current preset` | One knob (or CV/MIDI value) that selects among the seven presets. |
+| `Preset 1`–`8` | One footswitch per preset. Turning one on turns the others off. |
+| `Current preset` | One knob (or CV/MIDI value) that selects among the eight presets. |
 
 ## 4. The pop-up on the device screen
 
@@ -78,9 +76,8 @@ to the plugin, so:
    you want to see the pop-up (use a second, third or fourth one for other pages).
 2. Every change of preset now shows the name of the preset on that page.
 
-The **Pop-up** cell of each preset turns it off for that preset only. The
-footswitch LEDs and the preset knob follow the preset as well, with the colour
-of each preset.
+The footswitch LEDs and the preset knob follow the preset as well, with the
+colour of each preset.
 
 > The pop-up needs a firmware with the HMI feature. Without it (older firmware, or
 > a MOD Duo) the plugin works the same, only without the pop-up and the LEDs: the
@@ -90,21 +87,20 @@ of each preset.
 
 | Preset | Idea |
 |---|---|
-| **One-of-seven selector** | Exactly one CV output is on at a time: preset N turns on output N. A 7-way selector. |
-| **Seven-scene guitar rig** | Outputs 1 Compressor, 2 Overdrive, 3 Distortion, 4 Chorus, 5 Delay, 6 Reverb, 7 Boost, and the presets *Clean, Chorus, Crunch, Lead, Solo, Ambient, Kill* (everything off). |
+| **One-of-eight selector** | Exactly one CV output is on at a time: preset N turns on output N. An 8-way selector. |
+| **Eight-scene guitar rig** | Outputs 1 Compressor, 2 Overdrive, 3 Distortion, 4 Chorus, 5 Delay, 6 Reverb, 7 Boost, 8 Noise gate, and the presets *Clean, Chorus, Crunch, Rhythm, Lead, Solo, Ambient, Kill* (everything off). |
 | **Layer builder** | Preset N turns on outputs 1 to N: stack one more layer on every press. |
 
 ## 6. Port reference
 
 | Port | Type | Description |
 |---|---|---|
-| `CV Output 1`–`7` | CV output | 10 V while on in the active preset, 0 V otherwise. |
-| `Preset 1`–`7` | Control input (toggle) | Footswitch selectors. |
+| `CV Output 1`–`8` | CV output | 10 V while on in the active preset, 0 V otherwise. |
+| `Preset 1`–`8` | Control input (toggle) | Footswitch selectors. |
 | `Current preset` | Control input (enumeration) | Shows and selects the active preset. |
 | `Assign to notify 1`–`4` | Control input | Assign to a device page so the pop-up shows there. No audio or CV effect. |
 | `Preset N - Output M` | Control input (toggle) | Dip switch: is CV output M on while preset N is active? |
-| `Preset N - Pop-up` | Control input (toggle) | Show the pop-up when preset N is selected? |
-| Preset label 1–7 | Plugin property (patch) | The name of each preset. Edited on the display or on the settings page. |
+| Preset label 1–8 | Plugin property (patch) | The name of each preset. Edited on the display or on the settings page. |
 
 Names use letters, digits, spaces and `+ - : _ .`; anything else is replaced with `_`.
 They are saved with the pedalboard and with the plugin presets.

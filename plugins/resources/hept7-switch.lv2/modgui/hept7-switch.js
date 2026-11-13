@@ -1,16 +1,14 @@
 function (event, funcs) {
   // One function serves every instance of the plugin, so nothing mutable lives in this closure:
   // the state of each instance is kept in event.data.
-  const TOTAL = 7;          // presets (one footswitch each) and CV outputs
-  const DIPS = 8;           // dip switches of a preset: the CV outputs, then the HMI pop-up one
-  const POPUP = DIPS;       // number of the pop-up dip switch
+  const TOTAL = 8;          // presets (one footswitch each) and CV outputs
   const URI = 'http://srmourasilva.github.io/plugins/hept7-switch';
   const LABEL_MAX_LENGTH = 15;
   const INVALID_LABEL_CHARS = /[^a-zA-Z0-9+\-:_. ]/g;
   const TOAST_MS = 1700;
 
   const labelUri = (preset) => `${URI}#preset_label_${preset}`;
-  const dipSymbol = (preset, dip) => dip === POPUP ? `Preset_${preset}_popup` : `Preset_${preset}_output_${dip}`;
+  const dipSymbol = (preset, output) => `Preset_${preset}_output_${output}`;
   const range = (from, to) => Array.from({ length: to - from + 1 }, (_, i) => from + i);
 
   // Mirrors is_valid_label_char() / sanitize_label() in plugins/src/utils/utils.c
@@ -19,13 +17,13 @@ function (event, funcs) {
     .replace(INVALID_LABEL_CHARS, '_');
 
   // ---------------------------------------------------------------------------
-  // State: { active: 1..7, editing: 1..7, dips: [preset][dip] => bool, labels: [preset] => string }
+  // State: { active: 1..8, editing: 1..8, dips: [preset][output] => bool, labels: [preset] => string }
 
   const newState = () => ({
     active: 1,
     editing: 1,
-    // Same defaults as the TTL: preset N turns on output N, and every preset shows its pop-up
-    dips: range(1, TOTAL).map((p) => range(1, DIPS).map((d) => d === POPUP || p === d)),
+    // Same defaults as the TTL: preset N turns on output N
+    dips: range(1, TOTAL).map((p) => range(1, TOTAL).map((o) => p === o)),
     labels: range(1, TOTAL).map((p) => `Preset ${p}`),
   });
 
@@ -35,12 +33,10 @@ function (event, funcs) {
   // Building the settings page (the pedalboard icon is static HTML)
 
   const rowHtml = (preset) => {
-    const cells = range(1, DIPS).map((dip) => {
-      const what = dip === POPUP ? 'pop-up on the device screen' : `CV output ${dip}`;
-
-      return `<button type="button" role="switch" aria-checked="false" class="h7s-cell${dip === POPUP ? ' h7s-cell-popup' : ''}" data-preset="${preset}" data-output="${dip}" ` +
-        `aria-label="Preset ${preset}, ${what}" title="Preset ${preset} - ${dip === POPUP ? 'Pop-up' : `Output ${dip}`}"></button>`;
-    }).join('');
+    const cells = range(1, TOTAL).map((output) =>
+      `<button type="button" role="switch" aria-checked="false" class="h7s-cell" data-preset="${preset}" data-output="${output}" ` +
+      `aria-label="Preset ${preset}, CV output ${output}" title="Preset ${preset} - Output ${output}"></button>`
+    ).join('');
 
     return `<div class="h7s-row p${preset}" data-preset="${preset}">` +
       `<button type="button" class="h7s-rowpad" data-preset="${preset}" aria-pressed="false" title="Make preset ${preset} the active preset"><b>${preset}</b></button>` +
@@ -58,9 +54,7 @@ function (event, funcs) {
     ).join(''));
 
     const head = '<div class="h7s-row h7s-head" aria-hidden="true"><span class="h7s-corner">Preset</span><span class="h7s-spacer"></span>' +
-      '<div class="h7s-cells">' +
-      range(1, TOTAL).map((o) => `<span class="h7s-col">${o}</span>`).join('') +
-      '<span class="h7s-col h7s-col-popup">Pop-up</span></div></div>';
+      '<div class="h7s-cells">' + range(1, TOTAL).map((o) => `<span class="h7s-col">${o}</span>`).join('') + '</div></div>';
 
     settings.find('.h7s-matrix').html(head + range(1, TOTAL).map(rowHtml).join(''));
   };
@@ -183,14 +177,14 @@ function (event, funcs) {
     funcs.set_port_value(`Preset_selector_${preset}`, 1);
   };
 
-  const toggleDip = (event, preset, dip) => {
+  const toggleDip = (event, preset, output) => {
     const state = event.data.state;
-    const on = !state.dips[preset - 1][dip - 1];
+    const on = !state.dips[preset - 1][output - 1];
 
-    state.dips[preset - 1][dip - 1] = on;
+    state.dips[preset - 1][output - 1] = on;
     draw(event);
 
-    funcs.set_port_value(dipSymbol(preset, dip), on ? 1 : 0);
+    funcs.set_port_value(dipSymbol(preset, output), on ? 1 : 0);
   };
 
   const changeLabel = (event, input, preset) => {
@@ -245,12 +239,12 @@ function (event, funcs) {
     const state = event.data.state;
     let match;
 
-    if ((match = /^Preset_(\d+)_(?:output_(\d+)|(popup))$/.exec(symbol || ''))) {
+    if ((match = /^Preset_(\d+)_output_(\d+)$/.exec(symbol || ''))) {
       const preset = Number(match[1]);
-      const dip = match[3] ? POPUP : Number(match[2]);
+      const output = Number(match[2]);
 
-      if (preset >= 1 && preset <= TOTAL && dip >= 1 && dip <= DIPS) {
-        state.dips[preset - 1][dip - 1] = value == 1;
+      if (preset >= 1 && preset <= TOTAL && output >= 1 && output <= TOTAL) {
+        state.dips[preset - 1][output - 1] = value == 1;
       }
 
     } else if ((match = /^Preset_selector_(\d+)$/.exec(symbol || ''))) {

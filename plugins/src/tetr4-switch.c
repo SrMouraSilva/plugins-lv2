@@ -93,7 +93,7 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
 
     } else if (port >= PORT_PRESET_OUTPUT_FIRST && port < PORT_EVENTS_IN) {
         unsigned int dip = port - PORT_PRESET_OUTPUT_FIRST;
-        self->preset_outputs[dip / TOTAL_DIPS][dip % TOTAL_DIPS] = (float*) data;
+        self->preset_outputs[dip / TOTAL_OUTPUTS][dip % TOTAL_OUTPUTS] = (float*) data;
 
     } else if (port == PORT_EVENTS_IN) {
         self->lv2->events_in = (const LV2_Atom_Sequence*) data;

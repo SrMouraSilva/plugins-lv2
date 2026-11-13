@@ -49,7 +49,7 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
 ## C code and LV2
 
 * **One code base, several plugins.** Tetr4 and Hept7 Switch are the same sources sized by `src/config.h`
-  (`-DHEPT7_SWITCH`). Do not copy files to make a variant: parametrise (`TOTAL_PRESETS`, `TOTAL_OUTPUTS`, `TOTAL_DIPS`).
+  (`-DHEPT7_SWITCH`). Do not copy files to make a variant: parametrise (`TOTAL_PRESETS`, `TOTAL_OUTPUTS`).
 * **Port layout lives in `src/model/ports.h`** as contiguous ranges (`PORT_*_FIRST`), never as one `case` per port.
   The TTL indices must match it; `_Static_assert`s pin the Tetr4 layout. Changing a port means changing, together:
   `ports.h`, the TTL (indices, groups), `presets.ttl`, the modgui JS, the manual.
@@ -91,6 +91,7 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   Every clickable element of the icon (buttons, inputs) needs `position: relative; z-index: 30`, or it cannot be
   clicked on a real pedalboard. A script's `.click()` does not notice this; the preview shows a red bar for it.
   The settings window is opened by MOD UI with `z-index: 1000`, above the pedals.
+  An overlay drawn over those controls (an announcement, a tooltip) then needs a higher one still, with `pointer-events: none`.
 * The icon must not rely on MOD UI's film/knob widgets; draw it yourself. Outputs are laid out by MOD UI
   (`.mod-pedal-output`, 56 px per jack): with many outputs use a CSS grid with several columns.
 * **A custom settings page** (`modgui:settingsTemplate`): root absolutely positioned over the whole window, a

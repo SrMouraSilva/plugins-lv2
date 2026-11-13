@@ -25,7 +25,8 @@
  * of a factory preset, or what the page around it sends), and what the interface asks the plugin to do is
  * logged in window.__log.
  *
- * Query:  plugin=NAME   view=icon|settings|shot   preset=INDEX   addressed=Symbol,Symbol   click=CSS selector
+ * Query:  plugin=NAME   view=icon|settings|shot (the icon alone, for screenshots; jacks=1 keeps the jacks)
+ *          preset=INDEX   addressed=Symbol,Symbol   click=CSS selector
  * Outside: window.send(event) sends an event to the plugin javascript, window.portValues holds the ports.
  */
 const q = new URLSearchParams(location.search);
@@ -76,7 +77,7 @@ fetch('/api/plugin/' + q.get('plugin')).then((r) => r.json()).then(async (model)
   if (view === 'settings' && model.gui.settingsTemplate) { settings.css('z-index', 1000); } else { settings.hide(); }
   if (view === 'shot') {
     $('html, body, #pedalboard-dashboard').css({ background: 'transparent', padding: 0 });
-    icon.css({ position: 'fixed', left: 20, top: 20 }).find('.mod-actions, .mod-pedal-output, .mod-pedal-input').hide();
+    icon.css({ position: 'fixed', left: 20, top: 20 }).find(q.get('jacks') ? '.mod-actions' : '.mod-actions, .mod-pedal-output, .mod-pedal-input').hide();
   }
 
   let method; eval('method = ' + js);
