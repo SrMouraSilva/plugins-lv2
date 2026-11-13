@@ -54,7 +54,8 @@ const char* LV2_Controller_initialize(
         features,
         LV2_LOG__log,                              &this->logger.log,         false,
         LV2_URID__map,                             &this->map,                true,
-        LV2_HMI__WidgetControl,                    &this->hmi,                true,
+        // Optional (as in the TTL): hosts without it, such as the MOD Duo, still load the plugin, without LEDs/labels
+        LV2_HMI__WidgetControl,                    &this->hmi,                false,
         LV2_CONTROL_INPUT_PORT_CHANGE_REQUEST_URI, &this->control_input_port, true,
         NULL
     );
