@@ -35,7 +35,8 @@ typedef struct {
 
     float* current_preset_index;
 
-    float* preset_outputs[TOTAL_PRESETS][TOTAL_OUTPUTS];
+    /** Dip switches: the first TOTAL_OUTPUTS of each preset are the CV outputs, then the pop-up switch (if any) */
+    float* preset_outputs[TOTAL_PRESETS][TOTAL_DIPS];
 
     float* inverters[TOTAL_OUTPUTS];
 
@@ -140,5 +141,8 @@ extern Controller* Controller_instantiate();
 extern void Controller_cleanup(Controller* self);
 extern const char* Controller_get_preset_label(const Controller* self, unsigned int index);
 extern bool Controller_set_preset_label(Controller* self, unsigned int index, const char* new_label);
+
+/** Should the HMI show a pop-up when this preset is selected? Always, if the plugin has no switch for it */
+extern bool Controller_is_popup_enabled(const Controller* self, unsigned int index);
 
 #endif

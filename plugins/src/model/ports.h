@@ -17,22 +17,25 @@
  *   Preset selectors  TOTAL_PRESETS ports (footswitch selectors)
  *   Current preset    1 port
  *   Assign to notify  TOTAL_CONTROLLER_NOTIFIERS ports
- *   Dip switches      TOTAL_PRESETS * TOTAL_OUTPUTS ports (preset by preset)
+ *   Dip switches      TOTAL_PRESETS * TOTAL_DIPS ports (preset by preset)
  *   Events in/out     2 ports
  *
  * Tetr4 Switch (4x4):  outputs 0-3, selectors 4-7, current preset 8, notify 9-12, dips 13-28, events 29-30
- * Hept7 Switch (8x8):  outputs 0-7, selectors 8-15, current preset 16, notify 17-20, dips 21-84, events 85-86
+ * Hept7 Switch (7x7, 8 dips per preset): outputs 0-6, selectors 7-13, current preset 14, notify 15-18, dips 19-74, events 75-76
  */
 #define PORT_OUTPUT_CV_FIRST          0
 #define PORT_PRESET_SELECTOR_FIRST    (PORT_OUTPUT_CV_FIRST + TOTAL_OUTPUTS)
 #define PORT_PRESET_SELECT            (PORT_PRESET_SELECTOR_FIRST + TOTAL_PRESETS)
 #define PORT_ASSIGN_TO_NOTIFY_FIRST   (PORT_PRESET_SELECT + 1)
 #define PORT_PRESET_OUTPUT_FIRST      (PORT_ASSIGN_TO_NOTIFY_FIRST + TOTAL_CONTROLLER_NOTIFIERS)
-#define PORT_EVENTS_IN                (PORT_PRESET_OUTPUT_FIRST + TOTAL_PRESETS * TOTAL_OUTPUTS)
+#define PORT_EVENTS_IN                (PORT_PRESET_OUTPUT_FIRST + TOTAL_PRESETS * TOTAL_DIPS)
 #define PORT_EVENTS_OUT               (PORT_EVENTS_IN + 1)
 
-/** Index of the dip switch that sets CV output @p output (0-based) while preset @p preset (0-based) is active */
-#define PORT_PRESET_OUTPUT(preset, output) (PORT_PRESET_OUTPUT_FIRST + (preset) * TOTAL_OUTPUTS + (output))
+/**
+ * Index of the dip switch @p dip (0-based) of preset @p preset (0-based): the first TOTAL_OUTPUTS ones set the
+ * CV outputs while the preset is active; the next one (if HAS_POPUP_SWITCH) turns its HMI pop-up on/off
+ */
+#define PORT_PRESET_OUTPUT(preset, dip) (PORT_PRESET_OUTPUT_FIRST + (preset) * TOTAL_DIPS + (dip))
 
 #ifndef HEPT7_SWITCH
 // The Tetr4 Switch TTL numbers its ports by hand: guard against the layout drifting from it

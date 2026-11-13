@@ -2,22 +2,19 @@
     <div mod-role="drag-handle" class="mod-drag-handle"></div>
 
     <div class="hept7">
-      <div class="h7-rail h7-rail-left">
-        <button type="button" class="h7-pad  p1" data-preset="1" aria-pressed="false" title="Preset 1"><span>1</span></button>
-        <button type="button" class="h7-pad  p2" data-preset="2" aria-pressed="false" title="Preset 2"><span>2</span></button>
-        <button type="button" class="h7-pad  p3" data-preset="3" aria-pressed="false" title="Preset 3"><span>3</span></button>
-        <button type="button" class="h7-pad  p4" data-preset="4" aria-pressed="false" title="Preset 4"><span>4</span></button>
+      <div class="h7-head">
+        <span class="h7-brand">Hept7 switch</span>
+        <button type="button" class="h7-open">Edit scenes</button>
       </div>
 
-      <div class="h7-screen">
-        <div class="h7-top">
-          <span class="h7-brand">Hept7 switch</span>
-          <span class="h7-count"><span class="h7-count-num">1</span> / 8</span>
-        </div>
+      <!-- Mini display: shows the preset and, for a moment, announces every change of preset. It is the only
+           feedback on devices that cannot show a plugin pop-up (MOD Duo) -->
+      <div class="h7-display" data-preset="1">
+        <div class="h7-num">1</div>
 
-        <div class="h7-now">
-          <span class="h7-now-num">1</span>
-          <span class="h7-now-label">Preset 1</span>
+        <div class="h7-info">
+          <span class="h7-caption">Preset <b class="h7-caption-num">1</b> of 7</span>
+          <input type="text" class="h7-label" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of the active preset" value="Preset 1" />
         </div>
 
         <ol class="h7-outs" aria-label="CV outputs that are on">
@@ -28,17 +25,22 @@
           <li class="h7-out" data-output="5" title="CV Output 5"><i></i><b>5</b></li>
           <li class="h7-out" data-output="6" title="CV Output 6"><i></i><b>6</b></li>
           <li class="h7-out" data-output="7" title="CV Output 7"><i></i><b>7</b></li>
-          <li class="h7-out" data-output="8" title="CV Output 8"><i></i><b>8</b></li>
         </ol>
 
-        <button type="button" class="h7-open">Edit scenes</button>
+        <div class="h7-toast" aria-live="polite" aria-atomic="true">
+          <span class="h7-toast-num">1</span>
+          <span class="h7-toast-label">Preset 1</span>
+        </div>
       </div>
 
-      <div class="h7-rail h7-rail-right">
-        <button type="button" class="h7-pad  p5" data-preset="5" aria-pressed="false" title="Preset 5"><span>5</span></button>
-        <button type="button" class="h7-pad  p6" data-preset="6" aria-pressed="false" title="Preset 6"><span>6</span></button>
-        <button type="button" class="h7-pad  p7" data-preset="7" aria-pressed="false" title="Preset 7"><span>7</span></button>
-        <button type="button" class="h7-pad  p8" data-preset="8" aria-pressed="false" title="Preset 8"><span>8</span></button>
+      <div class="h7-pads">
+        <button type="button" class="h7-pad p1" data-preset="1" aria-pressed="false" title="Preset 1"><i></i><span>1</span></button>
+        <button type="button" class="h7-pad p2" data-preset="2" aria-pressed="false" title="Preset 2"><i></i><span>2</span></button>
+        <button type="button" class="h7-pad p3" data-preset="3" aria-pressed="false" title="Preset 3"><i></i><span>3</span></button>
+        <button type="button" class="h7-pad p4" data-preset="4" aria-pressed="false" title="Preset 4"><i></i><span>4</span></button>
+        <button type="button" class="h7-pad p5" data-preset="5" aria-pressed="false" title="Preset 5"><i></i><span>5</span></button>
+        <button type="button" class="h7-pad p6" data-preset="6" aria-pressed="false" title="Preset 6"><i></i><span>6</span></button>
+        <button type="button" class="h7-pad p7" data-preset="7" aria-pressed="false" title="Preset 7"><i></i><span>7</span></button>
       </div>
     </div>
 

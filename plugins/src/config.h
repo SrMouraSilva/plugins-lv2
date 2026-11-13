@@ -16,10 +16,15 @@
 #define PLUGIN_NAME "Hept7 Switch"
 #define PLUGIN_URI "http://srmourasilva.github.io/plugins/hept7-switch"
 
-/** Total of presets. The number of footswitches is also related */
-#define TOTAL_PRESETS 8
+/** Total of presets. The number of footswitches is also related (7: one per HMI LED colour) */
+#define TOTAL_PRESETS 7
 /** How many CV outputs there are */
-#define TOTAL_OUTPUTS 8
+#define TOTAL_OUTPUTS 7
+/**
+ * Dip switches of each preset: one per CV output, plus a last one that turns on/off the HMI pop-up
+ * shown when the preset is selected
+ */
+#define TOTAL_DIPS 8
 
 #else
 
@@ -30,8 +35,13 @@
 #define TOTAL_PRESETS 4
 /** How many CV outputs there are */
 #define TOTAL_OUTPUTS 4
+/** Dip switches of each preset: one per CV output */
+#define TOTAL_DIPS 4
 
 #endif
+
+/** Does each preset have a dip switch (after the CV outputs ones) to turn on/off its HMI pop-up? */
+#define HAS_POPUP_SWITCH (TOTAL_DIPS > TOTAL_OUTPUTS)
 
 #define PRESET_LABEL_MAX_SIZE 16
 
