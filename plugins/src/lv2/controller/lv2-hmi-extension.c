@@ -127,6 +127,10 @@ void run_footswitches(Controller* self, unsigned int current_preset) {
 void run_footswitch(Controller* self, unsigned int index_footswitch, bool on, bool force_update) {
     HMI* hmi = &self->lv2->hmi;
 
+    if (hmi->widgetControl == NULL) {
+        return;
+    }
+
     LV2_HMI_Addressing address = hmi->preset[index_footswitch];
 
     if (address != NULL && (force_update || self->is_preset_changed(self))) {
@@ -155,6 +159,10 @@ void run_footswitch(Controller* self, unsigned int index_footswitch, bool on, bo
 void run_select(Controller* self, unsigned int current_preset, bool force_update) {
     HMI* hmi = &self->lv2->hmi;
 
+    if (hmi->widgetControl == NULL) {
+        return;
+    }
+
     if (hmi->select != NULL && (force_update || self->is_preset_changed(self))) {
         LV2_HMI_LED_Colour current_led_colour = led_colours[current_preset];
 
@@ -177,6 +185,10 @@ void run_select(Controller* self, unsigned int current_preset, bool force_update
 
 void run_notification(Controller* self, unsigned int current_preset, bool force_update) {
     HMI* hmi = &self->lv2->hmi;
+
+    if (hmi->widgetControl == NULL) {
+        return;
+    }
 
     if (hmi->notifiers != NULL && (force_update || self->is_preset_changed(self))) {
         const char* message = Controller_get_preset_label(self, current_preset);
