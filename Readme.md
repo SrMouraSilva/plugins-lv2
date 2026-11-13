@@ -87,7 +87,7 @@ chmod +x /usr/bin/ping
 # To force a build without changing the version number into srmourasilva-plugins.mk
 rm -r /root/mod-workdir/moddwarf/build/srmourasilva-plugins-*
 
-# Copy files from container
+# Copy files from container (optional, CI already does this - see Releases)
 # Note: open a new tab
 docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/tetr4-switch.lv2/ binaries/dwarf
 docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/gossiper.lv2/ binaries/dwarf

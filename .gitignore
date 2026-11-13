@@ -1,2 +1,4 @@
 *.so
 .DS_Store
+binaries/
+out/
