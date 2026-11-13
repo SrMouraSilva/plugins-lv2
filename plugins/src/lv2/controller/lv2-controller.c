@@ -1,6 +1,14 @@
+/*
+ * Copyright 2021-2026 Paulo Mateus
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include <stdlib.h>
 
 #include <lv2/core/lv2_util.h>
+#include <lv2/lv2plug.in/ns/ext/atom/atom.h>
+#include <lv2/lv2plug.in/ns/ext/patch/patch.h>
 
 #include "lv2-controller.h"
 
@@ -11,8 +19,14 @@ const char* LV2_Controller_initialize(
     const LV2_Feature* const* features
 );
 
+static void map_uris(LV2_URID_Map* map, Controller_URIs* uris);
+
 LV2_Controller* LV2_Controller_instantiate() {
-    LV2_Controller* self = (LV2_Controller*) malloc(sizeof(LV2_Controller));
+    LV2_Controller* self = (LV2_Controller*) calloc(1, sizeof(LV2_Controller));
+
+    if (self == NULL) {
+        return NULL;
+    }
 
     self->initialize = &LV2_Controller_initialize;
 
@@ -40,7 +54,8 @@ const char* LV2_Controller_initialize(
         features,
         LV2_LOG__log,                              &this->logger.log,         false,
         LV2_URID__map,                             &this->map,                true,
-        LV2_HMI__WidgetControl,                    &this->hmi,                true,
+        // Optional (as in the TTL): hosts without it, such as the MOD Duo, still load the plugin, without LEDs/labels
+        LV2_HMI__WidgetControl,                    &this->hmi,                false,
         LV2_CONTROL_INPUT_PORT_CHANGE_REQUEST_URI, &this->control_input_port, true,
         NULL
     );
@@ -49,7 +64,26 @@ const char* LV2_Controller_initialize(
 
     if (missing) {
         lv2_log_error(&this->logger, "Missing feature <%s>\n", missing);
+        return missing;
     }
 
-    return missing;
+    map_uris(this->map, &this->uris);
+    lv2_atom_forge_init(&this->forge, this->map);
+
+    return NULL;
+}
+
+static void map_uris(LV2_URID_Map* map, Controller_URIs* uris) {
+    uris->atom_Object = map->map(map->handle, LV2_ATOM__Object);
+    uris->atom_URID = map->map(map->handle, LV2_ATOM__URID);
+    uris->atom_String = map->map(map->handle, LV2_ATOM__String);
+    uris->patch_Set = map->map(map->handle, LV2_PATCH__Set);
+    uris->patch_Get = map->map(map->handle, LV2_PATCH__Get);
+    uris->patch_property = map->map(map->handle, LV2_PATCH__property);
+    uris->patch_value = map->map(map->handle, LV2_PATCH__value);
+
+    uris->preset_label[0] = map->map(map->handle, TETR4_SWITCH_PLUGIN_URI "#preset_label_1");
+    uris->preset_label[1] = map->map(map->handle, TETR4_SWITCH_PLUGIN_URI "#preset_label_2");
+    uris->preset_label[2] = map->map(map->handle, TETR4_SWITCH_PLUGIN_URI "#preset_label_3");
+    uris->preset_label[3] = map->map(map->handle, TETR4_SWITCH_PLUGIN_URI "#preset_label_4");
 }

@@ -1,3 +1,9 @@
+/*
+ * Copyright 2021-2026 Paulo Mateus
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #ifndef TETR4_SWITCH_H
 #define	TETR4_SWITCH_H
 
@@ -51,6 +57,7 @@ typedef enum {
     PRESET_4_OUTPUT_4 = 28,
 
     EVENTS_IN = 29,
+    EVENTS_OUT = 30,
 } PortIndex;
 
 #endif

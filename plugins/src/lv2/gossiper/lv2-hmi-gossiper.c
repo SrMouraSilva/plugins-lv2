@@ -1,3 +1,9 @@
+/*
+ * Copyright 2021-2026 Paulo Mateus
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -41,14 +47,17 @@ static void unaddressed(LV2_Handle handle, uint32_t index) {
 }
 
 void assign(Gossiper* this, PortIndex index, LV2_HMI_Addressing addressing) {
-    unsigned int i = index - ASSIGN_TO_NOTIFY_1;
-
     switch (index) {
         case ASSIGN_TO_NOTIFY_1:
         case ASSIGN_TO_NOTIFY_2:
         case ASSIGN_TO_NOTIFY_3:
-        case ASSIGN_TO_NOTIFY_4:
+        case ASSIGN_TO_NOTIFY_4: {
+            unsigned int i = index - ASSIGN_TO_NOTIFY_1;
             this->notifiers[i].hmi_addressing = addressing;
+            break;
+        }
+
+        default:
             break;
     }
 }
@@ -65,6 +74,10 @@ void notify_footswithes_updated(Gossiper* gossiper, LV2_HMI_Addressing addressin
 void notify_potentiometers_updated(Gossiper* gossiper, LV2_HMI_Addressing addressing);
 
 void run_notification(Gossiper* this) {
+    if (this->lv2->hmi.widgetControl == NULL) {
+        return;
+    }
+
     for (unsigned int notifier=0; notifier<TOTAL_GOSSIPER_NOTIFIERS; notifier++) {
         LV2_HMI_Addressing addressing = this->notifiers[notifier].hmi_addressing;
 
@@ -87,8 +100,11 @@ void notify_footswithes_updated(Gossiper* gossiper, LV2_HMI_Addressing addressin
             continue;
         }
 
-        char message[14];
-        sprintf(message, "Footswitch %d", i+1);
+        const char* message = Gossiper_get_footswitch_label(gossiper, i);
+
+        if (message == NULL) {
+            continue;
+        }
 
         hmi->widgetControl->popup_message(
             hmi->widgetControl->handle,

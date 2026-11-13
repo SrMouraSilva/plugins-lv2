@@ -1,3 +1,9 @@
+/*
+ * Copyright 2021-2026 Paulo Mateus
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #ifndef GOSSIPER_H
 #define	GOSSIPER_H
 
@@ -64,7 +70,8 @@ typedef enum {
     OUTPUT_POTENTIOMETER_CV_3 = 32,
     OUTPUT_POTENTIOMETER_CV_4 = 33,
 
-    //EVENTS_IN = 34,
+    EVENTS_IN = 34,
+    EVENTS_OUT = 35,
 } PortIndex;
 
 // -----------------------------------------------
@@ -111,6 +118,7 @@ typedef struct {
     // Attributes
     Switch switches[TOTAL_GOSSIPER_FOOTSWITCHES];
     Potentiometer potentiometers[TOTAL_GOSSIPER_POTENTIOMETER];
+    char* footswitch_labels[TOTAL_GOSSIPER_FOOTSWITCHES];
 
     Notifier notifiers[TOTAL_GOSSIPER_NOTIFIERS];
 
@@ -151,5 +159,8 @@ typedef struct {
 
 
 extern Gossiper* Gossiper_instantiate();
+extern void Gossiper_cleanup(Gossiper* self);
+extern const char* Gossiper_get_footswitch_label(const Gossiper* self, unsigned int index);
+extern bool Gossiper_set_footswitch_label(Gossiper* self, unsigned int index, const char* new_label);
 
 #endif

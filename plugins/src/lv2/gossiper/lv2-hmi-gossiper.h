@@ -1,3 +1,9 @@
+/*
+ * Copyright 2021-2026 Paulo Mateus
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #ifndef LV2_HMI_GOSSIPER_H
 #define	LV2_HMI_GOSSIPER_H
 
