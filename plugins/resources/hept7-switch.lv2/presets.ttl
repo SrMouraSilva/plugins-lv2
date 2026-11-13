@@ -4,13 +4,13 @@
 @prefix state: <http://lv2plug.in/ns/ext/state#> .
 @prefix plug:  <http://srmourasilva.github.io/plugins/hept7-switch#> .
 
-# Factory presets. Each one starts on preset 1 and names the eight presets after the scenes.
+# Factory presets. Each one starts on preset 1 and names the seven presets after the scenes.
 
-# Exactly one CV output is on at a time: preset N turns on output N. Use it as an 8-way selector.
-<http://srmourasilva.github.io/plugins/hept7-switch#preset-one-of-eight-selector>
+# Exactly one CV output is on at a time: preset N turns on output N (output 8 stays off).
+<http://srmourasilva.github.io/plugins/hept7-switch#preset-one-to-one-selector>
     a pset:Preset ;
     lv2:appliesTo <http://srmourasilva.github.io/plugins/hept7-switch> ;
-    rdfs:label "One-of-eight selector" ;
+    rdfs:label "One-to-one selector" ;
     lv2:port [ lv2:symbol "Preset_selector_1" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_selector_2" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_selector_3" ; pset:value 0.0 ] ,
@@ -18,7 +18,6 @@
              [ lv2:symbol "Preset_selector_5" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_selector_6" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_selector_7" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_selector_8" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_combobox" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_1_output_1" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_1_output_2" ; pset:value 0.0 ] ,
@@ -75,15 +74,7 @@
              [ lv2:symbol "Preset_7_output_5" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_7_output_6" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_7_output_7" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_7_output_8" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_1" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_2" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_3" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_4" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_5" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_6" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_7" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_8" ; pset:value 1.0 ] ;
+             [ lv2:symbol "Preset_7_output_8" ; pset:value 0.0 ] ;
     state:state [
         plug:preset_label_1 "Preset 1" ;
         plug:preset_label_2 "Preset 2" ;
@@ -92,14 +83,13 @@
         plug:preset_label_5 "Preset 5" ;
         plug:preset_label_6 "Preset 6" ;
         plug:preset_label_7 "Preset 7" ;
-        plug:preset_label_8 "Preset 8" ;
     ] .
 
 # Outputs: 1 Compressor, 2 Overdrive, 3 Distortion, 4 Chorus, 5 Delay, 6 Reverb, 7 Boost, 8 Noise gate.
-<http://srmourasilva.github.io/plugins/hept7-switch#preset-eight-scene-guitar-rig>
+<http://srmourasilva.github.io/plugins/hept7-switch#preset-seven-scene-guitar-rig>
     a pset:Preset ;
     lv2:appliesTo <http://srmourasilva.github.io/plugins/hept7-switch> ;
-    rdfs:label "Eight-scene guitar rig" ;
+    rdfs:label "Seven-scene guitar rig" ;
     lv2:port [ lv2:symbol "Preset_selector_1" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_selector_2" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_selector_3" ; pset:value 0.0 ] ,
@@ -107,7 +97,6 @@
              [ lv2:symbol "Preset_selector_5" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_selector_6" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_selector_7" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_selector_8" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_combobox" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_1_output_1" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_1_output_2" ; pset:value 0.0 ] ,
@@ -136,52 +125,43 @@
              [ lv2:symbol "Preset_4_output_1" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_4_output_2" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_4_output_3" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_4_output_4" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_4_output_5" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_4_output_6" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_4_output_7" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_4_output_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_4_output_5" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_4_output_6" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_4_output_7" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_4_output_8" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_5_output_1" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_5_output_2" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_5_output_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_5_output_2" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_5_output_3" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_5_output_4" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_5_output_5" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_5_output_6" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_5_output_6" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_5_output_7" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_5_output_8" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_6_output_1" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_6_output_1" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_6_output_2" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_6_output_3" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_6_output_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_6_output_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_6_output_4" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_6_output_5" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_6_output_6" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_6_output_7" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_6_output_8" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_7_output_1" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_6_output_7" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_6_output_8" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_7_output_1" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_7_output_2" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_7_output_3" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_7_output_4" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_7_output_5" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_7_output_6" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_7_output_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_7_output_5" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_7_output_6" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_7_output_7" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_7_output_8" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_1" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_2" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_3" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_4" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_5" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_6" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_7" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_8" ; pset:value 0.0 ] ;
+             [ lv2:symbol "Preset_7_output_8" ; pset:value 0.0 ] ;
     state:state [
         plug:preset_label_1 "Clean" ;
         plug:preset_label_2 "Chorus" ;
         plug:preset_label_3 "Crunch" ;
-        plug:preset_label_4 "Rhythm" ;
-        plug:preset_label_5 "Lead" ;
-        plug:preset_label_6 "Solo" ;
-        plug:preset_label_7 "Ambient" ;
-        plug:preset_label_8 "Kill" ;
+        plug:preset_label_4 "Lead" ;
+        plug:preset_label_5 "Solo" ;
+        plug:preset_label_6 "Ambient" ;
+        plug:preset_label_7 "Kill" ;
     ] .
 
 # Each preset adds one more output on top of the previous ones (preset N turns on outputs 1 to N): stack layers one footswitch press at a time.
@@ -196,7 +176,6 @@
              [ lv2:symbol "Preset_selector_5" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_selector_6" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_selector_7" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_selector_8" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_combobox" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_1_output_1" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_1_output_2" ; pset:value 0.0 ] ,
@@ -253,15 +232,7 @@
              [ lv2:symbol "Preset_7_output_5" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_7_output_6" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_7_output_7" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_7_output_8" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_8_output_1" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_8_output_2" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_8_output_3" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_8_output_4" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_8_output_5" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_8_output_6" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_8_output_7" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_8_output_8" ; pset:value 1.0 ] ;
+             [ lv2:symbol "Preset_7_output_8" ; pset:value 0.0 ] ;
     state:state [
         plug:preset_label_1 "Layer 1" ;
         plug:preset_label_2 "Layer 2" ;
@@ -270,6 +241,5 @@
         plug:preset_label_5 "Layer 5" ;
         plug:preset_label_6 "Layer 6" ;
         plug:preset_label_7 "Layer 7" ;
-        plug:preset_label_8 "Layer 8" ;
     ] .
 

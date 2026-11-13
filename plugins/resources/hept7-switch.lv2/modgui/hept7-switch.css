@@ -31,7 +31,7 @@
   --h7-muted: #9fd5da;
   --h7-accent: #8ff3f7;
 
-  /* One colour per preset. The first seven are the LED colours of the device footswitches (the eighth LED reuses red) */
+  /* One colour per preset: the seven LED colours of the device footswitches */
   --h7-c1: #ff5a5f;
   --h7-c2: #ffd23f;
   --h7-c3: #4ade80;
@@ -39,7 +39,6 @@
   --h7-c5: #5b97ff;
   --h7-c6: #e879f9;
   --h7-c7: #f4f8f8;
-  --h7-c8: #ff9f43;
 
   font-family: "Avenir Next Rounded", "SF Pro Rounded", ui-rounded, "Nunito", "Varela Round", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
@@ -51,7 +50,6 @@
 .h7-pad.p5, .h7s-row.p5, .h7s-chip.p5, .h7-display[data-preset="5"] { --c: var(--h7-c5); }
 .h7-pad.p6, .h7s-row.p6, .h7s-chip.p6, .h7-display[data-preset="6"] { --c: var(--h7-c6); }
 .h7-pad.p7, .h7s-row.p7, .h7s-chip.p7, .h7-display[data-preset="7"] { --c: var(--h7-c7); }
-.h7-pad.p8, .h7s-row.p8, .h7s-chip.p8, .h7-display[data-preset="8"] { --c: var(--h7-c8); }
 
 /* Resets with no specificity, so every component rule below wins over them */
 :where(.hept7, .h7s) :where(button, input) {
@@ -389,11 +387,11 @@
   100% { transform: scale(1); }
 }
 
-/* The eight buttons, side by side */
+/* The seven buttons, side by side */
 .h7-pads {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: 9px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .h7-pad {
@@ -524,7 +522,7 @@
   height: 32px;
   border-radius: 10px;
   background:
-    linear-gradient(90deg, var(--h7-c1) 0 12.5%, var(--h7-c2) 0 25%, var(--h7-c3) 0 37.5%, var(--h7-c4) 0 50%, var(--h7-c5) 0 62.5%, var(--h7-c6) 0 75%, var(--h7-c7) 0 87.5%, var(--h7-c8) 0) bottom / 100% 9px no-repeat,
+    linear-gradient(90deg, var(--h7-c1) 0 14.28%, var(--h7-c2) 0 28.56%, var(--h7-c3) 0 42.84%, var(--h7-c4) 0 57.12%, var(--h7-c5) 0 71.4%, var(--h7-c6) 0 85.68%, var(--h7-c7) 0) bottom / 100% 9px no-repeat,
     var(--h7-ink);
   box-shadow: 0 2px 0 var(--h7-turq-deep);
 }
@@ -575,7 +573,6 @@
 .h7s[data-active="5"] { --c-active: var(--h7-c5); }
 .h7s[data-active="6"] { --c-active: var(--h7-c6); }
 .h7s[data-active="7"] { --c-active: var(--h7-c7); }
-.h7s[data-active="8"] { --c-active: var(--h7-c8); }
 
 .h7s .js-close {
   min-width: 100px;
@@ -1000,8 +997,8 @@
 
   .h7s-chips {
     display: grid;
-    grid-template-columns: repeat(8, minmax(0, 1fr));
-    gap: 5px;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
   }
 
   .h7s-chip {

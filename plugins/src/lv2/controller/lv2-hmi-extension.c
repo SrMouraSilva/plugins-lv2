@@ -17,11 +17,11 @@
 #include "../../model/controller.h"
 #include "../../model/ports.h"
 
-/** Colour of each preset's LED. The HMI only has seven, so Hept7 Switch's eighth preset reuses the first one's */
+/** Colour of each preset's LED. The HMI has seven of them, which is why Hept7 Switch has seven presets */
 static const LV2_HMI_LED_Colour led_colours[TOTAL_PRESETS] = {
 #ifdef HEPT7_SWITCH
     LV2_HMI_LED_Colour_Red, LV2_HMI_LED_Colour_Yellow, LV2_HMI_LED_Colour_Green, LV2_HMI_LED_Colour_Cyan,
-    LV2_HMI_LED_Colour_Blue, LV2_HMI_LED_Colour_Magenta, LV2_HMI_LED_Colour_White, LV2_HMI_LED_Colour_Red,
+    LV2_HMI_LED_Colour_Blue, LV2_HMI_LED_Colour_Magenta, LV2_HMI_LED_Colour_White,
 #else
     LV2_HMI_LED_Colour_Red, LV2_HMI_LED_Colour_Yellow, LV2_HMI_LED_Colour_Cyan, LV2_HMI_LED_Colour_Magenta,
 #endif

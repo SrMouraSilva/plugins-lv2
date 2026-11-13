@@ -21,7 +21,7 @@
  *   Events in/out     2 ports
  *
  * Tetr4 Switch (4x4):  outputs 0-3, selectors 4-7, current preset 8, notify 9-12, dips 13-28, events 29-30
- * Hept7 Switch (8x8):  outputs 0-7, selectors 8-15, current preset 16, notify 17-20, dips 21-84, events 85-86
+ * Hept7 Switch (7 presets x 8 outputs):  outputs 0-7, selectors 8-14, current preset 15, notify 16-19, dips 20-75, events 76-77
  */
 #define PORT_OUTPUT_CV_FIRST          0
 #define PORT_PRESET_SELECTOR_FIRST    (PORT_OUTPUT_CV_FIRST + TOTAL_OUTPUTS)

@@ -9,12 +9,12 @@
                  <modgui.ttl> ;
     lv2:optionalFeature lv2:hardRTCapable .
 
-<http://srmourasilva.github.io/plugins/hept7-switch#preset-one-of-eight-selector>
+<http://srmourasilva.github.io/plugins/hept7-switch#preset-one-to-one-selector>
     a pset:Preset ;
     lv2:appliesTo <http://srmourasilva.github.io/plugins/hept7-switch> ;
     rdfs:seeAlso <presets.ttl> .
 
-<http://srmourasilva.github.io/plugins/hept7-switch#preset-eight-scene-guitar-rig>
+<http://srmourasilva.github.io/plugins/hept7-switch#preset-seven-scene-guitar-rig>
     a pset:Preset ;
     lv2:appliesTo <http://srmourasilva.github.io/plugins/hept7-switch> ;
     rdfs:seeAlso <presets.ttl> .

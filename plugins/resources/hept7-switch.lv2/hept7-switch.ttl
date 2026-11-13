@@ -17,11 +17,11 @@
 
 # Port layout (keep in sync with plugins/src/model/ports.h):
 #   0-7    CV outputs
-#   8-15   Preset selectors (footswitch selectors)
-#   16     Current preset
-#   17-20  Assign to notify
-#   21-84  Dip switches, preset by preset (preset 1 outputs 1-8, preset 2 outputs 1-8, ...)
-#   85-86  Events in / out
+#   8-14   Preset selectors (footswitch selectors)
+#   15     Current preset
+#   16-19  Assign to notify
+#   20-75  Dip switches, preset by preset (preset 1 outputs 1-8, preset 2 outputs 1-8, ...)
+#   76-77  Events in / out
 
 plug:preset_label_1
     a lv2:Parameter ;
@@ -63,12 +63,6 @@ plug:preset_label_7
     a lv2:Parameter ;
     rdfs:label "Preset label 7" ;
     rdfs:comment "Custom name shown for preset 7, instead of the default 'Preset 7'." ;
-    rdfs:range atom:String .
-
-plug:preset_label_8
-    a lv2:Parameter ;
-    rdfs:label "Preset label 8" ;
-    rdfs:comment "Custom name shown for preset 8, instead of the default 'Preset 8'." ;
     rdfs:range atom:String .
 
 plug:group_cv_outputs
@@ -121,11 +115,6 @@ plug:group_preset_7
     lv2:symbol "preset_7" ;
     lv2:name "Preset 7 - Dip switches" .
 
-plug:group_preset_8
-    a pg:Group ;
-    lv2:symbol "preset_8" ;
-    lv2:name "Preset 8 - Dip switches" .
-
 <http://srmourasilva.github.io/plugins/hept7-switch>
     a lv2:Plugin, mod:ControlVoltagePlugin, mod:UtilityPlugin ;
 
@@ -152,7 +141,7 @@ doap:maintainer [
     lv2:microVersion 0 ;
 
 rdfs:comment """
-Hept7 switch is a loop switcher for CV, the big sibling of Tetr4 switch. Store which of its eight CV outputs are on in each of eight presets, and change between them with a footswitch. It comes with a full-screen, touch-friendly settings page and a small display that shows the preset on every device, even the ones without a screen for plugins.
+Hept7 switch is a loop switcher for CV, the big sibling of Tetr4 switch. Store which of its eight CV outputs are on in each of seven presets, and change between them with a footswitch. It comes with a full-screen, touch-friendly settings page and a small display that shows the preset on every device, even the ones without a screen for plugins.
 """ ;
 
 lv2:port
@@ -304,23 +293,11 @@ lv2:port
     lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
     rdfs:comment "Selects preset 7 as the active preset. Assign a footswitch to it to switch presets. Turning it on turns the other Preset selectors off." ;
 ],
-[
-    a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 15;
-    lv2:symbol "Preset_selector_8" ;
-    pg:group plug:group_preset_selection ;
-    lv2:name "Preset 8" ;
-    lv2:default 0.0 ;
-    lv2:minimum 0.0 ;
-    lv2:maximum 1 ;
-    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
-    rdfs:comment "Selects preset 8 as the active preset. Assign a footswitch to it to switch presets. Turning it on turns the other Preset selectors off." ;
-],
 # Based on
 # https://github.com/moddevices/mod-utilities/blob/b8a9d4558efc136c4ce90657a5958064640074f1/SwitchBox_2-1/switchbox_2-1.lv2/switchbox_2-1.ttl
 [
     a lv2:ControlPort, lv2:InputPort;
-    lv2:index 16;
+    lv2:index 15;
     lv2:symbol "Preset_combobox";
     pg:group plug:group_preset_selection ;
     lv2:name "Current preset";
@@ -332,15 +309,14 @@ lv2:port
         lv2:scalePoint [rdfs:label "Prst 5"; rdf:value 4];
         lv2:scalePoint [rdfs:label "Prst 6"; rdf:value 5];
         lv2:scalePoint [rdfs:label "Prst 7"; rdf:value 6];
-        lv2:scalePoint [rdfs:label "Prst 8"; rdf:value 7];
     lv2:default 0;
     lv2:minimum 0;
-    lv2:maximum 7;
-    rdfs:comment "Shows and selects which preset (1 to 8) is currently active. It is kept in sync with the Preset selector footswitches." ;
+    lv2:maximum 6;
+    rdfs:comment "Shows and selects which preset (1 to 7) is currently active. It is kept in sync with the Preset selector footswitches." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort;
-    lv2:index 17;
+    lv2:index 16;
     lv2:symbol "Assign_to_notify_1";
     pg:group plug:group_notifications ;
     lv2:name "Assign to notify 1";
@@ -352,7 +328,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort;
-    lv2:index 18;
+    lv2:index 17;
     lv2:symbol "Assign_to_notify_2";
     pg:group plug:group_notifications ;
     lv2:name "Assign to notify 2";
@@ -364,7 +340,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort;
-    lv2:index 19;
+    lv2:index 18;
     lv2:symbol "Assign_to_notify_3";
     pg:group plug:group_notifications ;
     lv2:name "Assign to notify 3";
@@ -376,7 +352,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort;
-    lv2:index 20;
+    lv2:index 19;
     lv2:symbol "Assign_to_notify_4";
     pg:group plug:group_notifications ;
     lv2:name "Assign to notify 4";
@@ -388,7 +364,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 21;
+    lv2:index 20;
     lv2:symbol "Preset_1_output_1" ;
     pg:group plug:group_preset_1 ;
     lv2:name "Preset 1 - Output 1" ;
@@ -400,7 +376,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 22;
+    lv2:index 21;
     lv2:symbol "Preset_1_output_2" ;
     pg:group plug:group_preset_1 ;
     lv2:name "Preset 1 - Output 2" ;
@@ -412,7 +388,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 23;
+    lv2:index 22;
     lv2:symbol "Preset_1_output_3" ;
     pg:group plug:group_preset_1 ;
     lv2:name "Preset 1 - Output 3" ;
@@ -424,7 +400,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 24;
+    lv2:index 23;
     lv2:symbol "Preset_1_output_4" ;
     pg:group plug:group_preset_1 ;
     lv2:name "Preset 1 - Output 4" ;
@@ -436,7 +412,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 25;
+    lv2:index 24;
     lv2:symbol "Preset_1_output_5" ;
     pg:group plug:group_preset_1 ;
     lv2:name "Preset 1 - Output 5" ;
@@ -448,7 +424,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 26;
+    lv2:index 25;
     lv2:symbol "Preset_1_output_6" ;
     pg:group plug:group_preset_1 ;
     lv2:name "Preset 1 - Output 6" ;
@@ -460,7 +436,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 27;
+    lv2:index 26;
     lv2:symbol "Preset_1_output_7" ;
     pg:group plug:group_preset_1 ;
     lv2:name "Preset 1 - Output 7" ;
@@ -472,7 +448,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 28;
+    lv2:index 27;
     lv2:symbol "Preset_1_output_8" ;
     pg:group plug:group_preset_1 ;
     lv2:name "Preset 1 - Output 8" ;
@@ -484,7 +460,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 29;
+    lv2:index 28;
     lv2:symbol "Preset_2_output_1" ;
     pg:group plug:group_preset_2 ;
     lv2:name "Preset 2 - Output 1" ;
@@ -496,7 +472,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 30;
+    lv2:index 29;
     lv2:symbol "Preset_2_output_2" ;
     pg:group plug:group_preset_2 ;
     lv2:name "Preset 2 - Output 2" ;
@@ -508,7 +484,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 31;
+    lv2:index 30;
     lv2:symbol "Preset_2_output_3" ;
     pg:group plug:group_preset_2 ;
     lv2:name "Preset 2 - Output 3" ;
@@ -520,7 +496,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 32;
+    lv2:index 31;
     lv2:symbol "Preset_2_output_4" ;
     pg:group plug:group_preset_2 ;
     lv2:name "Preset 2 - Output 4" ;
@@ -532,7 +508,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 33;
+    lv2:index 32;
     lv2:symbol "Preset_2_output_5" ;
     pg:group plug:group_preset_2 ;
     lv2:name "Preset 2 - Output 5" ;
@@ -544,7 +520,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 34;
+    lv2:index 33;
     lv2:symbol "Preset_2_output_6" ;
     pg:group plug:group_preset_2 ;
     lv2:name "Preset 2 - Output 6" ;
@@ -556,7 +532,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 35;
+    lv2:index 34;
     lv2:symbol "Preset_2_output_7" ;
     pg:group plug:group_preset_2 ;
     lv2:name "Preset 2 - Output 7" ;
@@ -568,7 +544,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 36;
+    lv2:index 35;
     lv2:symbol "Preset_2_output_8" ;
     pg:group plug:group_preset_2 ;
     lv2:name "Preset 2 - Output 8" ;
@@ -580,7 +556,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 37;
+    lv2:index 36;
     lv2:symbol "Preset_3_output_1" ;
     pg:group plug:group_preset_3 ;
     lv2:name "Preset 3 - Output 1" ;
@@ -592,7 +568,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 38;
+    lv2:index 37;
     lv2:symbol "Preset_3_output_2" ;
     pg:group plug:group_preset_3 ;
     lv2:name "Preset 3 - Output 2" ;
@@ -604,7 +580,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 39;
+    lv2:index 38;
     lv2:symbol "Preset_3_output_3" ;
     pg:group plug:group_preset_3 ;
     lv2:name "Preset 3 - Output 3" ;
@@ -616,7 +592,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 40;
+    lv2:index 39;
     lv2:symbol "Preset_3_output_4" ;
     pg:group plug:group_preset_3 ;
     lv2:name "Preset 3 - Output 4" ;
@@ -628,7 +604,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 41;
+    lv2:index 40;
     lv2:symbol "Preset_3_output_5" ;
     pg:group plug:group_preset_3 ;
     lv2:name "Preset 3 - Output 5" ;
@@ -640,7 +616,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 42;
+    lv2:index 41;
     lv2:symbol "Preset_3_output_6" ;
     pg:group plug:group_preset_3 ;
     lv2:name "Preset 3 - Output 6" ;
@@ -652,7 +628,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 43;
+    lv2:index 42;
     lv2:symbol "Preset_3_output_7" ;
     pg:group plug:group_preset_3 ;
     lv2:name "Preset 3 - Output 7" ;
@@ -664,7 +640,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 44;
+    lv2:index 43;
     lv2:symbol "Preset_3_output_8" ;
     pg:group plug:group_preset_3 ;
     lv2:name "Preset 3 - Output 8" ;
@@ -676,7 +652,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 45;
+    lv2:index 44;
     lv2:symbol "Preset_4_output_1" ;
     pg:group plug:group_preset_4 ;
     lv2:name "Preset 4 - Output 1" ;
@@ -688,7 +664,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 46;
+    lv2:index 45;
     lv2:symbol "Preset_4_output_2" ;
     pg:group plug:group_preset_4 ;
     lv2:name "Preset 4 - Output 2" ;
@@ -700,7 +676,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 47;
+    lv2:index 46;
     lv2:symbol "Preset_4_output_3" ;
     pg:group plug:group_preset_4 ;
     lv2:name "Preset 4 - Output 3" ;
@@ -712,7 +688,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 48;
+    lv2:index 47;
     lv2:symbol "Preset_4_output_4" ;
     pg:group plug:group_preset_4 ;
     lv2:name "Preset 4 - Output 4" ;
@@ -724,7 +700,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 49;
+    lv2:index 48;
     lv2:symbol "Preset_4_output_5" ;
     pg:group plug:group_preset_4 ;
     lv2:name "Preset 4 - Output 5" ;
@@ -736,7 +712,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 50;
+    lv2:index 49;
     lv2:symbol "Preset_4_output_6" ;
     pg:group plug:group_preset_4 ;
     lv2:name "Preset 4 - Output 6" ;
@@ -748,7 +724,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 51;
+    lv2:index 50;
     lv2:symbol "Preset_4_output_7" ;
     pg:group plug:group_preset_4 ;
     lv2:name "Preset 4 - Output 7" ;
@@ -760,7 +736,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 52;
+    lv2:index 51;
     lv2:symbol "Preset_4_output_8" ;
     pg:group plug:group_preset_4 ;
     lv2:name "Preset 4 - Output 8" ;
@@ -772,7 +748,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 53;
+    lv2:index 52;
     lv2:symbol "Preset_5_output_1" ;
     pg:group plug:group_preset_5 ;
     lv2:name "Preset 5 - Output 1" ;
@@ -784,7 +760,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 54;
+    lv2:index 53;
     lv2:symbol "Preset_5_output_2" ;
     pg:group plug:group_preset_5 ;
     lv2:name "Preset 5 - Output 2" ;
@@ -796,7 +772,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 55;
+    lv2:index 54;
     lv2:symbol "Preset_5_output_3" ;
     pg:group plug:group_preset_5 ;
     lv2:name "Preset 5 - Output 3" ;
@@ -808,7 +784,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 56;
+    lv2:index 55;
     lv2:symbol "Preset_5_output_4" ;
     pg:group plug:group_preset_5 ;
     lv2:name "Preset 5 - Output 4" ;
@@ -820,7 +796,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 57;
+    lv2:index 56;
     lv2:symbol "Preset_5_output_5" ;
     pg:group plug:group_preset_5 ;
     lv2:name "Preset 5 - Output 5" ;
@@ -832,7 +808,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 58;
+    lv2:index 57;
     lv2:symbol "Preset_5_output_6" ;
     pg:group plug:group_preset_5 ;
     lv2:name "Preset 5 - Output 6" ;
@@ -844,7 +820,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 59;
+    lv2:index 58;
     lv2:symbol "Preset_5_output_7" ;
     pg:group plug:group_preset_5 ;
     lv2:name "Preset 5 - Output 7" ;
@@ -856,7 +832,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 60;
+    lv2:index 59;
     lv2:symbol "Preset_5_output_8" ;
     pg:group plug:group_preset_5 ;
     lv2:name "Preset 5 - Output 8" ;
@@ -868,7 +844,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 61;
+    lv2:index 60;
     lv2:symbol "Preset_6_output_1" ;
     pg:group plug:group_preset_6 ;
     lv2:name "Preset 6 - Output 1" ;
@@ -880,7 +856,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 62;
+    lv2:index 61;
     lv2:symbol "Preset_6_output_2" ;
     pg:group plug:group_preset_6 ;
     lv2:name "Preset 6 - Output 2" ;
@@ -892,7 +868,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 63;
+    lv2:index 62;
     lv2:symbol "Preset_6_output_3" ;
     pg:group plug:group_preset_6 ;
     lv2:name "Preset 6 - Output 3" ;
@@ -904,7 +880,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 64;
+    lv2:index 63;
     lv2:symbol "Preset_6_output_4" ;
     pg:group plug:group_preset_6 ;
     lv2:name "Preset 6 - Output 4" ;
@@ -916,7 +892,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 65;
+    lv2:index 64;
     lv2:symbol "Preset_6_output_5" ;
     pg:group plug:group_preset_6 ;
     lv2:name "Preset 6 - Output 5" ;
@@ -928,7 +904,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 66;
+    lv2:index 65;
     lv2:symbol "Preset_6_output_6" ;
     pg:group plug:group_preset_6 ;
     lv2:name "Preset 6 - Output 6" ;
@@ -940,7 +916,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 67;
+    lv2:index 66;
     lv2:symbol "Preset_6_output_7" ;
     pg:group plug:group_preset_6 ;
     lv2:name "Preset 6 - Output 7" ;
@@ -952,7 +928,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 68;
+    lv2:index 67;
     lv2:symbol "Preset_6_output_8" ;
     pg:group plug:group_preset_6 ;
     lv2:name "Preset 6 - Output 8" ;
@@ -964,7 +940,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 69;
+    lv2:index 68;
     lv2:symbol "Preset_7_output_1" ;
     pg:group plug:group_preset_7 ;
     lv2:name "Preset 7 - Output 1" ;
@@ -976,7 +952,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 70;
+    lv2:index 69;
     lv2:symbol "Preset_7_output_2" ;
     pg:group plug:group_preset_7 ;
     lv2:name "Preset 7 - Output 2" ;
@@ -988,7 +964,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 71;
+    lv2:index 70;
     lv2:symbol "Preset_7_output_3" ;
     pg:group plug:group_preset_7 ;
     lv2:name "Preset 7 - Output 3" ;
@@ -1000,7 +976,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 72;
+    lv2:index 71;
     lv2:symbol "Preset_7_output_4" ;
     pg:group plug:group_preset_7 ;
     lv2:name "Preset 7 - Output 4" ;
@@ -1012,7 +988,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 73;
+    lv2:index 72;
     lv2:symbol "Preset_7_output_5" ;
     pg:group plug:group_preset_7 ;
     lv2:name "Preset 7 - Output 5" ;
@@ -1024,7 +1000,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 74;
+    lv2:index 73;
     lv2:symbol "Preset_7_output_6" ;
     pg:group plug:group_preset_7 ;
     lv2:name "Preset 7 - Output 6" ;
@@ -1036,7 +1012,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 75;
+    lv2:index 74;
     lv2:symbol "Preset_7_output_7" ;
     pg:group plug:group_preset_7 ;
     lv2:name "Preset 7 - Output 7" ;
@@ -1048,7 +1024,7 @@ lv2:port
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 76;
+    lv2:index 75;
     lv2:symbol "Preset_7_output_8" ;
     pg:group plug:group_preset_7 ;
     lv2:name "Preset 7 - Output 8" ;
@@ -1059,104 +1035,8 @@ lv2:port
     rdfs:comment "Dip switch: value that CV Output 8 will have when preset 7 is active (on = high, off = low)." ;
 ],
 [
-    a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 77;
-    lv2:symbol "Preset_8_output_1" ;
-    pg:group plug:group_preset_8 ;
-    lv2:name "Preset 8 - Output 1" ;
-    lv2:default 0.0 ;
-    lv2:minimum 0.0 ;
-    lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
-    rdfs:comment "Dip switch: value that CV Output 1 will have when preset 8 is active (on = high, off = low)." ;
-],
-[
-    a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 78;
-    lv2:symbol "Preset_8_output_2" ;
-    pg:group plug:group_preset_8 ;
-    lv2:name "Preset 8 - Output 2" ;
-    lv2:default 0.0 ;
-    lv2:minimum 0.0 ;
-    lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
-    rdfs:comment "Dip switch: value that CV Output 2 will have when preset 8 is active (on = high, off = low)." ;
-],
-[
-    a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 79;
-    lv2:symbol "Preset_8_output_3" ;
-    pg:group plug:group_preset_8 ;
-    lv2:name "Preset 8 - Output 3" ;
-    lv2:default 0.0 ;
-    lv2:minimum 0.0 ;
-    lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
-    rdfs:comment "Dip switch: value that CV Output 3 will have when preset 8 is active (on = high, off = low)." ;
-],
-[
-    a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 80;
-    lv2:symbol "Preset_8_output_4" ;
-    pg:group plug:group_preset_8 ;
-    lv2:name "Preset 8 - Output 4" ;
-    lv2:default 0.0 ;
-    lv2:minimum 0.0 ;
-    lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
-    rdfs:comment "Dip switch: value that CV Output 4 will have when preset 8 is active (on = high, off = low)." ;
-],
-[
-    a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 81;
-    lv2:symbol "Preset_8_output_5" ;
-    pg:group plug:group_preset_8 ;
-    lv2:name "Preset 8 - Output 5" ;
-    lv2:default 0.0 ;
-    lv2:minimum 0.0 ;
-    lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
-    rdfs:comment "Dip switch: value that CV Output 5 will have when preset 8 is active (on = high, off = low)." ;
-],
-[
-    a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 82;
-    lv2:symbol "Preset_8_output_6" ;
-    pg:group plug:group_preset_8 ;
-    lv2:name "Preset 8 - Output 6" ;
-    lv2:default 0.0 ;
-    lv2:minimum 0.0 ;
-    lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
-    rdfs:comment "Dip switch: value that CV Output 6 will have when preset 8 is active (on = high, off = low)." ;
-],
-[
-    a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 83;
-    lv2:symbol "Preset_8_output_7" ;
-    pg:group plug:group_preset_8 ;
-    lv2:name "Preset 8 - Output 7" ;
-    lv2:default 0.0 ;
-    lv2:minimum 0.0 ;
-    lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
-    rdfs:comment "Dip switch: value that CV Output 7 will have when preset 8 is active (on = high, off = low)." ;
-],
-[
-    a lv2:InputPort, lv2:ControlPort ;
-    lv2:index 84;
-    lv2:symbol "Preset_8_output_8" ;
-    pg:group plug:group_preset_8 ;
-    lv2:name "Preset 8 - Output 8" ;
-    lv2:default 1.0 ;
-    lv2:minimum 0.0 ;
-    lv2:maximum 1 ;
-    lv2:portProperty lv2:toggled;
-    rdfs:comment "Dip switch: value that CV Output 8 will have when preset 8 is active (on = high, off = low)." ;
-],
-[
     a lv2:InputPort, atom:AtomPort ;
-    lv2:index 85 ;
+    lv2:index 76 ;
     lv2:symbol "events_in" ;
     lv2:name "Events In" ;
     atom:bufferType atom:Sequence ;
@@ -1166,7 +1046,7 @@ lv2:port
 ],
 [
     a lv2:OutputPort, atom:AtomPort ;
-    lv2:index 86 ;
+    lv2:index 77 ;
     lv2:symbol "events_out" ;
     lv2:name "Events Out" ;
     atom:bufferType atom:Sequence ;
@@ -1180,8 +1060,7 @@ patch:writable plug:preset_label_1 ,
                plug:preset_label_4 ,
                plug:preset_label_5 ,
                plug:preset_label_6 ,
-               plug:preset_label_7 ,
-               plug:preset_label_8 ;
+               plug:preset_label_7 ;
 
 state:state [
     plug:preset_label_1 "Preset 1" ;
@@ -1191,7 +1070,6 @@ state:state [
     plug:preset_label_5 "Preset 5" ;
     plug:preset_label_6 "Preset 6" ;
     plug:preset_label_7 "Preset 7" ;
-    plug:preset_label_8 "Preset 8" ;
 ]
 
 .

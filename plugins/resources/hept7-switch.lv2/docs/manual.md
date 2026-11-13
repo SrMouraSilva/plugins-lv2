@@ -1,7 +1,7 @@
 # Hept7 Switch — User Manual
 
 Hept7 Switch turns **one footswitch press into eight CV signals at once**. You
-choose, for each of its **8 presets**, which of its **8 CV outputs** are on
+choose, for each of its **7 presets**, which of its **8 CV outputs** are on
 (10 V) or off (0 V), and then change between presets with a footswitch, a
 knob or the screen. Route the CV outputs to the on/off (or any CV-addressable)
 parameters of your plugins and a single press can turn a whole scene on.
@@ -18,7 +18,7 @@ a **display** that shows the preset (and announces every change of it), and a
 |---|---|
 | **Display, big number and name** | The active preset. **The name is editable**: click it and type (up to 15 characters). It is also the text the device screen pop-up shows (see section 4). |
 | **Display, eight squares** | The CV outputs that are on in the active preset. **They are buttons**: click one to turn that output on or off in the active preset, without opening the settings page (the other presets are edited on the settings page). |
-| **Eight buttons** | Select the preset. The button of the active preset lights up in its colour. The colours are those of the footswitch LEDs on the device (red, yellow, green, cyan, blue, magenta, white); the device has only seven, so preset 8 shows orange here and reuses red on the device LED. |
+| **Seven buttons** | Select the preset. The button of the active preset lights up in its colour. There are seven because the device footswitch LEDs have seven colours (red, yellow, green, cyan, blue, magenta, white): each preset has its own, here and on the device. |
 | **Edit scenes** | Opens the settings page (section 2). The gear icon above the plugin opens it too. |
 | **Eight CV jacks** | `CV Output 1`–`8`, on the back plate at the right, in two columns (1–4 and 5–8). |
 
@@ -62,8 +62,8 @@ assignment dialog) to the control you want to use:
 
 | Control | Use |
 |---|---|
-| `Preset 1`–`8` | One footswitch per preset. Turning one on turns the others off. |
-| `Current preset` | One knob (or CV/MIDI value) that selects among the eight presets. |
+| `Preset 1`–`7` | One footswitch per preset. Turning one on turns the others off. |
+| `Current preset` | One knob (or CV/MIDI value) that selects among the seven presets. |
 
 ## 4. The pop-up on the device screen
 
@@ -87,8 +87,8 @@ colour of each preset.
 
 | Preset | Idea |
 |---|---|
-| **One-of-eight selector** | Exactly one CV output is on at a time: preset N turns on output N. An 8-way selector. |
-| **Eight-scene guitar rig** | Outputs 1 Compressor, 2 Overdrive, 3 Distortion, 4 Chorus, 5 Delay, 6 Reverb, 7 Boost, 8 Noise gate, and the presets *Clean, Chorus, Crunch, Rhythm, Lead, Solo, Ambient, Kill* (everything off). |
+| **One-to-one selector** | Exactly one CV output is on at a time: preset N turns on output N (output 8 stays off). |
+| **Seven-scene guitar rig** | Outputs 1 Compressor, 2 Overdrive, 3 Distortion, 4 Chorus, 5 Delay, 6 Reverb, 7 Boost, 8 Noise gate, and the presets *Clean, Chorus, Crunch, Lead, Solo, Ambient, Kill* (everything off). |
 | **Layer builder** | Preset N turns on outputs 1 to N: stack one more layer on every press. |
 
 ## 6. Port reference
@@ -96,11 +96,11 @@ colour of each preset.
 | Port | Type | Description |
 |---|---|---|
 | `CV Output 1`–`8` | CV output | 10 V while on in the active preset, 0 V otherwise. |
-| `Preset 1`–`8` | Control input (toggle) | Footswitch selectors. |
+| `Preset 1`–`7` | Control input (toggle) | Footswitch selectors. |
 | `Current preset` | Control input (enumeration) | Shows and selects the active preset. |
 | `Assign to notify 1`–`4` | Control input | Assign to a device page so the pop-up shows there. No audio or CV effect. |
 | `Preset N - Output M` | Control input (toggle) | Dip switch: is CV output M on while preset N is active? |
-| Preset label 1–8 | Plugin property (patch) | The name of each preset. Edited on the display or on the settings page. |
+| Preset label 1–7 | Plugin property (patch) | The name of each preset. Edited on the display or on the settings page. |
 
 Names use letters, digits, spaces and `+ - : _ .`; anything else is replaced with `_`.
 They are saved with the pedalboard and with the plugin presets.

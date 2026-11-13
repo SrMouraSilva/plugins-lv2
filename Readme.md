@@ -45,13 +45,13 @@ With it, is possible to define four presets of active CV and change between then
 
 ## Hept7 Switch
 
-The big sibling of Tetr4 Switch, in turquoise: **8 presets** (one footswitch each) and **8 CV outputs**, with a dip switch per output in each preset. Same code base as Tetr4 Switch (the plugins differ only by [config.h](./plugins/src/config.h)).
+The big sibling of Tetr4 Switch, in turquoise: **7 presets** (one footswitch each, as many as the colours of the HMI footswitch LEDs) and **8 CV outputs**, with a dip switch per output in each preset. Same code base as Tetr4 Switch (the plugins differ only by [config.h](./plugins/src/config.h)).
 
-* **A display on the pedalboard**: a mini display on top of the plugin shows the active preset, its name (editable right there, it is the text the HMI pop-up shows) and which CV outputs are on (click a square to turn that output on or off in the active preset, without opening the settings page). Every change of preset is announced on it with the colour of the preset, so devices with no screen for plugin pop-ups (MOD Duo) still show which preset a footswitch has just selected. The eight buttons sit side by side below it
+* **A display on the pedalboard**: a mini display on top of the plugin shows the active preset, its name (editable right there, it is the text the HMI pop-up shows) and which CV outputs are on (click a square to turn that output on or off in the active preset, without opening the settings page). Every change of preset is announced on it with the colour of the preset, so devices with no screen for plugin pop-ups (MOD Duo) still show which preset a footswitch has just selected. The seven buttons sit side by side below it
 * **Full-screen settings page**: instead of MOD UI's generic settings window, the plugin brings its own page (`modgui:settingsTemplate`, see [hept7-switch-settings.html](./plugins/resources/hept7-switch.lv2/modgui/hept7-switch-settings.html)). It is built for touch: a preset x switch matrix with big cells, names edited in place, hardware assignment tiles and the saved presets list. On phones it shows one preset at a time
-* **Custom preset labels**, **custom HMI** (LED colours, active preset pop-up) and the optional HMI `WidgetControl` feature work as in Tetr4 Switch. The HMI only has seven LED colours, so preset 8 reuses red
+* **Custom preset labels**, **custom HMI** (LED colours, active preset pop-up) and the optional HMI `WidgetControl` feature work as in Tetr4 Switch
 * The eight CV jacks sit on a back plate that is part of the plugin, in two columns (1-4 and 5-8), instead of floating next to it
-* 3 factory presets: *One-of-eight selector*, *Eight-scene guitar rig* and *Layer builder*
+* 3 factory presets: *One-to-one selector*, *Seven-scene guitar rig* and *Layer builder*
 * [User manual (PDF)](./plugins/resources/hept7-switch.lv2/modgui/manual.pdf)
 * Try the interface of any plugin in a browser, without a device: [tools/modgui-preview](./tools/modgui-preview/README.md)
 
