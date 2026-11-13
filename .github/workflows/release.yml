@@ -51,23 +51,27 @@ jobs:
         include:
           # device: name used on the release assets
           # platform: mod-plugin-builder platform (also the cbix/mod-plugin-builder image tag)
-          - { device: duo, platform: modduo }
-          - { device: duo-x, platform: modduox }
-          - { device: dwarf, platform: moddwarf }
+          # home: home of the user the image runs as (the Duo/Duo X images use `builder`, the Dwarf one root)
+          - { device: duo, platform: modduo, home: /home/builder }
+          - { device: duo x, platform: modduox, home: /home/builder }
+          - { device: dwarf, platform: moddwarf, home: /root }
     steps:
       - uses: actions/checkout@v4
 
       - name: Build for ${{ matrix.device }}
         run: |
-          mkdir -p out
+          # The Duo/Duo X images run as a non-root user, which must be able to write to /out
+          mkdir -p out && chmod 777 out
           docker run --rm \
-            -v "$PWD/plugins:/root/mod-plugin-builder/plugins/package/srmourasilva-plugins" \
+            -v "$PWD/plugins:${{ matrix.home }}/mod-plugin-builder/plugins/package/srmourasilva-plugins" \
             -v "$PWD/out:/out" \
             "cbix/mod-plugin-builder:${{ matrix.platform }}" bash -euxc '
               # `build` needs ping to reach a device, which is not needed here
-              printf "#!/bin/bash\nexit 0\n" > /usr/bin/ping && chmod +x /usr/bin/ping
+              SUDO=$(test "$(id -u)" = 0 || echo sudo)
+              printf "#!/bin/bash\nexit 0\n" | $SUDO tee /usr/bin/ping >/dev/null
+              $SUDO chmod +x /usr/bin/ping
               ./build ${{ matrix.platform }} srmourasilva-plugins
-              cp -r /root/mod-workdir/${{ matrix.platform }}/target/usr/local/lib/lv2/*.lv2 /out/
+              cp -r "$HOME/mod-workdir/${{ matrix.platform }}/target/usr/local/lib/lv2/"*.lv2 /out/
             '
 
       - name: Package bundles
