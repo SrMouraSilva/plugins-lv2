@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hept7 Switch - modgui preview</title>
+<style>
+  html, body { height: 100%; margin: 0; }
+  body { display: flex; flex-direction: column; font: 14px system-ui, sans-serif; background: #2b2b2b; color: #ddd; }
+  header { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center; padding: 8px 12px; background: #111; }
+  header div { display: flex; gap: 4px; align-items: center; }
+  header b { color: #888; font-weight: 600; margin-right: 4px; }
+  button { font: inherit; color: #ddd; background: #333; border: 1px solid #555; border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  button:hover { background: #444; }
+  button[aria-pressed="true"] { background: #2a9fac; border-color: #7fdee5; color: #06232a; }
+  main { flex: 1; min-height: 0; overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 10px; }
+  iframe { border: 0; background: #fff; height: 100%; max-width: 100%; box-shadow: 0 0 0 1px #555; }
+</style>
+</head>
+<body>
+<header>
+  <div><b>View</b>
+    <button data-view="icon">Pedalboard</button>
+    <button data-view="settings">Settings page</button>
+  </div>
+  <div><b>Screen</b>
+    <button data-width="390">Phone 390</button>
+    <button data-width="768">Tablet 768</button>
+    <button data-width="1024">1024</button>
+    <button data-width="1366">1366</button>
+    <button data-width="0">Fit</button>
+  </div>
+  <div><b>Data</b>
+    <button data-dips="">One-of-seven</button>
+    <button data-dips="rig">Guitar rig</button>
+  </div>
+  <div><b>The host selects preset</b>
+    <span id="presets"></span>
+  </div>
+</header>
+<main><iframe id="frame" title="plugin"></iframe></main>
+<script>
+  const state = { view: 'icon', width: 0, dips: 'rig' };
+  const frame = document.getElementById('frame');
+
+  const reload = () => {
+    const query = new URLSearchParams({ view: state.view, dips: state.dips });
+    frame.style.width = state.width ? state.width + 'px' : '100%';
+    frame.src = 'frame.html?' + query;
+    document.querySelectorAll('[data-view]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.view === state.view));
+    document.querySelectorAll('[data-width]').forEach((b) => b.setAttribute('aria-pressed', Number(b.dataset.width) === state.width));
+    document.querySelectorAll('[data-dips]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.dips === state.dips));
+  };
+
+  document.querySelectorAll('[data-view]').forEach((b) => b.onclick = () => { state.view = b.dataset.view; reload(); });
+  document.querySelectorAll('[data-width]').forEach((b) => b.onclick = () => { state.width = Number(b.dataset.width); reload(); });
+  document.querySelectorAll('[data-dips]').forEach((b) => b.onclick = () => { state.dips = b.dataset.dips; reload(); });
+
+  // What a footswitch / the host does: it tells MOD UI the new value of the selector port
+  for (let p = 1; p <= 7; p++) {
+    const b = document.createElement('button');
+    b.textContent = p;
+    b.onclick = () => frame.contentWindow.send({ type: 'change', symbol: 'Preset_selector_' + p, value: 1 });
+    document.getElementById('presets').appendChild(b);
+  }
+
+  reload();
+</script>
+</body>
+</html>

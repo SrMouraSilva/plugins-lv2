@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The stylesheets and scripts MOD UI itself loads -->
+<link rel="stylesheet" href="/modui/css/fontello/css/fontello.css">
+<link rel="stylesheet" href="/modui/css/main.css">
+<link rel="stylesheet" href="/modui/css/dashboard.css">
+<link rel="stylesheet" href="/modui/css/fonts.css">
+<link rel="stylesheet" href="/modui/img/icons/icons.css">
+<link rel="stylesheet" href="/modui/css/pedals.css">
+<link rel="stylesheet" href="/modui/resources/pedals/default.css">
+<script src="/modui/js/lib/jquery-1.9.1.min.js"></script>
+<script src="/modui/js/lib/mustache.js"></script>
+<style>body { margin: 0; background: #1f1f1f; }</style>
+</head>
+<body>
+<div id="pedalboard-dashboard" style="position: relative; padding: 70px 40px 40px 40px;"></div>
+<script>
+/*
+ * A stand-in for what modgui.js (MOD UI) does with a plugin: it renders the icon and settings templates with
+ * Mustache, loads the stylesheet, and runs the plugin javascript with the same events and functions.
+ * It does not talk to a host: the log of what the plugin asks for is in window.__log.
+ *
+ * Query: view=icon|settings|shot  dips=rig  active=N  edit=N  addressed=Symbol,Symbol  test=1
+ */
+const q = new URLSearchParams(location.search);
+const view = q.get('view') || 'icon';
+const URI = 'http://srmourasilva.github.io/plugins/hept7-switch';
+const TOTAL = 7;
+const RIG = [[1,0,0,0,0,1,0],[1,0,0,1,0,1,0],[0,1,0,0,0,0,0],[0,1,0,0,1,0,1],[0,0,1,0,1,1,1],[1,0,0,1,1,1,0],[0,0,0,0,0,0,0]];
+const NAMES = ['Clean', 'Chorus', 'Crunch', 'Lead', 'Solo', 'Ambient', 'Kill'];
+
+const effect = {
+  name: 'Hept7 switch',
+  ports: {
+    audio: { input: [], output: [] }, midi: { input: [], output: [] },
+    cv: { input: [], output: Array.from({ length: TOTAL }, (_, i) => ({ symbol: 'Cv_output_' + (i + 1), name: 'CV Output ' + (i + 1) })) },
+  },
+};
+const log = (...a) => (window.__log = window.__log || []).push(a);
+const get = (file) => fetch('/plugin/' + file).then((r) => r.text());
+
+Promise.all(['hept7-switch.css', 'hept7-switch.html', 'hept7-switch-settings.html', 'hept7-switch.js'].map(get)).then(([css, iconTemplate, settingsTemplate, js]) => {
+  $('<style>').text(Mustache.render(css, { ns: '', cns: '_x' })).appendTo('head');
+
+  const icon = $('<div class="mod-pedal" mod-instance="/graph/hept7">').html(Mustache.render(iconTemplate, { effect, ns: '', cns: '_x' }));
+  // What MOD UI adds around every plugin icon
+  const actions = $('<div class="mod-actions">').appendTo(icon);
+  $('<div class="mod-settings">').click(() => settings.show()).appendTo(actions);
+  icon.find('[mod-role=output-cv-port]').each(function () {
+    $(this).addClass('mod-output mod-cv-output output-disconnected');
+    $('<div class="mod-output-jack jack-disconnected">').appendTo(this);
+  });
+  icon.css({ position: 'absolute', left: 40, top: 70 }).appendTo('#pedalboard-dashboard');
+
+  const settings = $('<div class="mod-settings" mod-instance="/graph/hept7">').html(Mustache.render(settingsTemplate, {
+    effect,
+    presets: {
+      factory: [{ uri: 'u1', label: 'One-of-seven selector' }, { uri: 'u2', label: 'Seven-scene guitar rig' }, { uri: 'u3', label: 'Layer builder' }],
+      user: [{ uri: 'u4', label: 'My gig', path: '/p' }],
+    },
+  })).appendTo('body');
+  settings.find('.js-close').click(() => { settings.hide(); return false; });
+
+  if (view === 'settings') { $('#pedalboard-dashboard').hide(); } else { settings.hide(); }
+  if (view === 'shot') {
+    $('html, body, #pedalboard-dashboard').css({ background: 'transparent', padding: 0 });
+    icon.css({ position: 'fixed', left: 20, top: 20 }).find('.mod-actions, .mod-pedal-output').hide();
+  }
+
+  let method; eval('method = ' + js);
+  const ports = [{ symbol: 'Preset_combobox', value: 0 }];
+  for (let p = 1; p <= TOTAL; p++) {
+    ports.push({ symbol: 'Preset_selector_' + p, value: p === 1 ? 1 : 0 });
+    for (let o = 1; o <= TOTAL; o++) ports.push({ symbol: `Preset_${p}_output_${o}`, value: q.get('dips') === 'rig' ? RIG[p - 1][o - 1] : (p === o ? 1 : 0) });
+    ports.push({ symbol: `Preset_${p}_popup`, value: 1 });
+  }
+  const data = {};
+  const funcs = {
+    set_port_value: (s, v) => log('set_port_value', s, v),
+    patch_get: (u) => log('patch_get', u),
+    patch_set: (u, t, v) => log('patch_set', u, t, v),
+  };
+  const send = window.send = (e) => method(Object.assign({ data, icon, settings, api_version: 3 }, e), funcs);
+
+  send({ type: 'start', ports, parameters: [] });
+  NAMES.forEach((name, i) => send({ type: 'change', uri: URI + '#preset_label_' + (i + 1), value: name }));
+
+  const active = Number(q.get('active') || 1);
+  if (active !== 1) send({ type: 'change', symbol: 'Preset_selector_' + active, value: 1 });
+  (q.get('addressed') || '').split(',').filter(Boolean).forEach((s) => settings.find(`.mod-address[mod-port-symbol=${s}]`).addClass('addressed'));
+  if (q.get('edit')) settings.find(`.h7s-chip[data-preset=${q.get('edit')}]`).click();
+  if (q.get('toast') === 'off') clearTimeout(data.toastTimer), icon.find('.h7-display').removeClass('is-changed');
+
+  if (q.get('test')) {
+    const out = [];
+    const snap = (t) => out.push(t + ' => ' + JSON.stringify({ active: data.state.active, editing: data.state.editing, label: icon.find('.h7-label').val(), toast: icon.find('.h7-display').hasClass('is-changed'), on: icon.find('.h7-out.is-on').map(function () { return $(this).data('output'); }).get().join(',') }));
+    snap('start');
+    settings.find('.h7s-cell[data-preset=3][data-output=4]').click(); snap('toggle P3/O4');
+    settings.find('.h7s-cell[data-preset=3][data-output=8]').click(); snap('toggle P3 pop-up');
+    icon.find('.h7-pad.p5').click(); snap('pedal button 5');
+    settings.find('.h7s-chip[data-preset=2]').click(); snap('chip 2 (edit only)');
+    settings.find('.h7s-activate[data-preset=2]').click(); snap('activate 2');
+    icon.find('.h7-label').val('Wow #1 é!!! very long name').trigger('input'); snap('label typed on the pedal display');
+    settings.find('.h7s-label[data-preset=4]').val('Four').trigger('input'); snap('label of 4 typed on the settings page');
+    send({ type: 'change', symbol: 'Preset_selector_6', value: 1 }); snap('host: selector 6');
+    send({ type: 'change', symbol: 'Preset_selector_6', value: 1 }); snap('host: selector 6 again');
+    send({ type: 'change', symbol: 'Preset_combobox', value: 3 }); snap('host: combobox 3');
+    send({ type: 'change', symbol: 'Preset_4_popup', value: 0 }); snap('host: pop-up of 4 off');
+    send({ type: 'patch_set', uri: URI + '#preset_label_4', value: 'From state' }); snap('host: label 4');
+    icon.find('.h7-open').click();
+    out.push('LOG ' + JSON.stringify(window.__log));
+    $('<pre id="result">').text(out.join('\n')).appendTo('body');
+  }
+});
+</script>
+</body>
+</html>
