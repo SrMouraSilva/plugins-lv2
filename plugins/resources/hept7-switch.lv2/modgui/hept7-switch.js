@@ -89,7 +89,8 @@ function (event, funcs) {
       }
     });
     icon.find('.h7-out').each(function () {
-      $(this).toggleClass('is-on', !!state.dips[state.active - 1][Number($(this).data('output')) - 1]);
+      const on = !!state.dips[state.active - 1][Number($(this).data('output')) - 1];
+      $(this).toggleClass('is-on', on).attr('aria-checked', on);
     });
 
     // Settings page
@@ -217,6 +218,8 @@ function (event, funcs) {
     const settings = event.settings;
 
     icon.on('click', '.h7-pad', function () { selectPreset(event, Number($(this).data('preset'))); });
+    // The squares of the display are the CV outputs of the active preset: click one to turn it on or off
+    icon.on('click', '.h7-out', function () { toggleDip(event, event.data.state.active, Number($(this).data('output'))); });
     icon.on('click', '.h7-open', function () { openSettings(event); });
     icon.on('input', '.h7-label', function () { changeLabel(event, $(this), event.data.state.active); });
     icon.on('blur', '.h7-label', function () { draw(event); });

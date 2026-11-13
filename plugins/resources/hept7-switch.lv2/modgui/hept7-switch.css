@@ -75,6 +75,7 @@
  */
 .h7-open,
 .h7-label,
+.h7-out,
 .h7-pad {
   position: relative;
   z-index: 30;
@@ -250,26 +251,34 @@
 .h7-outs {
   flex: 0 0 auto;
   display: flex;
-  gap: 5px;
+  gap: 2px;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
+/* Each square is a button: it turns that CV output on or off in the active preset */
 .h7-out {
-  width: 18px;
+  width: 30px;
+  padding: 4px 0 2px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 5px;
+  border-radius: 8px;
+  cursor: pointer;
   font-size: 10px;
   font-weight: 700;
   color: var(--h7-muted);
+  transition: background-color 0.15s, transform 0.08s;
 }
+
+.h7-out:hover { background: rgba(255, 255, 255, 0.08); }
+.h7-out:active { transform: scale(0.92); }
 
 .h7-out i {
   display: block;
-  width: 100%;
+  width: 18px;
   height: 22px;
   border-radius: 5px;
   background: var(--h7-ink-3);

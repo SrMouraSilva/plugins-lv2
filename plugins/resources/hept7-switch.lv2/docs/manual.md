@@ -17,7 +17,7 @@ a **display** that shows the preset (and announces every change of it), and a
 | Item | What it does |
 |---|---|
 | **Display, big number and name** | The active preset. **The name is editable**: click it and type (up to 15 characters). It is also the text the device screen pop-up shows (see section 4). |
-| **Display, seven squares** | The CV outputs that are on in the active preset. |
+| **Display, seven squares** | The CV outputs that are on in the active preset. **They are buttons**: click one to turn that output on or off in the active preset, without opening the settings page (the other presets are edited on the settings page). |
 | **Seven buttons** | Select the preset. The button of the active preset lights up in its colour; each preset has the same colour as its footswitch LED on the device (red, yellow, green, cyan, blue, magenta, white). |
 | **Edit scenes** | Opens the settings page (section 2). The gear icon above the plugin opens it too. |
 | **Seven CV jacks** | `CV Output 1`–`7`, in two columns. |
