@@ -69,6 +69,17 @@
   touch-action: manipulation;
 }
 
+/*
+ * MOD UI covers the whole icon with a drag handle (.mod-drag-handle, absolute, z-index 20) so the plugin can be
+ * moved by dragging it. Whatever must be clickable has to sit above it; the rest still drags the plugin.
+ */
+.h7-open,
+.h7-label,
+.h7-pad {
+  position: relative;
+  z-index: 30;
+}
+
 .hept7 button:focus-visible,
 .hept7 input:focus-visible,
 .h7s button:focus-visible,
