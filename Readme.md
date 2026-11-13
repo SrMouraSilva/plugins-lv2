@@ -43,6 +43,15 @@ With it, is possible to define four presets of active CV and change between then
      * Atom sample 1: https://github.com/moddevices/mod-cv-plugins/blob/master/source/mod-cv-clock/mod-cv-clock.c
      * Atom sample 2: https://lv2plug.in/book/#_state_map_h
 
+## Hept7 Switch
+
+The big sibling of Tetr4 Switch: **8 presets** and **8 CV outputs** instead of 4, in a turquoise handheld-console look. Same idea (a dip switch per output in each preset, and a footswitch-assignable selector per preset), same code base (the plugins differ only by `TOTAL_PRESETS`/`TOTAL_OUTPUTS` in [config.h](./plugins/src/config.h)).
+
+* **Full-screen settings page**: instead of MOD UI's generic settings window, the plugin brings its own page (`modgui:settingsTemplate`, see [hept7-switch-settings.html](./plugins/resources/hept7-switch.lv2/modgui/hept7-switch-settings.html)). It takes the whole screen and is built for touch: a preset x output matrix with big cells, preset names edited in place, a thumb-reach preset pad on each side of wide screens, hardware assignment tiles and the saved presets list. On phones it shows one preset at a time. On the pedalboard the plugin is a compact summary with an *Edit scenes* button that opens it
+* **Custom preset labels**, **custom HMI** (LED colours, active preset pop-up) and the optional HMI `WidgetControl` feature work as in Tetr4 Switch. The HMI only has seven LED colours, so preset 8 reuses preset 1's (red)
+* The CV jacks are laid out in two columns (1-4 and 5-8) on the pedalboard
+* 3 factory presets: *One-of-eight selector*, *Eight-scene guitar rig* and *Layer builder*
+
 ## Download
 
 Binaries for **MOD Duo**, **MOD Duo X** and **MOD Dwarf** are built by [GitHub Actions](./.github/workflows/release.yml) on every push and published on the [Releases](../../releases) page. Releases have no version number; they are named after the commit they were built from:
@@ -104,6 +113,7 @@ rm -r /root/mod-workdir/moddwarf/build/srmourasilva-plugins-*
 # Copy files from container (optional, CI already does this - see Releases)
 # Note: open a new tab
 docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/tetr4-switch.lv2/ binaries/dwarf
+docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/hept7-switch.lv2/ binaries/dwarf
 docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/gossiper.lv2/ binaries/dwarf
 ```
 

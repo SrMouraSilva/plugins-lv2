@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #include <lv2/core/lv2_util.h>
@@ -82,8 +83,11 @@ static void map_uris(LV2_URID_Map* map, Controller_URIs* uris) {
     uris->patch_property = map->map(map->handle, LV2_PATCH__property);
     uris->patch_value = map->map(map->handle, LV2_PATCH__value);
 
-    uris->preset_label[0] = map->map(map->handle, TETR4_SWITCH_PLUGIN_URI "#preset_label_1");
-    uris->preset_label[1] = map->map(map->handle, TETR4_SWITCH_PLUGIN_URI "#preset_label_2");
-    uris->preset_label[2] = map->map(map->handle, TETR4_SWITCH_PLUGIN_URI "#preset_label_3");
-    uris->preset_label[3] = map->map(map->handle, TETR4_SWITCH_PLUGIN_URI "#preset_label_4");
+    // <plugin uri>#preset_label_1 ... #preset_label_<TOTAL_PRESETS>
+    for (unsigned int i = 0; i < TOTAL_PRESETS; i++) {
+        char uri[sizeof(PLUGIN_URI) + 32];
+        snprintf(uri, sizeof(uri), PLUGIN_URI "#preset_label_%u", i + 1);
+
+        uris->preset_label[i] = map->map(map->handle, uri);
+    }
 }

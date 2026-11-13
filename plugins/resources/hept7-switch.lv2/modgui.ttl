@@ -1,0 +1,19 @@
+@prefix modgui: <http://moddevices.com/ns/modgui#> .
+@prefix lv2:    <http://lv2plug.in/ns/lv2core#> .
+
+<http://srmourasilva.github.io/plugins/hept7-switch>
+    modgui:gui [
+        modgui:resourcesDirectory <modgui> ;
+        modgui:iconTemplate <modgui/hept7-switch.html> ;
+        # Full-screen, touch-friendly settings page, instead of the generic one
+        modgui:settingsTemplate <modgui/hept7-switch-settings.html> ;
+        modgui:stylesheet <modgui/hept7-switch.css> ;
+        modgui:javascript <modgui/hept7-switch.js> ;
+        modgui:screenshot <modgui/screenshot.png> ;
+        modgui:thumbnail <modgui/thumbnail.png> ;
+        modgui:brand "SrMouraSilva" ;
+        modgui:label "Hept7 switch" ;
+        modgui:model "boxy-small" ;
+        modgui:panel "1-footswitch" ;
+        modgui:color "#3fbac4" ;
+    ] .

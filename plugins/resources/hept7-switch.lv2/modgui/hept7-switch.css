@@ -1,0 +1,1048 @@
+/*
+ * Copyright 2021-2026 Paulo Mateus
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * Hept7 switch: a turquoise handheld console.
+ *
+ *  - .hept7 / .h7-*   the plugin on the pedalboard (the icon)
+ *  - .h7s / .h7s-*    the full-screen settings page (modgui:settingsTemplate)
+ *
+ * Every rule is namespaced, because MOD UI loads this file into the whole page.
+ */
+
+.hept7,
+.h7s {
+  /* Turquoise shell */
+  --h7-shell-light: #6fd6de;
+  --h7-shell: #3fbac4;
+  --h7-shell-dark: #2b99a3;
+  --h7-shell-deep: #1b6d76;
+
+  /* The dark screen */
+  --h7-ink: #0c1b1f;
+  --h7-ink-2: #13292e;
+  --h7-ink-3: #1b3a41;
+  --h7-line: rgba(255, 255, 255, 0.09);
+  --h7-text: #e9f8f9;
+  --h7-muted: #92b9be;
+  --h7-accent: #7ff0f6;
+
+  /* One colour per preset (the first seven match the LED of the device footswitches) */
+  --h7-c1: #ff5a5f;
+  --h7-c2: #ffd23f;
+  --h7-c3: #4ade80;
+  --h7-c4: #2ee6d6;
+  --h7-c5: #5b97ff;
+  --h7-c6: #e879f9;
+  --h7-c7: #f1f5f4;
+  --h7-c8: #ff9f43;
+
+  font-family: "Avenir Next Rounded", "SF Pro Rounded", ui-rounded, "Nunito", "Varela Round", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.h7-pad.p1, .h7s-pad.p1, .h7s-row.p1, .h7s-chip.p1, .h7-now[data-preset="1"] { --c: var(--h7-c1); }
+.h7-pad.p2, .h7s-pad.p2, .h7s-row.p2, .h7s-chip.p2, .h7-now[data-preset="2"] { --c: var(--h7-c2); }
+.h7-pad.p3, .h7s-pad.p3, .h7s-row.p3, .h7s-chip.p3, .h7-now[data-preset="3"] { --c: var(--h7-c3); }
+.h7-pad.p4, .h7s-pad.p4, .h7s-row.p4, .h7s-chip.p4, .h7-now[data-preset="4"] { --c: var(--h7-c4); }
+.h7-pad.p5, .h7s-pad.p5, .h7s-row.p5, .h7s-chip.p5, .h7-now[data-preset="5"] { --c: var(--h7-c5); }
+.h7-pad.p6, .h7s-pad.p6, .h7s-row.p6, .h7s-chip.p6, .h7-now[data-preset="6"] { --c: var(--h7-c6); }
+.h7-pad.p7, .h7s-pad.p7, .h7s-row.p7, .h7s-chip.p7, .h7-now[data-preset="7"] { --c: var(--h7-c7); }
+.h7-pad.p8, .h7s-pad.p8, .h7s-row.p8, .h7s-chip.p8, .h7-now[data-preset="8"] { --c: var(--h7-c8); }
+
+
+/* ==========================================================================
+ * The plugin on the pedalboard
+ * ========================================================================== */
+
+/*
+ * Eight CV jacks do not fit in one column next to the plugin (each one is 56px tall):
+ * they go in two columns, 1-4 and 5-8, spanning the height of the plugin.
+ */
+.hept7-switch-base.mod-pedal .mod-pedal-output {
+  top: 18px;
+  right: -178px;
+  width: 174px;
+  display: grid;
+  grid-template-rows: repeat(4, 56px);
+  grid-auto-flow: column;
+  grid-auto-columns: 80px;
+  gap: 13px 14px;
+}
+
+.hept7-switch-base.mod-pedal .mod-pedal-output .mod-cv-output {
+  margin-bottom: 0;
+}
+
+.hept7 {
+  --h7-width: 640px;
+  --h7-height: 300px;
+
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+
+  width: var(--h7-width);
+  min-width: var(--h7-width);
+  height: var(--h7-height);
+  padding: 20px 22px;
+
+  color: var(--h7-text);
+  text-align: center;
+
+  /* The shell: lit from the top left, like moulded plastic */
+  background:
+    radial-gradient(120% 90% at 12% 0%, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 55%),
+    linear-gradient(165deg, var(--h7-shell-light) 0%, var(--h7-shell) 38%, var(--h7-shell-dark) 100%);
+  border-radius: 40px;
+  box-shadow:
+    inset 0 2px 1px rgba(255, 255, 255, 0.45),
+    inset 0 -5px 10px rgba(11, 71, 79, 0.45),
+    0 0 0 2px var(--h7-shell-deep);
+}
+
+/* The small "minus" and "plus" buttons above the grips */
+.hept7::before,
+.hept7::after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  width: 22px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--h7-shell-deep);
+  opacity: 0.55;
+}
+.hept7::before { left: 74px; }
+.hept7::after { right: 74px; }
+
+:where(.hept7, .h7s) :where(button, input) {
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+  text-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.hept7 button:focus-visible,
+.h7s button:focus-visible,
+.h7s input:focus-visible {
+  outline: 3px solid var(--h7-accent);
+  outline-offset: 2px;
+}
+
+/* Grips with the preset buttons */
+.h7-rail {
+  flex: 0 0 104px;
+  display: grid;
+  grid-template-columns: repeat(2, 44px);
+  grid-auto-rows: 44px;
+  gap: 14px;
+  align-content: center;
+  justify-content: center;
+}
+
+.h7-pad {
+  --c: #ddd;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--h7-ink);
+  background: radial-gradient(circle at 35% 28%, #ffffff, #d8e9ea 60%, #b7d2d5);
+  box-shadow:
+    0 3px 0 var(--h7-shell-deep),
+    0 5px 8px rgba(8, 56, 63, 0.45),
+    inset 0 1px 1px #fff;
+  transition: transform 0.08s, box-shadow 0.08s, background-color 0.2s;
+}
+
+.h7-pad:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--h7-shell-deep), inset 0 1px 1px #fff;
+}
+
+/* The lit ring of the active preset */
+.h7-pad::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -11px;
+  width: 14px;
+  height: 4px;
+  margin-left: -7px;
+  border-radius: 2px;
+  background: var(--h7-shell-deep);
+  opacity: 0.45;
+  transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+
+.h7-pad.is-active {
+  background: radial-gradient(circle at 35% 28%, #fff, var(--c) 70%);
+}
+
+.h7-pad.is-active::after {
+  background: var(--c);
+  opacity: 1;
+  box-shadow: 0 0 8px 1px var(--c);
+}
+
+/* The screen */
+.h7-screen {
+  flex: 1 1 auto;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px 18px 12px;
+
+  background: linear-gradient(180deg, var(--h7-ink-2), var(--h7-ink));
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 6px #070f11,
+    inset 0 0 18px rgba(0, 0, 0, 0.7),
+    0 1px 0 6px rgba(255, 255, 255, 0.12);
+  margin: 6px 0;
+}
+
+.h7-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--h7-muted);
+}
+
+.h7-brand { color: var(--h7-accent); }
+
+.h7-now {
+  --c: var(--h7-c1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.h7-now-num {
+  flex: 0 0 auto;
+  width: 54px;
+  height: 54px;
+  line-height: 54px;
+  border-radius: 16px;
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--h7-ink);
+  background: var(--c);
+  box-shadow: 0 0 18px -2px var(--c);
+}
+
+.h7-now-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--h7-text);
+}
+
+.h7-outs {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.h7-out {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--h7-muted);
+}
+
+.h7-out i {
+  display: block;
+  width: 100%;
+  max-width: 28px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--h7-ink-3);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.h7-out.is-on { color: var(--h7-text); }
+.h7-out.is-on i {
+  background: var(--h7-accent);
+  box-shadow: 0 0 8px 1px var(--h7-accent);
+}
+
+.h7-open {
+  align-self: center;
+  min-height: 30px;
+  padding: 0 18px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--h7-ink);
+  background: var(--h7-accent);
+  transition: background-color 0.15s;
+}
+.h7-open:hover { background: #b6f7fb; }
+.h7-open:active { background: #5fdce3; }
+
+
+/* ==========================================================================
+ * The settings page: takes the whole screen, built for touch
+ * ========================================================================== */
+
+.h7s {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+
+  color: var(--h7-text);
+  font-size: 16px;
+  line-height: 1.3;
+  background:
+    radial-gradient(90% 70% at 15% 0%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(165deg, var(--h7-shell-light) 0%, var(--h7-shell) 40%, var(--h7-shell-dark) 100%);
+}
+
+.h7s *,
+.h7s *::before,
+.h7s *::after {
+  box-sizing: border-box;
+}
+
+.h7s h1,
+.h7s h2,
+.h7s p {
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  text-transform: none;
+  text-shadow: none;
+  letter-spacing: normal;
+}
+
+/* The console: grips at the sides on wide screens, only the screen otherwise */
+.h7s-shell {
+  max-width: 1680px;
+  min-height: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+}
+
+.h7s-rail {
+  display: none;
+}
+
+.h7s-screen {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+
+  background: linear-gradient(180deg, var(--h7-ink-2), var(--h7-ink));
+  border-radius: 24px;
+  box-shadow:
+    0 0 0 6px #070f11,
+    0 10px 30px rgba(8, 56, 63, 0.5),
+    inset 0 0 30px rgba(0, 0, 0, 0.6);
+}
+
+/* Top bar */
+.h7s-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px 18px;
+  flex-wrap: wrap;
+}
+
+.h7s-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin-right: auto;
+}
+
+.h7s-logo {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background:
+    radial-gradient(circle at 30% 30%, #fff 0 3px, transparent 4px),
+    radial-gradient(circle at 70% 70%, var(--h7-ink) 0 3px, transparent 4px),
+    linear-gradient(160deg, var(--h7-shell-light), var(--h7-shell-dark));
+}
+
+.h7s h1 {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--h7-text);
+  white-space: nowrap;
+}
+
+.h7s-now {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 5px 16px 5px 5px;
+  border-radius: 999px;
+  background: var(--h7-ink-3);
+  box-shadow: inset 0 0 0 1px var(--h7-line);
+}
+
+.h7s-now-num {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+  border-radius: 50%;
+  text-align: center;
+  font-weight: 800;
+  color: var(--h7-ink);
+  background: var(--c-active, var(--h7-c1));
+}
+
+.h7s-now-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.h7s[data-active="1"] { --c-active: var(--h7-c1); }
+.h7s[data-active="2"] { --c-active: var(--h7-c2); }
+.h7s[data-active="3"] { --c-active: var(--h7-c3); }
+.h7s[data-active="4"] { --c-active: var(--h7-c4); }
+.h7s[data-active="5"] { --c-active: var(--h7-c5); }
+.h7s[data-active="6"] { --c-active: var(--h7-c6); }
+.h7s[data-active="7"] { --c-active: var(--h7-c7); }
+.h7s[data-active="8"] { --c-active: var(--h7-c8); }
+
+.h7s .js-close {
+  min-width: 96px;
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 24px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--h7-ink);
+  background: var(--h7-accent);
+  box-shadow: 0 3px 0 var(--h7-shell-deep);
+  transition: transform 0.08s, box-shadow 0.08s, background-color 0.15s;
+}
+.h7s .js-close:hover { background: #b6f7fb; }
+.h7s .js-close:active {
+  background: #5fdce3;
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--h7-shell-deep);
+}
+
+/* Which preset to edit (only on narrow screens) */
+.h7s-chips {
+  display: none;
+}
+
+/* Panels */
+.h7s-body {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.h7s-side {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.h7s-panel {
+  min-width: 0;
+  padding: 14px;
+  border-radius: 18px;
+  background: var(--h7-ink-2);
+  box-shadow: inset 0 0 0 1px var(--h7-line);
+}
+
+.h7s-panel-head {
+  margin-bottom: 12px;
+}
+
+.h7s h2 {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--h7-accent);
+}
+
+.h7s-panel-head p {
+  margin-top: 3px;
+  font-size: 14px;
+  color: var(--h7-muted);
+}
+
+/* The matrix: preset rows x CV output columns */
+.h7s-matrix {
+  display: grid;
+  gap: 6px;
+}
+
+.h7s-row {
+  --c: var(--h7-c1);
+  display: grid;
+  grid-template-columns: 48px minmax(104px, 1.1fr) minmax(0, 3fr);
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 0 0 2px transparent;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.h7s-row.is-active {
+  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+  box-shadow: inset 0 0 0 2px var(--c);
+}
+
+.h7s-row.h7s-head {
+  background: none;
+  box-shadow: none;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.h7s-corner,
+.h7s-col {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--h7-muted);
+}
+
+.h7s-corner { grid-column: 1 / 3; padding-left: 8px; }
+.h7s-spacer { display: none; }
+.h7s-col { text-align: center; }
+
+.h7s-cells {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.h7s-activate {
+  display: none;
+}
+
+.h7s-rowpad {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  cursor: pointer;
+  background: var(--h7-ink-3);
+  box-shadow: inset 0 0 0 2px var(--c);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--c) 55%, transparent);
+  transition: background-color 0.2s, transform 0.08s;
+}
+
+.h7s-rowpad b {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--c);
+}
+
+.h7s-rowpad i { display: none; }
+
+.h7s-rowpad:active { transform: scale(0.94); }
+
+.h7s-rowpad.is-active {
+  background: var(--c);
+  box-shadow: 0 0 16px -2px var(--c);
+}
+.h7s-rowpad.is-active b { color: var(--h7-ink); }
+
+.h7s-label {
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--h7-text);
+  background: var(--h7-ink);
+  box-shadow: inset 0 0 0 1px var(--h7-line);
+  text-overflow: ellipsis;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.h7s-label:focus {
+  outline: none;
+  background: #000;
+  box-shadow: inset 0 0 0 2px var(--c);
+}
+
+.h7s-cell {
+  position: relative;
+  min-width: 0;
+  height: 48px;
+  border-radius: 12px;
+  cursor: pointer;
+  background: var(--h7-ink);
+  box-shadow: inset 0 0 0 1px var(--h7-line), inset 0 3px 5px rgba(0, 0, 0, 0.5);
+  transition: background-color 0.15s, box-shadow 0.15s, transform 0.08s;
+}
+
+.h7s-cell:active { transform: scale(0.92); }
+
+.h7s-cell.is-on {
+  background: var(--c);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45), 0 0 0 1px var(--c);
+}
+
+/* The signal is actually leaving the plugin through the outputs of the active row */
+.h7s-row.is-active .h7s-cell.is-on {
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45), 0 0 14px 0 var(--c);
+}
+
+.h7s-cell::before {
+  content: attr(data-output);
+  display: none;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--h7-muted);
+}
+.h7s-cell.is-on::before { color: var(--h7-ink); }
+
+/* Hardware assignments: every tile is the button that opens the assignment dialog */
+.h7s-assign {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.h7s .mod-address.h7s-address {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  height: auto;
+  min-height: 56px;
+  padding: 6px 8px 6px 14px;
+  border-radius: 14px;
+  text-align: left;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.04);
+  background-image: none;
+  box-shadow: inset 0 0 0 1px var(--h7-line);
+  transition: background-color 0.15s, box-shadow 0.15s;
+}
+
+.h7s .mod-address.h7s-address:hover { background-color: rgba(255, 255, 255, 0.09); }
+
+.h7s-assign-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.h7s-assign-name small {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--h7-muted);
+}
+
+/* "+" while free, a check once the control is addressed */
+.h7s-assign-state {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  border-radius: 50%;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--h7-accent);
+  background: var(--h7-ink-3);
+}
+.h7s-assign-state::before { content: "+"; }
+
+.h7s .mod-address.h7s-address.addressed {
+  background-color: rgba(127, 240, 246, 0.12);
+  box-shadow: inset 0 0 0 2px var(--h7-accent);
+}
+.h7s .mod-address.h7s-address.addressed .h7s-assign-state {
+  color: var(--h7-ink);
+  background: var(--h7-accent);
+}
+.h7s .mod-address.h7s-address.addressed .h7s-assign-state::before { content: "\2713"; }
+
+/* Saved presets: MOD UI wires up this markup, it is only restyled here */
+.h7s .mod-presets {
+  position: relative;
+  float: none;
+  width: auto !important;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  background: none;
+}
+
+.h7s .mod-presets > span.mod-enumerated-title {
+  display: block;
+  height: auto;
+  margin-bottom: 8px;
+  overflow: visible !important;
+}
+
+.h7s .mod-presets form {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+}
+
+.h7s .mod-presets form > span {
+  flex: 1 1 0;
+}
+
+.h7s .mod-presets form label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--h7-ink-3);
+}
+
+.h7s .mod-presets .radio-preset {
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+  accent-color: var(--h7-accent);
+  -webkit-appearance: radio;
+  appearance: auto;
+}
+
+.h7s .mod-presets > div.mod-enumerated-list {
+  float: none;
+  width: 100%;
+  height: auto;
+  max-height: 232px;
+  padding: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  background: var(--h7-ink);
+}
+
+.h7s .mod-presets .mod-enumerated-list > div[mod-role="enumeration-option"] {
+  height: auto;
+  min-height: 46px;
+  padding: 12px 14px;
+  margin: 0 0 1px;
+  line-height: 1.2;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--h7-text);
+  background: var(--h7-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.h7s .mod-presets .mod-enumerated-list > div[mod-role="enumeration-option"]:hover { background: var(--h7-ink-3); }
+.h7s .mod-presets .mod-enumerated-list > div[mod-role="enumeration-option"].selected {
+  color: var(--h7-ink);
+  background: var(--h7-accent);
+}
+
+.h7s .mod-presets footer {
+  position: static;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  margin: 10px 0 0;
+  padding: 0;
+  background: none;
+}
+
+.h7s .mod-presets .btn {
+  float: none;
+  width: auto;
+  min-width: 48px;
+  min-height: 48px;
+  margin: 0;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--h7-text);
+  background-color: var(--h7-ink-3);
+  background-repeat: no-repeat;
+  background-position: center center;
+  box-shadow: inset 0 0 0 1px var(--h7-line);
+}
+
+.h7s .mod-presets .btn.preset-btn-save,
+.h7s .mod-presets .btn.preset-btn-save-as,
+.h7s .mod-presets .btn.preset-btn-delete {
+  width: 48px;
+  margin-right: 0;
+}
+
+.h7s .mod-presets .btn.preset-btn-rename { width: 56px !important; font-size: 13px; }
+
+.h7s .mod-presets .btn:hover { background-color: #25505a; }
+.h7s .mod-presets .btn.disabled { opacity: 0.35; cursor: default; }
+.h7s .mod-presets .btn.disabled:hover { background-color: var(--h7-ink-3); }
+
+.h7s .mod-presets .assign-all { margin-left: auto; }
+.h7s .mod-presets .btn.preset-btn-assign-all.addressed {
+  color: var(--h7-ink);
+  background-color: var(--h7-accent);
+}
+
+
+/* --------------------------------------------------------------------------
+ * Wide screens: the grips with the preset buttons, thumb reach
+ * -------------------------------------------------------------------------- */
+@media (min-width: 1100px) {
+  .h7s-shell { gap: 22px; }
+
+  .h7s-rail {
+    flex: 0 0 132px;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    height: calc(100vh - 24px);
+    display: grid;
+    grid-template-columns: repeat(2, 56px);
+    grid-auto-rows: 56px;
+    gap: 22px 18px;
+    align-content: center;
+    justify-content: center;
+  }
+
+  .h7s-pad {
+    --c: #ddd;
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--h7-ink);
+    background: radial-gradient(circle at 35% 28%, #ffffff, #d8e9ea 60%, #b7d2d5);
+    box-shadow: 0 4px 0 var(--h7-shell-deep), 0 7px 10px rgba(8, 56, 63, 0.45), inset 0 1px 1px #fff;
+    transition: transform 0.08s, box-shadow 0.08s, background-color 0.2s;
+  }
+
+  .h7s-pad:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--h7-shell-deep), inset 0 1px 1px #fff;
+  }
+
+  .h7s-pad::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -14px;
+    width: 18px;
+    height: 5px;
+    margin-left: -9px;
+    border-radius: 3px;
+    background: var(--h7-shell-deep);
+    opacity: 0.45;
+    transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+  }
+
+  .h7s-pad.is-active { background: radial-gradient(circle at 35% 28%, #fff, var(--c) 70%); }
+  .h7s-pad.is-active::after {
+    background: var(--c);
+    opacity: 1;
+    box-shadow: 0 0 10px 1px var(--c);
+  }
+
+  .h7s-body { grid-template-columns: minmax(0, 1fr) 360px; }
+  .h7s-assign { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Medium screens: the matrix and the side panels next to each other when there is room */
+@media (min-width: 900px) and (max-width: 1099px) {
+  .h7s-body { grid-template-columns: minmax(0, 1fr) 320px; }
+  .h7s-assign { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* --------------------------------------------------------------------------
+ * Narrow screens (phones, portrait tablets): one preset at a time, as a 4 x 2 grid
+ * -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .h7s { font-size: 15px; }
+  .h7s-screen { padding: 10px; border-radius: 18px; }
+  .h7s-panel { padding: 10px; }
+
+  .h7s-bar { gap: 8px 10px; }
+  .h7s h1 { font-size: 18px; }
+  .h7s-now { order: 3; flex: 1 1 100%; }
+
+  .h7s-chips {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .h7s-chip {
+    --c: #ddd;
+    position: relative;
+    height: 48px;
+    border-radius: 12px;
+    cursor: pointer;
+    background: var(--h7-ink-3);
+    box-shadow: inset 0 0 0 2px var(--c);
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--c) 40%, transparent);
+  }
+  .h7s-chip i { display: none; }
+  .h7s-chip b { font-size: 17px; font-weight: 800; color: var(--c); }
+  .h7s-chip.is-editing {
+    background: var(--c);
+    box-shadow: 0 0 14px -2px var(--c);
+  }
+  .h7s-chip.is-editing b { color: var(--h7-ink); }
+
+  /* A dot on the chip of the preset that is playing */
+  .h7s-chip.is-active::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 5px;
+    width: 8px;
+    height: 8px;
+    margin-left: -4px;
+    border-radius: 50%;
+    background: var(--h7-ink);
+    box-shadow: 0 0 0 2px var(--c);
+  }
+  .h7s-chip.is-editing.is-active::after { background: var(--h7-ink); box-shadow: none; }
+
+  .h7s-row.h7s-head { display: none; }
+  .h7s-row { display: none; grid-template-columns: 56px minmax(0, 1fr); gap: 10px; padding: 8px; }
+  .h7s-row.is-editing { display: grid; }
+
+  .h7s-rowpad { width: 56px; height: 56px; }
+  .h7s-label { height: 56px; font-size: 18px; }
+
+  .h7s-cells {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .h7s-cell { height: 64px; }
+  .h7s-cell::before { display: block; font-size: 16px; }
+
+  .h7s-row.is-editing:not(.is-active) .h7s-activate {
+    display: block;
+    grid-column: 1 / -1;
+    min-height: 56px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--h7-ink);
+    background: var(--c);
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
+  }
+  .h7s-row.is-editing:not(.is-active) .h7s-activate:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
+  }
+}
+
+/* Short screens (a phone on its side): tighter, everything still reachable by scrolling */
+@media (max-height: 520px) {
+  .h7s { padding-top: 8px; padding-bottom: 8px; }
+  .h7s-screen { gap: 8px; padding: 10px; }
+  .h7s-panel-head p { display: none; }
+  .h7s .js-close { min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hept7 *, .h7s * { transition: none !important; }
+}

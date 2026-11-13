@@ -15,30 +15,22 @@
 #include "../extension/control-input-port-change-request.h"
 
 #include "../../model/controller.h"
+#include "../../model/ports.h"
 
-typedef enum {
-    PRESET_SELECTOR_1 = 4,
-    PRESET_SELECTOR_2 = 5,
-    PRESET_SELECTOR_3 = 6,
-    PRESET_SELECTOR_4 = 7,
-
-    PRESET_SELECT = 8,
-    
-    ASSIGN_TO_NOTIFY_1 = 9,
-    ASSIGN_TO_NOTIFY_2 = 10,
-    ASSIGN_TO_NOTIFY_3 = 11,
-    ASSIGN_TO_NOTIFY_4 = 12,
-} HmiAdressing;
-
-LV2_HMI_LED_Colour led_colours[] = {
+/** Colour of each preset's LED. The HMI only has seven, so a bigger plugin reuses the first ones */
+static const LV2_HMI_LED_Colour led_colours[TOTAL_PRESETS] = {
+#ifdef HEPT7_SWITCH
+    LV2_HMI_LED_Colour_Red, LV2_HMI_LED_Colour_Yellow, LV2_HMI_LED_Colour_Green, LV2_HMI_LED_Colour_Cyan,
+    LV2_HMI_LED_Colour_Blue, LV2_HMI_LED_Colour_Magenta, LV2_HMI_LED_Colour_White, LV2_HMI_LED_Colour_Red,
+#else
     LV2_HMI_LED_Colour_Red, LV2_HMI_LED_Colour_Yellow, LV2_HMI_LED_Colour_Cyan, LV2_HMI_LED_Colour_Magenta,
-    LV2_HMI_LED_Colour_Magenta, LV2_HMI_LED_Colour_Yellow, LV2_HMI_LED_Colour_White
+#endif
 };
 
 
 static void LV2_HMI_addressed(LV2_Handle handle, uint32_t index, LV2_HMI_Addressing addressing, const LV2_HMI_AddressingInfo* info);
 static void LV2_HMI_unaddressed(LV2_Handle handle, uint32_t index);
-static void LV2_HMI_assign(Controller* self, HmiAdressing index, LV2_HMI_Addressing addressing);
+static void LV2_HMI_assign(Controller* self, uint32_t index, LV2_HMI_Addressing addressing);
 
 
 bool LV2_HMI_is_extension_data_appliable(const char* uri) {
@@ -57,7 +49,7 @@ const void* LV2_HMI_extension_data() {
 static void LV2_HMI_addressed(LV2_Handle handle, uint32_t index, LV2_HMI_Addressing addressing, const LV2_HMI_AddressingInfo* info) {
     Controller* self = (Controller*) handle;
     
-    LV2_HMI_assign(self, (HmiAdressing) index, addressing);
+    LV2_HMI_assign(self, index, addressing);
 
     // self->infos[index] = *info;
     // self->infos[index].label = strdup(info->label);
@@ -66,7 +58,7 @@ static void LV2_HMI_addressed(LV2_Handle handle, uint32_t index, LV2_HMI_Address
 static void LV2_HMI_unaddressed(LV2_Handle handle, uint32_t index) {
     Controller* self = (Controller*) handle;
 
-    LV2_HMI_assign(self, (HmiAdressing) index, NULL);
+    LV2_HMI_assign(self, index, NULL);
 
     // free((void*)self->infos[index].label);
     // memset(&self->infos[index], 0, sizeof(self->infos[index]));
@@ -77,31 +69,24 @@ void run_footswitch(Controller* self, unsigned int index_footswitch, bool on, bo
 void run_select(Controller* self, unsigned int current_preset, bool force_update);
 void run_notification(Controller* self, unsigned int current_preset, bool force_update);
 
-void LV2_HMI_assign(Controller* self, HmiAdressing index, LV2_HMI_Addressing addressing) {
+void LV2_HMI_assign(Controller* self, uint32_t index, LV2_HMI_Addressing addressing) {
     unsigned int current_preset = self->get_index_current_preset(self);
 
-    unsigned int preset_index = index - PRESET_SELECTOR_1;
-    unsigned int notifier_index = index - ASSIGN_TO_NOTIFY_1;
+    if (index >= PORT_PRESET_SELECTOR_FIRST && index < PORT_PRESET_SELECT) {
+        unsigned int preset_index = index - PORT_PRESET_SELECTOR_FIRST;
 
-    switch (index) {
-        case PRESET_SELECTOR_1:
-        case PRESET_SELECTOR_2:
-        case PRESET_SELECTOR_3:
-        case PRESET_SELECTOR_4:
-            self->lv2->hmi.preset[preset_index] = addressing;
-            run_footswitch(self, preset_index, preset_index == current_preset, true);
-            break;
-        case PRESET_SELECT:
-            self->lv2->hmi.select = addressing;
-            run_select(self, current_preset, true);
-            break;
-        case ASSIGN_TO_NOTIFY_1:
-        case ASSIGN_TO_NOTIFY_2:
-        case ASSIGN_TO_NOTIFY_3:
-        case ASSIGN_TO_NOTIFY_4:
-            self->lv2->hmi.notifiers[notifier_index] = addressing;
-            run_notification(self, current_preset, true);
-            break;
+        self->lv2->hmi.preset[preset_index] = addressing;
+        run_footswitch(self, preset_index, preset_index == current_preset, true);
+
+    } else if (index == PORT_PRESET_SELECT) {
+        self->lv2->hmi.select = addressing;
+        run_select(self, current_preset, true);
+
+    } else if (index >= PORT_ASSIGN_TO_NOTIFY_FIRST && index < PORT_PRESET_OUTPUT_FIRST) {
+        unsigned int notifier_index = index - PORT_ASSIGN_TO_NOTIFY_FIRST;
+
+        self->lv2->hmi.notifiers[notifier_index] = addressing;
+        run_notification(self, current_preset, true);
     }
 }
 
@@ -139,7 +124,7 @@ void run_footswitch(Controller* self, unsigned int index_footswitch, bool on, bo
             : LV2_HMI_LED_Brightness_None;
         
         char message[11];
-        sprintf(message, "%d - %s", index_footswitch+1, on ? "ON" : "OFF");
+        snprintf(message, sizeof(message), "%d - %s", index_footswitch+1, on ? "ON" : "OFF");
 
         hmi->widgetControl->set_led_with_brightness(
             hmi->widgetControl->handle,
@@ -175,7 +160,7 @@ void run_select(Controller* self, unsigned int current_preset, bool force_update
 
         char short_message[10];
         //sprintf(short_message, "%d PRESET", current_preset+1);
-        sprintf(short_message, "%d", current_preset+1);
+        snprintf(short_message, sizeof(short_message), "%d", current_preset+1);
 
         //hmi->widgetControl->set_label(hmi->widgetControl->handle, hmi->select, "");
         hmi->widgetControl->set_label(hmi->widgetControl->handle, hmi->select, short_message);
@@ -190,7 +175,7 @@ void run_notification(Controller* self, unsigned int current_preset, bool force_
         return;
     }
 
-    if (hmi->notifiers != NULL && (force_update || self->is_preset_changed(self))) {
+    if (force_update || self->is_preset_changed(self)) {
         const char* message = Controller_get_preset_label(self, current_preset);
 
         if (message == NULL) {

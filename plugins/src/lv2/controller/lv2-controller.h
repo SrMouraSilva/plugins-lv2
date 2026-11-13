@@ -19,8 +19,6 @@
 
 #include "../../config.h"
 
-#define TETR4_SWITCH_PLUGIN_URI "http://srmourasilva.github.io/plugins/tetr4-switch"
-
 typedef struct {
     LV2_HMI_WidgetControl* widgetControl;
 

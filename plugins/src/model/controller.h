@@ -30,7 +30,7 @@ typedef struct {
 
 typedef struct {
     // Attributes
-    float* output_cvs[TOTAL_PRESETS];
+    float* output_cvs[TOTAL_OUTPUTS];
     float* preset_selectors[TOTAL_PRESETS];
 
     float* current_preset_index;

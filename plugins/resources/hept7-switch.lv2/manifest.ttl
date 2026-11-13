@@ -1,0 +1,25 @@
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix pset: <http://lv2plug.in/ns/ext/presets#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://srmourasilva.github.io/plugins/hept7-switch>
+    a lv2:Plugin ;
+    lv2:binary <hept7-switch.so> ;
+	rdfs:seeAlso <hept7-switch.ttl> ,
+                 <modgui.ttl> ;
+    lv2:optionalFeature lv2:hardRTCapable .
+
+<http://srmourasilva.github.io/plugins/hept7-switch#preset-one-of-eight-selector>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/hept7-switch> ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/hept7-switch#preset-eight-scene-guitar-rig>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/hept7-switch> ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/hept7-switch#preset-layer-builder>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/hept7-switch> ;
+    rdfs:seeAlso <presets.ttl> .
