@@ -100,8 +100,7 @@ doap:maintainer [
     lv2:microVersion 0 ;
 
 rdfs:comment """
-Tetr4 switch is a switch inspired on switches like Pedrone Penta Switch, Pedrone Yet, Carl Martin Octa Switch and others, but adaptable for the MOD Devices universe.
-With it, is possible to define four presets of active CV and change between then. 
+Tetr4 switch is a loop switcher for CV. Store which of its four CV outputs are on in each of four presets, and change between them with a single footswitch.
 """ ;
 
 

@@ -1,4 +1,5 @@
 @prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix pset: <http://lv2plug.in/ns/ext/presets#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 <http://srmourasilva.github.io/plugins/tetr4-switch>
@@ -7,3 +8,23 @@
 	rdfs:seeAlso <tetr4-switch.ttl> ,
                  <modgui.ttl> ;
     lv2:optionalFeature lv2:hardRTCapable .
+
+<http://srmourasilva.github.io/plugins/tetr4-switch#preset-four-scene-guitar-rig>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/tetr4-switch> ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/tetr4-switch#preset-one-of-four-selector>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/tetr4-switch> ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/tetr4-switch#preset-arrangement-builder>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/tetr4-switch> ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/tetr4-switch#preset-rhythm-lead-ambient-kill>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/tetr4-switch> ;
+    rdfs:seeAlso <presets.ttl> .

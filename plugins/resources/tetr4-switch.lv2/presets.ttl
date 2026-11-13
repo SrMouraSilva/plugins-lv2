@@ -1,0 +1,136 @@
+@prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+@prefix pset:  <http://lv2plug.in/ns/ext/presets#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix state: <http://lv2plug.in/ns/ext/state#> .
+@prefix plug:  <http://srmourasilva.github.io/plugins/tetr4-switch#> .
+
+# Factory presets: the four recipes from the user manual (modgui/manual.pdf, "Recipes").
+# Each one starts on preset 1 and names the four presets after the scenes.
+
+<http://srmourasilva.github.io/plugins/tetr4-switch#preset-four-scene-guitar-rig>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/tetr4-switch> ;
+    rdfs:label "Four-scene guitar rig" ;
+    lv2:port [ lv2:symbol "Preset_selector_1" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_selector_2" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_selector_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_selector_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_combobox" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_output_1" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_output_2" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_output_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_output_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_2_output_1" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_2_output_2" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_2_output_3" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_2_output_4" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_3_output_1" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_3_output_2" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_3_output_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_3_output_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_4_output_1" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_4_output_2" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_4_output_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_4_output_4" ; pset:value 1.0 ] ;
+    state:state [
+        plug:preset_label_1 "Clean" ;
+        plug:preset_label_2 "Modulation" ;
+        plug:preset_label_3 "Distortion" ;
+        plug:preset_label_4 "Solo" ;
+    ] .
+
+<http://srmourasilva.github.io/plugins/tetr4-switch#preset-one-of-four-selector>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/tetr4-switch> ;
+    rdfs:label "One-of-four selector" ;
+    lv2:port [ lv2:symbol "Preset_selector_1" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_selector_2" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_selector_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_selector_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_combobox" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_output_1" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_1_output_2" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_output_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_output_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_2_output_1" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_2_output_2" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_2_output_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_2_output_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_3_output_1" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_3_output_2" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_3_output_3" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_3_output_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_4_output_1" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_4_output_2" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_4_output_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_4_output_4" ; pset:value 1.0 ] ;
+    state:state [
+        plug:preset_label_1 "Amp A" ;
+        plug:preset_label_2 "Amp B" ;
+        plug:preset_label_3 "Amp C" ;
+        plug:preset_label_4 "Amp D" ;
+    ] .
+
+<http://srmourasilva.github.io/plugins/tetr4-switch#preset-arrangement-builder>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/tetr4-switch> ;
+    rdfs:label "Arrangement builder" ;
+    lv2:port [ lv2:symbol "Preset_selector_1" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_selector_2" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_selector_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_selector_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_combobox" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_output_1" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_1_output_2" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_output_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_output_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_2_output_1" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_2_output_2" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_2_output_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_2_output_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_3_output_1" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_3_output_2" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_3_output_3" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_3_output_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_4_output_1" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_4_output_2" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_4_output_3" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_4_output_4" ; pset:value 1.0 ] ;
+    state:state [
+        plug:preset_label_1 "Intro" ;
+        plug:preset_label_2 "Verse" ;
+        plug:preset_label_3 "Pre" ;
+        plug:preset_label_4 "Chorus" ;
+    ] .
+
+<http://srmourasilva.github.io/plugins/tetr4-switch#preset-rhythm-lead-ambient-kill>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/tetr4-switch> ;
+    rdfs:label "Rhythm / Lead / Ambient / Kill" ;
+    lv2:port [ lv2:symbol "Preset_selector_1" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_selector_2" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_selector_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_selector_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_combobox" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_output_1" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_1_output_2" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_output_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_output_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_2_output_1" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_2_output_2" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_2_output_3" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_2_output_4" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_3_output_1" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_3_output_2" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_3_output_3" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_3_output_4" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_4_output_1" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_4_output_2" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_4_output_3" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_4_output_4" ; pset:value 0.0 ] ;
+    state:state [
+        plug:preset_label_1 "Rhythm" ;
+        plug:preset_label_2 "Lead" ;
+        plug:preset_label_3 "Ambient" ;
+        plug:preset_label_4 "Bypass" ;
+    ] .
