@@ -7,6 +7,8 @@
 #ifndef LV2_CONTROLLER_H
 #define	LV2_CONTROLLER_H
 
+#include <stdbool.h>
+
 #include "lv2/log/logger.h"
 #include "lv2/atom/atom.h"
 #include "lv2/atom/forge.h"
@@ -47,6 +49,12 @@ typedef struct {
 
     /** Used to write patch:Set replies to events_out */
     LV2_Atom_Forge forge;
+
+    /**
+     * Set by state restore (e.g. loading a preset) when it changed the preset labels;
+     * the next run() sends them on events_out so an open GUI shows the new labels.
+     */
+    bool labels_restored;
 
     Controller_URIs uris;
 
