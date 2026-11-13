@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hept7 Switch - host scenarios</title>
+<style>
+  body { font: 14px system-ui, sans-serif; margin: 20px; background: #1b1b1b; color: #ddd; }
+  h1 { font-size: 18px; } select, button { font: inherit; }
+  li { margin: 6px 0; } .pass { color: #6fdc8c; } .fail { color: #ff6b6b; font-weight: 700; } small { color: #888; display: block; margin-left: 22px; }
+  iframe { display: none; }
+</style>
+</head>
+<body>
+<h1>Hept7 Switch: clicks and the answers of the host</h1>
+<p>Runs the interface against the simulated host of the preview (MOD UI sends nothing when a port keeps its value; the plugin answers
+after a delay). Each scenario must leave the display where the plugin is, with one alert per click.
+Host answers after <select id="latency"><option>0</option><option>150</option><option selected>400</option><option>1000</option></select> ms
+<button id="run">Run</button></p>
+<ul id="results"></ul>
+<script>
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const hostPlugin = (w) => { let p = 1; while (p < 9 && w.portValues['Preset_selector_' + p] !== 1) p++; return p; };
+
+// Each scenario returns [ok, what happened]
+const scenarios = [
+  ['4 quick clicks, the host answers late', async (w, $, alerts, lat) => {
+    for (const p of [2, 3, 4, 5]) { $('.h7-pad.p' + p).click(); await sleep(120); }
+    await sleep(lat * 2 + 1500);
+    return [$('.h7-num').text() == hostPlugin(w) && alerts() === 4, `display ${$('.h7-num').text()}, plugin ${hostPlugin(w)}, ${alerts()} alerts for 4 clicks`];
+  }],
+  ['clicks 2, 3, 2 quickly (MOD UI drops the third: the port already has that value)', async (w, $, alerts, lat) => {
+    for (const p of [2, 3, 2]) { $('.h7-pad.p' + p).click(); await sleep(80); }
+    await sleep(lat * 2 + 1800);
+    return [$('.h7-num').text() == hostPlugin(w), `display ${$('.h7-num').text()}, plugin ${hostPlugin(w)}, ${alerts()} alerts`];
+  }],
+  ['the preset is changed from outside (a MIDI controller): shown and announced', async (w, $, alerts) => {
+    w.hostSelects(6); await sleep(100);
+    return [$('.h7-num').text() == 6 && alerts() === 1, `display ${$('.h7-num').text()}, ${alerts()} alert`];
+  }],
+  ['the same button clicked again after the alert is gone: announced again', async (w, $, alerts, lat) => {
+    $('.h7-pad.p4').click(); await sleep(lat + 2300);
+    const before = alerts(); $('.h7-pad.p4').click(); await sleep(60);
+    return [alerts() - before === 1, `${alerts() - before} alert on the second click`];
+  }],
+  ['the host answers a click with the same preset: no second alert', async (w, $, alerts, lat) => {
+    $('.h7-pad.p3').click(); await sleep(lat + 800);
+    return [alerts() === 1 && $('.h7-num').text() == 3, `${alerts()} alert, display ${$('.h7-num').text()}`];
+  }],
+];
+
+const run = async () => {
+  const list = document.getElementById('results'), lat = Number(document.getElementById('latency').value);
+  list.textContent = '';
+  for (const [name, scenario] of scenarios) {
+    const item = document.createElement('li'); item.textContent = name + ' ...'; list.appendChild(item);
+    const frame = document.createElement('iframe'); frame.style.cssText = 'display:block;width:1200px;height:420px;position:absolute;left:-9999px';
+    frame.src = 'frame.html?plugin=hept7-switch&latency=' + lat; document.body.appendChild(frame);
+    await new Promise((r) => frame.onload = r); await sleep(1200);
+    const w = frame.contentWindow, $ = w.$; let n = 0;
+    const addClass = $.fn.addClass; $.fn.addClass = function (c) { if (c === 'is-changed') n++; return addClass.apply(this, arguments); };   // counts the alerts
+    const [ok, what] = await scenario(w, $, () => n, lat);
+    item.className = ok ? 'pass' : 'fail'; item.innerHTML = (ok ? '✓ ' : '✗ ') + name + '<small>' + what + '</small>';
+    frame.remove();
+  }
+};
+document.getElementById('run').onclick = run;
+</script>
+</body>
+</html>

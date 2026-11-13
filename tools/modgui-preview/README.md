@@ -22,6 +22,11 @@ every request, so edit `plugins/resources/<plugin>.lv2/modgui/*` and reload. Onl
 * **Ports**: change a control port as the host would (a footswitch, a knob, MIDI...), to see how the interface
   reacts, for instance the display of Hept7 Switch announcing a change of preset (filter `selector`, tick one)
 
+* **Host answers after**: for plugins with `Preset_selector_N` ports the frame also simulates MOD UI and the plugin: it
+  sends nothing when a port already has that value (as `setPortValue` does), and answers after the chosen delay by
+  turning the previous selector off, the new one on and moving `Preset_combobox`. It reproduces races that a script's
+  instant `.click()` never shows. `scenarios.html` runs five of them (quick clicks, a dropped click, a change from
+  outside...) at several delays and says which pass
 * **Clickable check**: after loading, the frame tests (`elementFromPoint`) that every button/input of the visible view
   can actually be reached, and shows a red bar listing the ones that something covers. MOD UI puts a drag handle
   (`z-index: 20`) over the whole icon, so a control without `position: relative; z-index: 30` cannot be clicked on a
@@ -30,8 +35,8 @@ every request, so edit `plugins/resources/<plugin>.lv2/modgui/*` and reload. Onl
 
 It loads MOD UI's own CSS, jQuery and Mustache and renders the templates the way `modgui.js` does, but there is no
 plugin behind it: the ports only hold the values they are given, and what the interface asks the plugin to do is
-only logged (`__log` in the frame's console). So the plugin does not react to its own controls (for example, a
-selector does not turn the other selectors off). It does not replace a test on a real pedalboard (stacking of the
+only logged (`__log` in the frame's console). Apart from the selector simulation above, the plugin does not react
+to its own controls. It does not replace a test on a real pedalboard (stacking of the
 settings window, the position of the jacks, the device HMI, ...). The C side is not covered here.
 
 `ttl.py` is a small Turtle reader for the subset used by these bundles. If a TTL uses something it does not

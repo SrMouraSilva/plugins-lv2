@@ -7,8 +7,11 @@ function (event, funcs) {
   const LABEL_MAX_LENGTH = 15;
   const INVALID_LABEL_CHARS = /[^a-zA-Z0-9+\-:_. ]/g;
   const TOAST_MS = 1700;
-  // After a click, the host's answers to the previous clicks may still arrive: they must not undo this one
-  const STALE_MS = 1000;
+  // The host answers a click some time later, and several clicks can be in flight: the answers to the previous
+  // ones must not flicker the display. A click is "in flight" until the host answers it, or this long passes with
+  // the host quiet (MOD UI sends nothing when a click does not change the port, so some are never answered)
+  const SETTLE_MS = 800;
+  const IN_FLIGHT_MS = 2000;
 
   const labelUri = (preset) => `${URI}#preset_label_${preset}`;
   const dipSymbol = (preset, output) => `Preset_${preset}_output_${output}`;
@@ -21,7 +24,7 @@ function (event, funcs) {
 
   // ---------------------------------------------------------------------------
   // State: { active: 1..7, editing: 1..7, dips: [preset][output] => bool, labels: [preset] => string,
-  //          clickedAt: when the user last chose a preset }
+  //          inFlight: [{preset, at}] the clicks the host has not answered yet, hostPreset: what the host last said }
 
   const newState = () => ({
     active: 1,
@@ -29,7 +32,8 @@ function (event, funcs) {
     // Same defaults as the TTL: preset N turns on output N
     dips: range(1, PRESETS).map((p) => range(1, OUTPUTS).map((o) => p === o)),
     labels: range(1, PRESETS).map((p) => `Preset ${p}`),
-    clickedAt: 0,
+    inFlight: [],
+    hostPreset: 1,
   });
 
   const labelOf = (state, preset) => state.labels[preset - 1] || `Preset ${preset}`;
@@ -165,14 +169,16 @@ function (event, funcs) {
   // ---------------------------------------------------------------------------
   // Talking to the plugin
 
+  // The user pressed a preset button: the display announces it at once, without waiting for the host. The host's
+  // answer is handled by hostSays()
   const selectPreset = (event, preset) => {
     const state = event.data.state;
 
-    state.clickedAt = Date.now();
+    state.inFlight.push({ preset, at: Date.now() });
     state.editing = preset;
 
-    // A press is always answered by the display, and always sent to the plugin: what this page believes to be the
-    // active preset may be out of date (the plugin is the one that knows)
+    // Always announced and always sent, even to the preset that looks active: what this page believes may be out of
+    // date (the plugin is the one that knows)
     if (!setActive(event, preset)) {
       announce(event);
     }
@@ -180,6 +186,45 @@ function (event, funcs) {
 
     // The plugin turns the other selectors off by itself
     funcs.set_port_value(`Preset_selector_${preset}`, 1);
+  };
+
+  // The host says the plugin is on this preset:
+  //  - the answer to a click: the click was already shown, nothing to do (and the answers to the clicks before it
+  //    are not worth showing either: the display is already past them)
+  //  - the same preset as the display: nothing to do
+  //  - any other preset, with no click waiting for an answer (a footswitch, MIDI, the knob, or the host going
+  //    somewhere else than the click): the host has the last word, show it and announce it
+  //  - any other preset while clicks are still waiting: their answers are coming, let them settle (see reconcile)
+  const hostSays = (event, preset) => {
+    const state = event.data.state;
+    const now = Date.now();
+
+    state.hostPreset = preset;
+    state.inFlight = state.inFlight.filter((click) => now - click.at < IN_FLIGHT_MS);
+
+    const answered = state.inFlight.findIndex((click) => click.preset === preset);
+    if (answered >= 0) {
+      state.inFlight.splice(0, answered + 1);
+    }
+
+    clearTimeout(event.data.settleTimer);
+    event.data.settleTimer = setTimeout(() => reconcile(event), SETTLE_MS);
+
+    if (preset !== state.active && state.inFlight.length === 0) {
+      setActive(event, preset);
+    }
+  };
+
+  // The host has been quiet for a while: whatever click it never answered is lost, and where it says it is wins
+  const reconcile = (event) => {
+    const state = event.data.state;
+
+    state.inFlight = [];
+
+    if (state.hostPreset !== state.active) {
+      setActive(event, state.hostPreset);
+      draw(event);
+    }
   };
 
   const toggleDip = (event, preset, output) => {
@@ -240,9 +285,6 @@ function (event, funcs) {
   // ---------------------------------------------------------------------------
   // Events coming from the plugin / MOD UI
 
-  // An answer of the host to a click that is no longer the last one: it must not take the display back
-  const isStale = (state, preset) => preset !== state.active && Date.now() - state.clickedAt < STALE_MS;
-
   const handlePort = (event, symbol, value, announceChange) => {
     const state = event.data.state;
     let match;
@@ -258,15 +300,15 @@ function (event, funcs) {
     } else if ((match = /^Preset_selector_(\d+)$/.exec(symbol || ''))) {
       const preset = Number(match[1]);
 
-      if (value == 1 && preset >= 1 && preset <= PRESETS && !isStale(state, preset)) {
-        announceChange ? setActive(event, preset) : (state.active = preset);
+      if (value == 1 && preset >= 1 && preset <= PRESETS) {
+        announceChange ? hostSays(event, preset) : (state.active = state.hostPreset = preset);
       }
 
     } else if (symbol === 'Preset_combobox') {
       const preset = Math.round(Number(value)) + 1;
 
-      if (preset >= 1 && preset <= PRESETS && !isStale(state, preset)) {
-        announceChange ? setActive(event, preset) : (state.active = preset);
+      if (preset >= 1 && preset <= PRESETS) {
+        announceChange ? hostSays(event, preset) : (state.active = state.hostPreset = preset);
       }
     }
   };

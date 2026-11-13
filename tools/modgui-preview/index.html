@@ -42,6 +42,8 @@
     <button data-width="0">Fit</button>
   </div>
   <div><b>Preset</b> <select id="preset"></select></div>
+  <div><b>Host answers after</b>
+    <select id="latency"><option value="0">0 ms</option><option value="150" selected>150 ms</option><option value="400">400 ms</option><option value="1000">1 s</option></select></div>
   <div><button id="ports-toggle" aria-pressed="false">Ports</button></div>
 </header>
 <div class="layout">
@@ -67,7 +69,7 @@
   };
 
   const reload = () => {
-    const query = new URLSearchParams({ plugin: state.plugin, view: state.view, preset: state.preset });
+    const query = new URLSearchParams({ plugin: state.plugin, view: state.view, preset: state.preset, latency: $('latency').value });
     frame.style.width = state.width ? state.width + 'px' : '100%';
     frame.src = 'frame.html?' + query;
     document.querySelectorAll('[data-view]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.view === state.view));
@@ -111,6 +113,7 @@
   document.querySelectorAll('[data-view]').forEach((b) => b.onclick = () => { state.view = b.dataset.view; reload(); });
   document.querySelectorAll('[data-width]').forEach((b) => b.onclick = () => { state.width = Number(b.dataset.width); reload(); });
   $('preset').onchange = () => { state.preset = $('preset').value; reload(); };
+  $('latency').onchange = reload;
   $('filter').oninput = () => frame.contentWindow.portValues && model && renderPorts();
   $('ports-toggle').onclick = () => { const open = $('ports').classList.toggle('open'); $('ports-toggle').setAttribute('aria-pressed', open); };
 
