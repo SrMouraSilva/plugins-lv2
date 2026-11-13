@@ -79,7 +79,8 @@ instantiate(const LV2_Descriptor*     descriptor,
 static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
     Controller* self = (Controller*) instance;
 
-    if (port >= PORT_OUTPUT_CV_FIRST && port < PORT_PRESET_SELECTOR_FIRST) {
+    // The CV outputs are the first ports: nothing to compare against on the lower side (port is unsigned)
+    if (port < PORT_PRESET_SELECTOR_FIRST) {
         self->output_cvs[port - PORT_OUTPUT_CV_FIRST] = (float*) data;
 
     } else if (port >= PORT_PRESET_SELECTOR_FIRST && port < PORT_PRESET_SELECT) {
