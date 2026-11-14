@@ -81,7 +81,7 @@ Rebuild in the commit that changes the manual **or the interface** (screenshots)
 | `accentDark` | the same on the dark page (it follows the system theme): a light tint of the brand |
 | `colors` | the colours of the plugin (one per preset or channel): the strip under the cover, the headings and the recipe grids |
 | `links` | shown under the side navigation |
-| `output` | where the page is written, relative to the bundle (default `modgui/manual.html`). `modgui/` is installed on the device, `docs/` is not: build into `docs/manual.html` until the TTL uses the page |
+| `output` | where the page is written, relative to the bundle (default `modgui/manual.html`, which is installed on the device and is what `modgui:documentation` points to). Use `docs/manual.html` for a page the TTL does not use yet: `docs/` is not installed |
 
 ## 5. Writing `manual.md`
 
