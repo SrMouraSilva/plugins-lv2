@@ -65,8 +65,10 @@ function (event, funcs) {
     event.icon.find(`input[type=radio][checked]`).removeAttr("checked");
     event.icon.find(`input[type=radio][value=${id}]`).attr("checked", "checked");
 
-    funcs.set_port_value(`Preset_selector_${id}`, 1);
-    //funcs.set_port_value(`Preset_selector_${current}`, 0);
+    // To the combobox, not to the selector: MOD UI sends nothing when its copy of the port already holds the value,
+    // and its copy of a selector only goes back to 0 when the host answers, so a quick click back was lost. The
+    // plugin turns the selectors on and off by itself
+    funcs.set_port_value('Preset_combobox', id - 1);
   }
 
   const eventSwitch = (group, toggle) => {

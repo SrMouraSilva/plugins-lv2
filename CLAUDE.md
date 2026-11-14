@@ -53,12 +53,25 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
 * **Port layout lives in `src/model/ports.h`** as contiguous ranges (`PORT_*_FIRST`), never as one `case` per port.
   The TTL indices must match it; `_Static_assert`s pin the Tetr4 layout. Changing a port means changing, together:
   `ports.h`, the TTL (indices, groups), `presets.ttl`, the modgui JS, the manual.
-* Keep `run()` cheap and real-time friendly: no logging per cycle, no unbounded work, no new allocations (applying
-  a label from a `patch:Set` already allocates; do not add more). Port values the plugin sets itself (selector radio
-  behaviour, the combobox) go through `control_input_port->request_change`, which may only be called from `run()`.
+* Keep `run()` cheap and real-time friendly: no logging per cycle, no unbounded work, no allocations (the switches
+  keep their labels in fixed buffers; Gossiper still allocates when it applies a label from a `patch:Set`: do not add
+  more). Port values the plugin sets itself (selector radio behaviour, the combobox) go through
+  `control_input_port->request_change`, which may only be called from `run()`; never write into an input port. mod-host
+  ignores a request for the value a port already holds, and writes the port at once otherwise.
 * **The HMI is optional** (`LV2_HMI__WidgetControl` is `false` in `lv2_features_query` and `optionalFeature` in the
   TTL): the MOD Duo has none, and the plugin must still load and work. Guard every use of `widgetControl`.
   The HMI has seven LED colours (`LV2_HMI_LED_Colour_*`): a preset-per-footswitch plugin can have at most seven distinct ones.
+* **Talk to the HMI as little as possible, and not from `run()`.** mod-host locks a mutex and writes to the HMI channel
+  for every LED, label and pop-up. The switches send only what a change of preset touches, only when the preset really
+  changes (a momentary footswitch being released is not a change), and from the LV2 worker (`work:schedule`, optional:
+  without it, from `run()`). `addressed()` shows the state on that one widget and never pops up.
+* **Hept7's `Current preset` is a cycle** (`Preset_N_in_cycle`). The device keeps its own position for an enumeration on
+  a footswitch, the B+C pair or a knob, and nobody updates it when the plugin changes the preset (`set_value` only
+  changes the text). So a move of one option is a step counted from the active preset, and the plugin only ever writes
+  the device's last value or the option opposite to it into the port (`Controller_may_show_in_combobox`): then a step
+  is never ambiguous and never lost, even after MOD UI gives the device the port's value again. The selectors and the
+  `Active_preset` output (`modgui:monitoredOutputs`) say which preset is on, not the combobox. Run the cycle test
+  (a host whose "device" keeps its own index) after touching this.
 * **Pop-ups (`popup_message`) only show on a device page that has an `Assign to notify` control addressed.** Keep
   the four notify ports and say so in the manual.
 * Labels are plugin *properties* (`lv2:Parameter`, `atom:String`, `patch:writable`) read/written with
@@ -93,7 +106,9 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   at once, and let the host's events have the last word: the host answers late, several clicks can be in flight, and
   MOD UI sends **nothing** when a port already holds the value (`setPortValue`: `port.value == value`), so a click can
   go unanswered. Never let a late answer to an old click undo a newer one, and never ignore a press because the page
-  thinks it is already in that state. The preview simulates this (host latency, dropped clicks): run
+  thinks it is already in that state. MOD UI's copy of a selector stays at 1 until the host answers, so a quick click
+  back to it was dropped: Tetr4's buttons set `Preset_combobox`; Hept7's (whose combobox is a cycle) follow MOD UI's
+  copy of each selector and send 0 then 1 when it is already 1, and take the answer from `Active_preset`. The preview simulates this (host latency, dropped clicks): run
   `tools/modgui-preview/scenarios.html` after touching click handling. `event.icon` and `event.settings` are the two DOM roots.
 * **MOD UI covers the whole icon with `.mod-drag-handle` (absolute, `z-index: 20`)** so the plugin can be dragged.
   Every clickable element of the icon (buttons, inputs) needs `position: relative; z-index: 30`, or it cannot be

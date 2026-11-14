@@ -444,6 +444,16 @@
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.55);
 }
 
+/* Out of the cycle of "Current preset": still a button that selects the preset, only marked as skipped */
+.h7-pad.is-out-of-cycle:not(.is-active) {
+  background: linear-gradient(180deg, var(--h7-turq-light), var(--h7-turq));
+}
+.h7-pad.is-out-of-cycle span {
+  opacity: 0.55;
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+
 
 /* ==========================================================================
  * The settings page: takes the whole screen, built for touch
@@ -685,7 +695,8 @@
 
 .h7s-cells {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  /* The CV outputs, then "In the cycle" */
+  grid-template-columns: repeat(8, minmax(0, 1fr)) minmax(0, 1.25fr);
   gap: 6px;
 }
 
@@ -771,6 +782,31 @@
   color: var(--h7-muted);
 }
 .h7s-cell.is-on::before { color: var(--h7-ink); }
+
+/* Set apart from the CV outputs: it is not a CV output */
+.h7s-cell-cycle,
+.h7s-col-cycle { margin-left: 10px; }
+
+.h7s-cell.h7s-cell-cycle.is-on {
+  background: var(--h7-turq);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45), 0 0 0 1px var(--h7-turq);
+}
+.h7s-row.is-active .h7s-cell.h7s-cell-cycle.is-on {
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45), 0 0 0 1px var(--h7-turq);
+}
+
+/* A mark inside the switch, so on and off do not rely on colour only */
+.h7s-cell-cycle::after {
+  content: "\2715";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--h7-muted);
+}
+.h7s-cell-cycle.is-on::after { content: "\21BB"; color: var(--h7-ink); font-size: 20px; }
 
 /* Hardware assignments: every tile is the button that opens the assignment dialog */
 .h7s-assign {
@@ -1047,6 +1083,12 @@
 
   .h7s-cell { height: 64px; }
   .h7s-cell::before { display: block; font-size: 16px; }
+
+  /* A row of its own under the outputs, with its name written in it */
+  .h7s-cell-cycle { grid-column: 1 / -1; margin-left: 0; height: 56px; }
+  .h7s-cell-cycle::after { justify-content: center; grid-auto-flow: column; gap: 8px; }
+  .h7s-cell-cycle::after { content: "\2715  Out of the cycle"; font-size: 16px; }
+  .h7s-cell-cycle.is-on::after { content: "\21BB  In the cycle of Current preset"; font-size: 16px; }
 
   .h7s-row.is-editing:not(.is-active) .h7s-activate {
     display: block;

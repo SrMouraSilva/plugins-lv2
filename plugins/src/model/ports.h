@@ -19,9 +19,12 @@
  *   Assign to notify  TOTAL_CONTROLLER_NOTIFIERS ports
  *   Dip switches      TOTAL_PRESETS * TOTAL_OUTPUTS ports (preset by preset)
  *   Events in/out     2 ports
+ *   In the cycle      TOTAL_PRESETS ports, Hept7 Switch only (added after the events: ports are never renumbered)
+ *   Active preset     1 output port, Hept7 Switch only
  *
  * Tetr4 Switch (4x4):  outputs 0-3, selectors 4-7, current preset 8, notify 9-12, dips 13-28, events 29-30
- * Hept7 Switch (7 presets x 8 outputs):  outputs 0-7, selectors 8-14, current preset 15, notify 16-19, dips 20-75, events 76-77
+ * Hept7 Switch (7 presets x 8 outputs):  outputs 0-7, selectors 8-14, current preset 15, notify 16-19, dips 20-75,
+ *                                        events 76-77, in the cycle 78-84, active preset 85
  */
 #define PORT_OUTPUT_CV_FIRST          0
 #define PORT_PRESET_SELECTOR_FIRST    (PORT_OUTPUT_CV_FIRST + TOTAL_OUTPUTS)
@@ -30,6 +33,11 @@
 #define PORT_PRESET_OUTPUT_FIRST      (PORT_ASSIGN_TO_NOTIFY_FIRST + TOTAL_CONTROLLER_NOTIFIERS)
 #define PORT_EVENTS_IN                (PORT_PRESET_OUTPUT_FIRST + TOTAL_PRESETS * TOTAL_OUTPUTS)
 #define PORT_EVENTS_OUT               (PORT_EVENTS_IN + 1)
+/** Whether a preset is one of those "Current preset" goes through. A plugin without these ports (Tetr4 Switch) never
+ *  has them connected: every preset is in the cycle */
+#define PORT_PRESET_IN_CYCLE_FIRST    (PORT_EVENTS_OUT + 1)
+/** Output: the active preset (0-based), for the interface. Hept7 Switch only (Tetr4 Switch never connects it) */
+#define PORT_ACTIVE_PRESET            (PORT_PRESET_IN_CYCLE_FIRST + TOTAL_PRESETS)
 
 /** Index of the dip switch that sets CV output @p output (0-based) while preset @p preset (0-based) is active */
 #define PORT_PRESET_OUTPUT(preset, output) (PORT_PRESET_OUTPUT_FIRST + (preset) * TOTAL_OUTPUTS + (output))

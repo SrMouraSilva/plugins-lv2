@@ -7,68 +7,37 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include <lv2/lv2plug.in/ns/ext/log/log.h>
-
 #include "controller.h"
 #include "../utils/utils.h"
 
 #define PRESET_LABEL_MAX_LENGTH (PRESET_LABEL_MAX_SIZE - 1)
 
-static char* Controller_make_default_preset_label(unsigned int index);
-
-bool Controller_is_preset_changed(void* self);
-
-unsigned int Controller_get_index_previous_preset(void* self);
-unsigned int Controller_get_index_current_preset(void* self);
-
-unsigned int Controller_get_current_preset(void* self);
-
-unsigned int Controller_get_output_signal(void* self);
-
-void Controller_set_index_current_preset_by_mask(void* self, unsigned int index);
-void Controller_set_index_previous_preset_by_mask(void* self, unsigned int index);
-
-void Controller_run(void* self, uint32_t n_samples);
-
-/**
- * Calculate the preset index by mask.
- * If there more than one bit actived, is considered
- * the highest significative bit as the current preset.
- */
-unsigned int preset_index_by_mask(unsigned int mask) {
-    return highest_on_bit(mask);
-}
+static void Controller_set_default_preset_label(Controller* self, unsigned int index);
+static unsigned int Controller_read_combobox(const Controller* self);
+static unsigned int Controller_read_cycle_mask(const Controller* self);
+static unsigned int Controller_follow_combobox(const Controller* self, unsigned int combobox);
+static unsigned int Controller_next_in_cycle(const Controller* self, unsigned int from, int direction);
+static void Controller_update_output_cvs(const Controller* self, uint32_t n_samples);
 
 
-Controller* Controller_instantiate() {
+Controller* Controller_instantiate(void) {
     Controller* self = (Controller*) calloc(1, sizeof(Controller));
 
     if (self == NULL) {
         return NULL;
     }
 
-    self->is_preset_changed = &Controller_is_preset_changed;
-
-    self->get_index_previous_preset = &Controller_get_index_previous_preset;
-    self->get_index_current_preset = &Controller_get_index_current_preset;
-
-    self->get_current_preset = &Controller_get_current_preset;
-
-    self->get_output_signal = &Controller_get_output_signal;
-
-    self->run = &Controller_run;
-
-    self->internal_state.current_preset_mask = 0b0000001;
-    self->internal_state.previous_preset_mask = self->internal_state.current_preset_mask;
-    self->internal_state.preset_changed = false;
+    // Same as the TTL defaults: preset 1, with its selector on
+    self->current_preset = 0;
+    self->previous_preset = 0;
+    self->selector_mask = 1u << 0;
+    self->combobox = 0;
+    self->started = false;
+    self->cycle_mask = (1u << TOTAL_PRESETS) - 1;
+    self->cycle_position = 0;
 
     for (unsigned int i=0; i<TOTAL_PRESETS; i++) {
-        self->preset_labels[i] = Controller_make_default_preset_label(i);
-
-        if (self->preset_labels[i] == NULL) {
-            Controller_cleanup(self);
-            return NULL;
-        }
+        Controller_set_default_preset_label(self, i);
     }
 
     self->lv2 = NULL;
@@ -77,14 +46,8 @@ Controller* Controller_instantiate() {
 }
 
 void Controller_cleanup(Controller* self) {
-    if (self == NULL) {
-        return;
-    }
-
-    for (unsigned int i=0; i<TOTAL_PRESETS; i++) {
-        free(self->preset_labels[i]);
-        self->preset_labels[i] = NULL;
-    }
+    // Nothing allocated besides the Controller itself, which the caller frees
+    (void) self;
 }
 
 const char* Controller_get_preset_label(const Controller* self, unsigned int index) {
@@ -100,131 +63,199 @@ bool Controller_set_preset_label(Controller* self, unsigned int index, const cha
         return false;
     }
 
-    char* next_label = (new_label == NULL || new_label[0] == '\0')
-        ? Controller_make_default_preset_label(index)
-        : sanitize_label(new_label, PRESET_LABEL_MAX_LENGTH);
-
-    if (next_label == NULL) {
-        return false;
+    if (new_label == NULL || new_label[0] == '\0') {
+        Controller_set_default_preset_label(self, index);
+    } else {
+        sanitize_label_to(self->preset_labels[index], new_label, PRESET_LABEL_MAX_LENGTH);
     }
-
-    free(self->preset_labels[index]);
-    self->preset_labels[index] = next_label;
 
     return true;
 }
 
 
-bool Controller_is_preset_changed(void* self) {
-    Controller* this = (Controller*) self;
+void Controller_run(Controller* self, uint32_t n_samples) {
+    const unsigned int selectors = make_mask(self->preset_selectors, TOTAL_PRESETS);
+    const unsigned int combobox = Controller_read_combobox(self);
+    const bool selectors_moved = selectors != self->selector_mask;
+    // The plugin's own requests are already in self->combobox: a move is a move from outside
+    const bool combobox_moved = combobox != self->combobox;
 
-    return this->internal_state.preset_changed;
-}
+    self->cycle_mask = Controller_read_cycle_mask(self);
 
-void Controller_set_index_previous_preset_by_mask(void* self, unsigned int preset_mask) {
-    Controller* this = (Controller*) self;
+    // Selectors that went on since the previous cycle. Going off never chooses a preset: a momentary footswitch
+    // being released, or the active preset being turned off, only asks for its selector to be turned on again
+    const unsigned int turned_on = selectors & ~self->selector_mask;
+    unsigned int next = self->current_preset;
 
-    int index = preset_index_by_mask(preset_mask);
-    this->internal_state.previous_preset_mask = 0b1 << index;
-}
+    if (!self->started) {
+        // A pedalboard being loaded (the host does not process while it loads, so its values are all here): the
+        // selectors say which preset was on. The combobox may hold where a filtered cycle had left the device
+        if (selectors != 0) {
+            next = (selectors & (1u << combobox)) ? combobox : lowest_on_bit(selectors);
+        } else {
+            next = combobox;
+        }
 
-unsigned int Controller_get_index_previous_preset(void* self) {
-    Controller* this = (Controller*) self;
+    } else if (turned_on != 0) {
+        // Several at once (a snapshot): the combobox, which moved with them, breaks the tie
+        next = (turned_on & (1u << combobox)) ? combobox : lowest_on_bit(turned_on);
 
-    return preset_index_by_mask(this->internal_state.previous_preset_mask);
-}
-
-void Controller_set_index_current_preset_by_mask(void* self, unsigned int preset_mask) {
-    Controller* this = (Controller*) self;
-
-    int index = preset_index_by_mask(preset_mask);
-    this->internal_state.current_preset_mask = 0b1 << index;
-}
-
-unsigned int Controller_get_index_current_preset(void* self) {
-    Controller* this = (Controller*) self;
-
-    return preset_index_by_mask(this->internal_state.current_preset_mask);
-}
-
-unsigned int Controller_get_current_preset(void* self) {
-    Controller* this = (Controller*) self;
-
-    unsigned int index_current_preset = this->get_index_current_preset(self);
-
-    return make_mask(this->preset_outputs[index_current_preset], TOTAL_OUTPUTS);
-}
-
-unsigned int Controller_get_output_signal(void* self) {
-    Controller* this = (Controller*) self;
-
-    return this->get_current_preset(this);
-}
-
-///////////////////////////////////////////////////////
-// UPDATES
-void Controller_update_assignables(Controller* self);
-void Controller_update_output_cvs(Controller* self, uint32_t n_samples);
-
-
-void Controller_run(void* self, uint32_t n_samples) {
-    Controller* this = (Controller*) self;
-
-    unsigned int preset_mask = make_mask(this->preset_selectors, TOTAL_PRESETS);
-    unsigned int current_preset = (int) *this->current_preset_index;
-
-    bool slider_changed = preset_mask != this->internal_state.current_preset_mask;
-    bool combobox_changed = this->get_index_current_preset(this) != current_preset;
-
-    this->internal_state.preset_changed = slider_changed || combobox_changed;
-
-    if (this->internal_state.preset_changed) {
-        Controller_set_index_previous_preset_by_mask(this, this->internal_state.current_preset_mask);
-
-        unsigned int new_mask_current_preset = slider_changed
-            ? (preset_mask ^ this->internal_state.current_preset_mask)
-            : (new_mask_current_preset = 0b1 << current_preset);
-
-        Controller_set_index_current_preset_by_mask(this, new_mask_current_preset);
+    } else if (combobox_moved && !selectors_moved) {
+        // When the selectors moved too (a snapshot, whose combobox may hold a cycle position), they have the last word
+        next = Controller_follow_combobox(self, combobox);
     }
 
-    Controller_update_assignables(self);
+    if (combobox_moved || !self->started) {
+        self->cycle_position = combobox;
+    }
+
+    self->started = true;
+    self->inputs_changed = selectors_moved || combobox_moved;
+    self->selector_mask = selectors;
+    self->combobox = combobox;
+
+    self->preset_changed = next != self->current_preset;
+
+    if (self->preset_changed) {
+        self->previous_preset = self->current_preset;
+        self->current_preset = next;
+    }
+
+    if (self->active_preset_output != NULL) {
+        *self->active_preset_output = (float) self->current_preset;
+    }
+
     Controller_update_output_cvs(self, n_samples);
 }
 
-void Controller_update_assignables(Controller* self) {
-    unsigned int index = self->get_index_current_preset(self);
-
-    if (self->internal_state.preset_changed) {
-        unsigned int previous_index = self->get_index_previous_preset(self);
-
-        // Footswitches
-        *self->preset_selectors[previous_index] = 0.0f;
-        *self->preset_selectors[index] = 1.0f;
-
-        // Select
-        *self->current_preset_index = index;
-    }
+bool Controller_has_cycle(const Controller* self) {
+    return self->cycle_mask != 0;
 }
 
-void Controller_update_output_cvs(Controller* self, uint32_t n_samples) {
-    // Calculate output values
-    unsigned int output_coded = self->get_output_signal(self);
-    float output_cv_values[TOTAL_OUTPUTS];
+int Controller_cycle_step(unsigned int from, unsigned int to) {
+    if (to == (from + 1) % TOTAL_PRESETS) {
+        return 1;
+    }
+    if (to == (from + TOTAL_PRESETS - 1) % TOTAL_PRESETS) {
+        return -1;
+    }
+    return 0;
+}
 
-    for (unsigned int n = 0; n < TOTAL_OUTPUTS; n++) {
-        unsigned int mask = 1 << n;
-        output_cv_values[n] = ((output_coded & mask) >> n) * MAX_TENSION;
+/** The option opposite to the device's position: the only other value the plugin sets "Current preset" to */
+static unsigned int Controller_opposite_position(const Controller* self) {
+    return (self->cycle_position + TOTAL_PRESETS / 2) % TOTAL_PRESETS;
+}
+
+bool Controller_may_show_in_combobox(const Controller* self, unsigned int preset) {
+    return preset == self->cycle_position || preset == Controller_opposite_position(self);
+}
+
+/**
+ * Where a move of "Current preset" from outside leads. Without a cycle (Tetr4 Switch), to the preset it names. With
+ * one (even when every preset is in it: the steps then count from the active preset too):
+ *  - a step (the next or previous option: a footswitch, the B+C pair, a knob) goes to the next or previous preset in
+ *    the cycle, counted from the active preset, not from the value: the device's position may be behind it
+ *  - a jump goes to the preset it names, or, when that preset is out of the cycle, to the next one in the cycle in the
+ *    direction of the jump
+ *
+ * The device moves one option from its own position: the last value it sent (cycle_position), or a value the port
+ * had since then, when MOD UI gave it to the device again (it does when it shows the page of the device again). The
+ * plugin only ever sets the port to the device's position or to the option opposite to it
+ * (Controller_may_show_in_combobox), so the device is at one of those two, which are not next to each other:
+ *  - the value of a press is next to only one of them, so its direction is never ambiguous
+ *  - it is never the value the port holds, so the host always sees it (a press is never lost)
+ */
+static unsigned int Controller_follow_combobox(const Controller* self, unsigned int combobox) {
+    if (!Controller_has_cycle(self)) {
+        return combobox;
     }
 
-    // Update CV values
-    for (uint32_t i = 0; i < n_samples; i++) {
-        for (unsigned int id_output = 0; id_output < TOTAL_OUTPUTS; id_output++) {
-            self->output_cvs[id_output][i] = output_cv_values[id_output];
+    int direction = Controller_cycle_step(self->cycle_position, combobox);
+
+    if (direction == 0) {
+        direction = Controller_cycle_step(Controller_opposite_position(self), combobox);
+    }
+
+    if (direction != 0) {
+        return Controller_next_in_cycle(self, self->current_preset, direction);
+    }
+
+    if (self->cycle_mask & (1u << combobox)) {
+        return combobox;
+    }
+
+    return Controller_next_in_cycle(self, combobox, combobox < self->cycle_position ? -1 : 1);
+}
+
+/** The first preset in the cycle after @p from (itself only when it is the only one) */
+static unsigned int Controller_next_in_cycle(const Controller* self, unsigned int from, int direction) {
+    unsigned int preset = from;
+
+    for (unsigned int i=0; i<TOTAL_PRESETS; i++) {
+        preset = (preset + (direction > 0 ? 1 : TOTAL_PRESETS - 1)) % TOTAL_PRESETS;
+
+        if (self->cycle_mask & (1u << preset)) {
+            return preset;
+        }
+    }
+
+    return from;
+}
+
+static unsigned int Controller_read_cycle_mask(const Controller* self) {
+    unsigned int mask = 0;
+    bool has_ports = false;
+
+    for (unsigned int i=0; i<TOTAL_PRESETS; i++) {
+        float* const port = self->presets_in_cycle[i];
+
+        if (port == NULL) {
+            continue;
+        }
+
+        has_ports = true;
+
+        if (!is_zero(*port)) {
+            mask |= 1u << i;
+        }
+    }
+
+    if (!has_ports) {
+        return 0;
+    }
+
+    // Nothing in the cycle would leave "Current preset" with nowhere to go: take it as everything
+    return mask != 0 ? mask : (1u << TOTAL_PRESETS) - 1;
+}
+
+/** The combobox port as a preset index, rounded and kept in range whatever the host writes into it */
+static unsigned int Controller_read_combobox(const Controller* self) {
+    const float value = *self->current_preset_index;
+
+    if (!(value > 0.5f)) {  // also NaN
+        return 0;
+    }
+
+    const unsigned int index = (unsigned int) (value + 0.5f);
+
+    return index < TOTAL_PRESETS ? index : TOTAL_PRESETS - 1;
+}
+
+static void Controller_update_output_cvs(const Controller* self, uint32_t n_samples) {
+    float* const* dips = self->preset_outputs[self->current_preset];
+
+    // One output at a time: a plain fill of a contiguous buffer, which the compiler vectorises
+    for (unsigned int output = 0; output < TOTAL_OUTPUTS; output++) {
+        const float value = is_zero(*dips[output]) ? 0.0f : MAX_TENSION;
+        float* const buffer = self->output_cvs[output];
+
+        for (uint32_t i = 0; i < n_samples; i++) {
+            buffer[i] = value;
         }
     }
 }
 
-static char* Controller_make_default_preset_label(unsigned int index) {
-    return make_default_label("Preset", index);
+static void Controller_set_default_preset_label(Controller* self, unsigned int index) {
+    format_default_label(self->preset_labels[index], PRESET_LABEL_MAX_SIZE, "Preset", index);
 }

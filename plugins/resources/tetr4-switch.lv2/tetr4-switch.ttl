@@ -13,6 +13,7 @@
 @prefix state: <http://lv2plug.in/ns/ext/state#> .
 @prefix patch: <http://lv2plug.in/ns/ext/patch#> .
 @prefix pg:   <http://lv2plug.in/ns/ext/port-groups#> .
+@prefix work: <http://lv2plug.in/ns/ext/worker#> .
 @prefix plug: <http://srmourasilva.github.io/plugins/tetr4-switch#> .
 
 plug:preset_label_1
@@ -91,13 +92,13 @@ doap:maintainer [
     foaf:mbox <mailto:mateus.moura@hotmail.com> ;
     ];
 
-    lv2:requiredFeature urid:map;
-    lv2:optionalFeature lv2:hardRTCapable, state:loadDefaultState, <http://moddevices.com/ns/hmi#WidgetControl>;
-    lv2:extensionData <http://moddevices.com/ns/hmi#PluginNotification>, state:interface;
+    lv2:requiredFeature urid:map, <http://kx.studio/ns/lv2ext/control-input-port-change-request>;
+    lv2:optionalFeature lv2:hardRTCapable, state:loadDefaultState, <http://moddevices.com/ns/hmi#WidgetControl>, work:schedule;
+    lv2:extensionData <http://moddevices.com/ns/hmi#PluginNotification>, state:interface, work:interface;
 
     lv2:majorVersion 1 ;
     lv2:minorVersion 1 ;
-    lv2:microVersion 0 ;
+    lv2:microVersion 1 ;
 
 rdfs:comment """
 Tetr4 switch is a loop switcher for CV. Store which of its four CV outputs are on in each of four presets, and change between them with a single footswitch.

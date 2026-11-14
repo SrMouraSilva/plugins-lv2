@@ -13,6 +13,7 @@
 @prefix state: <http://lv2plug.in/ns/ext/state#> .
 @prefix patch: <http://lv2plug.in/ns/ext/patch#> .
 @prefix pg:   <http://lv2plug.in/ns/ext/port-groups#> .
+@prefix work: <http://lv2plug.in/ns/ext/worker#> .
 @prefix plug: <http://srmourasilva.github.io/plugins/hept7-switch#> .
 
 # Port layout (keep in sync with plugins/src/model/ports.h):
@@ -22,6 +23,8 @@
 #   16-19  Assign to notify
 #   20-75  Dip switches, preset by preset (preset 1 outputs 1-8, preset 2 outputs 1-8, ...)
 #   76-77  Events in / out
+#   78-84  In the cycle of "Current preset", preset by preset (added after the events: ports are never renumbered)
+#   85     Active preset (output, for the interface)
 
 plug:preset_label_1
     a lv2:Parameter ;
@@ -132,13 +135,13 @@ doap:maintainer [
     foaf:mbox <mailto:mateus.moura@hotmail.com> ;
     ];
 
-    lv2:requiredFeature urid:map;
-    lv2:optionalFeature lv2:hardRTCapable, state:loadDefaultState, <http://moddevices.com/ns/hmi#WidgetControl>;
-    lv2:extensionData <http://moddevices.com/ns/hmi#PluginNotification>, state:interface;
+    lv2:requiredFeature urid:map, <http://kx.studio/ns/lv2ext/control-input-port-change-request>;
+    lv2:optionalFeature lv2:hardRTCapable, state:loadDefaultState, <http://moddevices.com/ns/hmi#WidgetControl>, work:schedule;
+    lv2:extensionData <http://moddevices.com/ns/hmi#PluginNotification>, state:interface, work:interface;
 
     lv2:majorVersion 1 ;
     lv2:minorVersion 0 ;
-    lv2:microVersion 1 ;
+    lv2:microVersion 5 ;
 
 rdfs:comment """
 Hept7 switch is a loop switcher for CV, the big sibling of Tetr4 switch. Store which of its eight CV outputs are on in each of seven presets, and change between them with a footswitch. It comes with a full-screen, touch-friendly settings page and a small display that shows the preset on every device, even the ones without a screen for plugins.
@@ -312,7 +315,7 @@ lv2:port
     lv2:default 0;
     lv2:minimum 0;
     lv2:maximum 6;
-    rdfs:comment "Shows and selects which preset (1 to 7) is currently active. It is kept in sync with the Preset selector footswitches." ;
+    rdfs:comment "Shows and selects which preset (1 to 7) is currently active. It is kept in sync with the Preset selector footswitches. Assigned to a footswitch, to the B+C pair or to a knob, it goes through the presets that are In the cycle and skips the others." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort;
@@ -1052,6 +1055,102 @@ lv2:port
     atom:bufferType atom:Sequence ;
     atom:supports patch:Message ;
     rdfs:comment "Internal port used to send patch:Set messages, such as replying with the current preset labels." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 78 ;
+    lv2:symbol "Preset_1_in_cycle" ;
+    pg:group plug:group_preset_1 ;
+    lv2:name "Preset 1 - In the cycle" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:integer, lv2:toggled ;
+    rdfs:comment "On: preset 1 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 79 ;
+    lv2:symbol "Preset_2_in_cycle" ;
+    pg:group plug:group_preset_2 ;
+    lv2:name "Preset 2 - In the cycle" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:integer, lv2:toggled ;
+    rdfs:comment "On: preset 2 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 80 ;
+    lv2:symbol "Preset_3_in_cycle" ;
+    pg:group plug:group_preset_3 ;
+    lv2:name "Preset 3 - In the cycle" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:integer, lv2:toggled ;
+    rdfs:comment "On: preset 3 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 81 ;
+    lv2:symbol "Preset_4_in_cycle" ;
+    pg:group plug:group_preset_4 ;
+    lv2:name "Preset 4 - In the cycle" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:integer, lv2:toggled ;
+    rdfs:comment "On: preset 4 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 82 ;
+    lv2:symbol "Preset_5_in_cycle" ;
+    pg:group plug:group_preset_5 ;
+    lv2:name "Preset 5 - In the cycle" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:integer, lv2:toggled ;
+    rdfs:comment "On: preset 5 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 83 ;
+    lv2:symbol "Preset_6_in_cycle" ;
+    pg:group plug:group_preset_6 ;
+    lv2:name "Preset 6 - In the cycle" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:integer, lv2:toggled ;
+    rdfs:comment "On: preset 6 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 84 ;
+    lv2:symbol "Preset_7_in_cycle" ;
+    pg:group plug:group_preset_7 ;
+    lv2:name "Preset 7 - In the cycle" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:integer, lv2:toggled ;
+    rdfs:comment "On: preset 7 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+],
+[
+    a lv2:OutputPort, lv2:ControlPort ;
+    lv2:index 85 ;
+    lv2:symbol "Active_preset" ;
+    pg:group plug:group_preset_selection ;
+    lv2:name "Active preset" ;
+    lv2:default 0 ;
+    lv2:minimum 0 ;
+    lv2:maximum 6 ;
+    lv2:portProperty lv2:integer ;
+    rdfs:comment "Output: the active preset (0 is preset 1), whatever selected it. Used by the interface of the plugin." ;
 ] ;
 
 patch:writable plug:preset_label_1 ,

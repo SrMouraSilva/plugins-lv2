@@ -74,7 +74,14 @@
              [ lv2:symbol "Preset_7_output_5" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_7_output_6" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_7_output_7" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_7_output_8" ; pset:value 0.0 ] ;
+             [ lv2:symbol "Preset_7_output_8" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_2_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_3_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_4_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_5_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_6_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_7_in_cycle" ; pset:value 1.0 ] ;
     state:state [
         plug:preset_label_1 "Preset 1" ;
         plug:preset_label_2 "Preset 2" ;
@@ -153,7 +160,14 @@
              [ lv2:symbol "Preset_7_output_5" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_7_output_6" ; pset:value 0.0 ] ,
              [ lv2:symbol "Preset_7_output_7" ; pset:value 0.0 ] ,
-             [ lv2:symbol "Preset_7_output_8" ; pset:value 0.0 ] ;
+             [ lv2:symbol "Preset_7_output_8" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_2_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_3_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_4_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_5_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_6_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_7_in_cycle" ; pset:value 1.0 ] ;
     state:state [
         plug:preset_label_1 "Clean" ;
         plug:preset_label_2 "Chorus" ;
@@ -232,7 +246,14 @@
              [ lv2:symbol "Preset_7_output_5" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_7_output_6" ; pset:value 1.0 ] ,
              [ lv2:symbol "Preset_7_output_7" ; pset:value 1.0 ] ,
-             [ lv2:symbol "Preset_7_output_8" ; pset:value 0.0 ] ;
+             [ lv2:symbol "Preset_7_output_8" ; pset:value 0.0 ] ,
+             [ lv2:symbol "Preset_1_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_2_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_3_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_4_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_5_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_6_in_cycle" ; pset:value 1.0 ] ,
+             [ lv2:symbol "Preset_7_in_cycle" ; pset:value 1.0 ] ;
     state:state [
         plug:preset_label_1 "Layer 1" ;
         plug:preset_label_2 "Layer 2" ;

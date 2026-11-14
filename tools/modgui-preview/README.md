@@ -24,9 +24,11 @@ every request, so edit `plugins/resources/<plugin>.lv2/modgui/*` and reload. Onl
 
 * **Host answers after**: for plugins with `Preset_selector_N` ports the frame also simulates MOD UI and the plugin: it
   sends nothing when a port already has that value (as `setPortValue` does), and answers after the chosen delay by
-  turning the previous selector off, the new one on and moving `Preset_combobox`. It reproduces races that a script's
-  instant `.click()` never shows. `scenarios.html` runs five of them (quick clicks, a dropped click, a change from
-  outside...) at several delays and says which pass
+  turning the previous selector off, the new one on and moving `Preset_combobox`, leaving out, as mod-host does, the
+  port the change came through (the host already holds that value). It reproduces races that a script's instant
+  `.click()` never shows. `scenarios.html` runs eight of them (quick clicks, a dropped click, a change from
+  outside...) at several delays and says which pass; `scenarios.html?run=1&latency=400` runs them at once and puts
+  the number of failures in the page title, for a headless browser
 * **Clickable check**: after loading, the frame tests (`elementFromPoint`) that every button/input of the visible view
   can actually be reached, and shows a red bar listing the ones that something covers. MOD UI puts a drag handle
   (`z-index: 20`) over the whole icon, so a control without `position: relative; z-index: 30` cannot be clicked on a

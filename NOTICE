@@ -10,6 +10,3 @@ original license:
   * plugins/src/lv2/extension/control-input-port-change-request.h
     Copyright 2020-2021 Filipe Coelho <falktx@falktx.com>
     ISC License (see the notice at the top of each file).
-
-  * plugins/src/utils/state_map.h
-    Adapted from the LV2 Book examples, https://lv2plug.in/book/#_state_map_h

@@ -19,7 +19,7 @@ Host answers after <select id="latency"><option>0</option><option>150</option><o
 <ul id="results"></ul>
 <script>
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const hostPlugin = (w) => { let p = 1; while (p < 9 && w.portValues['Preset_selector_' + p] !== 1) p++; return p; };
+const hostPlugin = (w) => w.simPreset();
 
 // Each scenario returns [ok, what happened]
 const scenarios = [
@@ -28,10 +28,25 @@ const scenarios = [
     await sleep(lat * 2 + 1500);
     return [$('.h7-num').text() == hostPlugin(w) && alerts() === 4, `display ${$('.h7-num').text()}, plugin ${hostPlugin(w)}, ${alerts()} alerts for 4 clicks`];
   }],
-  ['clicks 2, 3, 2 quickly (MOD UI drops the third: the port already has that value)', async (w, $, alerts, lat) => {
+  ['clicks 2, 3, 2 quickly: the plugin ends on the last click', async (w, $, alerts, lat) => {
     for (const p of [2, 3, 2]) { $('.h7-pad.p' + p).click(); await sleep(80); }
     await sleep(lat * 2 + 1800);
-    return [$('.h7-num').text() == hostPlugin(w), `display ${$('.h7-num').text()}, plugin ${hostPlugin(w)}, ${alerts()} alerts`];
+    return [$('.h7-num').text() == 2 && hostPlugin(w) == 2, `display ${$('.h7-num').text()}, plugin ${hostPlugin(w)}, ${alerts()} alerts`];
+  }],
+  ['clicks 1, 5, 1, 5, 1 quickly: the plugin ends on the last click', async (w, $, alerts, lat) => {
+    for (const p of [1, 5, 1, 5, 1]) { $('.h7-pad.p' + p).click(); await sleep(60); }
+    await sleep(lat * 2 + 1800);
+    return [$('.h7-num').text() == 1 && hostPlugin(w) == 1, `display ${$('.h7-num').text()}, plugin ${hostPlugin(w)}, ${alerts()} alerts`];
+  }],
+  ['a click MOD UI drops, with no answer from the host: the display goes back to where the plugin is', async (w, $, alerts, lat) => {
+    w.portValues['Preset_selector_4'] = 1;   // MOD UI's copy of the selector of preset 4 is on (a stale copy the page did not see), the plugin is on 1
+    $('.h7-pad.p4').click(); await sleep(2000 + 500);   // IN_FLIGHT_MS of the plugin javascript: then it gives up on the click
+    return [$('.h7-num').text() == hostPlugin(w), `display ${$('.h7-num').text()}, plugin ${hostPlugin(w)}`];
+  }],
+  ['the cycle switch of preset 3 turns Preset_3_in_cycle off and marks its button', async (w, $) => {
+    $('.h7s-cell-cycle[data-preset="3"]').click(); await sleep(100);
+    const port = w.portValues['Preset_3_in_cycle'], marked = $('.h7-pad.p3').hasClass('is-out-of-cycle');
+    return [port === 0 && marked, `Preset_3_in_cycle ${port}, button marked ${marked}`];
   }],
   ['the preset is changed from outside (a MIDI controller): shown and announced', async (w, $, alerts) => {
     w.hostSelects(6); await sleep(100);
@@ -64,6 +79,10 @@ const run = async () => {
   }
 };
 document.getElementById('run').onclick = run;
+// ?run=1 runs at once (for a headless browser); the title says when it is done and how many failed
+const autorun = new URLSearchParams(location.search);
+if (autorun.get('latency')) document.getElementById('latency').value = autorun.get('latency');
+if (autorun.get('run')) run().then(() => { document.title = 'done: ' + document.querySelectorAll('#results .fail').length + ' failed'; });
 </script>
 </body>
 </html>

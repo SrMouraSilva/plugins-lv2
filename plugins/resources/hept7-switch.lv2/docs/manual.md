@@ -18,7 +18,7 @@ a **display** that shows the preset (and announces every change of it), and a
 |---|---|
 | **Display, big number and name** | The active preset. **The name is editable**: click it and type (up to 15 characters). It is also the text the device screen pop-up shows (see section 4). |
 | **Display, eight squares** | The CV outputs that are on in the active preset. **They are buttons**: click one to turn that output on or off in the active preset, without opening the settings page (the other presets are edited on the settings page). |
-| **Seven buttons** | Select the preset. The button of the active preset lights up in its colour. There are seven because the device footswitch LEDs have seven colours (red, yellow, green, cyan, blue, magenta, white): each preset has its own, here and on the device. |
+| **Seven buttons** | Select the preset. The button of the active preset lights up in its colour. There are seven because the device footswitch LEDs have seven colours (red, yellow, green, cyan, blue, magenta, white): each preset has its own, here and on the device. A button with its number **crossed out** is a preset left out of the cycle of `Current preset` (section 3); the button still selects it. |
 | **Edit scenes** | Opens the settings page (section 2). The gear icon above the plugin opens it too. |
 | **Eight CV jacks** | `CV Output 1`–`8`, on the back plate at the right, in two columns (1–4 and 5–8). |
 
@@ -46,12 +46,17 @@ screen and is made for touch: big cells, nothing smaller than a fingertip.
   CV output. A lit cell means that output is **on** while that preset is active.
   The row of the active preset is highlighted, and its lit cells are the CV
   signals actually leaving the plugin right now.
+* **Cycle**: the last cell of each row, set apart from the CV outputs. On (↻,
+  turquoise), the preset is one of those `Current preset` goes through when it
+  is assigned to a footswitch, to the B+C pair or to a knob; off (✕), they skip
+  it. See section 3.
 * **Hardware**: tiles to assign a footswitch, a knob or a device screen page to
   the plugin's controls (section 3). A tile shows a check mark once it is assigned.
 * **Saved presets**: the factory presets (section 5) and your own presets.
 
 On a **phone** the page shows one preset at a time: pick it on the numbered
-strip, edit its eight cells, and use *Switch to preset N* to make it play.
+strip, edit its eight cells and its *Cycle* switch (the wide cell under them),
+and use *Switch to preset N* to make it play.
 
 ![The settings page on a phone](images/hept7-settings-phone.png)
 
@@ -63,7 +68,36 @@ assignment dialog) to the control you want to use:
 | Control | Use |
 |---|---|
 | `Preset 1`–`7` | One footswitch per preset. Turning one on turns the others off. |
-| `Current preset` | One knob (or CV/MIDI value) that selects among the seven presets. |
+| `Current preset` | One control that goes through the presets: a footswitch (each press goes to the next preset), the B+C pair of footswitches (previous / next), or a knob. Also a CV or MIDI value. |
+
+### Choosing which presets `Current preset` goes through
+
+Seven presets may be more than a song needs. Turn off the **Cycle** cell of the
+presets you do not use (settings page, section 2) and `Current preset` skips
+them: with presets 1, 2 and 5 in the cycle, a footswitch assigned to it goes
+1 → 2 → 5 → 1 → ..., and the B+C pair goes forwards and backwards through the
+same three.
+
+* The cycle always starts from the **active preset**. If a `Preset N`
+  footswitch or a button of the plugin has just selected preset 5, the next
+  press of `Current preset` goes to the preset after 5 in the cycle.
+* Presets out of the cycle can still be selected: the plugin buttons and the
+  `Preset 1`–`7` footswitches select any preset. Only `Current preset` skips them.
+* With every preset in the cycle (the default), `Current preset` goes through
+  all seven, also counting from the active preset.
+
+> **How it works, and its limit.** The device keeps its own position for
+> `Current preset` and sends the option after (or before) it on each press;
+> nobody tells the device when the plugin changes the preset. The plugin
+> therefore takes a move of one option as "next" (or "previous") and counts
+> from the active preset, wherever the device's position is (a MIDI or CV
+> value that moves it by exactly one option is a step too). So the value of
+> `Current preset` (in the assignment and snapshot screens) may be the
+> device's position instead of the active preset; the display, the buttons,
+> the `Preset` footswitches and the name on the device screen always show the
+> active preset. On a B+C pair that stops at the first and last options
+> instead of going around, a press at an end does nothing until a press in the
+> other direction.
 
 ## 4. The pop-up on the device screen
 
@@ -97,9 +131,11 @@ colour of each preset.
 |---|---|---|
 | `CV Output 1`–`8` | CV output | 10 V while on in the active preset, 0 V otherwise. |
 | `Preset 1`–`7` | Control input (toggle) | Footswitch selectors. |
-| `Current preset` | Control input (enumeration) | Shows and selects the active preset. |
+| `Current preset` | Control input (enumeration) | Shows and selects the active preset; goes through the presets that are in the cycle (section 3). |
 | `Assign to notify 1`–`4` | Control input | Assign to a device page so the pop-up shows there. No audio or CV effect. |
 | `Preset N - Output M` | Control input (toggle) | Dip switch: is CV output M on while preset N is active? |
+| `Preset N - In the cycle` | Control input (toggle) | Is preset N one of the presets `Current preset` goes through? On by default. |
+| `Active preset` | Control output | The active preset (0 is preset 1), whatever selected it. Used by the interface of the plugin. |
 | Preset label 1–7 | Plugin property (patch) | The name of each preset. Edited on the display or on the settings page. |
 
 Names use letters, digits, spaces and `+ - : _ .`; anything else is replaced with `_`.

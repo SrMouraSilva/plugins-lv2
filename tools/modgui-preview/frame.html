@@ -87,19 +87,26 @@ fetch('/api/plugin/' + q.get('plugin')).then((r) => r.json()).then(async (model)
   // (latency=MS delays the host's answer, 150 by default; simulate=0 turns it off):
   //  - MOD UI sends nothing when the port already has that value (setPortValue: `port.value == value`), and the
   //    value only goes back when the host's answer arrives
-  //  - the plugin then turns the previous selector off, the new one on, and moves `Preset_combobox`
+  //  - the plugin then turns the previous selector off, the new one on, and moves `Preset_combobox`. Like mod-host,
+  //    the answer leaves out the port the change came through: the host already holds that value
+  //    (RequestControlPortChange ignores a request for the value the port has), so it sends nothing for it
   const latency = Number(q.get('latency') === null ? 150 : q.get('latency'));
   const simulate = q.get('simulate') !== '0' && 'Preset_selector_1' in portValues;
   let hostPreset = 1;
   while (hostPreset < 64 && portValues['Preset_selector_' + hostPreset] !== 1) hostPreset++;
-  const hostSelects = (preset) => {
+  // through: the symbol the change came in by (nothing for a change from outside: a footswitch, MIDI)
+  const hostSelects = (preset, through) => {
     const previous = hostPreset;
     hostPreset = preset;
-    if (previous !== preset) send({ type: 'change', symbol: 'Preset_selector_' + previous, value: 0 });
-    send({ type: 'change', symbol: 'Preset_selector_' + preset, value: 1 });
-    send({ type: 'change', symbol: 'Preset_combobox', value: preset - 1 });
+    const answer = (symbol, value) => symbol !== through && send({ type: 'change', symbol, value });
+    if (previous !== preset) answer('Preset_selector_' + previous, 0);
+    answer('Preset_selector_' + preset, 1);
+    if (previous !== preset) answer('Preset_combobox', preset - 1);
+    // A monitored output (Hept7 Switch): the host reports it whenever it changes
+    if (previous !== preset && 'Active_preset' in portValues) send({ type: 'change', symbol: 'Active_preset', value: preset - 1 });
   };
-  window.hostSelects = hostSelects;   // what a MIDI controller does
+  window.hostSelects = (preset) => hostSelects(preset);   // what a MIDI controller does
+  window.simPreset = () => hostPreset;                    // where the simulated plugin is
 
   const funcs = {
     set_port_value: (symbol, value) => {
@@ -108,7 +115,8 @@ fetch('/api/plugin/' + q.get('plugin')).then((r) => r.json()).then(async (model)
       log('set_port_value', symbol, value);
       parent.portChanged && parent.portChanged(symbol, value);
       const selector = /^Preset_selector_(\d+)$/.exec(symbol);
-      if (simulate && selector && value == 1) setTimeout(() => hostSelects(Number(selector[1])), latency);
+      if (simulate && selector && value == 1) setTimeout(() => hostSelects(Number(selector[1]), symbol), latency);
+      if (simulate && symbol === 'Preset_combobox') setTimeout(() => hostSelects(Math.round(value) + 1, symbol), latency);
     },
     // The plugin answers a patch:Get with a 'change' event that has a uri
     patch_get: (uri) => { log('patch_get', uri); setTimeout(() => send({ type: 'change', uri, value: parameterValues[uri] }), 0); },
