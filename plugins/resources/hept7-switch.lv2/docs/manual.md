@@ -10,7 +10,9 @@ It is the bigger sibling of Tetr4 Switch, and it has two things of its own:
 a **display** that shows the preset (and announces every change of it), and a
 **full-screen settings page** made for touch screens.
 
-![Hept7 Switch on the pedalboard](images/hept7-pedalboard.png)
+![Hept7 Switch on the pedalboard](images/hept7-pedalboard.webp)
+
+![Hept7 Switch in use: the buttons select the preset and the display announces it, the squares turn the outputs on and off, the name is edited right there](images/hept7-switch-demo.gif)
 
 ## 1. The plugin on the pedalboard
 
@@ -28,7 +30,7 @@ Whenever the preset changes — from a footswitch, a knob, the buttons or a
 MIDI controller — the whole display takes the colour of the new preset for a
 moment, showing its number and name big:
 
-![The display announcing preset 3](images/hept7-announce.png)
+![The display announcing preset 3](images/hept7-announce.webp)
 
 This works on every device, including the **MOD Duo**, which has no screen
 for plugin pop-ups: it is how you see which preset a footswitch has just
@@ -39,7 +41,7 @@ selected.
 Click **Edit scenes** (or the gear icon) to open a page that takes the whole
 screen and is made for touch: big cells, nothing smaller than a fingertip.
 
-![The settings page](images/hept7-settings.png)
+![The settings page](images/hept7-settings.webp)
 
 * **Scenes**: one row per preset. The round button on the left makes that
   preset the active one; the field next to it is its name; then one cell per
@@ -63,7 +65,9 @@ dots between them show and change the page, and on a touch screen you can
 fewer presets per page (it says *Scenes 2/3*), and each purpose of the *Hardware*
 section gets a page of its own.
 
-![The settings page on a phone](images/hept7-settings-phone.png)
+![The settings page on a phone](images/hept7-settings-phone.webp)
+
+![Going through the settings page: the matrix, a name, the cycle switch and every page with the arrows of the top bar](images/hept7-switch-settings.gif)
 
 ## 3. Switching presets with hardware
 
@@ -75,6 +79,10 @@ assignment dialog) to the control you want to use:
 | `Preset 1`–`7` | One footswitch per preset. Turning one on turns the others off. |
 | `Current preset` | One control that goes through the presets: a footswitch (each press goes to the next preset), the B+C pair of footswitches (previous / next), or a knob. Also a CV or MIDI value. |
 
+On the settings page, tap the tile of the preset and choose the control in the dialog that opens:
+
+![The tiles Preset 1 and Preset 2 of the settings page open the assignment](images/step-assign-preset-buttons.webp)
+
 ### Choosing which presets `Current preset` goes through
 
 Seven presets may be more than a song needs. Turn off the **Cycle** cell of the
@@ -82,6 +90,8 @@ presets you do not use (settings page, section 2) and `Current preset` skips
 them: with presets 1, 2 and 5 in the cycle, a footswitch assigned to it goes
 1 → 2 → 5 → 1 → ..., and the B+C pair goes forwards and backwards through the
 same three.
+
+![Presets 3, 4, 6 and 7 are out of the cycle (✕): Current preset goes through 1, 2 and 5](images/step-cycle.webp)
 
 * The cycle always starts from the **active preset**. If a `Preset N`
   footswitch or a button of the plugin has just selected preset 5, the next
@@ -113,6 +123,9 @@ to the plugin, so:
 
 1. Assign one of `Assign to notify 1`–`4` to a control of the device page where
    you want to see the pop-up (use a second, third or fourth one for other pages).
+
+    ![The Notify tiles of the settings page](images/step-assign-notify.webp)
+
 2. Every change of preset now shows the name of the preset on that page.
 
 The footswitch LEDs and the preset knob follow the preset as well, with the

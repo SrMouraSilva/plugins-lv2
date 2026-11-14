@@ -1,0 +1,34 @@
+{
+  "title": "Hept7 Switch",
+  "eyebrow": "SrMouraSilva · Plugin manual",
+  "tagline": "Seven scenes. Eight outputs. One stomp.",
+  "subtitle": "A CV loop switcher with a display on the pedal and a full-screen, touch-friendly settings page, for MOD Dwarf, MOD Duo X and MOD Duo",
+  "badges": [
+    "7 presets",
+    "8 CV outputs",
+    "Touch settings page"
+  ],
+  "edition": "User manual · November 2026 edition",
+  "version": "v1.0",
+  "hero": "../modgui/screenshot.png",
+  "brand": "#0c4550",
+  "brand2": "#052a31",
+  "accent": "#17717d",
+  "accentDark": "#8ff3f7",
+  "colors": [
+    "#ff5a5f",
+    "#ffd23f",
+    "#4ade80",
+    "#2ee6d6",
+    "#5b97ff",
+    "#e879f9",
+    "#c9d6d8"
+  ],
+  "links": [
+    {
+      "label": "Source code",
+      "url": "https://github.com/SrMouraSilva/plugins-lv2"
+    }
+  ],
+  "output": "docs/manual.html"
+}
