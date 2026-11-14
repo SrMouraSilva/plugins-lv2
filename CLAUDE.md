@@ -117,7 +117,7 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   An overlay drawn over those controls (an announcement, a tooltip) then needs a higher one still, with `pointer-events: none`.
 * The icon must not rely on MOD UI's film/knob widgets; draw it yourself. Outputs are laid out by MOD UI
   (`.mod-pedal-output`, 56 px per jack): with many outputs use a CSS grid with several columns.
-* **A custom settings page** (`modgui:settingsTemplate`): root absolutely positioned over the whole window, a
+* **A custom settings page** (`modgui:settingsTemplate`; the full guide is `docs/custom-settings-pages.md`, read it first): root absolutely positioned over the whole window, a
   `.js-close` button (the window closes with it), the assignment buttons as `[mod-role=input-control-address]` with
   `mod-port-symbol` (MOD UI adds the `addressed` class), and the saved-presets block copied from MOD UI's
   `html/resources/settings.html` (`.mod-presets` ...) so it keeps working. Rules `.mod-presets {width: 322px !important}`
