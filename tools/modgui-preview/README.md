@@ -18,6 +18,11 @@ every request, so edit `plugins/resources/<plugin>.lv2/modgui/*` and reload. Onl
 * **View**: the plugin on the pedalboard, or its settings page, if it has its own (`modgui:settingsTemplate`).
   Plugins without one use the generic settings window of MOD UI, which is not previewed
 * **Screen**: the page is rendered inside a frame of that width, so a responsive layout can be checked
+* **As MOD UI shows it**: a phone, a phone on its side or a tablet the way MOD UI really appears on it. MOD UI's page has
+  no `<meta name="viewport">` and its body is at least 1024px wide, so a touch device lays it out ~1024px wide and
+  shrinks it to the screen; `@media` queries on the viewport then never match. The frame is drawn 1024px wide, scaled
+  to the screen, and told it is a touch screen of that size (`screen.width`, `pointer: coarse`): what the Screen buttons
+  (a plain narrow frame) cannot show. Hept7's settings page measures itself instead of using media queries
 * **Preset**: starts the interface with the values of a factory preset
 * **Ports**: change a control port as the host would (a footswitch, a knob, MIDI...), to see how the interface
   reacts, for instance the display of Hept7 Switch announcing a change of preset (filter `selector`, tick one)

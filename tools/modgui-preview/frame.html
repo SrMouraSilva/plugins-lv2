@@ -14,6 +14,22 @@
 <script src="/modui/js/lib/jquery-1.9.1.min.js"></script>
 <script src="/modui/js/lib/mustache.js"></script>
 <style>body { margin: 0; background: #1f1f1f; }</style>
+<script>
+  // device=WxH: what a phone or tablet shows of MOD UI. Its page has no viewport meta tag, so the browser lays it out
+  // in a wide viewport (the body has min-width: 1024px) and shrinks it to the screen, which is a touch screen
+  // of W x H pixels. The index page draws this frame 1024px wide and scales it; here the browser is told the rest
+  const device = new URLSearchParams(location.search).get('device');
+  if (device) {
+    const [w, h] = device.split('x').map(Number);
+    Object.defineProperty(window.screen, 'width', { value: w });
+    Object.defineProperty(window.screen, 'height', { value: h });
+    const matchMedia = window.matchMedia.bind(window);
+    window.matchMedia = (query) => /pointer:\s*coarse/.test(query)
+      ? { matches: true, media: query, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }
+      : matchMedia(query);
+    document.write('<style>body { min-width: 1024px; }</style>');
+  }
+</script>
 </head>
 <body>
 <div id="pedalboard-dashboard" style="position: relative; padding: 70px 40px 40px 40px;"></div>
@@ -26,6 +42,7 @@
  * logged in window.__log.
  *
  * Query:  plugin=NAME   view=icon|settings|shot (the icon alone, for screenshots; jacks=1 keeps the jacks)
+ *          device=390x844 (the screen of a phone, as MOD UI shows itself on it: see the top of this file)
  *          preset=INDEX   addressed=Symbol,Symbol   click=CSS selector
  *          latency=MS (delay of the simulated host, 150)   simulate=0 (no simulated host)
  * Outside: window.send(event) sends an event to the plugin javascript, window.portValues holds the ports.
