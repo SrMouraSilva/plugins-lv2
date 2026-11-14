@@ -15,11 +15,13 @@ control if you're actually looking at it — a pop-up appears only on a
 device screen page that has one of Gossiper's four "Assign to notify"
 slots addressed to it. This is necessary because Mod devices only allow dialogs to be displayed if an `Assign to notify` parameter is linked to an endless knobs currently visible on the screen.
 
-[![Sample demonstration of the plugin in action](images/gossiper-youtube-preview.png)](https://youtu.be/iV262pY_yZE)
+[![Sample demonstration of the plugin in action](images/gossiper-youtube-preview.webp)](https://youtu.be/iV262pY_yZE)
 
 ## 1. Plugin GUI overview
 
-![The Gossiper panel](images/gossiper-overview.png)
+![Gossiper at work: footswitches and potentiometers move from outside, as a MIDI controller would, and the display says which one was used last](images/gossiper-demo.gif)
+
+![The Gossiper panel](images/gossiper-overview.webp)
 
 | Item | Description | Interactivity |
 |---|---|---|
@@ -56,17 +58,21 @@ Click **Settings** (or the gear icon above the plugin) to open the settings page
 you can link, and each panel starts with **Hardware assignment**: that is the step where you choose which control of
 your device, your MIDI foot controller or your pedal drives that parameter.
 
-![The settings page](images/plugin-settings.png)
+![The settings page](images/plugin-settings.webp)
+
+![Going through the settings page: a footswitch is renamed, and every page is visited with the arrows of the top bar](images/gossiper-settings.gif)
 
 On a small screen the page splits into several pages instead of scrolling: use the arrows in the top bar (they
 are always there), the dots between them, or swipe sideways on a touch screen.
 
 **Step 1 — Assign the control.** In **Footswitches**, find a row that is not used yet — or, in **Potentiometers**, a
 row for a knob — and tap **Assign** next to it.
-![Step 1: assigning Footswitch 1](images/forum-step1-assign-footswitch.png)
+
+![Step 1: tap Assign next to Footswitch 1](images/settings-step1-assign-footswitch.webp)
 
 In the opened modal, select MIDI option in **Assign to**.
-![alt text](images/midi.png)
+
+![The assignment dialog of MOD UI: Assign to MIDI](images/midi.webp)
 
 Now you must send the MIDI message (or pick the device control) you want to drive it. After it, save.
 The button shows a check mark once it is assigned.
@@ -74,18 +80,18 @@ The button shows a check mark once it is assigned.
 **Step 2 — Assign a pop-up slot.** Do the same for one of the four slots in **Screen pop-ups** — this is what decides
 *where* the pop-up will show.
 
-![Step 2: assigning Assign to notify 1](images/forum-step2-assign-to-notify.png)
+![Step 2: tap Pop-up slot 1](images/settings-step2-assign-to-notify.webp)
 
 **Step 3 — Choose the target.** Pick what the slot is addressed to
 — usually **Device**, so it lives on the screen itself.
 
-![Step 3: choosing the assignment target](images/forum-step3-choose-target.png)
+![Step 3: choosing the assignment target](images/forum-step3-choose-target.webp)
 
 **Step 4 — Pick the page and control.** Choose which page (and which knob
 or footswitch, B/C) the slot sits on. Whenever that page is showing,
 that's where the pop-up appears.
 
-![Step 4: picking a page, knob or footswitch](images/forum-step4-pick-page-and-control.png)
+![Step 4: picking a page, knob or footswitch](images/forum-step4-pick-page-and-control.webp)
 
 Repeat step 1 for as many footswitches/potentiometers as you're feeding in,
 and steps 2–4 for as many slots as you want pages covered by — up to
@@ -93,6 +99,8 @@ and steps 2–4 for as many slots as you want pages covered by — up to
 
 The page also lets you type the **name** of each footswitch and the **Min** and **Max** voltage of each
 potentiometer, and keeps your own presets (**Saved presets**).
+
+![Min and Max: the CV range of a potentiometer, in volts](images/step-min-max.webp)
 
 > **No screen for pop-ups?** The MOD Duo (and any device without the HMI) cannot show pop-ups: the display on the
 > plugin itself (item A, section 1) is the feedback there. Open the pedalboard and look at it.
@@ -124,6 +132,8 @@ Click a footswitch's label field and type a new name (up to 15 characters).
 Allowed characters are letters, digits, spaces and `+ - : _ .`; anything
 else is replaced with `_`. The name is what the pop-up shows for that
 footswitch, and it's saved with the pedalboard/preset.
+
+![Renaming Footswitch 2 on the pedal](images/step-rename.webp)
 
 ## 6. Why bother: one real example
 
