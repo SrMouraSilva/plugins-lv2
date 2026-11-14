@@ -13,13 +13,12 @@
 #include "lv2/atom/atom.h"
 #include "lv2/atom/forge.h"
 #include "lv2/urid/urid.h"
+#include "lv2/worker/worker.h"
 
 #include "../extension/lv2-hmi.h"
 #include "../extension/control-input-port-change-request.h"
 
 #include "../../config.h"
-
-#define TETR4_SWITCH_PLUGIN_URI "http://srmourasilva.github.io/plugins/tetr4-switch"
 
 typedef struct {
     LV2_HMI_WidgetControl* widgetControl;
@@ -68,6 +67,12 @@ typedef struct {
 
     /** Request change */
     LV2_ControlInputPort_Change_Request* control_input_port;
+
+    /**
+     * LV2 worker (optional): the messages to the HMI are sent from its thread, not from run(), as the host locks a
+     * mutex and writes to the HMI channel for each of them. Without it they are sent from run()
+     */
+    LV2_Worker_Schedule* worker;
 
 
     /**

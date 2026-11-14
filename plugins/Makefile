@@ -5,7 +5,14 @@
 include Makefile.mk
 
 TETR4_SWITCH = tetr4-switch
+HEPT7_SWITCH = hept7-switch
 GOSSIPER = gossiper
+
+# Tetr4 Switch and Hept7 Switch are the same code base, sized by -DHEPT7_SWITCH (see src/config.h)
+SWITCH_SOURCES = src/utils/utils.c \
+		  src/lv2/controller/lv2-controller.c src/lv2/controller/lv2-hmi-extension.c \
+		  src/model/controller.c \
+		  src/tetr4-switch.c
 
 HEADERS=$(shell find -type f -name '*.h')
 SOURCES=$(shell find -type f -name '*.c')
@@ -26,14 +33,15 @@ INSTALL_PATH = /usr/local/lib/lv2
 all: build
 #build: build-gossiper
 #build: build-tetr4-switch
-build: build-gossiper build-tetr4-switch
+build: build-gossiper build-tetr4-switch build-hept7-switch
 
 build-tetr4-switch:
-	$(CC) src/utils/utils.c \
-		  src/lv2/controller/lv2-controller.c src/lv2/controller/atom-extension.c src/lv2/controller/lv2-hmi-extension.c \
-		  src/model/controller.c \
-		  src/tetr4-switch.c \
+	$(CC) $(SWITCH_SOURCES) \
 		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(TETR4_SWITCH).lv2/$(TETR4_SWITCH).so
+
+build-hept7-switch:
+	$(CC) $(SWITCH_SOURCES) -DHEPT7_SWITCH \
+		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(HEPT7_SWITCH).lv2/$(HEPT7_SWITCH).so
 
 build-gossiper:
 	$(CC) src/utils/utils.c \
@@ -46,6 +54,7 @@ build-gossiper:
 
 clean:
 	rm -f $(TETR4_SWITCH).lv2/$(TETR4_SWITCH)$(LIB_EXT)
+	rm -f $(HEPT7_SWITCH).lv2/$(HEPT7_SWITCH)$(LIB_EXT)
 	rm -f $(GOSSIPER).lv2/$(GOSSIPER)$(LIB_EXT)
 
 # --------------------------------------------------------------
@@ -59,6 +68,14 @@ install: build
 	cp -r resources/$(TETR4_SWITCH).lv2/modgui $(DESTDIR)$(PREFIX)/lib/lv2/$(TETR4_SWITCH).lv2/
 
 
+	install -d $(DESTDIR)$(PREFIX)/lib/lv2/$(HEPT7_SWITCH).lv2
+
+	install -m 644 resources/$(HEPT7_SWITCH).lv2/*.so  $(DESTDIR)$(PREFIX)/lib/lv2/$(HEPT7_SWITCH).lv2/
+	install -m 644 resources/$(HEPT7_SWITCH).lv2/*.ttl $(DESTDIR)$(PREFIX)/lib/lv2/$(HEPT7_SWITCH).lv2/
+
+	cp -r resources/$(HEPT7_SWITCH).lv2/modgui $(DESTDIR)$(PREFIX)/lib/lv2/$(HEPT7_SWITCH).lv2/
+
+
 	install -d $(DESTDIR)$(PREFIX)/lib/lv2/$(GOSSIPER).lv2
 
 	install -m 644 resources/$(GOSSIPER).lv2/*.so  $(DESTDIR)$(PREFIX)/lib/lv2/$(GOSSIPER).lv2/
@@ -69,12 +86,14 @@ install: build
 install-user: build
 	install -d ~/.lv2/
 	cp -r resources/$(TETR4_SWITCH).lv2/ ~/.lv2/$(TETR4_SWITCH).lv2
+	cp -r resources/$(HEPT7_SWITCH).lv2/ ~/.lv2/$(HEPT7_SWITCH).lv2
 	cp -r resources/$(GOSSIPER).lv2/ ~/.lv2/$(GOSSIPER).lv2
 
 # --------------------------------------------------------------
 
 uninstall-user:
 	rm -r ~/.lv2/$(TETR4_SWITCH).lv2
+	rm -r ~/.lv2/$(HEPT7_SWITCH).lv2
 	rm -r ~/.lv2/$(GOSSIPER).lv2
 
 # --------------------------------------------------------------

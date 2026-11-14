@@ -1,0 +1,170 @@
+<div class="t4s" mod-role="tetr4-settings">
+  <div class="t4s-shell">
+    <div class="t4s-screen">
+      <header class="t4s-bar">
+        <div class="t4s-title">
+          <span class="t4s-logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <h1>Tetr4 switch</h1>
+        </div>
+
+        <div class="t4s-now" aria-live="polite">
+          <span class="t4s-now-num">1</span>
+          <span class="t4s-now-label">Preset 1</span>
+        </div>
+
+        <!-- The page being shown: always visible, whatever the input device (a swipe also changes it) -->
+        <nav class="t4s-nav" aria-label="Pages">
+          <button type="button" class="t4s-step t4s-prev" aria-label="Previous page" title="Previous page">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="t4s-dots" aria-hidden="true"></div>
+          <button type="button" class="t4s-step t4s-next" aria-label="Next page" title="Next page">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <span class="t4s-sr t4s-page-status" aria-live="polite"></span>
+        </nav>
+
+        <button type="button" class="js-close t4s-close">Close</button>
+      </header>
+
+      <!-- Never scrolls vertically. The script (layoutSettings) spreads the panels below over as many pages as the
+           screen needs, and puts them back here whenever the size changes -->
+      <main class="t4s-pager"></main>
+
+      <div class="t4s-stock" hidden>
+        <section class="t4s-panel t4s-scenes" data-panel="scenes">
+          <div class="t4s-panel-head">
+            <h2>Scenes<span class="t4s-range"></span></h2>
+            <p>Each card is a preset. Flip a switch up to turn that CV output on while the preset is active; tap the round button to play the preset.</p>
+          </div>
+          <div class="t4s-grid" role="group" aria-label="Which CV outputs are on in each preset"></div>
+        </section>
+
+        <section class="t4s-panel t4s-assign-panel t4s-hw-presets" data-panel="hardware-presets">
+          <div class="t4s-panel-head">
+            <span class="t4s-eyebrow">Hardware assignment</span>
+            <h2>Preset buttons<span class="t4s-range"></span></h2>
+            <p>Jump straight to a preset. Link one control of your device, such as a footswitch, to each preset: pressing it plays that preset.</p>
+          </div>
+          <ul class="t4s-assign">
+            <li>
+              <button type="button" class="mod-address t4s-address" mod-role="input-control-address" mod-port-symbol="Preset_selector_1" title="Assign Preset 1 to a hardware control">
+                <span class="t4s-assign-name"><span class="t4s-assign-title" data-preset="1">Preset 1</span><small>#1 &middot; footswitch</small></span>
+                <span class="t4s-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address t4s-address" mod-role="input-control-address" mod-port-symbol="Preset_selector_2" title="Assign Preset 2 to a hardware control">
+                <span class="t4s-assign-name"><span class="t4s-assign-title" data-preset="2">Preset 2</span><small>#2 &middot; footswitch</small></span>
+                <span class="t4s-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address t4s-address" mod-role="input-control-address" mod-port-symbol="Preset_selector_3" title="Assign Preset 3 to a hardware control">
+                <span class="t4s-assign-name"><span class="t4s-assign-title" data-preset="3">Preset 3</span><small>#3 &middot; footswitch</small></span>
+                <span class="t4s-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address t4s-address" mod-role="input-control-address" mod-port-symbol="Preset_selector_4" title="Assign Preset 4 to a hardware control">
+                <span class="t4s-assign-name"><span class="t4s-assign-title" data-preset="4">Preset 4</span><small>#4 &middot; footswitch</small></span>
+                <span class="t4s-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+          </ul>
+        </section>
+
+        <section class="t4s-panel t4s-assign-panel t4s-hw-current" data-panel="hardware-current">
+          <div class="t4s-panel-head">
+            <span class="t4s-eyebrow">Hardware assignment</span>
+            <h2>Current preset<span class="t4s-range"></span></h2>
+            <p>Choose the preset with a single control: a knob, or a footswitch that steps through the presets.</p>
+          </div>
+          <ul class="t4s-assign">
+            <li>
+              <button type="button" class="mod-address t4s-address" mod-role="input-control-address" mod-port-symbol="Preset_combobox" title="Assign Current preset to a hardware control">
+                <span class="t4s-assign-name">Current preset<small>knob</small></span>
+                <span class="t4s-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+          </ul>
+        </section>
+
+        <section class="t4s-panel t4s-assign-panel t4s-hw-notify" data-panel="hardware-notify">
+          <div class="t4s-panel-head">
+            <span class="t4s-eyebrow">Hardware assignment</span>
+            <h2>Screen pop-ups<span class="t4s-range"></span></h2>
+            <p>Show an alert with the preset name on the device screen whenever it changes. Link each one to a page of the device: it only appears on pages that have one.</p>
+          </div>
+          <ul class="t4s-assign">
+            <li>
+              <button type="button" class="mod-address t4s-address" mod-role="input-control-address" mod-port-symbol="Assign_to_notify_1" title="Assign Notify 1 to a hardware control">
+                <span class="t4s-assign-name">Notify 1<small>screen pop-up</small></span>
+                <span class="t4s-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address t4s-address" mod-role="input-control-address" mod-port-symbol="Assign_to_notify_2" title="Assign Notify 2 to a hardware control">
+                <span class="t4s-assign-name">Notify 2<small>screen pop-up</small></span>
+                <span class="t4s-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address t4s-address" mod-role="input-control-address" mod-port-symbol="Assign_to_notify_3" title="Assign Notify 3 to a hardware control">
+                <span class="t4s-assign-name">Notify 3<small>screen pop-up</small></span>
+                <span class="t4s-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address t4s-address" mod-role="input-control-address" mod-port-symbol="Assign_to_notify_4" title="Assign Notify 4 to a hardware control">
+                <span class="t4s-assign-name">Notify 4<small>screen pop-up</small></span>
+                <span class="t4s-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+          </ul>
+        </section>
+
+        <section class="t4s-panel t4s-presets-panel" data-panel="presets">
+          <div class="t4s-panel-head">
+            <h2>Saved presets</h2>
+          </div>
+
+          <!-- PRESET LIST: same markup as the generic settings page, so MOD UI keeps wiring it up -->
+            <div class="mod-enumerated mod-presets">
+              <span class="mod-enumerated-title">
+                <form>
+                  <span>
+                    <label><input type="radio" name="preset_type" autocomplete="off" class="radio-preset radio-preset-factory" value="factory" checked="checked"> Factory</label>
+                  </span>
+                  <span>
+                    <label><input type="radio" name="preset_type" autocomplete="off" class="radio-preset radio-preset-user" value="user"> User</label>
+                  </span>
+                </form>
+              </span>
+              <div class="mod-enumerated-list mod-preset-factory" mod-widget="custom-select">
+                {{#presets.factory}}
+                <div mod-role="enumeration-option" mod-uri="{{uri}}">{{label}}</div>
+                {{/presets.factory}}
+              </div>
+              <div class="mod-enumerated-list mod-preset-user mod-hidden" mod-widget="custom-select">
+                {{#presets.user}}
+                <div mod-role="enumeration-option" mod-uri="{{uri}}" mod-path="{{path}}">{{label}}</div>
+                {{/presets.user}}
+              </div>
+              <footer>
+                <button class="btn btn-xs btn-primary preset-btn-save disabled" title="Save"></button>
+                <button class="btn btn-xs btn-primary preset-btn-save-as" title="Save as"></button>
+                <button class="btn btn-xs btn-primary preset-btn-rename disabled" title="Rename"></button>
+                <button class="btn btn-xs btn-primary preset-btn-delete disabled" title="Delete"></button>
+                <button class="btn btn-xs btn-primary preset-btn-assign-sel disabled mod-hidden">Assign selected</button>
+                <span class="assign-all">
+                  <button class="btn btn-xs btn-primary preset-btn-assign-all" mod-role="presets-address">Assign all</button>
+                </span>
+              </footer>
+            </div>
+            <!-- END PRESET LIST -->
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

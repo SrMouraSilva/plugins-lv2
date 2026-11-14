@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #include <lv2/core/lv2_util.h>
@@ -57,6 +58,7 @@ const char* LV2_Controller_initialize(
         // Optional (as in the TTL): hosts without it, such as the MOD Duo, still load the plugin, without LEDs/labels
         LV2_HMI__WidgetControl,                    &this->hmi,                false,
         LV2_CONTROL_INPUT_PORT_CHANGE_REQUEST_URI, &this->control_input_port, true,
+        LV2_WORKER__schedule,                      &this->worker,             false,
         NULL
     );
 
@@ -82,8 +84,11 @@ static void map_uris(LV2_URID_Map* map, Controller_URIs* uris) {
     uris->patch_property = map->map(map->handle, LV2_PATCH__property);
     uris->patch_value = map->map(map->handle, LV2_PATCH__value);
 
-    uris->preset_label[0] = map->map(map->handle, TETR4_SWITCH_PLUGIN_URI "#preset_label_1");
-    uris->preset_label[1] = map->map(map->handle, TETR4_SWITCH_PLUGIN_URI "#preset_label_2");
-    uris->preset_label[2] = map->map(map->handle, TETR4_SWITCH_PLUGIN_URI "#preset_label_3");
-    uris->preset_label[3] = map->map(map->handle, TETR4_SWITCH_PLUGIN_URI "#preset_label_4");
+    // <plugin uri>#preset_label_1 ... #preset_label_<TOTAL_PRESETS>
+    for (unsigned int i = 0; i < TOTAL_PRESETS; i++) {
+        char uri[sizeof(SWITCH_PLUGIN_URI) + 32];
+        snprintf(uri, sizeof(uri), SWITCH_PLUGIN_URI "#preset_label_%u", i + 1);
+
+        uris->preset_label[i] = map->map(map->handle, uri);
+    }
 }

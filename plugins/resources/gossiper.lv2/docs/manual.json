@@ -1,0 +1,37 @@
+{
+  "title": "Gossiper",
+  "eyebrow": "SrMouraSilva · Plugin manual",
+  "tagline": "Know what your controller just did.",
+  "subtitle": "Screen and CV feedback for controls that have none of their own, for MOD Dwarf, MOD Duo X and MOD Duo",
+  "badges": [
+    "7 footswitches",
+    "4 potentiometers",
+    "11 CV outputs"
+  ],
+  "edition": "User manual · November 2026 edition",
+  "version": "v1.0",
+  "hero": "../modgui/screenshot.png",
+  "brand": "#1c2028",
+  "brand2": "#0b0e13",
+  "accent": "#9a5b00",
+  "accentDark": "#ffc861",
+  "colors": [
+    "#ff6667",
+    "#ffff67",
+    "#66ffff",
+    "#bb7cd2",
+    "#f5a77e",
+    "#66ff66",
+    "#ff66ff"
+  ],
+  "links": [
+    {
+      "label": "Forum thread",
+      "url": "https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happening-when-you-are-looking-it/9660"
+    },
+    {
+      "label": "Source code",
+      "url": "https://github.com/SrMouraSilva/plugins-lv2"
+    }
+  ]
+}

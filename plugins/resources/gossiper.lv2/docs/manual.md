@@ -4,7 +4,7 @@ Gossiper gives you screen and CV feedback for controls that don't have any
 of their own — typically an external MIDI foot controller or knob box with
 no LEDs or display.
 
-![The Gossiper panel: 7 footswitch indicators and 4 potentiometer range rows](../modgui/screenshot.png)
+![The Gossiper panel: a display with the last control used, 7 footswitch indicators and 4 potentiometer meters](../modgui/screenshot.png)
 
 Assign one of its parameters to receive the MIDI (or
 CV, or device control), and Gossiper turns that into a plain CV signal
@@ -15,18 +15,22 @@ control if you're actually looking at it — a pop-up appears only on a
 device screen page that has one of Gossiper's four "Assign to notify"
 slots addressed to it. This is necessary because Mod devices only allow dialogs to be displayed if an `Assign to notify` parameter is linked to an endless knobs currently visible on the screen.
 
-[![Sample demonstration of the plugin in action](images/gossiper-youtube-preview.png)](https://youtu.be/iV262pY_yZE)
+[![Sample demonstration of the plugin in action](images/gossiper-youtube-preview.webp)](https://youtu.be/iV262pY_yZE)
 
 ## 1. Plugin GUI overview
 
-<!--![The Gossiper panel: 7 footswitch indicators and 4 potentiometer range rows](images/panel-overview.svg)-->
-![The Gossiper panel: 7 footswitch indicators and 4 potentiometer range rows](images/gossiper-overview.png)
+![Gossiper at work: footswitches and potentiometers move from outside, as a MIDI controller would, and the display says which one was used last](images/gossiper-demo.gif)
 
-| Item | Description | Interactivity | 
+![The Gossiper panel](images/gossiper-overview.webp)
+
+| Item | Description | Interactivity |
 |---|---|---|
-| **A — Footswitch indicator** | Lights up in its own colour while that footswitch is ON, and mirrors it on `CV Output N` (0 V/10 V). | Only visualization status. Clicking on it does nothing. |
-| **B — Footswitch label** | Click and type a name (up to 15 characters) — this is the text a pop-up shows for that footswitch. | Editable field |
-| **C — Potentiometer range** | The CV range (`Minimum`/`Maximum`, in volts) that potentiometer's 0–10 V output is scaled into. | Only visualization status. For changing its value, it is necessary to open the plugin's settings. |
+| **A — Display** | Says **which control was used last** and what it did: `Footswitch 2 — ON`, or `Pot 3 — 63%`. It stays on, and lights up for a moment each time a control is used. This is how you see a message on a device that has no screen for plugin pop-ups, such as the MOD Duo. | Only visualization status |
+| **B — Footswitch indicator** | A disc in a colour of its own for each footswitch. Lit while the footswitch is ON, and mirrored on `CV Output N` (0 V / 10 V). The one used last is outlined. | Only visualization status. Clicking on it does nothing. |
+| **C — Footswitch label** | Click and type a name (up to 15 characters): this is the text the pop-up and the display show for that footswitch. | Editable field |
+| **D — Potentiometer** | The position of the knob (0–100 %) as a meter, and the CV range (`Minimum`–`Maximum`, in volts) its 0–10 V output is scaled into. The one used last is outlined. | Only visualization status. To change the range, open the settings. |
+| **E — Settings** | Opens the settings page (section 3). The gear icon above the plugin opens it too. | Button |
+| **F — CV outputs** | `1`–`7` are the footswitches and `P1`–`P4` the potentiometers. | Jacks |
 
 ## 2. What it's for
 
@@ -50,40 +54,56 @@ unlit external box.
 
 ## 3. Setting it up on the device
 
-This is the actual assignment flow on a MOD Dwarf, screen by screen:
+Click **Settings** (or the gear icon above the plugin) to open the settings page. It has one panel for each thing
+you can link, and each panel starts with **Hardware assignment**: that is the step where you choose which control of
+your device, your MIDI foot controller or your pedal drives that parameter.
 
-**Step 1 — Assign the control.** Open the plugin's settings by gear icon (⚙️).
-![plugin settings](images/plugin-settings.png)
-Choose one of the `Footswitch <number>` parameters that is not used yet — 
-or choose one of the `Pot <number>` (if you want to see a potentiometer status) —
-and tap the assign icon next to it.
-![Step 1: assigning Footswitch 1](images/forum-step1-assign-footswitch.png)
+![The settings page](images/plugin-settings.webp)
+
+![Going through the settings page: a footswitch is renamed, and every page is visited with the arrows of the top bar](images/gossiper-settings.gif)
+
+On a small screen the page splits into several pages instead of scrolling: use the arrows in the top bar (they
+are always there), the dots between them, or swipe sideways on a touch screen.
+
+**Step 1 — Assign the control.** In **Footswitches**, find a row that is not used yet — or, in **Potentiometers**, a
+row for a knob — and tap **Assign** next to it.
+
+![Step 1: tap Assign next to Footswitch 1](images/settings-step1-assign-footswitch.webp)
 
 In the opened modal, select MIDI option in **Assign to**.
-![alt text](images/midi.png)
 
-Now you must to send the
-MIDI message (or pick the device control) you want to drive it. After it, save.
+![The assignment dialog of MOD UI: Assign to MIDI](images/midi.webp)
 
-**Step 2 — Assign a notify slot.** Do the same for one of the
-`Assign to notify <number>` parameters — this is what decides *where* the pop-up will show.
+Now you must send the MIDI message (or pick the device control) you want to drive it. After it, save.
+The button shows a check mark once it is assigned.
 
-![Step 2: assigning Assign to notify 1](images/forum-step2-assign-to-notify.png)
+**Step 2 — Assign a pop-up slot.** Do the same for one of the four slots in **Screen pop-ups** — this is what decides
+*where* the pop-up will show.
 
-**Step 3 — Choose the target.** Pick what the notify slot is addressed to
+![Step 2: tap Pop-up slot 1](images/settings-step2-assign-to-notify.webp)
+
+**Step 3 — Choose the target.** Pick what the slot is addressed to
 — usually **Device**, so it lives on the screen itself.
 
-![Step 3: choosing the assignment target](images/forum-step3-choose-target.png)
+![Step 3: choosing the assignment target](images/forum-step3-choose-target.webp)
 
 **Step 4 — Pick the page and control.** Choose which page (and which knob
-or footswitch, B/C) the notify slot sits on. Whenever that page is showing,
+or footswitch, B/C) the slot sits on. Whenever that page is showing,
 that's where the pop-up appears.
 
-![Step 4: picking a page, knob or footswitch](images/forum-step4-pick-page-and-control.png)
+![Step 4: picking a page, knob or footswitch](images/forum-step4-pick-page-and-control.webp)
 
 Repeat step 1 for as many footswitches/potentiometers as you're feeding in,
-and step 2–4 for as many notify slots as you want pages covered by — up to
+and steps 2–4 for as many slots as you want pages covered by — up to
 4, so you can get a pop-up whichever of up to 4 pages you're currently on.
+
+The page also lets you type the **name** of each footswitch and the **Min** and **Max** voltage of each
+potentiometer, and keeps your own presets (**Saved presets**).
+
+![Min and Max: the CV range of a potentiometer, in volts](images/step-min-max.webp)
+
+> **No screen for pop-ups?** The MOD Duo (and any device without the HMI) cannot show pop-ups: the display on the
+> plugin itself (item A, section 1) is the feedback there. Open the pedalboard and look at it.
 
 ## 4. How the pop-up decides when to appear
 
@@ -112,6 +132,8 @@ Click a footswitch's label field and type a new name (up to 15 characters).
 Allowed characters are letters, digits, spaces and `+ - : _ .`; anything
 else is replaced with `_`. The name is what the pop-up shows for that
 footswitch, and it's saved with the pedalboard/preset.
+
+![Renaming Footswitch 2 on the pedal](images/step-rename.webp)
 
 ## 6. Why bother: one real example
 

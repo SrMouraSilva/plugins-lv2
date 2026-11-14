@@ -1,0 +1,317 @@
+<div class="gps" mod-role="gossiper-settings">
+  <div class="gps-shell">
+    <div class="gps-screen">
+      <header class="gps-bar">
+        <div class="gps-title">
+          <span class="gps-logo" aria-hidden="true"></span>
+          <h1>Gossiper</h1>
+        </div>
+
+        <!-- The last control used, as on the pedal -->
+        <div class="gps-now is-idle" data-kind="idle" data-n="1" aria-live="polite">
+          <span class="gps-now-badge">&ndash;</span>
+          <span class="gps-now-label">Nothing yet</span>
+        </div>
+
+        <!-- The page being shown: always visible, whatever the input device (a swipe also changes it) -->
+        <nav class="gps-nav" aria-label="Pages">
+          <button type="button" class="gps-step gps-prev" aria-label="Previous page" title="Previous page">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="gps-dots" aria-hidden="true"></div>
+          <button type="button" class="gps-step gps-next" aria-label="Next page" title="Next page">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <span class="gps-sr gps-page-status" aria-live="polite"></span>
+        </nav>
+
+        <button type="button" class="js-close gps-close">Close</button>
+      </header>
+
+      <!-- Never scrolls vertically. The script (layoutSettings) spreads the panels below over as many pages as the
+           screen needs, and puts them back here whenever the size changes -->
+      <main class="gps-pager"></main>
+
+      <div class="gps-stock" hidden>
+        <section class="gps-panel gps-switches-panel" data-panel="switches">
+          <div class="gps-panel-head">
+            <span class="gps-eyebrow">Hardware assignment</span>
+            <h2>Footswitches<span class="gps-range-label"></span></h2>
+            <p>Link a control that turns on and off, such as a button of your MIDI foot controller, to each row. Gossiper then shows its name when it changes and sends it out as a CV signal (0 V off, 10 V on). Type the name you want the pop-up to say.</p>
+          </div>
+          <div class="gps-list" role="group" aria-label="Footswitches">
+            <div class="gps-row g1" data-n="1">
+              <span class="gps-led" aria-hidden="true"><b>1</b></span>
+              <input type="text" class="gps-label" data-n="1" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of footswitch 1, the text of its pop-up" value="Footswitch 1" />
+              <button type="button" class="mod-address gps-address" mod-role="input-control-address" mod-port-symbol="Footswitch_1" title="Assign Footswitch 1 to a hardware control">
+                <span class="gps-assign-name">Assign</span>
+                <span class="gps-assign-state" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="gps-row g2" data-n="2">
+              <span class="gps-led" aria-hidden="true"><b>2</b></span>
+              <input type="text" class="gps-label" data-n="2" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of footswitch 2, the text of its pop-up" value="Footswitch 2" />
+              <button type="button" class="mod-address gps-address" mod-role="input-control-address" mod-port-symbol="Footswitch_2" title="Assign Footswitch 2 to a hardware control">
+                <span class="gps-assign-name">Assign</span>
+                <span class="gps-assign-state" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="gps-row g3" data-n="3">
+              <span class="gps-led" aria-hidden="true"><b>3</b></span>
+              <input type="text" class="gps-label" data-n="3" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of footswitch 3, the text of its pop-up" value="Footswitch 3" />
+              <button type="button" class="mod-address gps-address" mod-role="input-control-address" mod-port-symbol="Footswitch_3" title="Assign Footswitch 3 to a hardware control">
+                <span class="gps-assign-name">Assign</span>
+                <span class="gps-assign-state" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="gps-row g4" data-n="4">
+              <span class="gps-led" aria-hidden="true"><b>4</b></span>
+              <input type="text" class="gps-label" data-n="4" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of footswitch 4, the text of its pop-up" value="Footswitch 4" />
+              <button type="button" class="mod-address gps-address" mod-role="input-control-address" mod-port-symbol="Footswitch_4" title="Assign Footswitch 4 to a hardware control">
+                <span class="gps-assign-name">Assign</span>
+                <span class="gps-assign-state" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="gps-row g5" data-n="5">
+              <span class="gps-led" aria-hidden="true"><b>5</b></span>
+              <input type="text" class="gps-label" data-n="5" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of footswitch 5, the text of its pop-up" value="Footswitch 5" />
+              <button type="button" class="mod-address gps-address" mod-role="input-control-address" mod-port-symbol="Footswitch_5" title="Assign Footswitch 5 to a hardware control">
+                <span class="gps-assign-name">Assign</span>
+                <span class="gps-assign-state" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="gps-row g6" data-n="6">
+              <span class="gps-led" aria-hidden="true"><b>6</b></span>
+              <input type="text" class="gps-label" data-n="6" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of footswitch 6, the text of its pop-up" value="Footswitch 6" />
+              <button type="button" class="mod-address gps-address" mod-role="input-control-address" mod-port-symbol="Footswitch_6" title="Assign Footswitch 6 to a hardware control">
+                <span class="gps-assign-name">Assign</span>
+                <span class="gps-assign-state" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="gps-row g7" data-n="7">
+              <span class="gps-led" aria-hidden="true"><b>7</b></span>
+              <input type="text" class="gps-label" data-n="7" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of footswitch 7, the text of its pop-up" value="Footswitch 7" />
+              <button type="button" class="mod-address gps-address" mod-role="input-control-address" mod-port-symbol="Footswitch_7" title="Assign Footswitch 7 to a hardware control">
+                <span class="gps-assign-name">Assign</span>
+                <span class="gps-assign-state" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="gps-panel gps-pots-panel" data-panel="pots">
+          <div class="gps-panel-head">
+            <span class="gps-eyebrow">Hardware assignment</span>
+            <h2>Potentiometers<span class="gps-range-label"></span></h2>
+            <p>Link a knob or an expression pedal to each row. Its position goes out as a CV signal between Min and Max (in volts), and the pop-up shows its percentage once you stop moving it.</p>
+          </div>
+          <div class="gps-list" role="group" aria-label="Potentiometers">
+            <div class="gps-row gps-pot" data-n="1">
+              <span class="gps-chip" aria-hidden="true"><b>P1</b></span>
+              <div class="gps-pot-main">
+                <span class="gps-pot-name">Pot 1</span>
+                <div class="gps-meter"><i></i></div>
+                <span class="gps-pot-percent">0%</span>
+              </div>
+              <button type="button" class="mod-address gps-address" mod-role="input-control-address" mod-port-symbol="Potentiometer_1" title="Assign Pot 1 to a hardware control">
+                  <span class="gps-assign-name">Assign</span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              <div class="gps-range">
+              <div class="gps-field">
+                <label for="gps-min-1">Min</label>
+                <input type="number" id="gps-min-1" class="gps-volts" data-port="minimum_1" min="0" max="10" step="0.1" inputmode="decimal" value="0" />
+                <em>V</em>
+                <button type="button" class="mod-address gps-address gps-address-small" mod-role="input-control-address" mod-port-symbol="minimum_1" title="Assign min of pot 1 to a hardware control">
+                  <span class="gps-assign-name">Assign</span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              </div>
+              <div class="gps-field">
+                <label for="gps-max-1">Max</label>
+                <input type="number" id="gps-max-1" class="gps-volts" data-port="maximum_1" min="0" max="10" step="0.1" inputmode="decimal" value="10" />
+                <em>V</em>
+                <button type="button" class="mod-address gps-address gps-address-small" mod-role="input-control-address" mod-port-symbol="maximum_1" title="Assign max of pot 1 to a hardware control">
+                  <span class="gps-assign-name">Assign</span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              </div>
+              </div>
+            </div>
+            <div class="gps-row gps-pot" data-n="2">
+              <span class="gps-chip" aria-hidden="true"><b>P2</b></span>
+              <div class="gps-pot-main">
+                <span class="gps-pot-name">Pot 2</span>
+                <div class="gps-meter"><i></i></div>
+                <span class="gps-pot-percent">0%</span>
+              </div>
+              <button type="button" class="mod-address gps-address" mod-role="input-control-address" mod-port-symbol="Potentiometer_2" title="Assign Pot 2 to a hardware control">
+                  <span class="gps-assign-name">Assign</span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              <div class="gps-range">
+              <div class="gps-field">
+                <label for="gps-min-2">Min</label>
+                <input type="number" id="gps-min-2" class="gps-volts" data-port="minimum_2" min="0" max="10" step="0.1" inputmode="decimal" value="0" />
+                <em>V</em>
+                <button type="button" class="mod-address gps-address gps-address-small" mod-role="input-control-address" mod-port-symbol="minimum_2" title="Assign min of pot 2 to a hardware control">
+                  <span class="gps-assign-name">Assign</span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              </div>
+              <div class="gps-field">
+                <label for="gps-max-2">Max</label>
+                <input type="number" id="gps-max-2" class="gps-volts" data-port="maximum_2" min="0" max="10" step="0.1" inputmode="decimal" value="10" />
+                <em>V</em>
+                <button type="button" class="mod-address gps-address gps-address-small" mod-role="input-control-address" mod-port-symbol="maximum_2" title="Assign max of pot 2 to a hardware control">
+                  <span class="gps-assign-name">Assign</span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              </div>
+              </div>
+            </div>
+            <div class="gps-row gps-pot" data-n="3">
+              <span class="gps-chip" aria-hidden="true"><b>P3</b></span>
+              <div class="gps-pot-main">
+                <span class="gps-pot-name">Pot 3</span>
+                <div class="gps-meter"><i></i></div>
+                <span class="gps-pot-percent">0%</span>
+              </div>
+              <button type="button" class="mod-address gps-address" mod-role="input-control-address" mod-port-symbol="Potentiometer_3" title="Assign Pot 3 to a hardware control">
+                  <span class="gps-assign-name">Assign</span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              <div class="gps-range">
+              <div class="gps-field">
+                <label for="gps-min-3">Min</label>
+                <input type="number" id="gps-min-3" class="gps-volts" data-port="minimum_3" min="0" max="10" step="0.1" inputmode="decimal" value="0" />
+                <em>V</em>
+                <button type="button" class="mod-address gps-address gps-address-small" mod-role="input-control-address" mod-port-symbol="minimum_3" title="Assign min of pot 3 to a hardware control">
+                  <span class="gps-assign-name">Assign</span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              </div>
+              <div class="gps-field">
+                <label for="gps-max-3">Max</label>
+                <input type="number" id="gps-max-3" class="gps-volts" data-port="maximum_3" min="0" max="10" step="0.1" inputmode="decimal" value="10" />
+                <em>V</em>
+                <button type="button" class="mod-address gps-address gps-address-small" mod-role="input-control-address" mod-port-symbol="maximum_3" title="Assign max of pot 3 to a hardware control">
+                  <span class="gps-assign-name">Assign</span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              </div>
+              </div>
+            </div>
+            <div class="gps-row gps-pot" data-n="4">
+              <span class="gps-chip" aria-hidden="true"><b>P4</b></span>
+              <div class="gps-pot-main">
+                <span class="gps-pot-name">Pot 4</span>
+                <div class="gps-meter"><i></i></div>
+                <span class="gps-pot-percent">0%</span>
+              </div>
+              <button type="button" class="mod-address gps-address" mod-role="input-control-address" mod-port-symbol="Potentiometer_4" title="Assign Pot 4 to a hardware control">
+                  <span class="gps-assign-name">Assign</span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              <div class="gps-range">
+              <div class="gps-field">
+                <label for="gps-min-4">Min</label>
+                <input type="number" id="gps-min-4" class="gps-volts" data-port="minimum_4" min="0" max="10" step="0.1" inputmode="decimal" value="0" />
+                <em>V</em>
+                <button type="button" class="mod-address gps-address gps-address-small" mod-role="input-control-address" mod-port-symbol="minimum_4" title="Assign min of pot 4 to a hardware control">
+                  <span class="gps-assign-name">Assign</span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              </div>
+              <div class="gps-field">
+                <label for="gps-max-4">Max</label>
+                <input type="number" id="gps-max-4" class="gps-volts" data-port="maximum_4" min="0" max="10" step="0.1" inputmode="decimal" value="10" />
+                <em>V</em>
+                <button type="button" class="mod-address gps-address gps-address-small" mod-role="input-control-address" mod-port-symbol="maximum_4" title="Assign max of pot 4 to a hardware control">
+                  <span class="gps-assign-name">Assign</span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="gps-panel gps-notify-panel" data-panel="notify">
+          <div class="gps-panel-head">
+            <span class="gps-eyebrow">Hardware assignment</span>
+            <h2>Screen pop-ups<span class="gps-range-label"></span></h2>
+            <p>A pop-up only appears on a device page that has one of these linked to it. Link each slot to a page where you want to see the alerts (up to four pages). With none linked, Gossiper stays silent.</p>
+          </div>
+          <ul class="gps-tiles">
+              <li>
+                <button type="button" class="mod-address gps-tile" mod-role="input-control-address" mod-port-symbol="Assign_to_notify_1" title="Assign pop-up slot 1 to a page of the device">
+                  <span class="gps-tile-name">Pop-up slot 1<small>device page</small></span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="mod-address gps-tile" mod-role="input-control-address" mod-port-symbol="Assign_to_notify_2" title="Assign pop-up slot 2 to a page of the device">
+                  <span class="gps-tile-name">Pop-up slot 2<small>device page</small></span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="mod-address gps-tile" mod-role="input-control-address" mod-port-symbol="Assign_to_notify_3" title="Assign pop-up slot 3 to a page of the device">
+                  <span class="gps-tile-name">Pop-up slot 3<small>device page</small></span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="mod-address gps-tile" mod-role="input-control-address" mod-port-symbol="Assign_to_notify_4" title="Assign pop-up slot 4 to a page of the device">
+                  <span class="gps-tile-name">Pop-up slot 4<small>device page</small></span>
+                  <span class="gps-assign-state" aria-hidden="true"></span>
+                </button>
+              </li>
+          </ul>
+        </section>
+
+        <section class="gps-panel gps-presets-panel" data-panel="presets">
+          <div class="gps-panel-head">
+            <h2>Saved presets</h2>
+          </div>
+
+          <!-- PRESET LIST: same markup as the generic settings page, so MOD UI keeps wiring it up -->
+          <div class="mod-enumerated mod-presets">
+            <span class="mod-enumerated-title">
+              <form>
+                <span>
+                  <label><input type="radio" name="preset_type" autocomplete="off" class="radio-preset radio-preset-factory" value="factory" checked="checked"> Factory</label>
+                </span>
+                <span>
+                  <label><input type="radio" name="preset_type" autocomplete="off" class="radio-preset radio-preset-user" value="user"> User</label>
+                </span>
+              </form>
+            </span>
+            <div class="mod-enumerated-list mod-preset-factory" mod-widget="custom-select">
+              {{#presets.factory}}
+              <div mod-role="enumeration-option" mod-uri="{{uri}}">{{label}}</div>
+              {{/presets.factory}}
+            </div>
+            <div class="mod-enumerated-list mod-preset-user mod-hidden" mod-widget="custom-select">
+              {{#presets.user}}
+              <div mod-role="enumeration-option" mod-uri="{{uri}}" mod-path="{{path}}">{{label}}</div>
+              {{/presets.user}}
+            </div>
+            <footer>
+              <button class="btn btn-xs btn-primary preset-btn-save disabled" title="Save"></button>
+              <button class="btn btn-xs btn-primary preset-btn-save-as" title="Save as"></button>
+              <button class="btn btn-xs btn-primary preset-btn-rename disabled" title="Rename"></button>
+              <button class="btn btn-xs btn-primary preset-btn-delete disabled" title="Delete"></button>
+              <button class="btn btn-xs btn-primary preset-btn-assign-sel disabled mod-hidden">Assign selected</button>
+              <span class="assign-all">
+                <button class="btn btn-xs btn-primary preset-btn-assign-all" mod-role="presets-address">Assign all</button>
+              </span>
+            </footer>
+          </div>
+          <!-- END PRESET LIST -->
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+<!doctype html>
+<!-- Copyright 2021-2026 Paulo Mateus -- SPDX-License-Identifier: Apache-2.0
+     An abstract picture of Hept7 Switch (a display with 8 CV outputs, 7 preset buttons), 400x400, for internal use.
+     Rendered to alternative-thumbnail.png by tools/media/thumbnails.mjs -->
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; background: transparent; }
+  .card { position: relative; box-sizing: border-box; width: 400px; height: 400px; border-radius: 88px; overflow: hidden;
+    background: radial-gradient(110% 80% at 10% 0%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 60%), linear-gradient(170deg, #7fdee5, #43b9c4 50%, #2a9fac);
+    box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.25); }
+  .display { position: absolute; left: 44px; right: 44px; top: 70px; height: 124px; border-radius: 34px; background: linear-gradient(#0c4550, #07313a);
+    box-shadow: inset 0 0 26px rgba(0, 0, 0, .55), 0 0 0 5px #1a7d89; }
+  .num { position: absolute; left: 22px; top: 22px; width: 80px; height: 80px; border-radius: 24px; background: #4ade80; box-shadow: 0 0 26px -2px #4ade80; }
+  .outs { position: absolute; left: 124px; right: 22px; top: 40px; display: flex; gap: 6px; }
+  .outs i { flex: 1; height: 44px; border-radius: 9px; background: #136070; box-shadow: inset 0 2px 3px rgba(0, 0, 0, .6); }
+  .outs i.on { background: #8ff3f7; box-shadow: 0 0 14px 1px #8ff3f7; }
+  .name { position: absolute; left: 124px; top: 92px; width: 130px; height: 14px; border-radius: 7px; background: rgba(232, 251, 252, .85); }
+  .pads { position: absolute; left: 44px; right: 44px; top: 232px; display: flex; gap: 10px; }
+  .pad { position: relative; flex: 1; height: 92px; border-radius: 24px; background: linear-gradient(#b9f1f4, #7fdee5); box-shadow: 0 6px 0 #1a7d89, 0 10px 12px rgba(10, 80, 90, .4), inset 0 2px 2px #fff; }
+  .pad::before { content: ""; position: absolute; top: 12px; left: 50%; width: 60%; height: 8px; margin-left: -30%; border-radius: 4px; background: var(--c); opacity: .55; }
+  .pad.on { background: linear-gradient(#a6f5c4, #4ade80); transform: translateY(4px); box-shadow: 0 2px 0 #1a7d89, inset 0 2px 2px #fff; }
+  .pad.on::before { opacity: 1; background: #07313a; }
+</style>
+<div class="card">
+  <div class="display">
+    <div class="num"></div>
+    <div class="outs"><i></i><i class="on"></i><i></i><i></i><i class="on"></i><i></i><i></i><i class="on"></i></div>
+    <div class="name"></div>
+  </div>
+  <div class="pads">
+    <div class="pad" style="--c:#ff5a5f"></div><div class="pad" style="--c:#ffd23f"></div><div class="pad on" style="--c:#4ade80"></div>
+    <div class="pad" style="--c:#2ee6d6"></div><div class="pad" style="--c:#5b97ff"></div><div class="pad" style="--c:#e879f9"></div><div class="pad" style="--c:#f4f8f8"></div>
+  </div>
+</div>

@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PLUGINS: gossiper tetr4-switch
+  PLUGINS: gossiper tetr4-switch hept7-switch
 
 jobs:
   version:
