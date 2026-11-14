@@ -2,95 +2,83 @@
     <div mod-role="drag-handle" class="mod-drag-handle"></div>
 
     <div class="gossiper">
-      <div class="name">Gossiper</div>
-    
-      <section class="footer">
-        <div class="group1">
-          <div class="footswitch" title="Try it on plugin settings">
-            <input type="checkbox" name="{{{cns}}}-footswitch-1" class="footswitch Footswitch_1" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Footswitch_1" disabled />
-            <span><input type="text" class="footswitch-label" mod-widget="string" mod-role="input-parameter-value" mod-parameter-uri="http://srmourasilva.github.io/plugins/gossiper#footswitch_label_1" value="Footswitch 1" maxlength="15" /></span>
-          </div>
+      <div class="gp-main">
+        <div class="gp-head">
+          <span class="gp-brand">Gossiper</span>
+          <button type="button" class="gp-open">Settings</button>
         </div>
-    
-        <div class="group2">
-          <div class="footswitch" title="Try it on plugin settings">
-            <input type="checkbox" name="{{{cns}}}-footswitch-2" class="footswitch Footswitch_2" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Footswitch_2" disabled />
-            <span><input type="text" class="footswitch-label" mod-widget="string" mod-role="input-parameter-value" mod-parameter-uri="http://srmourasilva.github.io/plugins/gossiper#footswitch_label_2" value="Footswitch 2" maxlength="15" /></span>
+
+        <!-- The last control that was used. It stays on: devices without a screen for plugin pop-ups (MOD Duo)
+             have no other way to tell which footswitch or knob has just been pressed -->
+        <div class="gp-display is-idle" data-kind="idle" data-n="1" aria-live="polite">
+          <div class="gp-badge">&ndash;</div>
+          <div class="gp-info">
+            <span class="gp-caption">Last control used</span>
+            <span class="gp-what">Nothing yet</span>
+          </div>
+          <div class="gp-state">
+            <span class="gp-state-text"></span>
+            <div class="gp-state-meter"><i></i></div>
           </div>
         </div>
 
-        <div class="group3">
-          <div class="footswitch" title="Try it on plugin settings">
-            <input type="checkbox" name="{{{cns}}}-footswitch-3" class="footswitch Footswitch_3" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Footswitch_3" disabled />
-            <span><input type="text" class="footswitch-label" mod-widget="string" mod-role="input-parameter-value" mod-parameter-uri="http://srmourasilva.github.io/plugins/gossiper#footswitch_label_3" value="Footswitch 3" maxlength="15" /></span>
+        <div class="gp-switches" aria-label="Footswitches">
+          <div class="gp-fs g1" data-n="1">
+            <span class="gp-led" aria-hidden="true"><b>1</b></span>
+            <input type="text" class="gp-label" data-n="1" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of footswitch 1, the text of its pop-up" value="Footswitch 1" />
           </div>
-        </div>
-    
-        <div class="group4">
-          <div class="footswitch" title="Try it on plugin settings">
-            <input type="checkbox" name="{{{cns}}}-footswitch-4" class="footswitch Footswitch_4" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Footswitch_4" disabled />
-            <span><input type="text" class="footswitch-label" mod-widget="string" mod-role="input-parameter-value" mod-parameter-uri="http://srmourasilva.github.io/plugins/gossiper#footswitch_label_4" value="Footswitch 4" maxlength="15" /></span>
+          <div class="gp-fs g2" data-n="2">
+            <span class="gp-led" aria-hidden="true"><b>2</b></span>
+            <input type="text" class="gp-label" data-n="2" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of footswitch 2, the text of its pop-up" value="Footswitch 2" />
+          </div>
+          <div class="gp-fs g3" data-n="3">
+            <span class="gp-led" aria-hidden="true"><b>3</b></span>
+            <input type="text" class="gp-label" data-n="3" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of footswitch 3, the text of its pop-up" value="Footswitch 3" />
+          </div>
+          <div class="gp-fs g4" data-n="4">
+            <span class="gp-led" aria-hidden="true"><b>4</b></span>
+            <input type="text" class="gp-label" data-n="4" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of footswitch 4, the text of its pop-up" value="Footswitch 4" />
+          </div>
+          <div class="gp-fs g5" data-n="5">
+            <span class="gp-led" aria-hidden="true"><b>5</b></span>
+            <input type="text" class="gp-label" data-n="5" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of footswitch 5, the text of its pop-up" value="Footswitch 5" />
+          </div>
+          <div class="gp-fs g6" data-n="6">
+            <span class="gp-led" aria-hidden="true"><b>6</b></span>
+            <input type="text" class="gp-label" data-n="6" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of footswitch 6, the text of its pop-up" value="Footswitch 6" />
+          </div>
+          <div class="gp-fs g7" data-n="7">
+            <span class="gp-led" aria-hidden="true"><b>7</b></span>
+            <input type="text" class="gp-label" data-n="7" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of footswitch 7, the text of its pop-up" value="Footswitch 7" />
           </div>
         </div>
 
-        <div class="group5">
-          <div class="footswitch" title="Try it on plugin settings">
-            <input type="checkbox" name="{{{cns}}}-footswitch-5" class="footswitch Footswitch_5" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Footswitch_5" disabled />
-            <span><input type="text" class="footswitch-label" mod-widget="string" mod-role="input-parameter-value" mod-parameter-uri="http://srmourasilva.github.io/plugins/gossiper#footswitch_label_5" value="Footswitch 5" maxlength="15" /></span>
+        <div class="gp-pots" aria-label="Potentiometers">
+          <div class="gp-pot" data-n="1">
+            <div class="gp-pot-top"><span class="gp-pot-name">Pot 1</span><span class="gp-pot-value">0%</span></div>
+            <div class="gp-meter"><i></i></div>
+            <span class="gp-pot-range">0.00 - 10.00 V</span>
+          </div>
+          <div class="gp-pot" data-n="2">
+            <div class="gp-pot-top"><span class="gp-pot-name">Pot 2</span><span class="gp-pot-value">0%</span></div>
+            <div class="gp-meter"><i></i></div>
+            <span class="gp-pot-range">0.00 - 10.00 V</span>
+          </div>
+          <div class="gp-pot" data-n="3">
+            <div class="gp-pot-top"><span class="gp-pot-name">Pot 3</span><span class="gp-pot-value">0%</span></div>
+            <div class="gp-meter"><i></i></div>
+            <span class="gp-pot-range">0.00 - 10.00 V</span>
+          </div>
+          <div class="gp-pot" data-n="4">
+            <div class="gp-pot-top"><span class="gp-pot-name">Pot 4</span><span class="gp-pot-value">0%</span></div>
+            <div class="gp-meter"><i></i></div>
+            <span class="gp-pot-range">0.00 - 10.00 V</span>
           </div>
         </div>
+      </div>
 
-        <div class="group6">
-          <div class="footswitch" title="Try it on plugin settings">
-            <input type="checkbox" name="{{{cns}}}-footswitch-6" class="footswitch Footswitch_6" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Footswitch_6" disabled />
-            <span><input type="text" class="footswitch-label" mod-widget="string" mod-role="input-parameter-value" mod-parameter-uri="http://srmourasilva.github.io/plugins/gossiper#footswitch_label_6" value="Footswitch 6" maxlength="15" /></span>
-          </div>
-        </div>
-
-        <div class="group7">
-          <div class="footswitch" title="Try it on plugin settings">
-            <input type="checkbox" name="{{{cns}}}-footswitch-7" class="footswitch Footswitch_7" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Footswitch_7" disabled />
-            <span><input type="text" class="footswitch-label" mod-widget="string" mod-role="input-parameter-value" mod-parameter-uri="http://srmourasilva.github.io/plugins/gossiper#footswitch_label_7" value="Footswitch 7" maxlength="15" /></span>
-          </div>
-        </div>
-      </section>
-
-      <section section="potentiometers">
-        <div>
-          <strong>Pot 1</strong>
-          <div class="potentiometer-values">
-            <label for="minimum_1">Min</label><input name="minimum_1" type="text" size="6" disabled />
-            —
-            <label for="maximum_1">Max</label><input name="maximum_1" type="text" size="6" disabled />
-          </div>
-        </div>
-        <div>
-          <strong>Pot 2</strong>
-          <div class="potentiometer-values">
-            <label for="minimum_2">Min</label><input name="minimum_2" type="text" size="6" disabled />
-            —
-            <label for="maximum_2">Max</label><input name="maximum_2" type="text" size="6" disabled />
-          </div>
-        </div>
-        <div>
-          <strong>Pot 3</strong>
-          <div class="potentiometer-values">
-            <label for="minimum_3">Min</label><input name="minimum_3" type="text" size="6" disabled />
-            —
-            <label for="maximum_3">Max</label><input name="maximum_3" type="text" size="6" disabled />
-          </div>
-        </div>
-        <div>
-          <strong>Pot 4</strong>
-          <div class="potentiometer-values">
-            <label for="minimum_4">Min</label><input name="minimum_4" type="text" size="6" disabled />
-            —
-            <label for="maximum_4">Max</label><input name="maximum_4" type="text" size="6" disabled />
-          </div>
-        </div>
-      </section>
+      <div class="gp-jacks" aria-hidden="true"></div>
     </div>
-
 
     <div class="mod-pedal-input">
         {{#effect.ports.audio.input}}
