@@ -11,7 +11,9 @@
         modgui:javascript <modgui/gossiper.js> ;
         modgui:screenshot <modgui/screenshot.png> ;
         modgui:thumbnail <modgui/thumbnail.png> ;
-        modgui:documentation <modgui/manual.pdf> ;
+        # The HTML manual (built from docs/manual.md by tools/manual/build_manual_html.py): self-contained, because MOD UI
+        # serves it from /effect/file/documentation, where relative links do not work
+        modgui:documentation <modgui/manual.html> ;
         modgui:brand "SrMouraSilva" ;
         modgui:label "Gossiper" ;
         modgui:model "boxy-small" ;
