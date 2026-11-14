@@ -1,0 +1,69 @@
+name: Documentation site
+
+# Builds the documentation site (tools/site/build_site.py): the landing page, the user manual of each plugin and the
+# guides for developers, and publishes it on GitHub Pages.
+#
+#   https://<owner>.github.io/<repository>/   e.g. https://srmourasilva.github.io/plugins-lv2/
+#
+# One-time setup, in the repository settings:
+#   1. Settings > Pages > Build and deployment > Source: "GitHub Actions"
+#   2. Settings > Environments > github-pages > Deployment branches: allow the branches listed below (GitHub only
+#      allows the default branch at first, and the deploy job is refused on any other until it is added)
+#
+# TODO: the site is published from the development branch for now. When it is merged, replace the branch below by the
+# main one (master) and remove the development branch from the allowed branches of the environment.
+on:
+  push:
+    branches:
+      - feature/hept7-switch
+  pull_request:                 # only builds: a broken manual or guide is caught before merging
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; a newer push replaces one that has not finished
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install the tools
+        run: pip install markdown pillow
+
+      - name: Build the site
+        run: python3 tools/site/build_site.py --out _site --repo "$GITHUB_REPOSITORY" --ref "${{ github.head_ref || github.ref_name }}"
+
+      - name: List what was built
+        run: find _site -type f | sort | xargs ls -la | awk '{print $5, $9}'
+
+      - uses: actions/configure-pages@v5
+        if: github.event_name != 'pull_request'
+
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
