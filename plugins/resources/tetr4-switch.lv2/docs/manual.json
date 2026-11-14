@@ -1,0 +1,20 @@
+{
+  "title": "Tetr4 Switch",
+  "eyebrow": "MOD Audio · Plugin manual",
+  "tagline": "Four scenes. One stomp.",
+  "subtitle": "Programmable CV loop switcher for MOD Dwarf, MOD Duo X and MOD Duo",
+  "badges": ["4 presets", "4 CV outputs", "16 DIP switches"],
+  "edition": "User manual · November 2026 edition",
+  "version": "v1.0.0",
+  "hero": "images/panel.webp",
+  "brand": "#0a1380",
+  "brand2": "#02094e",
+  "accent": "#2b41c4",
+  "accentDark": "#a9b6ff",
+  "colors": ["#ff6667", "#ffff67", "#66ffff", "#bb7cd2"],
+  "links": [
+    {"label": "Forum thread", "url": "https://forum.mod.audio/t/tetr4-switch-plugin-in-beta-store/8998"},
+    {"label": "Store page", "url": "https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy90ZXRyNC1zd2l0Y2g="},
+    {"label": "Source code", "url": "https://github.com/SrMouraSilva/tetr4-switch-lv2"}
+  ]
+}
