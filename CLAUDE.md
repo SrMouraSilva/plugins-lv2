@@ -10,6 +10,9 @@ plugins/src/                 C sources (shared code in lv2/, model/, utils/)
 plugins/resources/<name>.lv2 the bundle: <name>.ttl, manifest.ttl, modgui.ttl, presets.ttl, modgui/, docs/
 plugins/Makefile             build-<plugin> targets; srmourasilva-plugins.mk is the mod-plugin-builder package
 tools/modgui-preview/        browser preview of any plugin's modgui (no device needed)
+tools/media/                 GIFs and alternative thumbnails (recorded from the preview); see "GIFs and alternative thumbnails"
+tools/manual/                builds modgui/manual.html from docs/manual.md; see "HTML manuals"
+docs/                        guides for other developers: custom-settings-pages, making-gifs, alternative-thumbnails, html-manuals
 .github/workflows/release.yml  builds Duo, Duo X and Dwarf; PLUGINS lists what is packaged
 ```
 
@@ -44,7 +47,8 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
 3. `plugins/srmourasilva-plugins.mk`: add `<name>.lv2` to `SRMOURASILVA_PLUGINS_BUNDLES` and **bump
    `SRMOURASILVA_PLUGINS_VERSION`** (otherwise the builder does not rebuild).
 4. `.github/workflows/release.yml`: add it to `PLUGINS`.
-5. `Readme.md` section, `NOTICE` title, a user manual (below), screenshot and thumbnail.
+5. `Readme.md` section, `NOTICE` title, a user manual (below), screenshot and thumbnail, the two GIFs and the alternative
+   thumbnail (and the plugin in `PLUGINS` of `tools/site/build_site.py`, so it is on the documentation site) (section "GIFs and alternative thumbnails": add the plugin to `tools/media/scenarios.mjs` and `thumbnails.mjs`).
 
 ## C code and LV2
 
@@ -127,14 +131,99 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   fallback before any `color-mix()`.
 * On the MOD Duo there are no plugin pop-ups: if the plugin changes something the musician should notice, the
   icon itself must show it.
-* `screenshot.png` is about 500 px wide and `thumbnail.png` about 150 px, both transparent around the plugin.
+* `screenshot.png` is about 500 px wide and `thumbnail.png` about 150 px, both transparent around the plugin. They stay **PNG**:
+  MOD UI and MOD's tools read them (`modgui:screenshot`, `modgui:thumbnail`).
 
 ## Documentation
 
 * `Readme.md`: one section per plugin (what it is, features, links); update the build/`docker cp` lists.
-* User manual: `plugins/resources/<name>.lv2/docs/manual.md` (+ `images/`), built into `modgui/manual.pdf` by
-  `docs/build_manual.py` (needs `pip install markdown` and Chrome) and referenced with `modgui:documentation`.
+* User manual: `plugins/resources/<name>.lv2/docs/manual.md` (+ `images/`), built into `modgui/manual.html` (section "HTML manuals")
+  and, where a PDF is still wanted, into `modgui/manual.pdf` by `docs/build_manual.py` (needs `pip install markdown` and Chrome).
+  `modgui:documentation` points to the HTML where it exists.
   `docs/` is not installed on the device, only `modgui/` is. Images come from the preview tool.
+
+## GIFs and alternative thumbnails
+
+Every plugin has, in `plugins/resources/<name>.lv2/docs/` (not installed on the device), and all of them are shown in the
+plugin's section of `Readme.md`:
+
+* `images/<name>-demo.gif`: the plugin on the pedalboard, used the way a musician would (a few taps on the footswitches
+  and switches, a rename). `images/<name>-settings.gif`: its settings page, going through every page with the arrows of
+  the top bar. A plugin without a settings page of its own has no second GIF.
+* `alternative-thumbnail.webp` (400x400, transparent outside the rounded square), drawn by `alternative-thumbnail.html`
+  next to it: a **simpler, more abstract** picture than `thumbnail.png`, like the first image of a plugin in the Anagram
+  marketplace: flat shapes in the colours of the plugin, **no text**, no real UI. It is for internal use (MOD UI does not
+  read it); keep it in the Readme next to the title of the plugin.
+
+The full guides, written for other developers, are [docs/making-gifs.md](docs/making-gifs.md) and
+[docs/alternative-thumbnails.md](docs/alternative-thumbnails.md): keep them in step with the tools. In short (needs Node 22+, Google Chrome and `pip install pillow`; the preview starts by itself):
+
+```bash
+node tools/media/record.mjs all                    # every GIF
+node tools/media/record.mjs tetr4-switch settings  # one: <plugin> <demo|settings>
+node tools/media/thumbnails.mjs                    # every alternative-thumbnail.webp
+node tools/media/shots.mjs all                     # the pictures of the steps of the manuals (docs/images/step-*.webp)
+```
+
+* `record.mjs` drives the preview (`tools/modgui-preview/frame.html`) through the Chrome DevTools, runs the script of
+  `tools/media/scenarios.mjs`, captures frames while it runs and `build_gif.py` puts them together (identical frames are
+  merged, one palette, endless loop). The input is shown as a **finger** (a circle that glides to what is tapped), not as
+  a mouse pointer: the interfaces are touch first. The taps are real mouse events, so `:active` states are recorded.
+* **Pictures in `docs/` are WebP, not PNG** (`docs/images/*.webp`, `alternative-thumbnail.webp`): they need transparency
+  (JPEG cannot), and WebP keeps it at a fifth of the size of PNG. The tools write WebP directly; for a picture that comes from
+  elsewhere, `python3 tools/media/to_webp.py FILE.png` converts it and rewrites the Markdown that mentions it (`--docs`: every
+  PNG of the docs). The PNGs that MOD UI reads (`modgui/screenshot.png`, `thumbnail.png`) stay PNG. GIFs and photos (JPEG) stay as they are.
+* A scenario is short (10 to 20 s, under about 1 MB), starts and ends on the first preset, and shows the point of the plugin:
+  what a press does, which output lights up, that a name is editable. The settings GIF is recorded at 860 px wide
+  (tablet size: it has pages); the pedalboard one is clipped to the plugin on the dark of a pedalboard. Plugins that only
+  show what a controller did (Gossiper) are driven from outside with `send({type: 'change', symbol, value})`. Taps on
+  hardware-assignment tiles mark them as `addressed`, which is what MOD UI does once its dialog is confirmed; do not
+  show anything the real plugin does not do.
+* **Re-record in the commit that changes the interface** (like the screenshot and the PDF of the manual), and look at
+  the result: pull some frames out with Pillow before committing. When a selector of the interface changes, update the
+  scenario.
+* The alternative thumbnail is plain HTML/CSS using the colours of the plugin (copy the variables from its stylesheet);
+  render it with `thumbnails.mjs` and look at it small, next to the others.
+
+## HTML manuals
+
+`modgui:documentation` points to `modgui/manual.html`, built from `docs/manual.md` (+ `docs/manual.json`, the cover and the
+colours of the plugin) by `python3 tools/manual/build_manual_html.py <plugin>|all` (`pip install markdown pillow`). The
+conventions of the Markdown (steps, callouts, video cards, recipes, FAQ, pins on a picture) and of the JSON are in
+[docs/html-manuals.md](docs/html-manuals.md).
+
+* **Put a picture in every step that happens in our interface** (not in MOD UI's own dialogs); a list item with a picture is
+  indented by four spaces with a blank line around it, or the numbered list breaks.
+* **`manual.md` is the source; never edit `manual.html`.** Rebuild in the commit that changes the text or the interface.
+* The page must be **self-contained**: MOD UI serves it from `/effect/file/documentation`, where relative links do not
+  work, so the builder embeds the CSS, the JS and every image. Keep images small; GIFs only where they tell something.
+* Pictures must stay in proportion at every width (phone 390, tablet 820, desktop 1440; light and dark theme): look at
+  the three widths before committing, especially the cover picture.
+* **Pictures of the interface in a manual go stale when the interface changes** (a step that shows a button, a settings
+  page). The ones of the steps are made by `tools/media/shots.mjs` from `tools/media/shot-specs.mjs` (state, ring, finger,
+  crop): run it in the same commit, with the target highlighted and the finger on it, and search the
+  manuals for what you changed. Pictures of MOD UI's own dialogs are not ours to redo.
+* Facts in a manual come from the plugin (the TTL, the factory presets, the code), not from memory: check a recipe or a
+  port against `presets.ttl` / the TTL.
+* Raise `lv2:microVersion` when the manual changes (the modgui cache).
+
+## Documentation site
+
+`tools/site/build_site.py` builds a static site (landing page, the user manual of each plugin, the guides of `docs/` and
+the preview's README) that `.github/workflows/docs.yml` publishes on GitHub Pages: `python3 tools/site/build_site.py --out _site`
+(`pip install markdown pillow`; Python 3.12+). It renders the manuals and the guides with `tools/manual/build_manual_html.py`,
+so they look like the manuals of the device.
+
+* **A new plugin** appears on the site by being added to `PLUGINS` in `tools/site/build_site.py` and having `docs/manual.md`,
+  `docs/manual.json` (title, tagline, badges, colours, links), `docs/alternative-thumbnail.webp` and the two GIFs. **A new guide**
+  is added to `GUIDES` (and `GUIDE_TAGLINES`) in the same file.
+* A link from a guide to another guide becomes a link to its page; a link to any other file becomes a link to it on GitHub: write
+  guides with relative links to files (`../CLAUDE.md`, `./making-gifs.md`), never with absolute URLs of this repository.
+* Fenced code blocks inside a list item are turned into code blocks after the item (Python-Markdown does not nest them);
+  prefer a fence at the left margin.
+* **The workflow publishes from the development branch for now** (a TODO at its top): when the branch is merged, replace it by
+  the main one in `docs.yml`. Settings needed once: *Pages > Source: GitHub Actions*, and the branch allowed in
+  *Environments > github-pages > Deployment branches*.
 
 ## Git
 
