@@ -98,7 +98,7 @@ doap:maintainer [
 
     lv2:majorVersion 1 ;
     lv2:minorVersion 1 ;
-    lv2:microVersion 1 ;
+    lv2:microVersion 3 ;
 
 rdfs:comment """
 Tetr4 switch is a loop switcher for CV. Store which of its four CV outputs are on in each of four presets, and change between them with a single footswitch.

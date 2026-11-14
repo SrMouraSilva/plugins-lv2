@@ -4,275 +4,1118 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-:root {
-  --tetr4-switch-width: 600px;
-  --tetr4-switch-height: 268px;
+/*
+ * Tetr4 switch: a navy pedal with four banks of DIP switches, one footswitch (and name) under each.
+ *
+ *  - .tetr4-switch / .t4-*   the plugin on the pedalboard (the icon)
+ *  - .t4s / .t4s-*           the full-screen settings page (modgui:settingsTemplate)
+ *
+ * Every rule is namespaced, because MOD UI loads this file into the whole page.
+ */
 
-  --tetr4-switch-background: #02094e;
+.tetr4-switch,
+.t4s {
+  /* Navy, the colour of the plugin (modgui:color is #02094e) */
+  --t4-ink: #030a52;      /* the darkest: slots, fields, dark text on a bright colour */
+  --t4-ink-2: #07106a;    /* panels */
+  --t4-ink-3: #131f94;    /* raised controls */
+  --t4-line: rgba(255, 255, 255, 0.14);
+  --t4-text: #f0f2ff;
+  --t4-muted: #a9b2f0;
+  --t4-accent: #d3d8ff;
+
+  /* One colour per preset (the LED colours of the device footswitches) */
+  --t4-c1: #ff6667;
+  --t4-c2: #ffff67;
+  --t4-c3: #66ffff;
+  --t4-c4: #bb7cd2;
+
+  /* What a switch that is on looks like in a preset that is not playing: stored, not live */
+  --t4-stored: #6d78cf;
+
+  font-family: "Avenir Next Rounded", "SF Pro Rounded", ui-rounded, "Nunito", "Varela Round", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
+
+.t4-unit.p1, .t4s-card.p1 { --c: var(--t4-c1); }
+.t4-unit.p2, .t4s-card.p2 { --c: var(--t4-c2); }
+.t4-unit.p3, .t4s-card.p3 { --c: var(--t4-c3); }
+.t4-unit.p4, .t4s-card.p4 { --c: var(--t4-c4); }
+
+/* Resets with no specificity, so every component rule below wins over them */
+:where(.tetr4-switch, .t4s) :where(button, input) {
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+  text-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/*
+ * MOD UI covers the whole icon with a drag handle (.mod-drag-handle, absolute, z-index 20) so the plugin can be
+ * moved by dragging it. Whatever must be clickable has to sit above it; the rest still drags the plugin.
+ */
+.t4-open,
+.t4-dip,
+.t4-foot,
+.t4-name {
+  position: relative;
+  z-index: 30;
+}
+
+.tetr4-switch button:focus-visible,
+.tetr4-switch input:focus-visible,
+.t4s button:focus-visible,
+.t4s input:focus-visible {
+  outline: 3px solid var(--t4-accent);
+  outline-offset: 2px;
+}
+
+
+/* ==========================================================================
+ * The plugin on the pedalboard
+ * ========================================================================== */
 
 .tetr4-switch-base.mod-pedal .mod-pedal-output {
   top: 0px;
 }
 
 .tetr4-switch {
-  text-shadow: 0 0 1px black;
+  --t4-width: 600px;
+  --t4-height: 268px;
 
-  padding: 16px;
-  margin: 0px;
-
-  display: block;
-  color: #ddd;
+  box-sizing: border-box;
   position: relative;
-
-  font-family: monospace;
-
-  color: #eee;
-}
-
-.tetr4-switch .footer,
-.tetr4-switch .dips {
-  display: flex;
-  justify-content: space-around;
-}
-
-.tetr4-switch .footer {
-  margin-top: 8px;
-}
-
-.tetr4-switch .name {
-  text-shadow: 0 0 2px black;
-  font-weight: bold;
-
-  font-family: monospace;
-  margin-top: -10px;
-  margin-bottom: -4px;
-  font-size: large;
-  text-align: center;
-  width: 100%;
-}
-
-.tetr4-switch .group1 {
-  --tetr4-switch-slider-background-on: #ff6667;
-}
-.tetr4-switch .group2 {
-  --tetr4-switch-slider-background-on: #ffff67;
-}
-.tetr4-switch .group3 {
-  --tetr4-switch-slider-background-on: #66ffff;
-}
-.tetr4-switch .group4 {
-  --tetr4-switch-slider-background-on: #bb7cd2;
-}
-
-
-.tetr4-switch {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  gap: 8px;
 
-  background: var(--tetr4-switch-background);
+  width: var(--t4-width);
+  min-width: var(--t4-width);
+  height: var(--t4-height);
+  padding: 12px 18px 14px;
 
-  background-repeat: no-repeat;
-  background-size: var(--tetr4-switch-width), var(--tetr4-switch-height), auto;
-  height: var(--tetr4-switch-height);
-  width: var(--tetr4-switch-width);
-  min-width: var(--tetr4-switch-width);
-  border-radius: 18px;
-
-  font-family: "cooper hewitt", Sans-serif;
-  font-weight: 500;
+  color: var(--t4-text);
   text-align: center;
+
+  background:
+    radial-gradient(110% 70% at 8% 0%, rgba(130, 150, 255, 0.12), rgba(130, 150, 255, 0) 60%),
+    linear-gradient(170deg, #060e6c 0%, #02094e 100%);
+  border-radius: 22px;
+  box-shadow:
+    inset 0 2px 1px rgba(255, 255, 255, 0.2),
+    inset 0 -4px 8px rgba(0, 0, 20, 0.45),
+    0 0 0 2px #0d1678;
 }
 
-.tetr4-switch .footswitch {
+.t4-head {
   display: flex;
-  flex-direction: row;
-
-  z-index: 30;
-  position: relative;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  min-height: 24px;
 }
 
-.tetr4-switch .footswitch input[type="radio"] {
-  position: absolute;
-  opacity: 0;
-  z-index: -1;
+.t4-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--t4-text);
 }
 
-.tetr4-switch .footswitch input[type="radio"] + span::before {
-  /** Based on https://pedalboard.netlify.app/ */
-  -webkit-tap-highlight-color: transparent;
-  width: 60px;
-  height: 60px;
-  border-radius: 100%;
-  background: #FFF;
-  box-shadow: inset 0 0 0 10px #aaa;
-  overflow: hidden;
-  white-space: nowrap;
-  text-indent: 200%;
-  border: 1px solid #BBB;
-  display: block;
-  cursor: pointer;
-  
+/* The four preset colours, as a small mark */
+.t4-brand::before {
   content: "";
+  width: 24px;
+  height: 12px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--t4-c1) 0 25%, var(--t4-c2) 0 50%, var(--t4-c3) 0 75%, var(--t4-c4) 0);
+  box-shadow: 0 0 0 2px rgba(0, 0, 20, 0.5);
+}
+
+.t4-open {
+  min-height: 24px;
+  padding: 0 14px;
+  border-radius: 12px;
   cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--t4-text);
+  background: var(--t4-ink-3);
+  box-shadow: 0 2px 0 #01062f;
+  transition: background-color 0.15s;
+}
+.t4-open:hover { background: #1c2bb5; }
+.t4-open:active { transform: translateY(1px); box-shadow: 0 1px 0 #01062f; }
 
-  margin: 0 auto;
-  transition: background-color .4s, box-shadow .4s;
+.t4-units {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
 }
 
-.tetr4-switch .footswitch input[type="radio"] + span:hover::before {
-  box-shadow: inset 0 0 0 9px color-mix(in srgb, var(--tetr4-switch-slider-background-on) 50%, #aaa);
-}
-
-.tetr4-switch .footswitch input[type="radio"]:checked + span::before {
-  background-position-y: bottom;
-  border-color: var(--tetr4-switch-slider-background-on);
-  box-shadow: inset 0 0 0 10px var(--tetr4-switch-slider-background-on);
-}
-
-.tetr4-switch .footswitch-label {
-  width: 90px;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-  margin-top: 8px;
-  display: block;
-  background-color: var(--tetr4-switch-slider-background-off);
-  color: #222;
-  text-shadow: none;
-  box-shadow: inset 0 0 2px black;
-  border: 1px solid var(--tetr4-switch-background);
-  padding: 4px 6px;
-  cursor: text;
-
-  transition: background-color .4s ease-in, border-color .4s ease-in;
-}
-
-.tetr4-switch .footswitch-label::selection {
-  background: var(--tetr4-switch-background);
-  color: #ffffff;
-}
-
-.tetr4-switch .footswitch-label:focus {
-  border: 1px solid var(--tetr4-switch-slider-background-on);
-  background-color: #ffffff;
-}
-
-.tetr4-switch .footswitch input[type="radio"]:checked + .footswitch-label {
-  background-color: var(--tetr4-switch-slider-background-on);
-}
-
-
-/**********************************************************/
-/**
- * Based on
- *  - https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_switch
- */
-:root {
-  --tetr4-switch-slider-background-on: #2196F3;
-  --tetr4-switch-slider-background-off: #ccc;
-  --tetr4-switch-slider-background-off-disabled: #666;
-  --tetr4-switch-slider-tick-on: white;
-  --tetr4-switch-slider-tick-off: white;
-  --tetr4-switch-slider-front: #fff;
-  --tetr4-switch-slider-width: 26;
-  --tetr4-switch-slider-height: 52;
-  --tetr4-switch-slider-border: 4;
-}
-
-.tetr4-switch .dip-switch {
+.t4-unit {
+  --c: var(--t4-c1);
+  min-width: 0;
   display: flex;
-  padding-top: 0;
-  /* border: 1px solid var(--tetr4-switch-slider-background-off); */
-  transition: border .4s;
-}
-.tetr4-switch .dip-switch.active {
-  /* border: 1px solid var(--tetr4-switch-slider-background-on); */
-}
-
-.tetr4-switch .dip-switch legend {
-  font-size: .8em;
-  margin-bottom: 5px;
-  padding: 0 4px;
-
-  color: #ccc;
-  font-weight: bold;
-
-  border: 0;
-}
-
-.tetr4-switch .switch-controller {
-  display: inline-flex;
   flex-direction: column;
-
-  z-index: 30;
-}
-.tetr4-switch .switch-controller .content {
-  text-align: center;
-  font-size: 12px;
+  justify-content: space-between;
+  gap: 8px;
 }
 
-.tetr4-switch .switch {
-  position: relative;
-  display: inline-block;
-  width: calc(var(--tetr4-switch-slider-width) * 1px);
-  height: calc(var(--tetr4-switch-slider-height) * 1px);
+/* The bank of DIP switches */
+.t4-bank {
+  padding: 6px 7px 7px;
+  border-radius: 12px;
+  background: rgba(0, 0, 20, 0.3);
+  box-shadow: inset 0 0 0 1px var(--t4-line), inset 0 2px 6px rgba(0, 0, 20, 0.5);
+  transition: box-shadow 0.25s;
 }
 
-.tetr4-switch .switch input { 
-  opacity: 0;
-  width: 0;
-  height: 0;
+.t4-unit.is-active .t4-bank {
+  box-shadow: inset 0 0 0 2px var(--c), inset 0 2px 6px rgba(0, 0, 20, 0.5), 0 0 14px -2px var(--c);
 }
 
-.tetr4-switch .slider {
-  position: absolute;
+.t4-bank-title {
+  margin: 0 0 4px;
+  padding: 0;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-shadow: none;
+  color: var(--t4-muted);
+  transition: color 0.25s;
+}
+.t4-unit.is-active .t4-bank-title { color: var(--c); }
+
+.t4-dips {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* A mini DIP switch: up is on. The number is the CV output it drives */
+.t4-dip {
+  --t4-trk: 44px;
+  --t4-knob: 19px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 24px;
   cursor: pointer;
+}
+
+.t4-dip-num {
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 12px;
+  color: var(--t4-muted);
+}
+
+.t4-dip-track {
+  position: relative;
+  display: block;
+  width: 24px;
+  height: var(--t4-trk);
+  border-radius: 7px;
+  background: #040a40;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.t4-dip-track::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  height: var(--t4-knob);
+  border-radius: 5px;
+  background: linear-gradient(180deg, #fff, #c9cffc);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
+  transition: transform 0.18s ease;
+}
+
+.t4-dip.is-on .t4-dip-track { background: var(--t4-stored); }
+.t4-dip.is-on .t4-dip-track::before { transform: translateY(calc(-1 * (var(--t4-trk) - 6px - var(--t4-knob)))); }
+.t4-dip.is-on .t4-dip-num { color: var(--t4-text); }
+
+.t4-unit.is-active .t4-dip.is-on .t4-dip-track {
+  background: var(--c);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.3), 0 0 8px -1px var(--c);
+}
+
+.t4-dip:hover .t4-dip-track { box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.7), 0 0 0 2px rgba(255, 255, 255, 0.25); }
+
+/* The footswitch and the name of the preset */
+.t4-pedal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+
+/*
+ * The footswitch: the ring is part of the casing (it never moves, and it is the LED: it takes the colour of the preset
+ * when the preset is playing), only the cap in the middle is raised, and only the cap goes down when it is pressed
+ */
+.t4-foot {
+  --ring: #5d67bd;
+  position: relative;
+  flex: 0 0 auto;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: var(--ring);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 20, 0.35), inset 0 2px 3px rgba(0, 0, 20, 0.35);
+  transition: background-color 0.25s, box-shadow 0.25s;
+}
+
+.t4-foot:hover { --ring: #7480d0; }
+
+.t4-cap {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  bottom: 7px;
+  left: 7px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--t4-ink);
+  background: radial-gradient(circle at 50% 34%, #fff 0 34%, #dfe3ff 62%, #b4bcf3 100%);
+  box-shadow: 0 4px 0 #7e88d6, 0 6px 7px rgba(0, 0, 20, 0.55);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.t4-foot:active .t4-cap {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #7e88d6, 0 2px 3px rgba(0, 0, 20, 0.5);
+}
+
+.t4-unit.is-active .t4-foot {
+  --ring: var(--c);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 20, 0.3), inset 0 2px 3px rgba(0, 0, 20, 0.25), 0 0 16px 0 var(--c);
+}
+.t4-unit.is-active .t4-cap { box-shadow: 0 4px 0 #7e88d6, 0 6px 7px rgba(0, 0, 20, 0.55); }
+.t4-unit.is-active .t4-foot:active .t4-cap { box-shadow: 0 1px 0 #7e88d6, 0 2px 3px rgba(0, 0, 20, 0.5); }
+
+/* The name of the preset: it is also what the device screen (HMI) shows, so it is editable right here */
+.t4-name {
+  width: 100%;
+  min-width: 0;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 9px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--t4-text);
+  background: #040a40;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7), inset 0 0 0 1px var(--t4-line);
+  text-overflow: ellipsis;
+  cursor: text;
+  -webkit-user-select: text;
+  user-select: text;
+  transition: background-color 0.2s, box-shadow 0.2s, color 0.2s;
+}
+.t4-name::selection { background: var(--c); color: var(--t4-ink); }
+.t4-unit.is-active .t4-name { color: var(--c); box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7), inset 0 0 0 1px var(--c); }
+.t4-name:focus {
+  outline: none;
+  color: var(--t4-text);
+  background: #000;
+  box-shadow: inset 0 0 0 2px var(--c);
+}
+
+
+/* ==========================================================================
+ * The settings page: takes the whole screen, built for touch
+ * ========================================================================== */
+
+.t4s {
+  position: absolute;
+  z-index: 10;
   top: 0;
-  left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--tetr4-switch-slider-background-off);
-  transition: .4s;
-  box-shadow: inset 0 0 2px black;
+  left: 0;
+  box-sizing: border-box;
+  /* Never scrolls: what does not fit goes on another page (see the pager) */
+  overflow: hidden;
+  overscroll-behavior: contain;
+
+  /* The margins of the screen. The pager reaches the edges and its pages keep these margins inside, so the shadows of
+     the panels fade out on the page instead of being cut a few pixels from the panel */
+  --t4s-gy: 14px;
+  --t4s-pl: max(14px, env(safe-area-inset-left));
+  --t4s-pr: max(14px, env(safe-area-inset-right));
+  --t4s-pb: max(var(--t4s-gy), env(safe-area-inset-bottom));
+  padding: max(var(--t4s-gy), env(safe-area-inset-top)) var(--t4s-pr) var(--t4s-pb) var(--t4s-pl);
+
+  color: var(--t4-text);
+  font-size: 16px;
+  line-height: 1.3;
+  background:
+    radial-gradient(90% 60% at 12% 0%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(165deg, #2f40cf 0%, #1f2fb0 45%, #162399 100%);
 }
 
-.tetr4-switch .slider:before {
-  --height-size: calc(var(--tetr4-switch-slider-height) / 2);
+.t4s *,
+.t4s *::before,
+.t4s *::after {
+  box-sizing: border-box;
+}
 
+.t4s h1,
+.t4s h2,
+.t4s p {
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  text-transform: none;
+  text-shadow: none;
+  letter-spacing: normal;
+}
+
+.t4s-shell {
+  max-width: 1500px;
+  height: 100%;
+  margin: 0 auto;
+}
+
+.t4s-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+.t4s-stock[hidden] { display: none; }
+
+.t4s-sr {
   position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Top bar, straight on the blue */
+.t4s-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px 18px;
+  flex-wrap: wrap;
+  flex: 0 0 auto;
+}
+
+.t4s-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin-right: auto;
+}
+
+.t4s-logo {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  width: 36px;
+  height: 32px;
+  padding: 6px;
+  border-radius: 10px;
+  background: var(--t4-ink);
+  box-shadow: 0 2px 0 rgba(0, 0, 30, 0.5), inset 0 0 0 1px var(--t4-line);
+}
+.t4s-logo i { flex: 1 1 0; border-radius: 2px; }
+.t4s-logo i:nth-child(1) { height: 100%; background: var(--t4-c1); }
+.t4s-logo i:nth-child(2) { height: 45%; background: var(--t4-c2); }
+.t4s-logo i:nth-child(3) { height: 75%; background: var(--t4-c3); }
+.t4s-logo i:nth-child(4) { height: 30%; background: var(--t4-c4); }
+
+.t4s h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--t4-text);
+  text-shadow: 0 1px 0 rgba(0, 0, 30, 0.35);
+  white-space: nowrap;
+}
+
+.t4s-now {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 5px 18px 5px 5px;
+  border-radius: 999px;
+  background: var(--t4-ink-2);
+  box-shadow: 0 3px 0 var(--t4-ink);
+}
+
+.t4s-now-num {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  border-radius: 50%;
+  text-align: center;
+  font-weight: 800;
+  color: var(--t4-ink);
+  background: var(--c-active, var(--t4-c1));
+}
+
+.t4s-now-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.t4s[data-active="1"] { --c-active: var(--t4-c1); }
+.t4s[data-active="2"] { --c-active: var(--t4-c2); }
+.t4s[data-active="3"] { --c-active: var(--t4-c3); }
+.t4s[data-active="4"] { --c-active: var(--t4-c4); }
+
+.t4s .js-close {
+  min-width: 100px;
+  min-height: 48px;
+  padding: 0 26px;
+  border-radius: 24px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--t4-text);
+  background: var(--t4-ink-2);
+  box-shadow: 0 3px 0 var(--t4-ink);
+  transition: transform 0.08s, box-shadow 0.08s, background-color 0.15s;
+}
+.t4s .js-close:hover { background: var(--t4-ink-3); }
+.t4s .js-close:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--t4-ink);
+}
+
+/* Page controls: always there. Swiping the pager does the same */
+.t4s-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.t4s-step {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  cursor: pointer;
+  color: var(--t4-text);
+  background: var(--t4-ink-2);
+  box-shadow: 0 3px 0 var(--t4-ink);
+  transition: transform 0.08s, box-shadow 0.08s, background-color 0.15s, opacity 0.15s;
+}
+.t4s-step:hover { background: var(--t4-ink-3); }
+.t4s-step:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--t4-ink);
+}
+.t4s-step:disabled {
+  opacity: 0.35;
+  cursor: default;
+  transform: none;
+  box-shadow: 0 3px 0 var(--t4-ink);
+}
+
+/* One dot per page, the current one filled. A tap on one goes to its page, but the arrows are the controls */
+.t4s-dots {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+}
+
+.t4s-dot {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 36px;
+  cursor: pointer;
+}
+.t4s-dot::before {
   content: "";
-  height: calc(calc(var(--height-size) - calc(2 * var(--tetr4-switch-slider-border))) * 1px);
-  width: calc(calc(var(--tetr4-switch-slider-width) - calc(2 * var(--tetr4-switch-slider-border))) * 1px);
-  left: calc(var(--tetr4-switch-slider-border) * 1px);
-  bottom: calc(var(--tetr4-switch-slider-border) * 1px);
-  background-color: var(--tetr4-switch-slider-tick-off);
-  transition: .2s;
-  transition-timing-function: ease;
-  box-shadow: 0 0 2px #888;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.4;
+  transition: width 0.2s, height 0.2s, opacity 0.2s;
 }
-.tetr4-switch input:checked + .slider:before {
-  background-color: var(--tetr4-switch-slider-tick-on);
-}
-
-.tetr4-switch input:checked + .slider {
-  background-color: var(--tetr4-switch-slider-background-off-disabled);
-  box-shadow: inset 0 0 2px black;
+.t4s-dot.is-current::before {
+  width: 12px;
+  height: 12px;
+  opacity: 1;
 }
 
-.tetr4-switch .active input:checked + .slider {
-  background-color: var(--tetr4-switch-slider-background-on);
-  box-shadow: inset 0 0 2px black,
-              0 0 2px var(--tetr4-switch-slider-background-on);
+/*
+ * The pages sit side by side in a strip that scrolls (and snaps) horizontally: a swipe on a touch screen, the
+ * arrows elsewhere. Vertically it never scrolls; each page is cut to its height by the script
+ */
+.t4s-pager {
+  flex: 1 1 0;
+  min-height: 0;
+  margin: 0 calc(-1 * var(--t4s-pr)) calc(-1 * var(--t4s-pb)) calc(-1 * var(--t4s-pl));
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior: contain;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.t4s-pager::-webkit-scrollbar { display: none; }
+
+.t4s-page {
+  flex: 0 0 100%;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  /* the margins of the screen, and room for the shadow of the panels, which the page clips */
+  padding: 4px var(--t4s-pr) var(--t4s-pb) var(--t4s-pl);
+  overflow: hidden;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
-/* .tetr4-switch input:focus + .slider {
-  box-shadow: 0 0 1px var(--tetr4-switch-slider-background-on);
-} */
 
-.tetr4-switch input:checked + .slider:before {
-  --height-size: calc(var(--tetr4-switch-slider-height) / 2);
+/* Panels */
+.t4s-panel {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 16px;
+  border-radius: 20px;
+  background: var(--t4-ink-2);
+  box-shadow: 0 4px 10px rgba(6, 50, 58, 0.35), inset 0 0 0 1px var(--t4-line);
+}
 
-  transform: translateY(calc(var(--height-size) * -1px));
+.t4s-panel-head {
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.t4s-eyebrow {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--t4-muted);
+}
+
+.t4s-range {
+  margin-left: 8px;
+  color: var(--t4-muted);
+  letter-spacing: 0.04em;
+}
+
+.t4s h2 {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--t4-accent);
+}
+
+.t4s-panel-head p {
+  margin-top: 3px;
+  font-size: 14px;
+  color: var(--t4-muted);
+}
+
+/* The scenes: one card per preset, with its DIP switches. The script chooses how many columns (1, 2 or 4: never 3 + 1)
+   and, from the width of a card, whether the name sits beside the switches (.is-row) or above them */
+.t4s-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--t4s-cols, 2), minmax(0, 1fr));
+  gap: 8px;
+  --t4s-trk: 84px;
+}
+
+.t4s-card {
+  --c: var(--t4-c1);
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  grid-template-areas: "pad label" "dips dips";
+  align-content: start;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 2px transparent;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.t4s-card.is-active {
+  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--c) 15%, transparent);
+  box-shadow: inset 0 0 0 2px var(--c);
+}
+
+.t4s-pad {
+  grid-area: pad;
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: var(--t4-ink-3);
+  box-shadow: inset 0 0 0 2px var(--c);
+  transition: background-color 0.2s, transform 0.08s, box-shadow 0.2s;
+}
+.t4s-pad b {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--c);
+}
+.t4s-pad:active { transform: scale(0.94); }
+.t4s-pad.is-active {
+  background: var(--c);
+  box-shadow: 0 0 16px -2px var(--c);
+}
+.t4s-pad.is-active b { color: var(--t4-ink); }
+
+.t4s-label {
+  grid-area: label;
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--t4-text);
+  background: var(--t4-ink);
+  box-shadow: inset 0 0 0 1px var(--t4-line);
+  text-overflow: ellipsis;
+  -webkit-user-select: text;
+  user-select: text;
+}
+.t4s-label:focus {
+  outline: none;
+  background: #000;
+  box-shadow: inset 0 0 0 2px var(--c);
+}
+
+/* The DIP switches: a bank of four, up is on */
+.t4s-dips {
+  grid-area: dips;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  padding: 10px 8px 7px;
+  border-radius: 12px;
+  background: var(--t4-ink);
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.55), inset 0 0 0 1px var(--t4-line);
+}
+
+.t4s-dip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.t4s-dip-track {
+  --t4s-knob: calc(var(--t4s-trk) * 0.46);
+  position: relative;
+  display: block;
+  width: min(100%, 52px);
+  min-width: 40px;
+  height: var(--t4s-trk);
+  border-radius: 10px;
+  background: #02062f;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.75), 0 1px 0 rgba(255, 255, 255, 0.14);
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.t4s-dip-track::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  height: var(--t4s-knob);
+  border-radius: 7px;
+  background: linear-gradient(180deg, #fff, #c9cffc);
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.5);
+  transition: transform 0.18s ease;
+}
+
+.t4s-dip-num {
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  color: var(--t4-muted);
+}
+
+.t4s-dip:active .t4s-dip-track { box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.75), 0 0 0 2px rgba(255, 255, 255, 0.3); }
+
+.t4s-dip.is-on .t4s-dip-track { background: var(--t4-stored); }
+.t4s-dip.is-on .t4s-dip-track::before { transform: translateY(calc(-1 * (var(--t4s-trk) - 8px - var(--t4s-knob)))); }
+.t4s-dip.is-on .t4s-dip-num { color: var(--t4-text); }
+
+/* The signal is actually leaving the plugin through the switches of the active card */
+.t4s-card.is-active .t4s-dip.is-on .t4s-dip-track {
+  background: var(--c);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.3), 0 0 14px -1px var(--c);
+}
+
+/* A card wide enough: the name goes under the button, and the switches take the rest of the row */
+.t4s-grid.is-row { --t4s-trk: 64px; }
+.t4s-grid.is-row .t4s-card {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
+  grid-template-areas: "pad dips" "label dips";
+  align-items: start;
+}
+.t4s-grid.is-row .t4s-dips { align-self: stretch; }
+
+
+/* Hardware assignments: every tile is the button that opens the assignment dialog */
+.t4s-assign {
+  display: grid;
+  /* The script sets the number of columns from the width of the panel */
+  grid-template-columns: repeat(var(--t4s-cols, 2), minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.t4s .mod-address.t4s-address {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  height: auto;
+  min-height: 56px;
+  padding: 6px 8px 6px 14px;
+  border-radius: 14px;
+  text-align: left;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.05);
+  background-image: none;
+  box-shadow: inset 0 0 0 1px var(--t4-line);
+  transition: background-color 0.15s, box-shadow 0.15s;
+}
+
+.t4s .mod-address.t4s-address:hover { background-color: rgba(255, 255, 255, 0.1); }
+
+.t4s-assign-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.t4s-assign-title,
+.t4s-assign-name small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.t4s-assign-name small {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--t4-muted);
+}
+
+/* The tiles of the preset buttons carry the colour of their preset */
+.t4s-assign-title[data-preset]::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: var(--dot);
+}
+.t4s-assign-title[data-preset="1"] { --dot: var(--t4-c1); }
+.t4s-assign-title[data-preset="2"] { --dot: var(--t4-c2); }
+.t4s-assign-title[data-preset="3"] { --dot: var(--t4-c3); }
+.t4s-assign-title[data-preset="4"] { --dot: var(--t4-c4); }
+
+/* "+" while free, a check once the control is addressed */
+.t4s-assign-state {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  border-radius: 50%;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--t4-accent);
+  background: var(--t4-ink-3);
+}
+.t4s-assign-state::before { content: "+"; }
+
+.t4s .mod-address.t4s-address.addressed {
+  background-color: rgba(143, 243, 247, 0.14);
+  box-shadow: inset 0 0 0 2px var(--t4-accent);
+}
+.t4s .mod-address.t4s-address.addressed .t4s-assign-state {
+  color: var(--t4-ink);
+  background: var(--t4-accent);
+}
+.t4s .mod-address.t4s-address.addressed .t4s-assign-state::before { content: "\2713"; }
+
+/* Saved presets: MOD UI wires up this markup, it is only restyled here */
+.t4s-presets-panel {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+}
+
+.t4s .mod-presets {
+  position: relative;
+  float: none;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+  width: auto !important;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  background: none;
+}
+
+.t4s .mod-presets > span.mod-enumerated-title {
+  display: block;
+  height: auto;
+  margin-bottom: 8px;
+  overflow: visible !important;
+}
+
+.t4s .mod-presets form {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+}
+
+.t4s .mod-presets form > span {
+  flex: 1 1 0;
+}
+
+.t4s .mod-presets form label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--t4-ink-3);
+}
+
+.t4s .mod-presets .radio-preset {
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+  accent-color: var(--t4-accent);
+  -webkit-appearance: radio;
+  appearance: auto;
+}
+
+.t4s .mod-presets > div.mod-enumerated-list {
+  float: none;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  min-height: 150px;
+  flex: 1 1 0;
+  padding: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  background: var(--t4-ink);
+}
+
+.t4s .mod-presets .mod-enumerated-list > div[mod-role="enumeration-option"] {
+  height: auto;
+  min-height: 46px;
+  padding: 12px 14px;
+  margin: 0 0 1px;
+  line-height: 1.2;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--t4-text);
+  background: var(--t4-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.t4s .mod-presets .mod-enumerated-list > div[mod-role="enumeration-option"]:hover { background: var(--t4-ink-3); }
+.t4s .mod-presets .mod-enumerated-list > div[mod-role="enumeration-option"].selected {
+  color: var(--t4-ink);
+  background: var(--t4-accent);
+}
+
+.t4s .mod-presets footer {
+  position: static;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  margin: 10px 0 0;
+  padding: 0;
+  background: none;
+}
+
+.t4s .mod-presets .btn {
+  float: none;
+  width: auto;
+  min-width: 48px;
+  min-height: 48px;
+  margin: 0;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--t4-text);
+  background-color: var(--t4-ink-3);
+  background-repeat: no-repeat;
+  background-position: center center;
+  box-shadow: inset 0 0 0 1px var(--t4-line);
+}
+
+.t4s .mod-presets .btn.preset-btn-save,
+.t4s .mod-presets .btn.preset-btn-save-as,
+.t4s .mod-presets .btn.preset-btn-delete {
+  width: 48px;
+  margin-right: 0;
+}
+
+.t4s .mod-presets .btn.preset-btn-rename { width: 56px !important; font-size: 13px; }
+
+.t4s .mod-presets .btn:hover { background-color: #25505a; }
+.t4s .mod-presets .btn.disabled { opacity: 0.35; cursor: default; }
+.t4s .mod-presets .btn.disabled:hover { background-color: var(--t4-ink-3); }
+
+.t4s .mod-presets .assign-all { margin-left: auto; }
+.t4s .mod-presets .btn.preset-btn-assign-all.addressed {
+  color: var(--t4-ink);
+  background-color: var(--t4-accent);
+}
+
+
+/* --------------------------------------------------------------------------
+ * Sizes. The script measures the box the page is drawn in (MOD UI's own page has no viewport meta tag, so media
+ * queries cannot tell a phone from a desktop there) and says so with data-w (s < 700px, m < 1100px, l) and
+ * data-h (s: short, m), and with .is-row on the scenes when a card is wide enough for its name to sit beside the switches
+ * -------------------------------------------------------------------------- */
+
+/* A column of panels, and a row of them (wide screens) */
+.t4s-stack {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-self: stretch;
+  min-width: 0;
+  min-height: 0;
+}
+.t4s-stack > .t4s-panel { flex: 0 0 auto; }
+.t4s-stack > .t4s-presets-panel { flex: 1 1 0; min-height: 0; }
+
+.t4s-row {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+  min-height: 0;
+}
+.t4s-row > .t4s-hw-presets,
+.t4s-page > .t4s-hw-presets { flex-grow: 3; }
+.t4s-row > .t4s-hw-current,
+.t4s-row > .t4s-hw-notify,
+.t4s-page > .t4s-hw-current,
+.t4s-page > .t4s-hw-notify { flex-grow: 2; }
+.t4s-row > .t4s-presets-panel { flex: 3 1 0; align-self: stretch; }
+
+/* Narrow: the logo, the preset playing and the close button, and under them the page controls across the width */
+.t4s[data-w="s"] { font-size: 15px; }
+.t4s[data-w="s"] .t4s-bar { gap: 8px 10px; }
+.t4s[data-w="s"] h1 { display: none; }
+.t4s[data-w="s"] .t4s-title { margin-right: 0; }
+.t4s[data-w="s"] .t4s-now { order: 2; flex: 1 1 0; }
+.t4s[data-w="s"] .t4s-close { order: 3; min-width: 88px; padding: 0 20px; }
+.t4s[data-w="s"] .t4s-nav { order: 4; flex: 1 1 100%; justify-content: space-between; }
+.t4s[data-w="s"] .t4s-dots { flex: 1 1 auto; justify-content: center; }
+.t4s[data-w="s"] .t4s-panel { padding: 12px; border-radius: 18px; }
+.t4s[data-w="s"] .t4s-panel-head { margin-bottom: 8px; }
+/* The scenes are what the height of a phone is spent on; the other panels have room for their text */
+.t4s[data-w="s"] .t4s-scenes .t4s-panel-head p { display: none; }
+
+/* Short (a phone on its side): tighter, with no room for the descriptions; 44px is still the smallest target */
+.t4s[data-h="s"] { --t4s-gy: 8px; }
+.t4s[data-h="s"] .t4s-screen { gap: 6px; }
+.t4s[data-h="s"] .t4s-panel { padding: 10px 12px; }
+.t4s[data-h="s"] .t4s-panel-head { margin-bottom: 8px; }
+.t4s[data-h="s"] .t4s-scenes .t4s-panel-head p { display: none; }
+.t4s[data-h="s"] .t4s-step,
+.t4s[data-h="s"] .t4s-close { min-height: 44px; height: 44px; }
+.t4s[data-h="s"] .t4s-grid { gap: 6px; --t4s-trk: 56px; }
+.t4s[data-h="s"] .t4s-grid.is-row { --t4s-trk: 52px; }
+.t4s[data-h="s"] .t4s-card { gap: 6px; padding: 6px; grid-template-columns: 44px minmax(0, 1fr); }
+.t4s[data-h="s"] .t4s-grid.is-row .t4s-card { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr); }
+.t4s[data-h="s"] .t4s-pad { width: 44px; height: 44px; }
+.t4s[data-h="s"] .t4s-label { height: 44px; }
+.t4s[data-h="s"] .t4s-dips { padding: 8px 8px 5px; }
+.t4s[data-h="s"] .t4s-assign { gap: 4px; }
+.t4s[data-h="s"] .t4s-presets-panel .mod-presets > div.mod-enumerated-list { min-height: 64px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tetr4-switch *, .t4s * { transition: none !important; }
 }

@@ -1,180 +1,75 @@
 <div class="mod-pedal tetr4-switch-base mod-no-shadow">
     <div mod-role="drag-handle" class="mod-drag-handle"></div>
 
-    <div class="tetr4-switch">
-      <div class="name">Tetr4 switch</div>
-    
-      <section class="dips">
-      <fieldset class="dip-switch group1 active">
-        <legend>Config 1</legend>
-        <div class="switch-controller">
-          <span class="content">1</span>
-          <label class="switch" data-switch="Preset_1_output_1">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 1 - Output 1"></span>
-          </label>
-        </div>
-      
-        <div class="switch-controller">
-          <span class="content">2</span>
-          <label class="switch" data-switch="Preset_1_output_2">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 1 - Output 2"></span>
-          </label>
-        </div>
-      
-        <div class="switch-controller">
-          <span class="content">3</span>
-          <label class="switch" data-switch="Preset_1_output_3">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 1 - Output 3"></span>
-          </label>
-        </div>
-      
-        <div class="switch-controller">
-          <span class="content">4</span>
-          <label class="switch" data-switch="Preset_1_output_4">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 1 - Output 4"></span>
-          </label>
-        </div>
-      </fieldset>
-    
-      <fieldset class="dip-switch group2">
-        <legend>Config 2</legend>
-        <div class="switch-controller">
-          <span class="content">1</span>
-          <label class="switch" data-switch="Preset_2_output_1">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 2 - Output 1"></span>
-          </label>
-        </div>
-      
-        <div class="switch-controller">
-          <span class="content">2</span>
-          <label class="switch" data-switch="Preset_2_output_2">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 2 - Output 2"></span>
-          </label>
-        </div>
-      
-        <div class="switch-controller">
-          <span class="content">3</span>
-          <label class="switch" data-switch="Preset_2_output_3">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 2 - Output 3"></span>
-          </label>
-        </div>
-      
-        <div class="switch-controller">
-          <span class="content">4</span>
-          <label class="switch" data-switch="Preset_2_output_4">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 2 - Output 4"></span>
-          </label>
-        </div>
-      </fieldset>
-    
-      <fieldset class="dip-switch group3">
-        <legend>Config 3</legend>
-        <div class="switch-controller">
-          <span class="content">1</span>
-          <label class="switch" data-switch="Preset_3_output_1">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 3 - Output 1"></span>
-          </label>
-        </div>
-      
-        <div class="switch-controller">
-          <span class="content">2</span>
-          <label class="switch" data-switch="Preset_3_output_2">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 3 - Output 2"></span>
-          </label>
-        </div>
-      
-        <div class="switch-controller">
-          <span class="content">3</span>
-          <label class="switch" data-switch="Preset_3_output_3">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 3 - Output 3"></span>
-          </label>
-        </div>
-      
-        <div class="switch-controller">
-          <span class="content">4</span>
-          <label class="switch" data-switch="Preset_3_output_4">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 3 - Output 4"></span>
-          </label>
-        </div>
-      </fieldset>
-    
-      <fieldset class="dip-switch group4">
-        <legend>Config 4</legend>
-        <div class="switch-controller">
-          <span class="content">1</span>
-          <label class="switch" data-switch="Preset_4_output_1">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 4 - Output 1"></span>
-          </label>
-        </div>
-      
-        <div class="switch-controller">
-          <span class="content">2</span>
-          <label class="switch" data-switch="Preset_4_output_2">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 4 - Output 2"></span>
-          </label>
-        </div>
-      
-        <div class="switch-controller">
-          <span class="content">3</span>
-          <label class="switch" data-switch="Preset_4_output_3">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 4 - Output 3"></span>
-          </label>
-        </div>
-      
-        <div class="switch-controller">
-          <span class="content">4</span>
-          <label class="switch" data-switch="Preset_4_output_4">
-            <input type="checkbox" />
-            <span class="slider" title="Preset 4 - Output 4"></span>
-          </label>
-        </div>
-      </fieldset>
-      </section>
-    
-      <footer class="footer">
-        <div class="group1">
-          <label class="footswitch">
-            <input type="radio" name="{{{cns}}}-preset" value="1" class="footswitch Preset_selector_1" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Preset_selector_1" checked />
-            <span><input type="text" class="footswitch-label" mod-widget="string" mod-role="input-parameter-value" mod-parameter-uri="http://srmourasilva.github.io/plugins/tetr4-switch#preset_label_1" value="Preset 1" maxlength="15" /></span>
-          </label>
-        </div>
+    <div class="tetr4-switch" data-active="1">
+      <div class="t4-head">
+        <span class="t4-brand">Tetr4 switch</span>
+        <button type="button" class="t4-open">Edit scenes</button>
+      </div>
 
-        <div class="group2">
-          <label class="footswitch">
-            <input type="radio" name="{{{cns}}}-preset" value="2" class="footswitch Preset_selector_2" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Preset_selector_2" />
-            <span><input type="text" class="footswitch-label" mod-widget="string" mod-role="input-parameter-value" mod-parameter-uri="http://srmourasilva.github.io/plugins/tetr4-switch#preset_label_2" value="Preset 2" maxlength="15" /></span>
-          </label>
+      <!-- One unit per preset: its four DIP switches (which CV outputs are on) above its footswitch and name -->
+      <div class="t4-units">
+      <div class="t4-unit p1" data-preset="1">
+        <section class="t4-bank">
+          <h3 class="t4-bank-title">Config 1</h3>
+          <div class="t4-dips" role="group" aria-label="CV outputs on in preset 1">
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="1" data-output="1" aria-label="Preset 1, CV output 1" title="Preset 1 - Output 1"><span class="t4-dip-num">1</span><span class="t4-dip-track"></span></button>
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="1" data-output="2" aria-label="Preset 1, CV output 2" title="Preset 1 - Output 2"><span class="t4-dip-num">2</span><span class="t4-dip-track"></span></button>
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="1" data-output="3" aria-label="Preset 1, CV output 3" title="Preset 1 - Output 3"><span class="t4-dip-num">3</span><span class="t4-dip-track"></span></button>
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="1" data-output="4" aria-label="Preset 1, CV output 4" title="Preset 1 - Output 4"><span class="t4-dip-num">4</span><span class="t4-dip-track"></span></button>
+          </div>
+        </section>
+        <div class="t4-pedal">
+          <button type="button" class="t4-foot" data-preset="1" aria-pressed="false" aria-label="Select preset 1" title="Preset 1"><span class="t4-cap"><b>1</b></span></button>
+          <input type="text" class="t4-name" data-preset="1" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of preset 1" value="Preset 1" />
         </div>
-
-        <div class="group3">
-          <label class="footswitch">
-            <input type="radio" name="{{{cns}}}-preset" value="3" class="footswitch Preset_selector_3" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Preset_selector_3" />
-            <span><input type="text" class="footswitch-label" mod-widget="string" mod-role="input-parameter-value" mod-parameter-uri="http://srmourasilva.github.io/plugins/tetr4-switch#preset_label_3" value="Preset 3" maxlength="15" /></span>
-          </label>
+      </div>
+      <div class="t4-unit p2" data-preset="2">
+        <section class="t4-bank">
+          <h3 class="t4-bank-title">Config 2</h3>
+          <div class="t4-dips" role="group" aria-label="CV outputs on in preset 2">
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="2" data-output="1" aria-label="Preset 2, CV output 1" title="Preset 2 - Output 1"><span class="t4-dip-num">1</span><span class="t4-dip-track"></span></button>
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="2" data-output="2" aria-label="Preset 2, CV output 2" title="Preset 2 - Output 2"><span class="t4-dip-num">2</span><span class="t4-dip-track"></span></button>
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="2" data-output="3" aria-label="Preset 2, CV output 3" title="Preset 2 - Output 3"><span class="t4-dip-num">3</span><span class="t4-dip-track"></span></button>
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="2" data-output="4" aria-label="Preset 2, CV output 4" title="Preset 2 - Output 4"><span class="t4-dip-num">4</span><span class="t4-dip-track"></span></button>
+          </div>
+        </section>
+        <div class="t4-pedal">
+          <button type="button" class="t4-foot" data-preset="2" aria-pressed="false" aria-label="Select preset 2" title="Preset 2"><span class="t4-cap"><b>2</b></span></button>
+          <input type="text" class="t4-name" data-preset="2" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of preset 2" value="Preset 2" />
         </div>
-
-        <div class="group4">
-          <label class="footswitch">
-            <input type="radio" name="{{{cns}}}-preset" value="4" class="footswitch Preset_selector_4" mod-widget="switch" mod-role="input-parameter-value" mod-parameter-uri="Preset_selector_4" />
-            <span><input type="text" class="footswitch-label" mod-widget="string" mod-role="input-parameter-value" mod-parameter-uri="http://srmourasilva.github.io/plugins/tetr4-switch#preset_label_4" value="Preset 4" maxlength="15" /></span>
-          </label>
+      </div>
+      <div class="t4-unit p3" data-preset="3">
+        <section class="t4-bank">
+          <h3 class="t4-bank-title">Config 3</h3>
+          <div class="t4-dips" role="group" aria-label="CV outputs on in preset 3">
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="3" data-output="1" aria-label="Preset 3, CV output 1" title="Preset 3 - Output 1"><span class="t4-dip-num">1</span><span class="t4-dip-track"></span></button>
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="3" data-output="2" aria-label="Preset 3, CV output 2" title="Preset 3 - Output 2"><span class="t4-dip-num">2</span><span class="t4-dip-track"></span></button>
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="3" data-output="3" aria-label="Preset 3, CV output 3" title="Preset 3 - Output 3"><span class="t4-dip-num">3</span><span class="t4-dip-track"></span></button>
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="3" data-output="4" aria-label="Preset 3, CV output 4" title="Preset 3 - Output 4"><span class="t4-dip-num">4</span><span class="t4-dip-track"></span></button>
+          </div>
+        </section>
+        <div class="t4-pedal">
+          <button type="button" class="t4-foot" data-preset="3" aria-pressed="false" aria-label="Select preset 3" title="Preset 3"><span class="t4-cap"><b>3</b></span></button>
+          <input type="text" class="t4-name" data-preset="3" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of preset 3" value="Preset 3" />
         </div>
-      </footer>
+      </div>
+      <div class="t4-unit p4" data-preset="4">
+        <section class="t4-bank">
+          <h3 class="t4-bank-title">Config 4</h3>
+          <div class="t4-dips" role="group" aria-label="CV outputs on in preset 4">
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="4" data-output="1" aria-label="Preset 4, CV output 1" title="Preset 4 - Output 1"><span class="t4-dip-num">1</span><span class="t4-dip-track"></span></button>
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="4" data-output="2" aria-label="Preset 4, CV output 2" title="Preset 4 - Output 2"><span class="t4-dip-num">2</span><span class="t4-dip-track"></span></button>
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="4" data-output="3" aria-label="Preset 4, CV output 3" title="Preset 4 - Output 3"><span class="t4-dip-num">3</span><span class="t4-dip-track"></span></button>
+            <button type="button" class="t4-dip" role="switch" aria-checked="false" data-preset="4" data-output="4" aria-label="Preset 4, CV output 4" title="Preset 4 - Output 4"><span class="t4-dip-num">4</span><span class="t4-dip-track"></span></button>
+          </div>
+        </section>
+        <div class="t4-pedal">
+          <button type="button" class="t4-foot" data-preset="4" aria-pressed="false" aria-label="Select preset 4" title="Preset 4"><span class="t4-cap"><b>4</b></span></button>
+          <input type="text" class="t4-name" data-preset="4" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Name of preset 4" value="Preset 4" />
+        </div>
+      </div>
+      </div>
     </div>
 
 

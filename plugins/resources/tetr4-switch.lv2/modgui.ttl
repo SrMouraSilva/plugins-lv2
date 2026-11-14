@@ -5,6 +5,8 @@
     modgui:gui [
         modgui:resourcesDirectory <modgui> ;
         modgui:iconTemplate <modgui/tetr4-switch.html> ;
+        # Full-screen, touch-friendly settings page, instead of the generic one
+        modgui:settingsTemplate <modgui/tetr4-switch-settings.html> ;
         modgui:stylesheet <modgui/tetr4-switch.css> ;
         modgui:javascript <modgui/tetr4-switch.js> ;
         modgui:screenshot <modgui/screenshot.png> ;
