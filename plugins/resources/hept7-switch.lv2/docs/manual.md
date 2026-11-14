@@ -51,12 +51,17 @@ screen and is made for touch: big cells, nothing smaller than a fingertip.
   is assigned to a footswitch, to the B+C pair or to a knob; off (✕), they skip
   it. See section 3.
 * **Hardware**: tiles to assign a footswitch, a knob or a device screen page to
-  the plugin's controls (section 3). A tile shows a check mark once it is assigned.
+  the plugin's controls (section 3), told apart by purpose: the *preset
+  buttons* (1 to 7), *Current preset* and the *screen pop-ups*. A tile shows a
+  check mark once it is assigned.
 * **Saved presets**: the factory presets (section 5) and your own presets.
 
-On a **phone** the page shows one preset at a time: pick it on the numbered
-strip, edit its eight cells and its *Cycle* switch (the wide cell under them),
-and use *Switch to preset N* to make it play.
+The page never scrolls up and down. What does not fit the screen goes on
+another **page**, to the right: the arrows in the top bar (always there) and the
+dots between them show and change the page, and on a touch screen you can
+**swipe** sideways too. A large screen shows more on each page; a phone shows
+fewer presets per page (it says *Scenes 2/3*), and each purpose of the *Hardware*
+section gets a page of its own.
 
 ![The settings page on a phone](images/hept7-settings-phone.png)
 

@@ -141,7 +141,7 @@ doap:maintainer [
 
     lv2:majorVersion 1 ;
     lv2:minorVersion 0 ;
-    lv2:microVersion 5 ;
+    lv2:microVersion 7 ;
 
 rdfs:comment """
 Hept7 switch is a loop switcher for CV, the big sibling of Tetr4 switch. Store which of its eight CV outputs are on in each of seven presets, and change between them with a footswitch. It comes with a full-screen, touch-friendly settings page and a small display that shows the preset on every device, even the ones without a screen for plugins.
