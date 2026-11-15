@@ -125,23 +125,24 @@
 }
 
 .ks-brand {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+  display: block;
   font-size: 13px;
   font-weight: 800;
+  line-height: 1.15;
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
-/* A mark: a signal that passes, is cut, passes... */
-.ks-brand::before {
-  content: "";
-  width: 24px;
-  height: 12px;
-  border-radius: 4px;
-  background: linear-gradient(90deg, var(--ks-red) 0 25%, var(--ks-cut) 0 50%, var(--ks-red) 0 75%, var(--ks-cut) 0);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
+/* The vendor (modgui:brand), under the name */
+.ks-vendor {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  white-space: nowrap;
+  opacity: 0.62;
 }
 
 .ks-state {
@@ -1083,16 +1084,19 @@
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 1px var(--ks-line);
 }
 
+/* Only tells the state (it cannot be pressed): flat, with no fill, no shadow and no box, so it is neither a button
+   (raised) nor a field (sunk): a rule at its side in the colour of the state, the caption and the value as text */
 .kss-now {
   display: flex;
   align-items: center;
   gap: 10px;
   min-width: 0;
   max-width: 100%;
-  padding: 5px 18px 5px 14px;
-  border-radius: 999px;
-  background: var(--ks-ink-2);
-  box-shadow: 0 3px 0 var(--ks-ink);
+  padding: 2px 0 2px 12px;
+  border-left: 3px solid var(--ks-accent);
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .kss-now small {
   flex: 0 0 auto;
@@ -1307,3 +1311,201 @@
 .kss-row > .kss-hardware { flex: 3 1 0; }
 .kss-stack > .kss-row { flex: 0 0 auto; align-items: stretch; }
 .kss-stack > .kss-row > .kss-panel { flex-grow: 1; }
+
+
+/* ==========================================================================
+ * Settings page: what is playing, and tempo and feel (all that the pedal has in its face, with room to spare)
+ * ========================================================================== */
+
+.kss-row > .kss-play-panel { flex: 3 1 0; }
+.kss-row > .kss-sound-panel { flex: 2 1 0; }
+.kss-play-panel,
+.kss-sound-panel { display: flex; flex-direction: column; }
+.kss-page > .kss-row { align-self: stretch; }
+.kss-page > .kss-row > .kss-sound-panel { align-self: flex-start; }
+.kss-row > .kss-stack > .kss-pattern-panel { flex: 0 0 auto; }
+
+.kss .kss-play-name {
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--ks-text);
+}
+.kss-play-head { margin-bottom: 6px; }
+.kss-play-hint {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--ks-muted);
+}
+
+/* Everything that can play, to pick with one tap */
+.kss-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 8px;
+}
+.kss-choice {
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ks-text);
+  background: var(--ks-ink-3);
+  box-shadow: 0 3px 0 var(--ks-ink), inset 0 0 0 1px var(--ks-line);
+  transition: background-color 0.15s;
+}
+.kss-choice:hover { background: #3d2b26; }
+.kss-choice:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ks-ink), inset 0 0 0 1px var(--ks-line); }
+.kss-choice[aria-checked="true"] {
+  color: var(--ks-ink);
+  background: var(--ks-red);
+  box-shadow: 0 3px 0 var(--ks-red-deep), 0 0 14px -3px var(--ks-red);
+}
+
+/* What the pattern does: its steps, as on the pedal but a little bigger. It only shows what it is */
+.kss-view {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 2px 0 2px 12px;
+  border-left: 3px solid var(--ks-accent);
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.kss-view-caption {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ks-muted);
+}
+.kss-view-steps {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  gap: 4px;
+  height: 18px;
+}
+.kss-view-steps i {
+  display: block;
+  border-radius: 5px;
+  background: var(--ks-cut);
+  transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+.kss-view-steps i.l2 { background: var(--ks-red); box-shadow: 0 0 12px -1px var(--ks-red); }
+.kss-view-steps i.l1 { background: var(--ks-half); }
+.kss-view-steps i.again { opacity: 0.4; }
+.kss-view-steps i.start { margin-left: 4px; }
+.kss.is-bypassed .kss-view-steps i.l2 { background: #7c4a43; box-shadow: none; }
+.kss.is-bypassed .kss-view-steps i.l1 { background: #5a3a34; }
+
+/* Tempo and feel: one block for each thing the pedal has under its display */
+.kss-sound {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
+}
+.kss-knob { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.kss-tempo,
+.kss-speed { grid-column: 1 / -1; }
+.kss-knob-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ks-muted);
+}
+.kss-knob-head small { font-size: 12px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+.kss-knob-head output { font-size: 20px; letter-spacing: 0; text-transform: none; color: var(--ks-text); }
+.kss-ends { display: flex; justify-content: space-between; gap: 8px; margin-top: -6px; }
+.kss-ends small { font-size: 12px; color: var(--ks-muted); }
+
+.kss-stepper-big { grid-template-columns: 52px minmax(96px, 1fr) 52px; gap: 8px; }
+.kss-stepper-big .kss-button { min-height: 52px; font-size: 22px; }
+.kss-stepper-big output { display: flex; align-items: baseline; justify-content: center; gap: 8px; }
+.kss-stepper-big output b { font-size: 34px; line-height: 1; letter-spacing: 0; }
+.kss-stepper-big output small { display: inline; font-size: 13px; letter-spacing: 0.1em; }
+
+.kss-segments {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border-radius: 16px;
+  background: var(--ks-ink);
+  box-shadow: inset 0 0 0 1px var(--ks-line), inset 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+.kss-segment {
+  min-width: 0;
+  min-height: 48px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ks-muted);
+  transition: background-color 0.15s, color 0.15s;
+}
+.kss-segment:hover { color: var(--ks-text); }
+.kss-segment[aria-checked="true"] { color: var(--ks-ink); background: var(--ks-red); box-shadow: 0 0 12px -2px var(--ks-red); }
+
+.kss-slider {
+  display: block;
+  width: 100%;
+  height: 44px;
+  cursor: pointer;
+  background: transparent;
+  --ks-fill: 100%;
+}
+.kss-slider::-webkit-slider-runnable-track {
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--ks-red) 0 var(--ks-fill), var(--ks-ink) var(--ks-fill) 100%);
+  box-shadow: inset 0 0 0 1px var(--ks-line);
+}
+.kss-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 30px;
+  height: 30px;
+  margin-top: -10px;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 0, #ecdcd8 40%, #b3a09b 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+.kss-slider::-moz-range-track { height: 10px; border-radius: 5px; background: var(--ks-ink); box-shadow: inset 0 0 0 1px var(--ks-line); }
+.kss-slider::-moz-range-progress { height: 10px; border-radius: 5px; background: var(--ks-red); }
+.kss-slider::-moz-range-thumb { width: 30px; height: 30px; border: 0; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff 0, #ecdcd8 40%, #b3a09b 100%); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
+
+/* On/off, in the top bar: lit while the effect is on */
+.kss-switches { display: flex; align-items: center; gap: 10px; }
+.kss-power[aria-pressed="true"] { color: var(--ks-ink); background: var(--ks-red); box-shadow: 0 3px 0 var(--ks-red-deep); }
+.kss-power[aria-pressed="true"]:hover { background: #ff6459; }
+
+/* What belongs on the first page, in a column: the editor only while Custom plays. The view stays: it is what the
+   pattern does, and it is the same for every choice, so there is nothing new to learn when the choice is Custom */
+.kss[data-together="1"][data-custom="0"] .kss-pattern-panel { display: none; }
+.kss[data-together="1"] .kss-use { display: none; }
+
+/* The way to the editor, only while Custom plays and the editor is on a page of its own */
+.kss-edit-pattern { display: none; margin-top: 12px; width: 100%; }
+.kss[data-together="0"][data-custom="1"] .kss-edit-pattern { display: block; }
+
+/* Narrow and short screens: one column, tighter */
+.kss[data-w="s"] .kss-sound { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.kss[data-w="s"] .kss-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.kss[data-w="s"] .kss-play-hint { display: none; }
+.kss[data-w="s"] .kss-view-steps { height: 16px; gap: 3px; }
+.kss[data-w="s"] .kss-switches { order: 3; }
+.kss[data-h="s"] .kss-play-hint { display: none; }
+.kss[data-h="s"] .kss-view-steps { height: 14px; }
+.kss[data-h="s"] .kss-sound { gap: 12px 24px; }
+.kss[data-h="s"] .kss-knob { gap: 6px; }
+.kss[data-h="s"] .kss-ends { display: none; }

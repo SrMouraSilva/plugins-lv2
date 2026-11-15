@@ -12,6 +12,11 @@
           <span class="kss-now-label">Chop 8ths</span>
         </div>
 
+        <!-- What the pedal has in its face and must be at hand on every page: on/off -->
+        <div class="kss-switches">
+          <button type="button" class="kss-button kss-power" aria-pressed="false" title="Turn the effect on or off (the footswitch of the pedal)">Bypassed</button>
+        </div>
+
         <!-- The page being shown: always visible, whatever the input device (a swipe also changes it) -->
         <nav class="kss-nav" aria-label="Pages">
           <button type="button" class="kss-step kss-prev" aria-label="Previous page" title="Previous page">
@@ -32,6 +37,62 @@
       <main class="kss-pager"></main>
 
       <div class="kss-stock" hidden>
+        <!-- What is playing: the choice of pattern and what it does -->
+        <section class="kss-panel kss-play-panel" data-panel="play">
+          <div class="kss-panel-head kss-play-head">
+            <span class="kss-eyebrow">Pattern</span>
+            <h2 class="kss-play-name">Chop 8ths</h2>
+          </div>
+          <p class="kss-play-hint"></p>
+          <div class="kss-choices" role="radiogroup" aria-label="Patterns"></div>
+          <div class="kss-view" aria-label="What the pattern does">
+            <span class="kss-view-caption" aria-hidden="true">Preview</span>
+            <div class="kss-view-steps" role="img"></div>
+          </div>
+          <!-- When the editor is not on this page (a small screen), the way to it while Custom plays -->
+          <button type="button" class="kss-button kss-edit-pattern">Edit the custom pattern &rarr;</button>
+        </section>
+
+        <!-- Tempo and feel: what the pedal has under its display -->
+        <section class="kss-panel kss-sound-panel" data-panel="sound">
+          <div class="kss-panel-head">
+            <span class="kss-eyebrow">Sound</span>
+            <h2>Tempo and feel</h2>
+          </div>
+          <div class="kss-sound">
+            <div class="kss-knob kss-tempo">
+              <div class="kss-knob-head"><span>Tempo</span></div>
+              <div class="kss-stepper kss-stepper-big">
+                <button type="button" class="kss-button kss-bpm-down" aria-label="Slower" title="Slower">&minus;</button>
+                <output class="kss-bpm" aria-label="Tempo in beats per minute"><b>120</b><small>BPM</small></output>
+                <button type="button" class="kss-button kss-bpm-up" aria-label="Faster" title="Faster">+</button>
+              </div>
+              <input type="range" class="kss-slider kss-bpm-input" min="40" max="240" step="1" value="120" aria-label="Tempo" />
+            </div>
+
+            <div class="kss-knob kss-speed">
+              <div class="kss-knob-head"><span>Speed</span><small>how fast the pattern runs</small></div>
+              <div class="kss-segments" role="radiogroup" aria-label="Speed of the pattern">
+                <button type="button" class="kss-segment" role="radio" aria-checked="false" data-speed="0">&frac12;x</button>
+                <button type="button" class="kss-segment" role="radio" aria-checked="true" data-speed="1">1x</button>
+                <button type="button" class="kss-segment" role="radio" aria-checked="false" data-speed="2">2x</button>
+                <button type="button" class="kss-segment" role="radio" aria-checked="false" data-speed="3">4x</button>
+              </div>
+            </div>
+
+            <div class="kss-knob kss-depth">
+              <div class="kss-knob-head"><span>Depth</span><output class="kss-depth-value">100%</output></div>
+              <input type="range" class="kss-slider kss-depth-input" min="0" max="100" step="1" value="100" aria-label="Depth: how much of the signal a cut removes" />
+              <div class="kss-ends"><small>a cut barely dips</small><small>a cut is silence</small></div>
+            </div>
+            <div class="kss-knob kss-edge">
+              <div class="kss-knob-head"><span>Edge</span><output class="kss-edge-value">1.5 ms</output></div>
+              <input type="range" class="kss-slider kss-edge-input" min="0" max="1000" step="1" value="511" aria-label="Edge: how long a cut takes to open and close" />
+              <div class="kss-ends"><small>hard, percussive chop</small><small>soft swell</small></div>
+            </div>
+          </div>
+        </section>
+
         <section class="kss-panel kss-pattern-panel" data-panel="pattern">
           <div class="kss-panel-head">
             <span class="kss-eyebrow">Pattern editor</span>

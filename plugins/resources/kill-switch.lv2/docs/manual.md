@@ -45,7 +45,7 @@ You need a pedalboard with an audio input and an output, and a guitar (or any so
 |---|---|
 | **Pattern: the arrows and the name** | Choose the pattern (section 3). The arrows go round: after the last pattern comes the first, and the last one is **Custom**, the pattern you write. |
 | **The sixteen squares** | The pattern. A bright red square lets the signal through, a dark one cuts it, and a darker red one is the middle level (only in your own patterns). A pattern shorter than sixteen steps is repeated; the first run is bright and the repetitions are dimmer, so you can see where it starts again. The squares go dim when the plugin is bypassed. |
-| **Edit pattern** | Opens the settings page: the editor of your own pattern and the controls to assign (section 4). |
+| **Edit pattern** | Opens the settings page: everything on the plugin with more room, the editor of your own pattern and the controls to assign (section 4). |
 | **Tempo: − and +** | The speed of the pattern, from 40 to 240 BPM. Hold a button to keep going. |
 | **Speed** | ½x, 1x, 2x or 4x: multiplies the speed of the pattern without changing the tempo. |
 | **Depth** | From 0% to 100%: how much of the signal a cut removes. 100% is silence; lower values only dip the level, like a tremolo with sharp edges. |
@@ -97,10 +97,18 @@ step of 250 ms and *Machine gun* a step of 62.5 ms.
 
 ## 4. Your own pattern
 
-The eleventh pattern, **Custom**, is yours. Click **Edit pattern** on the plugin (or open its settings with the gear icon):
-the first page of the settings is the editor.
+The eleventh pattern, **Custom**, is yours. Click **Edit pattern** on the plugin (or open its settings with the gear icon). The
+settings page has everything the plugin has, with more room, and its first page is where you play and write:
 
-![The settings page: the editor of the custom pattern, the controls to assign and the saved presets](images/settings.webp)
+* **The choice**: every pattern to pick with one tap, and a **Preview** of its steps (it only shows: it is not a control). Choosing
+  **Custom** opens the editor right there, under the preview.
+* **Tempo and feel**, beside it: the tempo (with its buttons and a slider), **Speed**, **Depth** and **Edge**.
+* **In the top bar**, on every page: **On** / **Bypassed**, the footswitch of the plugin.
+
+On a small screen there is no room for all of it on one page: the editor then has a page of its own, and a button under the list,
+**Edit the custom pattern →**, takes you there.
+
+![The settings page: the choice of pattern, the editor of the custom pattern, and tempo and feel](images/settings.webp)
 
 A step has **three levels**, and a tap on it goes to the next one, round and round:
 
@@ -121,17 +129,17 @@ Cut, half, pass, and back to cut: keep tapping a step until it shows the level y
    are kept, so you can shorten a pattern and bring its end back.
 3. **Set the steps per beat**, from 1 to 8: with 2 a step is an eighth note, 4 a sixteenth, 3 a triplet, 1 a quarter note.
    The step then lasts `60 / (tempo × steps per beat × speed)` seconds, as in the other patterns.
-4. **Listen to it.** The first change you make puts **Pattern** on **Custom**, so what you write is what you hear. The
-   **Play this pattern** button does the same without changing anything, and the arrows of the plugin and a device control
-   assigned to Pattern also reach it.
+4. **Listen to it.** Choosing **Custom** in the list plays it, and so does the first change you make to a step: **Pattern** goes
+   to **Custom**, so what you write is what you hear. Where the editor has a page of its own, the **Play this pattern** button
+   does the same without changing anything, and the arrows of the plugin and a device control assigned to Pattern also reach it.
 
 > [!TIP] Start from a built-in pattern
 > **Copy from…** copies one of the ten built-in patterns (steps, length and steps per beat) into your own, ready to be
 > changed: the quickest way to get *Gallop, but with a half step on the last note*.
 
 Your pattern is made of controls of the plugin, so it is saved with the **pedalboard**, with your own **saved presets** and
-with **snapshots**. The factory presets do not touch it. The page has more than one page when the screen is small: use the
-arrows of the top bar (or swipe sideways) to go to the assignments (**On / off** and **Controls**) and to the **Saved presets**.
+with **snapshots**. The factory presets do not touch it. The settings have more than one page: use the arrows of the top bar
+(or swipe sideways) to go to the assignments (**On / off** and **Controls**) and to the **Saved presets**.
 
 ![Going through the settings page: the steps of the custom pattern, the length, the steps per beat and every page](images/kill-switch-settings.webp)
 
@@ -235,7 +243,7 @@ Up to 16 steps, each with three levels (cut, half and pass), at 1 to 8 steps per
 ### I edited my pattern and it did not change what I hear.
 
 Check that **Pattern** is on **Custom** (the name on the plugin says so). The first edit switches it, but if you then chose
-another pattern with the arrows, or a controller did, press **Play this pattern**. And the step must be inside the
+another pattern with the arrows, or a controller did, choose **Custom** again in the list (or press **Play this pattern**). And the step must be inside the
 **length**: the dimmer steps after it are not played.
 
 ### Is my pattern saved?
