@@ -221,7 +221,20 @@
   font-weight: 800;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+  line-height: 1.15;
   color: var(--gp-text);
+}
+
+/* The vendor (modgui:brand), under the name */
+.gp-vendor {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  white-space: nowrap;
+  opacity: 0.62;
 }
 .gp-brand::before {
   content: "";
@@ -605,6 +618,8 @@
 }
 
 /* The last control used, as on the pedal */
+/* Only tells the state (it cannot be pressed): flat, with no fill, no shadow and no box, so it is neither a button
+   (raised) nor a field (sunk): a rule at its side in the colour of the state, the caption and the value as text */
 .gps-now {
   --c: var(--gp-accent);
   display: flex;
@@ -612,25 +627,21 @@
   gap: 10px;
   min-width: 0;
   max-width: 100%;
-  padding: 5px 18px 5px 5px;
-  border-radius: 999px;
-  background: var(--gp-ink);
-  box-shadow: 0 3px 0 #000, inset 0 0 0 1px var(--gp-line);
+  padding: 2px 0 2px 12px;
+  border-left: 3px solid var(--c);
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .gps-now-badge {
   flex: 0 0 auto;
-  min-width: 36px;
-  height: 36px;
-  padding: 0 6px;
-  line-height: 36px;
-  border-radius: 18px;
-  text-align: center;
+  font-size: 24px;
   font-weight: 800;
-  color: #0b0e13;
-  background: var(--c);
+  line-height: 1;
+  color: var(--c);
 }
-.gps-now.is-idle .gps-now-badge { color: var(--gp-muted); background: var(--gp-ink-3); }
+.gps-now.is-idle .gps-now-badge { color: var(--gp-muted); }
 
 .gps-now-label {
   min-width: 0;
@@ -640,6 +651,7 @@
   font-weight: 700;
 }
 .gps-now.is-idle .gps-now-label { color: var(--gp-muted); }
+.gps-now.is-idle { border-left-color: var(--gp-line); }
 
 .gps .js-close {
   min-width: 100px;
@@ -846,33 +858,28 @@
   box-shadow: inset 0 0 0 2px var(--c);
 }
 
-/* The disc of a footswitch, lit while it is on, and the chip of a knob */
+/* The tag of a footswitch (lit while it is on) and of a knob: it only says which one the row is, so it is flat, tinted
+   and without a ring or a shadow, which is what makes a button, and not round, so it is not taken for a footswitch */
 .gps-led,
 .gps-chip {
   display: grid;
   place-items: center;
   width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  font-size: 18px;
+  height: 34px;
+  border-radius: 8px;
+  font-size: 17px;
   font-weight: 800;
   color: var(--c);
-  background: radial-gradient(circle at 50% 35%, #2b313d, #12151b);
-  box-shadow: inset 0 0 0 4px #3a404c;
-  box-shadow: inset 0 0 0 4px color-mix(in srgb, var(--c) 40%, #12151b);
+  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--c) 18%, transparent);
   transition: background 0.2s, box-shadow 0.2s, color 0.2s;
 }
 .gps-row.is-on .gps-led {
   color: #0b0e13;
-  background: radial-gradient(circle at 50% 35%, #fff, var(--c) 60%);
-  box-shadow: inset 0 0 0 4px var(--c), 0 0 14px 1px var(--c);
+  background: var(--c);
+  box-shadow: 0 0 12px -2px var(--c);
 }
-.gps-chip {
-  --c: var(--gp-accent);
-  border-radius: 14px;
-  font-size: 16px;
-  box-shadow: inset 0 0 0 2px var(--gp-accent);
-}
+.gps-chip { --c: var(--gp-accent); }
 
 .gps-label {
   width: 100%;
