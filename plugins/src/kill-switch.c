@@ -11,9 +11,14 @@
  * Standalone: it shares no code with the other plugins (it only needs LV2's core header), so its macros cannot clash
  * with theirs.
  *
- * Patterns: '0' = cut, '1' = pass, one character per step, `steps_per_beat` steps per beat (before the Speed
- * multiplier). Every pattern starts with its first character the moment the plugin is switched on, as if a button had
- * been pressed then. The gate can only lower the level, so there is no output limiter.
+ * Patterns: one character per step, `steps_per_beat` steps per beat (before the Speed multiplier). A step has one of
+ * three levels, and the gain of each depends on Depth: '0' = cut (the signal is lowered by Depth: silence at 100%),
+ * '1' = half (halfway between a cut and the whole signal), '2' = pass (the signal as it is). Every pattern starts
+ * with its first step the moment the plugin is switched on, as if a button had been pressed then. The gate can only
+ * lower the level, so there is no output limiter.
+ *
+ * The ten built-in patterns are in PATTERNS; the eleventh, "Custom", is the one the musician writes on the settings
+ * page: its length, its steps per beat and its steps are control ports (saved with the pedalboard and the presets).
  *
  * modgui/kill-switch.js repeats the names and the steps of PATTERNS (to draw them): keep the two in step, and the
  * scale points of the `pattern` port in kill-switch.ttl too.
@@ -29,6 +34,10 @@
 
 #define KILL_SWITCH_URI "http://srmourasilva.github.io/plugins/kill-switch"
 
+#define CUSTOM_MAX_STEPS 16
+#define CUSTOM_MAX_STEPS_PER_BEAT 8
+#define LEVEL_COUNT 3
+
 /** Port indices: the order of the ports in kill-switch.ttl. New ports go at the end, after `ENABLED` */
 typedef enum {
     AUDIO_IN = 0,
@@ -38,8 +47,13 @@ typedef enum {
     SPEED,
     DEPTH,
     EDGE,
-    /** `lv2:enabled`, the bypass of the host: 1 = the effect is on, 0 = bypassed (clean) */
-    ENABLED,
+    /** The custom pattern: how many steps it has (1..CUSTOM_MAX_STEPS) and how many of them make a beat */
+    CUSTOM_LENGTH,
+    CUSTOM_STEPS_PER_BEAT,
+    /** CUSTOM_MAX_STEPS ports, one per step, in a row: the level (0..2) of each */
+    CUSTOM_STEP_FIRST,
+    /** `lv2:enabled`, the bypass of the host: 1 = the effect is on, 0 = bypassed (clean). Always the last port */
+    ENABLED = CUSTOM_STEP_FIRST + CUSTOM_MAX_STEPS,
     PORT_COUNT
 } PortIndex;
 
@@ -51,20 +65,23 @@ typedef struct {
 
 static const Pattern PATTERNS[] = {
     // Generic grooves
-    { "Chop 8ths",            2, "01" },
-    { "Chop 16ths",           4, "01" },
-    { "Triplet chop",         3, "01" },
-    { "Machine gun",          8, "01" },
-    { "Syncopated 3-3-2",     2, "01101101" },
-    { "Gallop",               4, "0110" },
+    { "Chop 8ths",            2, "02" },
+    { "Chop 16ths",           4, "02" },
+    { "Triplet chop",         3, "02" },
+    { "Machine gun",          8, "02" },
+    { "Syncopated 3-3-2",     2, "02202202" },
+    { "Gallop",               4, "0220" },
     // Inspired by guitarists famous for the kill switch: the rhythms are an approximation, not a transcription
-    { "Morello solo chop",    4, "0101011001011011" },
-    { "Morello toggle solo",  4, "0111010100110101" },
-    { "Greenwood chunk",      2, "01110111" },
-    { "Buckethead burst",     8, "0101010111111111" },
+    { "Morello solo chop",    4, "0202022002022022" },
+    { "Morello toggle solo",  4, "0222020200220202" },
+    { "Greenwood chunk",      2, "02220222" },
+    { "Buckethead burst",     8, "0202020222222222" },
 };
 
-#define PATTERN_COUNT ((int) (sizeof(PATTERNS) / sizeof(PATTERNS[0])))
+#define BUILT_IN_COUNT ((int) (sizeof(PATTERNS) / sizeof(PATTERNS[0])))
+/** The value of the `pattern` port that plays the pattern of the custom ports */
+#define CUSTOM_PATTERN BUILT_IN_COUNT
+#define PATTERN_COUNT (BUILT_IN_COUNT + 1)
 
 static const float SPEED_MULTIPLIER[] = { 0.5f, 1.0f, 2.0f, 4.0f };
 #define SPEED_COUNT ((int) (sizeof(SPEED_MULTIPLIER) / sizeof(SPEED_MULTIPLIER[0])))
@@ -85,6 +102,9 @@ typedef struct {
     const float* speed;
     const float* depth;
     const float* edge;
+    const float* custom_length;
+    const float* custom_steps_per_beat;
+    const float* custom_step[CUSTOM_MAX_STEPS];
     const float* enabled;
 
     float  sample_rate;
@@ -143,8 +163,14 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
         case SPEED:    self->speed   = (const float*) data; break;
         case DEPTH:    self->depth   = (const float*) data; break;
         case EDGE:     self->edge    = (const float*) data; break;
+        case CUSTOM_LENGTH:          self->custom_length          = (const float*) data; break;
+        case CUSTOM_STEPS_PER_BEAT:  self->custom_steps_per_beat  = (const float*) data; break;
         case ENABLED:  self->enabled = (const float*) data; break;
-        default: break;
+        default:
+            if (port >= CUSTOM_STEP_FIRST && port < CUSTOM_STEP_FIRST + CUSTOM_MAX_STEPS) {
+                self->custom_step[port - CUSTOM_STEP_FIRST] = (const float*) data;
+            }
+            break;
     }
 }
 
@@ -161,14 +187,37 @@ static void run(LV2_Handle instance, uint32_t frames) {
     }
 
     const bool  bypassed  = self->enabled != NULL && *self->enabled < 0.5f;
-    const Pattern* pattern = &PATTERNS[choice(self->pattern, PATTERN_COUNT)];
-    const int   steps_count = (int) strlen(pattern->steps);
+    const int   pattern_index = choice(self->pattern, PATTERN_COUNT);
+    // The steps of the pattern, one character per step: '0'..'2' (a built-in one points into PATTERNS)
+    char        custom_steps[CUSTOM_MAX_STEPS + 1];
+    const char* steps;
+    int         steps_count;
+    int         steps_per_beat;
+
+    if (pattern_index == CUSTOM_PATTERN) {
+        steps_count = (int) clampf(self->custom_length ? *self->custom_length + 0.5f : 8.0f, 1.0f, (float) CUSTOM_MAX_STEPS);
+        steps_per_beat = (int) clampf(self->custom_steps_per_beat ? *self->custom_steps_per_beat + 0.5f : 2.0f, 1.0f, (float) CUSTOM_MAX_STEPS_PER_BEAT);
+
+        for (int i = 0; i < steps_count; ++i) {
+            custom_steps[i] = (char) ('0' + choice(self->custom_step[i], LEVEL_COUNT));
+        }
+        custom_steps[steps_count] = '\0';
+        steps = custom_steps;
+    } else {
+        steps = PATTERNS[pattern_index].steps;
+        steps_count = (int) strlen(steps);
+        steps_per_beat = PATTERNS[pattern_index].steps_per_beat;
+    }
+
     const float multiplier = SPEED_MULTIPLIER[choice(self->speed, SPEED_COUNT)];
     const float bpm        = clampf(self->bpm ? *self->bpm : 120.0f, BPM_MIN, BPM_MAX);
     const float floor_gain = 1.0f - clampf(self->depth ? *self->depth * 0.01f : 1.0f, 0.0f, 1.0f);
     const float edge_ms    = clampf(self->edge ? *self->edge : 1.5f, EDGE_MIN_MS, EDGE_MAX_MS);
 
-    double step_length = 60.0 * (double) self->sample_rate / ((double) bpm * (double) pattern->steps_per_beat * (double) multiplier);
+    // The gain of each level: a cut is as deep as Depth says, the middle level halfway between a cut and the whole signal
+    const float level_gain[LEVEL_COUNT] = { floor_gain, floor_gain + (1.0f - floor_gain) * 0.5f, 1.0f };
+
+    double step_length = 60.0 * (double) self->sample_rate / ((double) bpm * (double) steps_per_beat * (double) multiplier);
     if (step_length < 2.0) {
         step_length = 2.0;
     }
@@ -194,7 +243,7 @@ static void run(LV2_Handle instance, uint32_t frames) {
         float slew = slew_bypass;
 
         if (!bypassed) {
-            target = pattern->steps[self->step] == '1' ? 1.0f : floor_gain;
+            target = level_gain[steps[self->step] - '0'];
             slew = slew_chop;
         }
 

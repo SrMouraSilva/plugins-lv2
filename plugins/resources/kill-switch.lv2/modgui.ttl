@@ -5,6 +5,8 @@
     modgui:gui [
         modgui:resourcesDirectory <modgui> ;
         modgui:iconTemplate <modgui/kill-switch.html> ;
+        # Full-screen, touch-friendly settings page, instead of the generic one: the editor of the custom pattern
+        modgui:settingsTemplate <modgui/kill-switch-settings.html> ;
         modgui:stylesheet <modgui/kill-switch.css> ;
         modgui:javascript <modgui/kill-switch.js> ;
         modgui:screenshot <modgui/screenshot.png> ;

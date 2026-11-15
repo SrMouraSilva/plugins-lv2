@@ -1,0 +1,158 @@
+<div class="kss" mod-role="kill-switch-settings">
+  <div class="kss-shell">
+    <div class="kss-screen">
+      <header class="kss-bar">
+        <div class="kss-title">
+          <span class="kss-logo" aria-hidden="true"></span>
+          <h1>Kill Switch</h1>
+        </div>
+
+        <div class="kss-now" aria-live="polite">
+          <small>Pattern</small>
+          <span class="kss-now-label">Chop 8ths</span>
+        </div>
+
+        <!-- The page being shown: always visible, whatever the input device (a swipe also changes it) -->
+        <nav class="kss-nav" aria-label="Pages">
+          <button type="button" class="kss-step kss-prev" aria-label="Previous page" title="Previous page">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="kss-dots" aria-hidden="true"></div>
+          <button type="button" class="kss-step kss-next" aria-label="Next page" title="Next page">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <span class="kss-sr kss-page-status" aria-live="polite"></span>
+        </nav>
+
+        <button type="button" class="js-close kss-close">Close</button>
+      </header>
+
+      <!-- Never scrolls vertically. The script (layoutSettings) spreads the panels below over as many pages as the
+           screen needs, and puts them back here whenever the size changes -->
+      <main class="kss-pager"></main>
+
+      <div class="kss-stock" hidden>
+        <section class="kss-panel kss-pattern-panel" data-panel="pattern">
+          <div class="kss-panel-head">
+            <span class="kss-eyebrow">Pattern editor</span>
+            <h2>Custom pattern</h2>
+            <p>Write your own rhythm. Tap a step to change its level: <b>cut</b>, then <b>half</b>, then <b>pass</b>, and back to cut. A cut lowers the signal by Depth, pass leaves it alone, half is in between. Pattern plays it when it is set to <b>Custom</b>.</p>
+          </div>
+          <div class="kss-editor">
+            <div class="kss-steps" role="group" aria-label="The steps of the custom pattern"></div>
+            <div class="kss-tools">
+              <div class="kss-field">
+                <span>Length</span>
+                <div class="kss-stepper">
+                  <button type="button" class="kss-button kss-length-down" aria-label="Fewer steps" title="Fewer steps">&minus;</button>
+                  <output class="kss-length" aria-label="Number of steps">8</output>
+                  <button type="button" class="kss-button kss-length-up" aria-label="More steps" title="More steps">+</button>
+                </div>
+              </div>
+              <div class="kss-field">
+                <span>Steps per beat</span>
+                <div class="kss-stepper">
+                  <button type="button" class="kss-button kss-beat-down" aria-label="Fewer steps per beat" title="Fewer steps per beat">&minus;</button>
+                  <output class="kss-beat" aria-label="Steps per beat">2<small>8ths</small></output>
+                  <button type="button" class="kss-button kss-beat-up" aria-label="More steps per beat" title="More steps per beat">+</button>
+                </div>
+              </div>
+              <label class="kss-field">
+                <span>Start from</span>
+                <select class="kss-select kss-from" aria-label="Copy a built-in pattern into the custom one"></select>
+              </label>
+              <button type="button" class="kss-button kss-use" aria-pressed="false">Play this pattern</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="kss-panel kss-assign-panel kss-hardware" data-panel="hardware">
+          <div class="kss-panel-head">
+            <span class="kss-eyebrow">Hardware assignment</span>
+            <h2>Controls<span class="kss-range"></span></h2>
+            <p>Play it from your device. Link the bypass to a footswitch (choose <b>Momentary</b> to chop only while you hold it), and the other controls to knobs, an expression pedal or footswitches.</p>
+          </div>
+          <ul class="kss-assign">
+            <li>
+              <button type="button" class="mod-address kss-address" mod-role="bypass-address" title="Assign Bypass to a hardware control">
+                <span class="kss-assign-name"><span class="kss-assign-title">Bypass</span><small>footswitch, momentary or toggle</small></span>
+                <span class="kss-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address kss-address" mod-role="input-control-address" mod-port-symbol="pattern" title="Assign Pattern to a hardware control">
+                <span class="kss-assign-name"><span class="kss-assign-title">Pattern</span><small>knob or footswitch</small></span>
+                <span class="kss-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address kss-address" mod-role="input-control-address" mod-port-symbol="bpm" title="Assign Tempo to a hardware control">
+                <span class="kss-assign-name"><span class="kss-assign-title">Tempo</span><small>knob or expression pedal</small></span>
+                <span class="kss-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address kss-address" mod-role="input-control-address" mod-port-symbol="speed" title="Assign Speed to a hardware control">
+                <span class="kss-assign-name"><span class="kss-assign-title">Speed</span><small>footswitch</small></span>
+                <span class="kss-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address kss-address" mod-role="input-control-address" mod-port-symbol="depth" title="Assign Depth to a hardware control">
+                <span class="kss-assign-name"><span class="kss-assign-title">Depth</span><small>knob or expression pedal</small></span>
+                <span class="kss-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address kss-address" mod-role="input-control-address" mod-port-symbol="edge" title="Assign Edge to a hardware control">
+                <span class="kss-assign-name"><span class="kss-assign-title">Edge</span><small>knob</small></span>
+                <span class="kss-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+          </ul>
+        </section>
+
+        <section class="kss-panel kss-presets-panel" data-panel="presets">
+          <div class="kss-panel-head">
+            <h2>Saved presets</h2>
+          </div>
+
+          <!-- PRESET LIST: same markup as the generic settings page, so MOD UI keeps wiring it up -->
+            <div class="mod-enumerated mod-presets">
+              <span class="mod-enumerated-title">
+                <form>
+                  <span>
+                    <label><input type="radio" name="preset_type" autocomplete="off" class="radio-preset radio-preset-factory" value="factory" checked="checked"> Factory</label>
+                  </span>
+                  <span>
+                    <label><input type="radio" name="preset_type" autocomplete="off" class="radio-preset radio-preset-user" value="user"> User</label>
+                  </span>
+                </form>
+              </span>
+              <div class="mod-enumerated-list mod-preset-factory" mod-widget="custom-select">
+                {{#presets.factory}}
+                <div mod-role="enumeration-option" mod-uri="{{uri}}">{{label}}</div>
+                {{/presets.factory}}
+              </div>
+              <div class="mod-enumerated-list mod-preset-user mod-hidden" mod-widget="custom-select">
+                {{#presets.user}}
+                <div mod-role="enumeration-option" mod-uri="{{uri}}" mod-path="{{path}}">{{label}}</div>
+                {{/presets.user}}
+              </div>
+              <footer>
+                <button class="btn btn-xs btn-primary preset-btn-save disabled" title="Save"></button>
+                <button class="btn btn-xs btn-primary preset-btn-save-as" title="Save as"></button>
+                <button class="btn btn-xs btn-primary preset-btn-rename disabled" title="Rename"></button>
+                <button class="btn btn-xs btn-primary preset-btn-delete disabled" title="Delete"></button>
+                <button class="btn btn-xs btn-primary preset-btn-assign-sel disabled mod-hidden">Assign selected</button>
+                <span class="assign-all">
+                  <button class="btn btn-xs btn-primary preset-btn-assign-all" mod-role="presets-address">Assign all</button>
+                </span>
+              </footer>
+            </div>
+            <!-- END PRESET LIST -->
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

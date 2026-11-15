@@ -138,6 +138,22 @@ export const scenarios = {
       while ((await bpm()) !== 120) await ctx.tap((await bpm()) > 120 ? '.ks-bpm-down' : '.ks-bpm-up', 60);
       await ctx.sleep(700);
     }),
+    // The editor of the custom pattern: a step goes through its three levels in a circle, the length and the steps per beat
+    settings: settings('kill-switch', async (ctx) => {
+      await ctx.sleep(700);
+      for (let i = 0; i < 3; i++) { await ctx.tap('.kss-cell:nth-child(1)', 100); await ctx.sleep(450); }     // cut, half, pass, and cut again
+      await ctx.tap('.kss-cell:nth-child(4)', 100);                       // pass -> cut
+      await ctx.sleep(450);
+      await ctx.tap('.kss-length-up', 100); await ctx.tap('.kss-length-up', 100);
+      await ctx.tap('.kss-beat-up', 100);
+      await ctx.sleep(700);
+      await visitPages(ctx, { next: '.kss-next', dot: '.kss-dot', tile: true, tileSymbol: (page) => ['', 'pattern', ''][page] || '' });
+      // Back to the start, as a controller would put it (the first edit switched Pattern to Custom)
+      for (const [symbol, value] of [['pattern', 0], ['custom_step_4', 2], ['custom_length', 8], ['custom_steps_per_beat', 2]]) {
+        await ctx.eval(`send({ type: 'change', symbol: '${symbol}', value: ${value} })`);
+      }
+      await ctx.sleep(600);
+    }, 540),
   },
 
   'gossiper': {

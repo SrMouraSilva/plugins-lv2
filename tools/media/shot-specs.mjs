@@ -43,6 +43,8 @@ const phone = (file, height, extra = {}) => window_(file, 1024, Math.round(heigh
 
 // The display shows the control that moved last: the footswitch on the pedal, the knob in the settings page
 const gossiper = (symbol, value) => `send({ type: 'change', symbol: '${symbol}', value: ${value} })`;
+// Kill Switch: the custom pattern on (Pattern = Custom), with its three levels in use
+const KS_CUSTOM = `send({ type: 'change', symbol: 'pattern', value: 10 })`;
 const GOSSIPER_PEDAL = [gossiper('Potentiometer_1', 0.2), gossiper('Potentiometer_3', 0.63), gossiper('Footswitch_2', 1)];
 const GOSSIPER_SETTINGS = [gossiper('Potentiometer_1', 0.2), gossiper('Footswitch_2', 1), gossiper('Potentiometer_3', 0.63)];
 
@@ -98,6 +100,13 @@ export const shots = {
     icon('step-pattern.webp', '.kill-switch', {
       setup: ['send({type:"change",symbol:"pattern",value:6})', 'send({type:"change",symbol:"bpm",value:89})'],
       highlight: ['.ks-prev', '.ks-next', '.ks-steps'], finger: '.ks-next',
+    }),
+    // The settings page: the editor of the custom pattern, the controls to assign and the saved presets
+    window_('settings.webp', 1366, 800, { setup: [KS_CUSTOM] }),
+    phone('settings-phone.webp', 844, { setup: [KS_CUSTOM] }),
+    // The custom pattern, Quick start of section 4: tapping a step goes to its next level
+    settings('step-custom-pattern.webp', '.kss-steps', {
+      setup: [KS_CUSTOM], highlight: ['.kss-cell:nth-child(3)'], finger: '.kss-cell:nth-child(3)', crop: { closest: 'section', of: '.kss-steps' },
     }),
     // Step 5: Depth and Edge
     icon('step-feel.webp', '.kill-switch', {

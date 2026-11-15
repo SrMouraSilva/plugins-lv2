@@ -54,7 +54,10 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
 ## C code and LV2
 
 * **Kill Switch is one standalone file** (`src/kill-switch.c`, only LV2's core header): its bypass is the `lv2:enabled`
-  port (1 = on), kept last, and `PATTERNS` is repeated in its modgui script and in the scale points of `pattern`.
+  port (1 = on), kept last, and `PATTERNS` is repeated in its modgui script and in the scale points of `pattern`. A step has
+  three levels ('0' cut, '1' half, '2' pass); the built-in patterns use 0 and 2, and the custom one is the ports
+  `custom_length`, `custom_steps_per_beat` and `custom_step_1..16` (the value 10 of `pattern`). A new port goes before
+  `lv2_enabled` only while the plugin is unreleased (the TTL indices, `PortIndex` and the harness must agree).
 * **One code base, several plugins.** Tetr4 and Hept7 Switch are the same sources sized by `src/config.h`
   (`-DHEPT7_SWITCH`). Do not copy files to make a variant: parametrise (`TOTAL_PRESETS`, `TOTAL_OUTPUTS`).
 * **Port layout lives in `src/model/ports.h`** as contiguous ranges (`PORT_*_FIRST`), never as one `case` per port.

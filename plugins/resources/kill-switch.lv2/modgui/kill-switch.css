@@ -11,7 +11,8 @@
  * Every rule is namespaced (.kill-switch / .ks-*), because MOD UI loads this file into the whole page.
  */
 
-.kill-switch {
+.kill-switch,
+.kss {
   /* Charcoal and red (modgui:color is #7d1d12) */
   --ks-ink: #120d0b;       /* the darkest: slots, the display */
   --ks-ink-2: #1d1512;     /* panels */
@@ -19,15 +20,18 @@
   --ks-line: rgba(255, 235, 228, 0.14);
   --ks-text: #f6ede9;
   --ks-muted: #b9a199;
+  --ks-accent: #ff8a80;    /* titles and marks on the settings page */
   --ks-red: #ff4a3d;       /* a step that passes, the LED, the filled part of a slider */
   --ks-red-deep: #b8261c;
   --ks-cut: #33231f;       /* a step that is cut */
+
+  --ks-half: #b8453a;      /* a step at the middle level */
 
   font-family: "Avenir Next Rounded", "SF Pro Rounded", ui-rounded, "Nunito", "Varela Round", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 /* Resets with no specificity, so every component rule below wins over them */
-:where(.kill-switch) :where(button, input, output) {
+:where(.kill-switch, .kss) :where(button, input, output, select) {
   -webkit-appearance: none;
   appearance: none;
   box-sizing: border-box;
@@ -48,6 +52,7 @@
  * MOD UI covers the whole icon with a drag handle (.mod-drag-handle, absolute, z-index 20) so the plugin can be
  * moved by dragging it. Whatever must be clickable has to sit above it; the rest still drags the plugin.
  */
+.ks-open,
 .ks-step-button,
 .ks-segment,
 .ks-slider,
@@ -57,7 +62,10 @@
 }
 
 .kill-switch button:focus-visible,
-.kill-switch input:focus-visible {
+.kill-switch input:focus-visible,
+.kss button:focus-visible,
+.kss input:focus-visible,
+.kss select:focus-visible {
   outline: 3px solid #ffd0ca;
   outline-offset: 2px;
 }
@@ -435,3 +443,861 @@
     transition: none !important;
   }
 }
+
+
+/* ==========================================================================
+ * The settings page: takes the whole screen, built for touch
+ * ========================================================================== */
+
+.kss {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  /* Never scrolls: what does not fit goes on another page (see the pager) */
+  overflow: hidden;
+  overscroll-behavior: contain;
+
+  /* The margins of the screen. The pager reaches the edges and its pages keep these margins inside, so the shadows of
+     the panels fade out on the page instead of being cut a few pixels from the panel */
+  --kss-gy: 14px;
+  --kss-pl: max(14px, env(safe-area-inset-left));
+  --kss-pr: max(14px, env(safe-area-inset-right));
+  --kss-pb: max(var(--kss-gy), env(safe-area-inset-bottom));
+  padding: max(var(--kss-gy), env(safe-area-inset-top)) var(--kss-pr) var(--kss-pb) var(--kss-pl);
+
+  color: var(--ks-text);
+  font-size: 16px;
+  line-height: 1.3;
+  background:
+    radial-gradient(90% 60% at 12% 0%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(165deg, #3a2520 0%, #241613 45%, #170e0c 100%);
+}
+
+
+.kss *,
+.kss *::before,
+.kss *::after {
+  box-sizing: border-box;
+}
+
+
+.kss h1,
+.kss h2,
+.kss p {
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  text-transform: none;
+  text-shadow: none;
+  letter-spacing: normal;
+}
+
+
+.kss-shell {
+  max-width: 1500px;
+  height: 100%;
+  margin: 0 auto;
+}
+
+
+.kss-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+
+.kss-stock[hidden] { display: none; }
+
+
+.kss-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+
+/* Top bar, straight on the background */
+.kss-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px 18px;
+  flex-wrap: wrap;
+  flex: 0 0 auto;
+}
+
+
+.kss-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin-right: auto;
+}
+
+
+.kss h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--ks-text);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+}
+
+
+.kss .js-close {
+  min-width: 100px;
+  min-height: 48px;
+  padding: 0 26px;
+  border-radius: 24px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ks-text);
+  background: var(--ks-ink-2);
+  box-shadow: 0 3px 0 var(--ks-ink);
+  transition: transform 0.08s, box-shadow 0.08s, background-color 0.15s;
+}
+
+.kss .js-close:hover { background: var(--ks-ink-3); }
+
+.kss .js-close:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ks-ink);
+}
+
+
+/* Page controls: always there. Swiping the pager does the same */
+.kss-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+
+.kss-step {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  cursor: pointer;
+  color: var(--ks-text);
+  background: var(--ks-ink-2);
+  box-shadow: 0 3px 0 var(--ks-ink);
+  transition: transform 0.08s, box-shadow 0.08s, background-color 0.15s, opacity 0.15s;
+}
+
+.kss-step:hover { background: var(--ks-ink-3); }
+
+.kss-step:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ks-ink);
+}
+
+.kss-step:disabled {
+  opacity: 0.35;
+  cursor: default;
+  transform: none;
+  box-shadow: 0 3px 0 var(--ks-ink);
+}
+
+
+/* One dot per page, the current one filled. A tap on one goes to its page, but the arrows are the controls */
+.kss-dots {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+}
+
+
+.kss-dot {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 36px;
+  cursor: pointer;
+}
+
+.kss-dot::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.4;
+  transition: width 0.2s, height 0.2s, opacity 0.2s;
+}
+
+.kss-dot.is-current::before {
+  width: 12px;
+  height: 12px;
+  opacity: 1;
+}
+
+
+/*
+ * The pages sit side by side in a strip that scrolls (and snaps) horizontally: a swipe on a touch screen, the
+ * arrows elsewhere. Vertically it never scrolls; each page is cut to its height by the script
+ */
+.kss-pager {
+  flex: 1 1 0;
+  min-height: 0;
+  margin: 0 calc(-1 * var(--kss-pr)) calc(-1 * var(--kss-pb)) calc(-1 * var(--kss-pl));
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior: contain;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.kss-pager::-webkit-scrollbar { display: none; }
+
+
+.kss-page {
+  flex: 0 0 100%;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  /* the margins of the screen, and room for the shadow of the panels, which the page clips */
+  padding: 4px var(--kss-pr) var(--kss-pb) var(--kss-pl);
+  overflow: hidden;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+
+
+/* Panels */
+.kss-panel {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 16px;
+  border-radius: 20px;
+  background: var(--ks-ink-2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), inset 0 0 0 1px var(--ks-line);
+}
+
+
+.kss-panel-head {
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+
+.kss-eyebrow {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ks-muted);
+}
+
+
+.kss-range {
+  margin-left: 8px;
+  color: var(--ks-muted);
+  letter-spacing: 0.04em;
+}
+
+
+.kss h2 {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ks-accent);
+}
+
+
+.kss-panel-head p {
+  margin-top: 3px;
+  font-size: 14px;
+  color: var(--ks-muted);
+}
+
+
+
+/* Hardware assignments: every tile is the button that opens the assignment dialog */
+.kss-assign {
+  display: grid;
+  /* The script sets the number of columns from the width of the panel */
+  grid-template-columns: repeat(var(--kss-cols, 2), minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+
+.kss .mod-address.kss-address {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  height: auto;
+  min-height: 56px;
+  padding: 6px 8px 6px 14px;
+  border-radius: 14px;
+  text-align: left;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.05);
+  background-image: none;
+  box-shadow: inset 0 0 0 1px var(--ks-line);
+  transition: background-color 0.15s, box-shadow 0.15s;
+}
+
+
+.kss .mod-address.kss-address:hover { background-color: rgba(255, 255, 255, 0.1); }
+
+
+.kss-assign-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+
+.kss-assign-title,
+.kss-assign-name small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.kss-assign-name small {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ks-muted);
+}
+
+
+/* The state of the assignment button: a dark disc that holds the icon (below), filled when the control is addressed */
+.kss-assign-state {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--ks-accent);
+  background: var(--ks-ink-3);
+}
+
+/*
+ * The icon of the assignment button: the one MOD UI and the device use for it everywhere (faders), so it is
+ * recognised at once. It is MOD UI's own img/icons/36/faders.png (36 x 36, white) used as a mask, so it takes the
+ * colour of the plugin and nothing has to be loaded from MOD UI. Free: the accent on a dark disc; addressed: the
+ * reverse.
+ */
+.kss-assign-state::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACOSURBVFiF7ZZRCoAwDEOteP8rxy9B0I1lbUcHeZ+CEPqybschhBBfACDz+5uTi5ZPSiAzs9l/r8ggf0rYcHsq8yhg6SpjFUQET1E2crxblOtQV9nK7jwMTcijgMWlLGOCU4sxYgG2KFfqcoGGYEvtOQSuyxUARrrDdK6csnKBQt9DLZiVsHRCelMLIXbgBkToOCu2t7NaAAAAAElFTkSuQmCC") center / 36px 36px no-repeat;
+  mask: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACOSURBVFiF7ZZRCoAwDEOteP8rxy9B0I1lbUcHeZ+CEPqybschhBBfACDz+5uTi5ZPSiAzs9l/r8ggf0rYcHsq8yhg6SpjFUQET1E2crxblOtQV9nK7jwMTcijgMWlLGOCU4sxYgG2KFfqcoGGYEvtOQSuyxUARrrDdK6csnKBQt9DLZiVsHRCelMLIXbgBkToOCu2t7NaAAAAAElFTkSuQmCC") center / 36px 36px no-repeat;
+}
+
+
+.kss .mod-address.kss-address.addressed {
+  background-color: rgba(255, 138, 128, 0.16);
+  box-shadow: inset 0 0 0 2px var(--ks-accent);
+}
+
+.kss .mod-address.kss-address.addressed .kss-assign-state {
+  color: var(--ks-ink);
+  background: var(--ks-accent);
+}
+
+
+/* Saved presets: MOD UI wires up this markup, it is only restyled here */
+.kss-presets-panel {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+}
+
+
+.kss .mod-presets {
+  position: relative;
+  float: none;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+  width: auto !important;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  background: none;
+}
+
+
+.kss .mod-presets > span.mod-enumerated-title {
+  display: block;
+  height: auto;
+  margin-bottom: 8px;
+  overflow: visible !important;
+}
+
+
+.kss .mod-presets form {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+}
+
+
+.kss .mod-presets form > span {
+  flex: 1 1 0;
+}
+
+
+.kss .mod-presets form label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--ks-ink-3);
+}
+
+
+.kss .mod-presets .radio-preset {
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+  accent-color: var(--ks-accent);
+  -webkit-appearance: radio;
+  appearance: auto;
+}
+
+
+.kss .mod-presets > div.mod-enumerated-list {
+  float: none;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  min-height: 150px;
+  flex: 1 1 0;
+  padding: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  background: var(--ks-ink);
+}
+
+
+.kss .mod-presets .mod-enumerated-list > div[mod-role="enumeration-option"] {
+  height: auto;
+  min-height: 46px;
+  padding: 12px 14px;
+  margin: 0 0 1px;
+  line-height: 1.2;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--ks-text);
+  background: var(--ks-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.kss .mod-presets .mod-enumerated-list > div[mod-role="enumeration-option"]:hover { background: var(--ks-ink-3); }
+
+.kss .mod-presets .mod-enumerated-list > div[mod-role="enumeration-option"].selected {
+  color: var(--ks-ink);
+  background: var(--ks-accent);
+}
+
+
+.kss .mod-presets footer {
+  position: static;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  margin: 10px 0 0;
+  padding: 0;
+  background: none;
+}
+
+
+.kss .mod-presets .btn {
+  float: none;
+  width: auto;
+  min-width: 48px;
+  min-height: 48px;
+  margin: 0;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ks-text);
+  background-color: var(--ks-ink-3);
+  background-repeat: no-repeat;
+  background-position: center center;
+  box-shadow: inset 0 0 0 1px var(--ks-line);
+}
+
+
+.kss .mod-presets .btn.preset-btn-save,
+.kss .mod-presets .btn.preset-btn-save-as,
+.kss .mod-presets .btn.preset-btn-delete {
+  width: 48px;
+  margin-right: 0;
+}
+
+
+.kss .mod-presets .btn.preset-btn-rename { width: 56px !important; font-size: 13px; }
+
+
+.kss .mod-presets .btn:hover { background-color: #44312c; }
+
+.kss .mod-presets .btn.disabled { opacity: 0.35; cursor: default; }
+
+.kss .mod-presets .btn.disabled:hover { background-color: var(--ks-ink-3); }
+
+
+.kss .mod-presets .assign-all { margin-left: auto; }
+
+.kss .mod-presets .btn.preset-btn-assign-all.addressed {
+  color: var(--ks-ink);
+  background-color: var(--ks-accent);
+}
+
+
+
+/* --------------------------------------------------------------------------
+ * Sizes. The script measures the box the page is drawn in (MOD UI's own page has no viewport meta tag, so media
+ * queries cannot tell a phone from a desktop there) and says so with data-w (s < 700px, m < 1100px, l) and
+ * data-h (s: short, m), and with .is-row on the scenes when a card is wide enough for its name to sit beside the switches
+ * -------------------------------------------------------------------------- */
+
+/* A column of panels, and a row of them (wide screens) */
+.kss-stack {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-self: stretch;
+  min-width: 0;
+  min-height: 0;
+}
+
+.kss-stack > .kss-panel { flex: 0 0 auto; }
+
+.kss-stack > .kss-presets-panel { flex: 1 1 0; min-height: 0; }
+
+
+.kss-row {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.kss-row > .kss-presets-panel { flex: 3 1 0; align-self: stretch; }
+
+
+/* Narrow: the logo, the preset playing and the close button, and under them the page controls across the width */
+.kss[data-w="s"] { font-size: 15px; }
+
+.kss[data-w="s"] .kss-bar { gap: 8px 10px; }
+
+.kss[data-w="s"] h1 { display: none; }
+
+.kss[data-w="s"] .kss-title { margin-right: 0; }
+
+.kss[data-w="s"] .kss-close { order: 3; min-width: 88px; padding: 0 20px; }
+
+.kss[data-w="s"] .kss-nav { order: 4; flex: 1 1 100%; justify-content: space-between; }
+
+.kss[data-w="s"] .kss-dots { flex: 1 1 auto; justify-content: center; }
+
+.kss[data-w="s"] .kss-panel { padding: 12px; border-radius: 18px; }
+
+.kss[data-w="s"] .kss-panel-head { margin-bottom: 8px; }
+
+
+/* Short (a phone on its side): tighter, with no room for the descriptions; 44px is still the smallest target */
+.kss[data-h="s"] { --kss-gy: 8px; }
+
+.kss[data-h="s"] .kss-screen { gap: 6px; }
+
+.kss[data-h="s"] .kss-panel { padding: 10px 12px; }
+
+.kss[data-h="s"] .kss-panel-head { margin-bottom: 8px; }
+
+.kss[data-h="s"] .kss-step,
+.kss[data-h="s"] .kss-close { min-height: 44px; height: 44px; }
+
+.kss[data-h="s"] .kss-assign { gap: 4px; }
+
+.kss[data-h="s"] .kss-presets-panel .mod-presets > div.mod-enumerated-list { min-height: 64px; }
+
+
+@media (prefers-reduced-motion: reduce) {
+  .tetr4-switch *, .kss * { transition: none !important; }
+}
+
+
+/* The mark and the pattern that is playing, in the top bar */
+.kss-logo {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 32px;
+  border-radius: 10px;
+  background:
+    linear-gradient(90deg, var(--ks-red) 0 25%, var(--ks-cut) 0 50%, var(--ks-red) 0 75%, var(--ks-cut) 0) center / 24px 12px no-repeat,
+    var(--ks-ink);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 1px var(--ks-line);
+}
+
+.kss-now {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 5px 18px 5px 14px;
+  border-radius: 999px;
+  background: var(--ks-ink-2);
+  box-shadow: 0 3px 0 var(--ks-ink);
+}
+.kss-now small {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ks-muted);
+}
+.kss-now-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+
+/* ==========================================================================
+ * The custom pattern: a row of steps, each with three levels that a tap goes through in a circle
+ * ========================================================================== */
+
+.kss-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* The script chooses the columns (16, 8 or 4: every line is full) from the width of the panel */
+.kss-steps {
+  display: grid;
+  grid-template-columns: repeat(var(--kss-cols, 8), minmax(0, 1fr));
+  gap: 8px;
+}
+
+.kss-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  height: var(--kss-cell, 84px);
+  padding: 6px 4px 5px;
+  border-radius: 14px;
+  cursor: pointer;
+  overflow: hidden;
+  text-align: center;
+  color: var(--ks-text);
+  background: var(--ks-ink);
+  box-shadow: inset 0 0 0 1px var(--ks-line), 0 3px 0 rgba(0, 0, 0, 0.45);
+  transition: opacity 0.15s, box-shadow 0.15s;
+}
+.kss-cell:active { transform: translateY(2px); box-shadow: inset 0 0 0 1px var(--ks-line), 0 1px 0 rgba(0, 0, 0, 0.45); }
+
+/* The level as a bar that fills the cell from the bottom: nothing (cut), half, all (pass) */
+.kss-cell-bar {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 22px;
+  height: 0;
+  border-radius: 7px;
+  background: var(--ks-red);
+  transition: height 0.15s, background-color 0.15s;
+}
+.kss-cell[data-level="0"] .kss-cell-bar { height: 4px; background: var(--ks-cut); }
+.kss-cell[data-level="1"] .kss-cell-bar { height: calc((100% - 52px) / 2); background: var(--ks-half); }
+.kss-cell[data-level="2"] .kss-cell-bar { height: calc(100% - 52px); box-shadow: 0 0 12px -2px var(--ks-red); }
+
+.kss-cell-n {
+  position: relative;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--ks-muted);
+}
+.kss-cell-level {
+  position: relative;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+/* A step beyond the length of the pattern is not played */
+.kss-cell.is-off { opacity: 0.4; }
+.kss-cell.is-off .kss-cell-level::after { content: " ·"; }
+
+.kss-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 18px;
+}
+
+.kss-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.kss-field > span {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ks-muted);
+}
+
+.kss-stepper {
+  display: grid;
+  grid-template-columns: 48px minmax(64px, auto) 48px;
+  align-items: center;
+  gap: 4px;
+}
+.kss-stepper output {
+  color: var(--ks-text);
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+}
+.kss-stepper output small {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ks-muted);
+}
+
+.kss-button,
+.kss-select {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ks-text);
+  background: var(--ks-ink-3);
+  box-shadow: 0 3px 0 var(--ks-ink), inset 0 0 0 1px var(--ks-line);
+  transition: background-color 0.15s;
+}
+.kss-button:hover,
+.kss-select:hover { background: #3d2b26; }
+.kss-button:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ks-ink), inset 0 0 0 1px var(--ks-line); }
+.kss-select { appearance: auto; -webkit-appearance: menulist; padding: 0 10px; }
+.kss-select option { color: #120d0b; background: #fff; }
+
+/* "Play this pattern": pressed while Pattern is on Custom */
+.kss-use {
+  margin-left: auto;
+  color: var(--ks-ink);
+  background: var(--ks-red);
+  box-shadow: 0 3px 0 var(--ks-red-deep);
+}
+.kss-use:hover { background: #ff6459; }
+.kss-use[aria-pressed="true"] {
+  color: var(--ks-text);
+  background: var(--ks-ink-3);
+  box-shadow: inset 0 0 0 2px var(--ks-red), 0 3px 0 var(--ks-ink);
+}
+
+/* The hardware tiles of this plugin: no extra colour of their own */
+.kss-hardware .kss-assign-name small { white-space: normal; }
+
+/* A pattern is written on the pedal too: the button that opens this page */
+.ks-open {
+  min-height: 24px;
+  padding: 0 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ks-text);
+  background: var(--ks-ink-3);
+  box-shadow: 0 2px 0 #0b0706;
+  transition: background-color 0.15s;
+}
+.ks-open:hover { background: #3d2b26; }
+.ks-open:active { transform: translateY(1px); box-shadow: 0 1px 0 #0b0706; }
+
+/* The steps of the pattern on the pedal: the middle level */
+.ks-steps i.l1 {
+  background: var(--ks-half);
+}
+.kill-switch.is-bypassed .ks-steps i.l1 { background: #5a3a34; }
+
+.kss[data-h="s"] .kss-cell { --kss-cell: 64px; }
+.kss[data-h="s"] .kss-cell-bar { bottom: 20px; }
+.kss[data-h="s"] .kss-cell[data-level="1"] .kss-cell-bar { height: calc((100% - 44px) / 2); }
+.kss[data-h="s"] .kss-cell[data-level="2"] .kss-cell-bar { height: calc(100% - 44px); }
+
+/* The editor and the controls in one column, the saved presets in another */
+.kss-row > .kss-stack { flex: 3 1 0; }
+.kss-row > .kss-presets-panel { flex: 2 1 0; }
+.kss-stack > .kss-pattern-panel { flex: 0 0 auto; }
+
+/* A phone: smaller steps, the two steppers side by side, then "start from" and "play" */
+.kss[data-w="s"] .kss-cell { --kss-cell: 60px; }
+.kss[data-w="s"] .kss-cell-bar { bottom: 20px; }
+.kss[data-w="s"] .kss-cell[data-level="1"] .kss-cell-bar { height: calc((100% - 44px) / 2); }
+.kss[data-w="s"] .kss-cell[data-level="2"] .kss-cell-bar { height: calc(100% - 44px); }
+.kss[data-w="s"] .kss-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; gap: 8px 10px; }
+.kss[data-w="s"] .kss-stepper { grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 2px; }
+.kss[data-w="s"] .kss-select { width: 100%; }
+.kss[data-w="s"] .kss-use { margin-left: 0; }
+.kss[data-h="s"] .kss-pattern-panel .kss-panel-head p { display: none; }

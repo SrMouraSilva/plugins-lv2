@@ -3,9 +3,9 @@
 Kill Switch **chops your signal in a rhythm**, like the momentary kill switch some guitars have: while the plugin is on,
 a looping pattern lets the sound through or cuts it, in time with the tempo you set. Bypassed, your signal is clean.
 
-You pick one of **10 patterns** (from a plain chop to a machine gun), set the **tempo** and the **speed**, and then use
-**Depth** and **Edge** to decide how deep and how hard the cuts are. It is one mono audio effect, with a footswitch on
-the plugin that is also its bypass.
+You pick one of **10 patterns** (from a plain chop to a machine gun) or **write your own**, set the **tempo** and the
+**speed**, and then use **Depth** and **Edge** to decide how deep and how hard the cuts are. It is one mono audio effect,
+with a footswitch on the plugin that is also its bypass.
 
 ![Kill Switch on the pedalboard](images/panel.webp)
 
@@ -32,19 +32,20 @@ You need a pedalboard with an audio input and an output, and a guitar (or any so
     ![Step 5: Depth and Edge](images/step-feel.webp)
 
 6. **Put it under your foot.** Assign the plugin's footswitch (its **Bypass**) to a device footswitch, in *Momentary*
-   mode if you want the effect on only while you hold it, as with the switch on a guitar ([section 4](#playing-it-live)).
+   mode if you want the effect on only while you hold it, as with the switch on a guitar ([section 5](#playing-it-live)).
 
 > [!TIP] Every pattern starts the moment you switch the plugin on
-> Whenever the plugin goes from bypassed to on, the pattern **starts again from its first step**, and all of the
-> patterns begin with a cut, as if you had pressed the kill switch right then. Press the footswitch in time with the
-> beat and the chops fall where you want them.
+> Whenever the plugin goes from bypassed to on, the pattern **starts again from its first step**. The ten built-in
+> patterns all begin with a cut, as if you had pressed the kill switch right then (in your own pattern, the first
+> step is whatever you set). Press the footswitch in time with the beat and the chops fall where you want them.
 
 ## 2. The plugin on the pedalboard
 
 | Item | What it does |
 |---|---|
-| **Pattern: the arrows and the name** | Choose the pattern (section 3). The arrows go round: after the last pattern comes the first. |
-| **The sixteen squares** | The pattern. A lit square lets the signal through and a dark one cuts it. A pattern shorter than sixteen steps is repeated; the first run is bright and the repetitions are dimmer, so you can see where it starts again. The squares go dim when the plugin is bypassed. |
+| **Pattern: the arrows and the name** | Choose the pattern (section 3). The arrows go round: after the last pattern comes the first, and the last one is **Custom**, the pattern you write. |
+| **The sixteen squares** | The pattern. A bright red square lets the signal through, a dark one cuts it, and a darker red one is the middle level (only in your own patterns). A pattern shorter than sixteen steps is repeated; the first run is bright and the repetitions are dimmer, so you can see where it starts again. The squares go dim when the plugin is bypassed. |
+| **Edit pattern** | Opens the settings page: the editor of your own pattern and the controls to assign (section 4). |
 | **Tempo: − and +** | The speed of the pattern, from 40 to 240 BPM. Hold a button to keep going. |
 | **Speed** | ½x, 1x, 2x or 4x: multiplies the speed of the pattern without changing the tempo. |
 | **Depth** | From 0% to 100%: how much of the signal a cut removes. 100% is silence; lower values only dip the level, like a tremolo with sharp edges. |
@@ -52,7 +53,7 @@ You need a pedalboard with an audio input and an output, and a guitar (or any so
 | **The footswitch and its light** | The **bypass** of the plugin. The ring and the light above it are red while the effect is on, and the label at the top says *On* or *Bypassed*. |
 | **Audio jacks** | `In` on the left, `Out` on the right. |
 
-All five controls (and the bypass) can be assigned to a device control: see [section 4](#playing-it-live).
+All five controls (and the bypass) can be assigned to a device control: see [section 5](#playing-it-live).
 
 ## 3. The patterns
 
@@ -94,10 +95,51 @@ step of 250 ms and *Machine gun* a step of 62.5 ms.
 > Kill Switch does not follow the tempo of the pedalboard or of a MIDI clock: set the tempo here, or assign it to a knob
 > or to an expression pedal.
 
-## 4. Playing it live
+## 4. Your own pattern
+
+The eleventh pattern, **Custom**, is yours. Click **Edit pattern** on the plugin (or open its settings with the gear icon):
+the first page of the settings is the editor.
+
+![The settings page: the editor of the custom pattern, the controls to assign and the saved presets](images/settings.webp)
+
+A step has **three levels**, and a tap on it goes to the next one, round and round:
+
+| Level | What the step does |
+|---|---|
+| **Cut** | Lowers the signal by **Depth**: silence at 100%. |
+| **Half** | Halfway between a cut and the whole signal: at Depth 100% half the level, at 50% three quarters of it. |
+| **Pass** | Lets the signal through as it is. |
+
+Cut, half, pass, and back to cut: keep tapping a step until it shows the level you want.
+
+1. **Tap the steps** of the first row to set their levels. The bar of a step says its level, and so does its label, so you
+   do not have to rely on the colour.
+
+    ![Tapping a step goes to its next level: cut, half, pass, and back to cut](images/step-custom-pattern.webp)
+
+2. **Set the length** with **−** and **+**: from 1 to 16 steps. Only the first steps are played; the dimmer ones after them
+   are kept, so you can shorten a pattern and bring its end back.
+3. **Set the steps per beat**, from 1 to 8: with 2 a step is an eighth note, 4 a sixteenth, 3 a triplet, 1 a quarter note.
+   The step then lasts `60 / (tempo × steps per beat × speed)` seconds, as in the other patterns.
+4. **Listen to it.** The first change you make puts **Pattern** on **Custom**, so what you write is what you hear. The
+   **Play this pattern** button does the same without changing anything, and the arrows of the plugin and a device control
+   assigned to Pattern also reach it.
+
+> [!TIP] Start from a built-in pattern
+> **Copy from…** copies one of the ten built-in patterns (steps, length and steps per beat) into your own, ready to be
+> changed: the quickest way to get *Gallop, but with a half step on the last note*.
+
+Your pattern is made of controls of the plugin, so it is saved with the **pedalboard**, with your own **saved presets** and
+with **snapshots**. The factory presets do not touch it. The page has more than one page when the screen is small: use the
+arrows of the top bar (or swipe sideways) to go to the **Controls** (the assignments) and to the **Saved presets**.
+
+![Going through the settings page: the steps of the custom pattern, the length, the steps per beat and every page](images/kill-switch-settings.webp)
+
+## 5. Playing it live
 
 Every control of the plugin can be assigned to a device control (a footswitch, a knob, an expression pedal), the way you
-assign any parameter: open the settings of the plugin (the gear icon) and click the control to assign.
+assign any parameter: open the settings of the plugin (the gear icon, or **Edit pattern**) and click the tile of the
+control to assign, in the **Controls** panel.
 
 | Control | Good to assign it to |
 |---|---|
@@ -110,7 +152,7 @@ assign any parameter: open the settings of the plugin (the gear icon) and click 
 
 The plugin shows nothing on the device screen, so there is no pop-up to set up.
 
-## 5. Factory presets
+## 6. Factory presets
 
 Open **Saved presets** in the settings of the plugin (or use the presets of the pedalboard) to pick one. Each one sets the
 pattern, the tempo, the speed, the depth and the edge; the bypass is not part of a preset.
@@ -132,7 +174,12 @@ pattern, the tempo, the speed, the depth and the edge; the bypass is not part of
 All of them have the speed at 1x. The first four are named after a song and use a pattern in the style of its guitar part,
 at about its tempo; they are a starting point, not a copy.
 
-## 6. Tips
+## 7. Tips
+
+### Build your own from a built-in pattern
+
+Pick the built-in pattern that is closest, **Copy from…** it into the custom pattern and change a step or two. Use the middle
+level for a ghost note: a step that is there, but soft.
 
 ### Set the tempo to the song, then leave it
 
@@ -141,8 +188,8 @@ a difference of one or two BPM is enough to drift off the beat over a bar.
 
 ### Switch it on on the beat
 
-The pattern restarts from its first step every time you switch the plugin on, and every pattern starts with a cut. Press
-the footswitch on the beat (or just before it) and the first chop lands exactly there.
+The pattern restarts from its first step every time you switch the plugin on, and the built-in patterns start with a cut.
+Press the footswitch on the beat (or just before it) and the first chop lands exactly there.
 
 ### Soften it with Depth
 
@@ -159,7 +206,7 @@ the chop into a soft swell.
 Before a delay, the cut chops what goes into the delay and the repeats go on ringing; after the delay, the repeats are
 chopped too. Try both places.
 
-## 7. Questions & answers
+## 8. Questions & answers
 
 ### Nothing is cut, I hear my guitar as it is.
 
@@ -181,9 +228,24 @@ output. On a stereo pedalboard, put one on each side with the same pattern and t
 
 Make **Edge** longer. At 0.1 ms the signal is stopped almost at once, which can click on a low note.
 
+### How many steps and how many levels can my own pattern have?
+
+Up to 16 steps, each with three levels (cut, half and pass), at 1 to 8 steps per beat.
+
+### I edited my pattern and it did not change what I hear.
+
+Check that **Pattern** is on **Custom** (the name on the plugin says so). The first edit switches it, but if you then chose
+another pattern with the arrows, or a controller did, press **Play this pattern**. And the step must be inside the
+**length**: the dimmer steps after it are not played.
+
+### Is my pattern saved?
+
+Yes, with the pedalboard, your saved presets and the snapshots. It is not in the factory presets, and it is not shared
+between pedalboards: each plugin on each pedalboard has its own.
+
 ### Does it change the level of my sound when it is on?
 
-Not while a step lets the signal through (it passes unchanged): the level only goes down in the cuts. So there is nothing
+Not while a step lets the signal through (it passes unchanged): the level only goes down in the cuts (and, a little, in the half steps). So there is nothing
 to compensate with a volume control.
 
 ### Why are the patterns named after guitarists?
