@@ -4,7 +4,7 @@
 # Assembled from store/ of https://github.com/SrMouraSilva/plugins-lv2 -- keep the four in step (see tools/store/pin.py).
 
 # The commit of the repository that is built: it must exist on GitHub. Update it with `python3 tools/store/pin.py`.
-HALF_MOUCO_VERSION = 3ba199a9fe5dd19772dd0c4503f4a037b081a7c6
+HALF_MOUCO_VERSION = bc156ddeef7b8e38d569aa72d4d70633fae3b38a
 HALF_MOUCO_SITE = https://github.com/SrMouraSilva/plugins-lv2.git
 HALF_MOUCO_SITE_METHOD = git
 HALF_MOUCO_BUNDLES = half-mouco.lv2
