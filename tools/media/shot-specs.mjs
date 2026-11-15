@@ -12,6 +12,11 @@
 //   fingerAt   [x, y] as a fraction of that element, when the default would cover what matters (a text field)
 //   crop       what the picture shows: a selector, or { closest: 'section', of: selector }
 //   scrollTo   (settings) a selector: the page that holds it is brought into view first
+//   query      more of the preview's query: jacks=1 keeps the jacks (the picture then includes them), device=390x844 is a phone
+//   transparent  nothing behind the plugin (the dark of a pedalboard is the default); margin  pixels around the crop
+//   scale      device pixel ratio (1.5 by default); wait  ms after setup before the picture (a toast stays about 2 s)
+//   out        a path in the bundle instead of docs/images (modgui/screenshot.png), format 'png', width in pixels of the picture
+//   crop 'window' is the whole window (a settings page as the user sees it)
 //
 // Run: node tools/media/shots.mjs all | <plugin>
 
@@ -22,8 +27,31 @@ const settings = (file, of, extra = {}) => ({
 const icon = (file, crop, extra = {}) => ({ file, view: 'shot', viewport: { width: 900, height: 640 }, crop, ...extra });
 const tile = (symbol) => `[mod-port-symbol="${symbol}"]`;
 
+// (The index of `preset=` in the query is the order of the preview's list, which is alphabetical.)
+// The pictures of the cover and of the overviews: the plugin alone, nothing behind it, as it is (a settings page: the whole
+// window, at the size of a laptop or of a phone). The states are the ones a reader finds when they open the plugin
+const alone = (file, crop, extra = {}) => icon(file, crop, { transparent: true, margin: 2, scale: 1, ...extra });
+// What MOD UI reads (they stay PNG): modgui/screenshot.png (500 px wide) and modgui/thumbnail.png (150 px), the plugin with
+// its jacks and nothing behind it
+const store = (crop, query) => ['screenshot', 'thumbnail'].map((name) => icon(`${name}.png`, crop, {
+  out: `modgui/${name}.png`, format: 'png', width: name === 'screenshot' ? 500 : 150, transparent: true, margin: 0, query,
+}));
+const window_ = (file, width, height, extra = {}) => ({ file, view: 'settings', viewport: { width, height }, crop: 'window', scale: 1, ...extra });
+// A phone: MOD UI has no viewport tag, so the page is laid out 1024 px wide and shrunk to the screen (see frame.html):
+// the window is 1024 wide, and the picture is taken at 1.5 times the size of the phone's screen
+const phone = (file, height, extra = {}) => window_(file, 1024, Math.round(height * 1024 / 390), { query: `device=390x${height}`, scale: 1.5 * 390 / 1024, ...extra });
+
+// The display shows the control that moved last: the footswitch on the pedal, the knob in the settings page
+const gossiper = (symbol, value) => `send({ type: 'change', symbol: '${symbol}', value: ${value} })`;
+const GOSSIPER_PEDAL = [gossiper('Potentiometer_1', 0.2), gossiper('Potentiometer_3', 0.63), gossiper('Footswitch_2', 1)];
+const GOSSIPER_SETTINGS = [gossiper('Potentiometer_1', 0.2), gossiper('Footswitch_2', 1), gossiper('Potentiometer_3', 0.63)];
+
 export const shots = {
   'tetr4-switch': [
+    // The cover of the manual (2x) and the overview of the settings page, on a laptop and on a phone
+    alone('panel.webp', '.tetr4-switch', { margin: 0, scale: 2 }),
+    window_('settings.webp', 1440, 800, { query: 'addressed=Preset_selector_1' }),
+    phone('settings-phone.webp', 740),
     // Quick start, step 4: Config 1 all down, Config 2 with switches 1 and 2 up
     icon('step-dip-switches.webp', '.tetr4-switch', {
       setup: [`send({type:'change',symbol:'Preset_1_output_1',value:0})`, `send({type:'change',symbol:'Preset_2_output_1',value:1})`],
@@ -43,6 +71,13 @@ export const shots = {
   ],
 
   'hept7-switch': [
+    ...store('.hept7', 'jacks=1'),
+    // "Seven-scene guitar rig" with preset 3 on: the display, the buttons and the jacks as the user sees them
+    alone('hept7-pedalboard.webp', '.hept7', { query: 'jacks=1&preset=2', setup: ['hostSelects(3)'], wait: 2800 }),
+    // ... and the display a moment after the change: it announces the preset (the toast stays for about two seconds)
+    alone('hept7-announce.webp', '.hept7', { query: 'jacks=1&preset=2', setup: ['hostSelects(3)'], wait: 300 }),
+    window_('hept7-settings.webp', 1366, 800, { query: 'preset=1' }),
+    phone('hept7-settings-phone.webp', 844, { query: 'device=390x844&preset=1' }),
     settings('step-assign-preset-buttons.webp', tile('Preset_selector_1'), { highlight: [tile('Preset_selector_1'), tile('Preset_selector_2')] }),
     // Section 3: leave the presets you do not use out of the cycle of Current preset
     {
@@ -56,6 +91,10 @@ export const shots = {
   ],
 
   'gossiper': [
+    ...store('.gossiper', 'jacks=1'),
+    // Footswitch 2 is on, Pot 1 at 20% and Pot 3 at 63%: the display says which control moved last
+    alone('gossiper-overview.webp', '.gossiper', { query: 'jacks=1', setup: GOSSIPER_PEDAL, wait: 1200 }),
+    window_('plugin-settings.webp', 1366, 800, { setup: GOSSIPER_SETTINGS, wait: 1200 }),
     settings('settings-step1-assign-footswitch.webp', tile('Footswitch_1')),
     settings('settings-step2-assign-to-notify.webp', tile('Assign_to_notify_1')),
     // Renaming a footswitch, on the pedal

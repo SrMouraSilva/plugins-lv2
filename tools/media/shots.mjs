@@ -32,8 +32,10 @@ const STYLE = `(() => {
 
 async function take(plugin, spec) {
   const page = await launch(spec.viewport);
+  // transparent: the plugin alone with nothing behind it (the pictures that go on the cover or are laid over a colour)
+  if (spec.transparent) await page.send('Emulation.setDefaultBackgroundColorOverride', { color: { r: 0, g: 0, b: 0, a: 0 } });
   await page.open(`${BASE}/frame.html?plugin=${plugin}&view=${spec.view}&latency=0${spec.query ? '&' + spec.query : ''}`);
-  if (spec.view === 'shot') {
+  if (spec.view === 'shot' && !spec.transparent) {
     await page.eval(`document.head.insertAdjacentHTML('beforeend', '<style>html, body, #pedalboard-dashboard { background: #14161d !important; }</style>')`);
   }
   await page.eval(STYLE);
@@ -57,13 +59,25 @@ async function take(plugin, spec) {
       document.body.appendChild(f);
     }
     const crop = ${JSON.stringify(spec.crop)};
+    if (crop === 'window') return { x: 0, y: 0, width: innerWidth, height: innerHeight };
     const el = typeof crop === 'string' ? q(crop) : q(crop.of).closest(crop.closest);
-    const r = el.getBoundingClientRect(), m = ${spec.view === 'shot' ? 14 : 6};
+    let r = el.getBoundingClientRect();
+    // The jacks are outside the body of the plugin (a column of them rests on its edge): the picture includes them
+    const jacks = ${JSON.stringify(/jacks=1/.test(spec.query || ''))} && q('.mod-pedal-output');
+    if (jacks) {
+      const j = jacks.getBoundingClientRect();
+      r = { left: Math.min(r.left, j.left), top: Math.min(r.top, j.top), right: Math.max(r.right, j.right), bottom: Math.max(r.bottom, j.bottom) };
+      r.width = r.right - r.left; r.height = r.bottom - r.top;
+    }
+    const m = ${spec.margin ?? (spec.view === 'shot' ? 14 : 6)};
     return { x: Math.max(0, r.left - m), y: Math.max(0, r.top - m), width: r.width + 2 * m, height: r.height + 2 * m };
   })()`);
-  await sleep(400);
-  const out = path.join(ROOT, 'plugins/resources', `${plugin}.lv2`, 'docs/images', spec.file);
-  fs.writeFileSync(out, await page.image(rect, { format: 'webp', quality: 90, scale: SCALE }));
+  await sleep(spec.wait ?? 400);
+  const bundle = path.join(ROOT, 'plugins/resources', `${plugin}.lv2`);
+  const out = path.join(bundle, spec.out || path.join('docs/images', spec.file));
+  // width: the picture is exactly that many pixels wide (the screenshot and the thumbnail that MOD UI reads)
+  const scale = spec.width ? spec.width / rect.width : spec.scale ?? SCALE;
+  fs.writeFileSync(out, await page.image(rect, { format: spec.format || 'webp', quality: 90, scale }));
   await page.close();
   console.log(`${plugin}: ${spec.file}`);
 }
