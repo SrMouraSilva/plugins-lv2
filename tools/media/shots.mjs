@@ -9,6 +9,7 @@
 //   node tools/media/shots.mjs gossiper      the pictures of one plugin
 //
 // The preview is started when it is not running already. Needs Node 22+ and Google Chrome.
+// A second argument picks one picture of the plugin by file name: node tools/media/shots.mjs kill-switch screenshot.png
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -62,11 +63,20 @@ async function take(plugin, spec) {
     if (crop === 'window') return { x: 0, y: 0, width: innerWidth, height: innerHeight };
     const el = typeof crop === 'string' ? q(crop) : q(crop.of).closest(crop.closest);
     let r = el.getBoundingClientRect();
-    // The jacks are outside the body of the plugin (a column of them rests on its edge): the picture includes them
-    const jacks = ${JSON.stringify(/jacks=1/.test(spec.query || ''))} && q('.mod-pedal-output');
-    if (jacks) {
-      const j = jacks.getBoundingClientRect();
-      r = { left: Math.min(r.left, j.left), top: Math.min(r.top, j.top), right: Math.max(r.right, j.right), bottom: Math.max(r.bottom, j.bottom) };
+    // The jacks are outside the body of the plugin (a column of them rests on each edge): the picture includes them,
+    // the inputs on the left as well as the outputs on the right. Their boxes are 80-88 px wide, but the socket is the
+    // 6-16 px of it on the side of the plugin (the rest is where the plug goes): with plugs=0 only that part counts,
+    // with a few pixels more for its shadow
+    if (${JSON.stringify(/jacks=1/.test(spec.query || ''))}) {
+      const socketsOnly = ${JSON.stringify(/plugs=0/.test(spec.query || ''))};
+      for (const j of document.querySelectorAll('.mod-input, .mod-output')) {
+        const b = j.getBoundingClientRect();
+        if (!b.width || !b.height) continue;
+        const isInput = j.classList.contains('mod-input');
+        const left = isInput || socketsOnly ? (isInput ? b.right - 20 : b.left) : b.left;
+        const right = isInput ? b.right : socketsOnly ? b.left + 20 : b.right;
+        r = { left: Math.min(r.left, left), top: Math.min(r.top, b.top), right: Math.max(r.right, right), bottom: Math.max(r.bottom, b.bottom) };
+      }
       r.width = r.right - r.left; r.height = r.bottom - r.top;
     }
     const m = ${spec.margin ?? (spec.view === 'shot' ? 14 : 6)};
@@ -82,7 +92,7 @@ async function take(plugin, spec) {
   console.log(`${plugin}: ${spec.file}`);
 }
 
-const [which = 'all'] = process.argv.slice(2);
+const [which = 'all', onlyFile] = process.argv.slice(2);
 let server = null;
 if (!(await previewIsUp())) {
   server = spawn('python3', [path.join(ROOT, 'tools/modgui-preview/serve.py'), '--port', String(PORT)], { stdio: 'ignore' });
@@ -91,7 +101,7 @@ if (!(await previewIsUp())) {
 try {
   for (const [plugin, list] of Object.entries(shots)) {
     if (which !== 'all' && which !== plugin) continue;
-    for (const spec of list) await take(plugin, spec);
+    for (const spec of list) if (!onlyFile || spec.file === onlyFile) await take(plugin, spec);
   }
 } finally {
   server?.kill();

@@ -138,16 +138,26 @@ export const scenarios = {
       while ((await bpm()) !== 120) await ctx.tap((await bpm()) > 120 ? '.ks-bpm-down' : '.ks-bpm-up', 60);
       await ctx.sleep(700);
     }),
-    // The editor of the custom pattern: a step goes through its three levels in a circle, the length and the steps per beat
+    // What plays (a pattern, then Custom), its tempo and the editor of the custom pattern: a step goes through its three
+    // levels in a circle, the length and the steps per beat. On a screen with room the editor sits under the choices; on a
+    // small one a button takes to it
     settings: settings('kill-switch', async (ctx) => {
-      await ctx.sleep(700);
+      await ctx.sleep(800);
+      await ctx.tap('.kss-choice[data-index="5"]');                       // Gallop
+      await ctx.sleep(900);
+      await ctx.tap('.kss-choice[data-index="10"]');                      // Custom
+      await ctx.sleep(800);
+      if (await ctx.eval(`getComputedStyle(document.querySelector('.kss-edit-pattern')).display !== 'none'`)) {
+        await ctx.tap('.kss-edit-pattern');                               // the editor is on a page of its own
+        await ctx.sleep(1100);
+      }
       for (let i = 0; i < 3; i++) { await ctx.tap('.kss-cell:nth-child(1)', 100); await ctx.sleep(450); }     // cut, half, pass, and cut again
       await ctx.tap('.kss-cell:nth-child(4)', 100);                       // pass -> cut
       await ctx.sleep(450);
       await ctx.tap('.kss-length-up', 100); await ctx.tap('.kss-length-up', 100);
       await ctx.tap('.kss-beat-up', 100);
       await ctx.sleep(700);
-      await visitPages(ctx, { next: '.kss-next', dot: '.kss-dot', tile: true, tileSymbol: (page) => ['', 'pattern', ''][page] || '' });
+      await visitPages(ctx, { next: '.kss-next', dot: '.kss-dot', tile: true, tileSymbol: () => 'pattern' });
       // Back to the start, as a controller would put it (the first edit switched Pattern to Custom)
       for (const [symbol, value] of [['pattern', 0], ['custom_step_4', 2], ['custom_length', 8], ['custom_steps_per_beat', 2]]) {
         await ctx.eval(`send({ type: 'change', symbol: '${symbol}', value: ${value} })`);
@@ -185,18 +195,35 @@ export const scenarios = {
       await send('ending', 0); await send('length', 8);
       await ctx.sleep(700);
     }),
-    // The editor of the custom pattern: a step goes through its three levels in a circle, on each side
+    // What plays (a pattern, an ending, Custom), its tempo and the editor of the custom pattern: a step goes through its
+    // three levels in a circle, on each side. On a screen with room the editor sits under the choices; on a small one a
+    // button takes to it
     settings: settings('half-mouco', async (ctx) => {
-      await ctx.sleep(700);
+      const send = (symbol, value) => ctx.eval(`send({ type: 'change', symbol: '${symbol}', value: ${value} })`);
+      await ctx.sleep(800);
+      await ctx.tap('.hms-choice[data-index="5"]');                        // Gallop sides
+      await ctx.sleep(900);
+      await ctx.tap('.hms-mode[data-mode="1"]');                           // the endings
+      await ctx.sleep(500);
+      await ctx.tap('.hms-choice[data-index="1"]');                        // Helicopter
+      await ctx.sleep(1000);
+      await ctx.tap('.hms-mode[data-mode="0"]');                           // back to the patterns
+      await ctx.sleep(500);
+      await ctx.tap('.hms-choice[data-index="9"]');                        // Custom
+      await ctx.sleep(800);
+      if (await ctx.eval(`getComputedStyle(document.querySelector('.hms-edit-pattern')).display !== 'none'`)) {
+        await ctx.tap('.hms-edit-pattern');                                // the editor is on a page of its own
+        await ctx.sleep(1100);
+      }
       for (let i = 0; i < 3; i++) { await ctx.tap('.hms-steps[data-side="l"] .hms-cell:nth-child(1)', 100); await ctx.sleep(450); }   // cut, half, pass, and cut again
       for (let i = 0; i < 3; i++) { await ctx.tap('.hms-steps[data-side="r"] .hms-cell:nth-child(1)', 100); await ctx.sleep(450); }
       await ctx.tap('.hms-length-up', 100); await ctx.tap('.hms-length-up', 100);
       await ctx.tap('.hms-beat-up', 100);
       await ctx.sleep(700);
-      await visitPages(ctx, { next: '.hms-next', dot: '.hms-dot', tile: true, tileSymbol: (page) => ['', 'mode', ''][page] || '' });
-      // Back to the start, as a controller would put it (the first edit switched Pattern to Custom)
-      for (const [symbol, value] of [['pattern', 0], ['custom_length', 8], ['custom_steps_per_beat', 2]]) {
-        await ctx.eval(`send({ type: 'change', symbol: '${symbol}', value: ${value} })`);
+      await visitPages(ctx, { next: '.hms-next', dot: '.hms-dot', tile: true, tileSymbol: () => 'mode' });
+      // Back to the start, as a controller would put it
+      for (const [symbol, value] of [['mode', 0], ['ending', 0], ['pattern', 0], ['custom_length', 8], ['custom_steps_per_beat', 2]]) {
+        await send(symbol, value);
       }
       await ctx.sleep(600);
     }, 540),

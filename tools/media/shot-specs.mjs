@@ -32,9 +32,10 @@ const tile = (symbol) => `[mod-port-symbol="${symbol}"]`;
 // window, at the size of a laptop or of a phone). The states are the ones a reader finds when they open the plugin
 const alone = (file, crop, extra = {}) => icon(file, crop, { transparent: true, margin: 2, scale: 1, ...extra });
 // What MOD UI reads (they stay PNG): modgui/screenshot.png (500 px wide) and modgui/thumbnail.png (150 px), the plugin with
-// its jacks and nothing behind it
+// its connectors (the sockets on both sides, as the other pedals' pictures have them) and nothing behind it: no plugs.
+// The margin keeps the 2 px ring that the body casts (box-shadow) and the shadow of the sockets, which a tight crop cuts
 const store = (crop, query) => ['screenshot', 'thumbnail'].map((name) => icon(`${name}.png`, crop, {
-  out: `modgui/${name}.png`, format: 'png', width: name === 'screenshot' ? 500 : 150, transparent: true, margin: 0, query,
+  out: `modgui/${name}.png`, format: 'png', width: name === 'screenshot' ? 500 : 150, transparent: true, margin: 4, query: `${query}&plugs=0`,
 }));
 const window_ = (file, width, height, extra = {}) => ({ file, view: 'settings', viewport: { width, height }, crop: 'window', scale: 1, ...extra });
 // A phone: MOD UI has no viewport tag, so the page is laid out 1024 px wide and shrunk to the screen (see frame.html):
@@ -52,6 +53,7 @@ const GOSSIPER_SETTINGS = [gossiper('Potentiometer_1', 0.2), gossiper('Footswitc
 
 export const shots = {
   'tetr4-switch': [
+    ...store('.tetr4-switch', 'jacks=1'),
     // The cover of the manual (2x) and the overview of the settings page, on a laptop and on a phone
     alone('panel.webp', '.tetr4-switch', { margin: 0, scale: 2 }),
     window_('settings.webp', 1440, 800, { query: 'addressed=Preset_selector_1' }),

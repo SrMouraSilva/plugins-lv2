@@ -41,7 +41,8 @@
  * of a factory preset, or what the page around it sends), and what the interface asks the plugin to do is
  * logged in window.__log.
  *
- * Query:  plugin=NAME   view=icon|settings|shot (the icon alone, for screenshots; jacks=1 keeps the jacks)
+ * Query:  plugin=NAME   view=icon|settings|shot (the icon alone, for screenshots; jacks=1 keeps the jacks,
+ *          plugs=0 also hides the plugs of the outputs, which leaves the connectors alone, as in the store's picture)
  *          device=390x844 (the screen of a phone, as MOD UI shows itself on it: see the top of this file)
  *          preset=INDEX   addressed=Symbol,Symbol   click=CSS selector
  *          latency=MS (delay of the simulated host, 150)   simulate=0 (no simulated host)
@@ -96,6 +97,7 @@ fetch('/api/plugin/' + q.get('plugin')).then((r) => r.json()).then(async (model)
   if (view === 'shot') {
     $('html, body, #pedalboard-dashboard').css({ background: 'transparent', padding: 0 });
     icon.css({ position: 'fixed', left: 20, top: 20 }).find(q.get('jacks') ? '.mod-actions' : '.mod-actions, .mod-pedal-output, .mod-pedal-input').hide();
+    if (q.get('plugs') === '0') icon.find('.mod-output-jack').hide();
   }
 
   let method; eval('method = ' + js);
