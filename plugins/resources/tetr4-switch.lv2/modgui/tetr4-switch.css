@@ -84,8 +84,10 @@
  * The plugin on the pedalboard
  * ========================================================================== */
 
+/* The sockets start at the outer edge of the 2px ring of the body, not under it: they are only 6px wide */
 .tetr4-switch-base.mod-pedal .mod-pedal-output {
   top: 0px;
+  right: -89px;
 }
 
 .tetr4-switch {
@@ -125,24 +127,25 @@
 }
 
 .t4-brand {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+  display: block;
   font-size: 13px;
   font-weight: 800;
+  line-height: 1.15;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--t4-text);
 }
 
-/* The four preset colours, as a small mark */
-.t4-brand::before {
-  content: "";
-  width: 24px;
-  height: 12px;
-  border-radius: 4px;
-  background: linear-gradient(90deg, var(--t4-c1) 0 25%, var(--t4-c2) 0 50%, var(--t4-c3) 0 75%, var(--t4-c4) 0);
-  box-shadow: 0 0 0 2px rgba(0, 0, 20, 0.5);
+/* The vendor (modgui:brand), under the name */
+.t4-vendor {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  white-space: nowrap;
+  opacity: 0.62;
 }
 
 .t4-open {
@@ -466,28 +469,27 @@
   white-space: nowrap;
 }
 
+/* Only tells the state (it cannot be pressed): flat, with no fill, no shadow and no box, so it is neither a button
+   (raised) nor a field (sunk): a rule at its side in the colour of the state, the caption and the value as text */
 .t4s-now {
   display: flex;
   align-items: center;
   gap: 10px;
   min-width: 0;
   max-width: 100%;
-  padding: 5px 18px 5px 5px;
-  border-radius: 999px;
-  background: var(--t4-ink-2);
-  box-shadow: 0 3px 0 var(--t4-ink);
+  padding: 2px 0 2px 12px;
+  border-left: 3px solid var(--c-active, var(--t4-c1));
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .t4s-now-num {
   flex: 0 0 auto;
-  width: 36px;
-  height: 36px;
-  line-height: 36px;
-  border-radius: 50%;
-  text-align: center;
+  font-size: 24px;
   font-weight: 800;
-  color: var(--t4-ink);
-  background: var(--c-active, var(--t4-c1));
+  line-height: 1;
+  color: var(--c-active, var(--t4-c1));
 }
 
 .t4s-now-label {
