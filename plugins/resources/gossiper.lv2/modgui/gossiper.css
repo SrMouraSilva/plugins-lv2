@@ -387,7 +387,7 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  padding: 9px 6px 8px;
+  padding: 17px 6px 8px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.07);
   background: color-mix(in srgb, var(--c) 13%, transparent);
@@ -396,8 +396,25 @@
   transition: background-color 0.2s, box-shadow 0.2s;
 }
 
-/* The whole card is the colour of its footswitch: it says which one it is without a button-like disc. The one used last
-   has a firmer outline, and a footswitch that is on has a fuller tint and an outline of its colour (no light: it is calm) */
+/* The whole card is the colour of its footswitch: it says which one it is without a button-like disc. A short bar, like the
+   LED of the pedals of the family, is lit while the footswitch is on, and then the card also has a fuller tint, an outline
+   of its colour and a halo on the number. The one used last has a firmer outline */
+.gp-fs::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 20px;
+  height: 4px;
+  margin-left: -10px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--c) 22%, transparent);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 40%, transparent);
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
 .gp-fs.is-last {
   background: rgba(255, 255, 255, 0.1);
   background: color-mix(in srgb, var(--c) 18%, transparent);
@@ -406,9 +423,14 @@
 }
 
 .gp-fs.is-on {
-  background: rgba(255, 255, 255, 0.14);
-  background: color-mix(in srgb, var(--c) 24%, transparent);
+  background: rgba(255, 255, 255, 0.16);
+  background: color-mix(in srgb, var(--c) 30%, transparent);
   box-shadow: inset 0 0 0 2px var(--c);
+}
+
+.gp-fs.is-on::before {
+  background: var(--c);
+  box-shadow: 0 0 8px 1px var(--c);
 }
 
 /* The number: only text in the colour of the card */
