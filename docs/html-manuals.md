@@ -145,6 +145,9 @@ assign: **Assigning the plugin:** Out 1 → Distortion
 ```
 ````
 
+With more than four columns the cells are smaller, and with more than **eight** (a sequencer of sixteen steps) the grid is laid
+out above the text instead of beside it.
+
 ### A picture with numbered pins
 
 Raw HTML, with the position of each pin in percent of the picture. Describe the numbers in a table with

@@ -192,6 +192,17 @@ p > img { max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 0 0 
 .recipe-body .assign { margin: 12px 0 0; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 14px; color: var(--muted); }
 .recipe.wide { --cell: 24px; grid-template-columns: minmax(300px, 340px) minmax(0, 1fr); }
 .recipe.wide .recipe-row i { height: 24px; }
+.recipe.xwide { --cell: 22px; grid-template-columns: minmax(0, 1fr); }
+.recipe.xwide .recipe-row i { height: 22px; }
+.recipe.xwide .recipe-row b { min-width: 150px; }
+@media (max-width: 760px) {
+  /* sixteen columns on a phone: the cells shrink to fit and the name of the row is cut short */
+  .recipe.xwide { padding: 18px 14px; }
+  .recipe.xwide .recipe-cols, .recipe.xwide .recipe-row { grid-template-columns: minmax(78px, 104px) repeat(var(--n), minmax(0, 1fr)); gap: 3px; }
+  .recipe.xwide .recipe-row b { min-width: 0; font-size: 12.5px; }
+  .recipe.xwide .recipe-row i { height: 20px; border-radius: 5px; }
+  .recipe.xwide .recipe-cols span { font-size: 9px; }
+}
 @media (max-width: 760px) { .recipe, .recipe.wide { grid-template-columns: 1fr; } }
 
 /* questions */

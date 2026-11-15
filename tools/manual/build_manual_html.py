@@ -83,6 +83,8 @@ def recipe_block(block: str, colors: list) -> str:
     text = "".join(f"<p>{markdown.markdown(p, extensions=[])[3:-4]}</p>" for p in body)
     assign_html = f'<p class="assign">{markdown.markdown(assign)[3:-4]}</p>' if assign else ""
     wide = " wide" if len(cols) > 4 else ""     # more than four outputs: smaller cells and a wider grid column
+    if len(cols) > 8:                           # more than eight (Kill Switch: sixteen steps): the grid goes above the text
+        wide += " xwide"
     return (f'\n<div class="recipe{wide}" style="--n:{len(cols)}"><div class="recipe-grid"><div class="recipe-cols"><b></b>{header}</div>{grid}</div>'
             f'<div class="recipe-body"><h4>{html.escape(title)}</h4>{text}{assign_html}</div></div>\n')
 
