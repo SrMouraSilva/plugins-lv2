@@ -126,23 +126,24 @@
 }
 
 .hm-brand {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+  display: block;
   font-size: 13px;
   font-weight: 800;
+  line-height: 1.15;
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
-/* A mark: a signal that passes, is cut, passes... */
-.hm-brand::before {
-  content: "";
-  width: 24px;
-  height: 12px;
-  border-radius: 4px;
-  background: linear-gradient(90deg, var(--hm-red) 0 25%, var(--hm-cut) 0 50%, var(--hm-red) 0 75%, var(--hm-cut) 0);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
+/* The vendor (modgui:brand), under the name */
+.hm-vendor {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  white-space: nowrap;
+  opacity: 0.62;
 }
 
 .hm-state {
@@ -1041,9 +1042,15 @@
 
 .hms[data-w="s"] .hms-title { margin-right: 0; }
 
-.hms[data-w="s"] .hms-close { order: 3; min-width: 88px; padding: 0 20px; }
+.hms[data-w="s"] .hms-close { order: 2; min-width: 88px; padding: 0 20px; }
 
-.hms[data-w="s"] .hms-nav { order: 4; flex: 1 1 100%; justify-content: space-between; }
+.hms[data-w="s"] .hms-switches { order: 3; flex: 1 1 100%; }
+
+.hms[data-w="s"] .hms-modes { flex: 1 1 auto; }
+
+.hms[data-w="s"] .hms-mode { flex: 1 1 0; }
+
+.hms[data-w="s"] .hms-nav { order: 5; flex: 1 1 100%; justify-content: space-between; }
 
 .hms[data-w="s"] .hms-dots { flex: 1 1 auto; justify-content: center; }
 
@@ -1086,16 +1093,19 @@
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 1px var(--hm-line);
 }
 
+/* Only tells the state (it cannot be pressed): flat, with no fill, no shadow and no box, so it is neither a button
+   (raised) nor a field (sunk): a rule at its side in the colour of the state, the caption and the value as text */
 .hms-now {
   display: flex;
   align-items: center;
   gap: 10px;
   min-width: 0;
   max-width: 100%;
-  padding: 5px 18px 5px 14px;
-  border-radius: 999px;
-  background: var(--hm-ink-2);
-  box-shadow: 0 3px 0 var(--hm-ink);
+  padding: 2px 0 2px 12px;
+  border-left: 3px solid var(--hm-accent);
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .hms-now small {
   flex: 0 0 auto;
@@ -1242,6 +1252,42 @@
 .hms-button:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--hm-ink), inset 0 0 0 1px var(--hm-line); }
 .hms-select { appearance: auto; -webkit-appearance: menulist; padding: 0 10px; }
 .hms-select option { color: #0a1315; background: #fff; }
+
+/* What plays and Mono, in the top bar as on the pedal */
+.hms-switches {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hms-modes {
+  display: flex;
+  padding: 3px;
+  gap: 3px;
+  border-radius: 17px;
+  background: var(--hm-ink);
+  box-shadow: inset 0 0 0 1px var(--hm-line), inset 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+.hms-mode {
+  min-width: 0;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--hm-muted);
+  transition: background-color 0.15s, color 0.15s;
+}
+.hms-mode:hover { color: var(--hm-text); }
+.hms-mode[aria-checked="true"] { color: var(--hm-ink); background: var(--hm-red); box-shadow: 0 0 12px -2px var(--hm-red); }
+
+/* Mono: lit while the left input feeds both sides */
+.hms-mono[aria-pressed="true"] {
+  color: var(--hm-ink);
+  background: var(--hm-red);
+  box-shadow: 0 3px 0 var(--hm-red-deep);
+}
+.hms-mono[aria-pressed="true"]:hover { background: #7aefd9; }
 
 /* "Play this pattern": pressed while Pattern is on Custom */
 .hms-use {
@@ -1456,3 +1502,245 @@
 .hms[data-h="s"] .hms-steps { gap: 4px; }
 .hms[data-w="s"] .hms-editor,
 .hms[data-h="s"] .hms-editor { gap: 6px; }
+
+
+/* ==========================================================================
+ * Settings page: what is playing, and tempo and feel (all that the pedal has in its face, with room to spare)
+ * ========================================================================== */
+
+.hms-view-lane[data-side="l"] { --lane: var(--hm-l); --lane-half: #1d7fa3; --lane-off: #2d5461; }
+.hms-view-lane[data-side="r"] { --lane: var(--hm-r); --lane-half: #a8742a; --lane-off: #6a5632; }
+
+.hms-row > .hms-play-panel { flex: 3 1 0; }
+.hms-row > .hms-sound-panel { flex: 2 1 0; }
+.hms-row > .hms-play-panel,
+.hms-row > .hms-sound-panel { align-self: stretch; }
+
+/* The head of the playing panel: its name, and the two families beside it */
+.hms-play-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-bottom: 6px;
+}
+.hms-play-head .hms-modes { min-width: 260px; }
+.hms-play-head .hms-mode { flex: 1 1 0; }
+.hms .hms-play-name {
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--hm-text);
+}
+.hms-play-hint {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--hm-muted);
+}
+
+/* Everything that can play, to pick with one tap */
+.hms-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+.hms-choice {
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--hm-text);
+  background: var(--hm-ink-3);
+  box-shadow: 0 3px 0 var(--hm-ink), inset 0 0 0 1px var(--hm-line);
+  transition: background-color 0.15s;
+}
+.hms-choice:hover { background: #25403f; }
+.hms-choice:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--hm-ink), inset 0 0 0 1px var(--hm-line); }
+.hms-choice[aria-checked="true"] {
+  color: var(--hm-ink);
+  background: var(--hm-red);
+  box-shadow: 0 3px 0 var(--hm-red-deep), 0 0 14px -3px var(--hm-red);
+}
+
+/* What each side does: the steps of the pattern (or the ending along its time), as on the pedal but bigger */
+.hms-view {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 2px 0 2px 12px;
+  border-left: 3px solid var(--hm-accent);
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.hms-view-caption {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hm-muted);
+}
+.hms-view-lane {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+.hms-view-lane > b {
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  color: var(--lane);
+}
+.hms-view-steps {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  gap: 4px;
+  height: 18px;
+}
+.hms-view-steps i {
+  display: block;
+  border-radius: 5px;
+  background: var(--hm-cut);
+  transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+.hms-view-steps i.l2 { background: var(--lane); box-shadow: 0 0 12px -1px var(--lane); }
+.hms-view-steps i.l1 { background: var(--lane-half); }
+.hms-view-steps i.again { opacity: 0.4; }
+.hms-view-steps i.start { margin-left: 4px; }
+.hms-view-steps[data-kind="ending"] { gap: 2px; }
+.hms-view-steps[data-kind="ending"] i { border-radius: 3px; }
+.hms-view-steps[data-kind="ending"] i.start { margin-left: 0; }
+.hms.is-bypassed .hms-view-steps i.l2,
+.hms.is-bypassed .hms-view-steps i.l1 { background: var(--lane-off); box-shadow: none; }
+
+/* Tempo and feel: one block for each thing the pedal has under its display */
+.hms-sound {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 28px;
+}
+.hms-knob { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.hms-knob-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hm-muted);
+}
+.hms-knob-head small { font-size: 12px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+.hms-knob-head output { font-size: 20px; letter-spacing: 0; text-transform: none; color: var(--hm-text); }
+.hms-ends { display: flex; justify-content: space-between; gap: 8px; margin-top: -6px; }
+.hms-ends small { font-size: 12px; color: var(--hm-muted); }
+
+.hms-tempo,
+.hms-speed,
+.hms-length-knob { grid-column: 1 / -1; }
+.hms-stepper-big { grid-template-columns: 56px minmax(96px, 1fr) 56px; gap: 8px; }
+.hms-stepper-big .hms-button { min-height: 56px; font-size: 22px; }
+.hms-stepper-big output { display: flex; align-items: baseline; justify-content: center; gap: 8px; }
+.hms-stepper-big output b { font-size: 40px; line-height: 1; letter-spacing: 0; }
+.hms-stepper-big output small { display: inline; font-size: 13px; letter-spacing: 0.1em; }
+
+/* Patterns have a speed, endings a length */
+.hms[data-mode="0"] .hms-length-knob,
+.hms[data-mode="1"] .hms-speed { display: none; }
+
+.hms-segments {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border-radius: 16px;
+  background: var(--hm-ink);
+  box-shadow: inset 0 0 0 1px var(--hm-line), inset 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+.hms-segment {
+  min-width: 0;
+  min-height: 48px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--hm-muted);
+  transition: background-color 0.15s, color 0.15s;
+}
+.hms-segment:hover { color: var(--hm-text); }
+.hms-segment[aria-checked="true"] { color: var(--hm-ink); background: var(--hm-red); box-shadow: 0 0 12px -2px var(--hm-red); }
+
+.hms-slider {
+  display: block;
+  width: 100%;
+  height: 44px;
+  cursor: pointer;
+  background: transparent;
+  --hm-fill: 100%;
+}
+.hms-slider::-webkit-slider-runnable-track {
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--hm-red) 0 var(--hm-fill), var(--hm-ink) var(--hm-fill) 100%);
+  box-shadow: inset 0 0 0 1px var(--hm-line);
+}
+.hms-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 30px;
+  height: 30px;
+  margin-top: -10px;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 0, #dcecea 40%, #9fb2af 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+.hms-slider::-moz-range-track { height: 10px; border-radius: 5px; background: var(--hm-ink); box-shadow: inset 0 0 0 1px var(--hm-line); }
+.hms-slider::-moz-range-progress { height: 10px; border-radius: 5px; background: var(--hm-red); }
+.hms-slider::-moz-range-thumb { width: 30px; height: 30px; border: 0; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff 0, #dcecea 40%, #9fb2af 100%); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
+
+/* On/off, in the top bar: lit while the effect is on */
+.hms-power[aria-pressed="true"] { color: var(--hm-ink); background: var(--hm-red); box-shadow: 0 3px 0 var(--hm-red-deep); }
+.hms-power[aria-pressed="true"]:hover { background: #7aefd9; }
+.hms-switches { flex-wrap: wrap; }
+
+/* Narrow and short screens: one column, tighter */
+.hms[data-w="s"] .hms-sound { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.hms[data-w="s"] .hms-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.hms[data-w="s"] .hms-play-hint { display: none; }
+.hms[data-w="s"] .hms-play-head .hms-modes { min-width: 0; width: 100%; }
+.hms[data-w="s"] .hms-view-steps { height: 28px; gap: 3px; }
+.hms[data-w="s"] .hms-stepper-big output b { font-size: 34px; }
+.hms[data-h="s"] .hms-play-hint { display: none; }
+.hms[data-h="s"] .hms-view-steps { height: 26px; }
+.hms[data-h="s"] .hms-sound { gap: 12px 24px; }
+.hms[data-h="s"] .hms-knob { gap: 6px; }
+.hms[data-h="s"] .hms-ends { display: none; }
+
+
+/* What belongs on the first page, in a column: the editor only while Custom plays. The view stays: it is what the
+   pattern does, and it is the same for every choice, so there is nothing new to learn when the choice is Custom */
+.hms[data-together="1"][data-custom="0"] .hms-pattern-panel { display: none; }
+.hms[data-together="1"] .hms-use { display: none; }
+.hms-page > .hms-row { align-self: stretch; }
+.hms-row > .hms-stack > .hms-pattern-panel { flex: 0 0 auto; }
+.hms-sound-panel .hms-sound { gap: 16px 24px; }
+.hms-sound .hms-stepper-big { grid-template-columns: 52px minmax(96px, 1fr) 52px; }
+.hms-sound .hms-stepper-big .hms-button { min-height: 52px; }
+.hms-stepper-big output b { font-size: 34px; }
+.hms[data-w="s"] .hms-view-steps { height: 16px; gap: 3px; }
+.hms[data-h="s"] .hms-view-steps { height: 14px; }
+
+/* Beside the choice of pattern, tempo and feel is as tall as it needs to be */
+.hms-page > .hms-row > .hms-sound-panel { align-self: flex-start; }
+.hms[data-together="1"] .hms-pattern-panel .hms-panel-head p { margin-top: 2px; }
+
+/* The way to the editor, only while Custom plays and the editor is on a page of its own */
+.hms-edit-pattern { display: none; margin-top: 12px; width: 100%; }
+.hms[data-together="0"][data-custom="1"] .hms-edit-pattern { display: block; }

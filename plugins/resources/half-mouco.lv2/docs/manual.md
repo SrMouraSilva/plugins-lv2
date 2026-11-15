@@ -59,7 +59,7 @@ You need a pedalboard with an audio input and an output, and a guitar (or any so
 | **Depth** | From 0% to 100%: how much of the signal a cut removes. 100% is silence; lower values only dip the level. |
 | **Edge** | From 0.1 ms to 20 ms, on a logarithmic scale: how long a cut takes to close and to open again. |
 | **Mono** | On: the left input feeds both sides. Off: each side has its own input. |
-| **Edit** | Opens the settings page: the editor of your own pattern and the controls to assign (section 5). |
+| **Edit** | Opens the settings page: everything on the plugin with more room, the editor of your own pattern and the controls to assign (section 5). |
 | **The footswitch and its light** | The **bypass** of the plugin. The ring and the light above it are lit while the effect is on, and the label at the top says *On* or *Bypassed*. |
 | **Audio jacks** | `In L` and `In R` on the left, `Out L` and `Out R` on the right. |
 
@@ -139,10 +139,18 @@ Changing the ending or the family while the plugin is on starts the new one from
 
 ## 5. Your own pattern
 
-The tenth pattern, **Custom**, is yours. Click **Edit** on the plugin (or open its settings with the gear icon): the first page of
-the settings is the editor.
+The tenth pattern, **Custom**, is yours. Click **Edit** on the plugin (or open its settings with the gear icon). The settings page has
+everything the plugin has, with more room, and its first page is where you play and write:
 
-![The settings page: the editor of the custom pattern, with a row for each side, the controls to assign and the saved presets](images/settings.webp)
+* **The choice**: **Patterns** or **Endings**, and under it every pattern (or ending) to pick with one tap, and a **Preview** of what
+  each side does (it only shows: it is not a control). Choosing **Custom** opens the editor right there, under the preview.
+* **Tempo and feel**, beside it: the tempo (with its buttons and a slider), **Speed** (or **Length**, in Endings), **Depth** and **Edge**.
+* **In the top bar**, on every page: **Mono**, and **On** / **Bypassed**, the footswitch of the plugin.
+
+On a small screen there is no room for all of it on one page: the editor then has a page of its own, and a button under the list,
+**Edit the custom pattern →**, takes you there.
+
+![The settings page: the choice of pattern, the editor of the custom pattern with a row for each side, and tempo and feel](images/settings.webp)
 
 A step has **three levels**, and a tap on it goes to the next one, round and round:
 
@@ -160,14 +168,15 @@ A step has **three levels**, and a tap on it goes to the next one, round and rou
 2. **Set the length** with **−** and **+**: from 1 to 16 steps, the same for both sides. Only the first steps are played; the dimmer ones after
    them are kept, so you can shorten a pattern and bring its end back.
 3. **Set the steps per beat**, from 1 to 8: with 2 a step is an eighth note, 4 a sixteenth, 3 a triplet, 1 a quarter note.
-4. **Listen to it.** The first change you make puts the plugin on **Patterns**, on **Custom**, so what you write is what you hear. The
-   **Play this pattern** button does the same without changing anything.
+4. **Listen to it.** Choosing **Custom** in the list plays it, and so does the first change you make to a step: the plugin goes to
+   **Patterns**, on **Custom**, so what you write is what you hear. Where the editor has a page of its own, the **Play this pattern**
+   button does the same without changing anything.
 
 > [!TIP] Start from a built-in pattern
 > **Copy from…** copies one of the nine built-in patterns (both rows, length and steps per beat) into your own, ready to be changed.
 
 Your pattern is made of controls of the plugin, so it is saved with the **pedalboard**, with your own **saved presets** and with
-**snapshots**. The factory presets do not touch it. On a small screen the settings have more than one page: use the arrows of the top bar (or swipe
+**snapshots**. The factory presets do not touch it. The settings have more than one page: use the arrows of the top bar (or swipe
 sideways) to go to the assignments (**On / off** and **Controls**) and to the **Saved presets**.
 
 ![Going through the settings page: the two rows of steps, the length, the steps per beat and every page](images/half-mouco-settings.webp)
@@ -265,7 +274,7 @@ No: the signal is only multiplied by a number that goes up and down.
 ### I edited my pattern and it did not change what I hear.
 
 Check that the family is **Patterns** and the pattern is **Custom** (the name on the plugin says so). The first edit switches both, but if you then chose
-another one, press **Play this pattern**. And the step must be inside the **length**: the dimmer steps after it are not played.
+another one, choose **Custom** again in the list (or press **Play this pattern**). And the step must be inside the **length**: the dimmer steps after it are not played.
 
 ### Is my pattern saved?
 

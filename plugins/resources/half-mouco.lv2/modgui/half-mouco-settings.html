@@ -12,6 +12,12 @@
           <span class="hms-now-label">Chop 8ths</span>
         </div>
 
+        <!-- What the pedal has in its face and must be at hand on every page: on/off and Mono (the left input feeds both sides) -->
+        <div class="hms-switches">
+          <button type="button" class="hms-button hms-mono" aria-pressed="false" title="Mono input: the left input feeds both sides">Mono</button>
+          <button type="button" class="hms-button hms-power" aria-pressed="false" title="Turn the effect on or off (the footswitch of the pedal)">Bypassed</button>
+        </div>
+
         <!-- The page being shown: always visible, whatever the input device (a swipe also changes it) -->
         <nav class="hms-nav" aria-label="Pages">
           <button type="button" class="hms-step hms-prev" aria-label="Previous page" title="Previous page">
@@ -32,6 +38,78 @@
       <main class="hms-pager"></main>
 
       <div class="hms-stock" hidden>
+        <!-- What is playing: the choice of pattern or ending, and what each side does with it, as big as the page allows -->
+        <section class="hms-panel hms-play-panel" data-panel="play">
+          <div class="hms-panel-head hms-play-head">
+            <div>
+              <span class="hms-eyebrow hms-play-kind">Pattern</span>
+              <h2 class="hms-play-name">Ping-pong 8ths</h2>
+            </div>
+            <div class="hms-modes" role="radiogroup" aria-label="What plays">
+              <button type="button" class="hms-mode" role="radio" aria-checked="true" data-mode="0">Patterns</button>
+              <button type="button" class="hms-mode" role="radio" aria-checked="false" data-mode="1">Endings</button>
+            </div>
+          </div>
+          <p class="hms-play-hint"></p>
+          <div class="hms-choices" role="radiogroup" aria-label="Pick what plays"></div>
+          <div class="hms-view" aria-label="What each side does">
+            <span class="hms-view-caption" aria-hidden="true">Preview</span>
+            <div class="hms-view-lane" data-side="l"><b aria-hidden="true">L</b><div class="hms-view-steps" role="img"></div></div>
+            <div class="hms-view-lane" data-side="r"><b aria-hidden="true">R</b><div class="hms-view-steps" role="img"></div></div>
+          </div>
+          <!-- When the editor is not on this page (a small screen), the way to it while Custom plays -->
+          <button type="button" class="hms-button hms-edit-pattern">Edit the custom pattern &rarr;</button>
+        </section>
+
+        <!-- Tempo and feel: what the pedal has under its display -->
+        <section class="hms-panel hms-sound-panel" data-panel="sound">
+          <div class="hms-panel-head">
+            <span class="hms-eyebrow">Sound</span>
+            <h2>Tempo and feel</h2>
+          </div>
+          <div class="hms-sound">
+            <div class="hms-knob hms-tempo">
+              <div class="hms-knob-head"><span>Tempo</span></div>
+              <div class="hms-stepper hms-stepper-big">
+                <button type="button" class="hms-button hms-bpm-down" aria-label="Slower" title="Slower">&minus;</button>
+                <output class="hms-bpm" aria-label="Tempo in beats per minute"><b>120</b><small>BPM</small></output>
+                <button type="button" class="hms-button hms-bpm-up" aria-label="Faster" title="Faster">+</button>
+              </div>
+              <input type="range" class="hms-slider hms-bpm-input" min="40" max="240" step="1" value="120" aria-label="Tempo" />
+            </div>
+
+            <!-- Patterns: how fast they run. Endings: how long they last -->
+            <div class="hms-knob hms-speed">
+              <div class="hms-knob-head"><span>Speed</span><small>how fast the pattern runs</small></div>
+              <div class="hms-segments" role="radiogroup" aria-label="Speed of the pattern">
+                <button type="button" class="hms-segment" role="radio" aria-checked="false" data-speed="0">&frac12;x</button>
+                <button type="button" class="hms-segment" role="radio" aria-checked="true" data-speed="1">1x</button>
+                <button type="button" class="hms-segment" role="radio" aria-checked="false" data-speed="2">2x</button>
+                <button type="button" class="hms-segment" role="radio" aria-checked="false" data-speed="3">4x</button>
+              </div>
+            </div>
+            <div class="hms-knob hms-length-knob">
+              <div class="hms-knob-head"><span>Length</span><small>how long the ending lasts</small></div>
+              <div class="hms-stepper hms-stepper-big">
+                <button type="button" class="hms-button hms-ending-length-down" aria-label="Shorter" title="Shorter">&minus;</button>
+                <output class="hms-ending-length" aria-label="Length of the ending in beats"><b>8</b><small>beats</small></output>
+                <button type="button" class="hms-button hms-ending-length-up" aria-label="Longer" title="Longer">+</button>
+              </div>
+            </div>
+
+            <div class="hms-knob hms-depth">
+              <div class="hms-knob-head"><span>Depth</span><output class="hms-depth-value">100%</output></div>
+              <input type="range" class="hms-slider hms-depth-input" min="0" max="100" step="1" value="100" aria-label="Depth: how much of the signal a cut removes" />
+              <div class="hms-ends"><small>a cut barely dips</small><small>a cut is silence</small></div>
+            </div>
+            <div class="hms-knob hms-edge">
+              <div class="hms-knob-head"><span>Edge</span><output class="hms-edge-value">1.5 ms</output></div>
+              <input type="range" class="hms-slider hms-edge-input" min="0" max="1000" step="1" value="511" aria-label="Edge: how long a cut takes to open and close" />
+              <div class="hms-ends"><small>hard, percussive chop</small><small>soft swell</small></div>
+            </div>
+          </div>
+        </section>
+
         <section class="hms-panel hms-pattern-panel" data-panel="pattern">
           <div class="hms-panel-head">
             <span class="hms-eyebrow">Pattern editor</span>
@@ -135,6 +213,12 @@
             <li>
               <button type="button" class="mod-address hms-address" mod-role="input-control-address" mod-port-symbol="edge" title="Assign Edge to a hardware control">
                 <span class="hms-assign-name"><span class="hms-assign-title">Edge</span><small>knob</small></span>
+                <span class="hms-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address hms-address" mod-role="input-control-address" mod-port-symbol="mono" title="Assign Mono to a hardware control">
+                <span class="hms-assign-name"><span class="hms-assign-title">Mono</span><small>footswitch</small></span>
                 <span class="hms-assign-state" aria-hidden="true"></span>
               </button>
             </li>

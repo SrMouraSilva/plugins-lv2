@@ -159,6 +159,16 @@ function (event, funcs) {
     draw(event);
   };
 
+  // Picks one of the family that is on (a pattern, or an ending)
+  const choose = (event, index) => {
+    const state = event.data.state;
+    const symbol = state.mode === 1 ? 'ending' : 'pattern';
+
+    state[symbol] = index;
+    send(event, symbol, index);
+    draw(event);
+  };
+
   const setBpm = (event, bpm) => {
     event.data.state.bpm = clamp(Math.round(bpm), BPM.min, BPM.max);
     send(event, 'bpm', event.data.state.bpm);
@@ -271,6 +281,8 @@ function (event, funcs) {
       root,
       pager: root.querySelector('.hms-pager'),
       stock: root.querySelector('.hms-stock'),
+      play: root.querySelector('[data-panel="play"]'),
+      sound: root.querySelector('[data-panel="sound"]'),
       pattern: { panel: root.querySelector('[data-panel="pattern"]'), body: root.querySelector('.hms-steps'), bodies: Array.from(root.querySelectorAll('.hms-steps')) },
       hardware,
       presets: { panel: root.querySelector('[data-panel="presets"]') },
@@ -307,7 +319,7 @@ function (event, funcs) {
 
   // Everything back in the stock, in the order it was written, and the pages (with their copies) thrown away
   const gather = (view) => {
-    view.stock.append(view.pattern.panel, ...view.hardware.map((part) => part.panel), view.presets.panel);
+    view.stock.append(view.play, view.sound, view.pattern.panel, ...view.hardware.map((part) => part.panel), view.presets.panel);
     view.hardware.forEach((part) => part.body.append(...part.items));
     view.pager.textContent = '';
     view.root.querySelectorAll('.hms-range').forEach((rangeEl) => { rangeEl.textContent = ''; });
@@ -345,22 +357,32 @@ function (event, funcs) {
   const fits = (page) => [page, ...page.querySelectorAll('.hms-panel, .hms-stack, .hms-row')]
     .every((el) => el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1);
 
-  // Roomy screens: the editor and the controls together, with the saved presets beside them or on a page of their own.
+  // Roomy screens. The first page holds everything that is played with: the choice of pattern, what it does, the
+  // editor (only while Custom is chosen: `together`), and tempo and feel beside them; the hardware and the saved
+  // presets follow. When that does not fit, the editor goes back to the second page, with the hardware.
   // Returns the pages, or null when none of them fits
   const layoutTogether = (view, wide) => {
-    const { pattern, hardware, presets } = view;
+    const { play, sound, pattern, hardware, presets } = view;
     const stack = (...nodes) => { const el = element('hms-stack'); el.append(...nodes); return el; };
     const row = (...nodes) => { const el = element('hms-row'); el.append(...nodes); return el; };
     const panels = hardware.map((part) => part.panel);
     const attempts = [
-      // The editor over the hardware panels (side by side), the saved presets in a column of their own
-      ...(wide ? [() => [[row(stack(pattern.panel, row(...panels)), presets.panel)]]] : []),
-      () => [[stack(pattern.panel, row(...panels))], [presets.panel]],
+      ...(wide ? [
+        { together: true, pages: () => [[row(stack(play, pattern.panel), sound)], [row(stack(row(...panels)), presets.panel)]] },
+        { together: true, pages: () => [[row(stack(play, pattern.panel), sound)], [stack(row(...panels))], [presets.panel]] },
+        { together: false, pages: () => [[row(play, sound)], [row(stack(pattern.panel, row(...panels)), presets.panel)]] },
+        { together: false, pages: () => [[row(play, sound)], [stack(pattern.panel, row(...panels))], [presets.panel]] },
+        // Short screens: the editor on a page of its own, the rest as before
+        { together: false, pages: () => [[row(play, sound)], [pattern.panel], [stack(row(...panels))], [presets.panel]] },
+      ] : []),
+      { together: true, pages: () => [[row(stack(play, pattern.panel), sound)], [stack(row(...panels))], [presets.panel]] },
+      { together: false, pages: () => [[stack(play, sound)], [stack(pattern.panel, row(...panels))], [presets.panel]] },
     ];
 
     for (const attempt of attempts) {
       gather(view);
-      const pages = setPages(view, attempt());
+      view.root.setAttribute('data-together', attempt.together ? '1' : '0');
+      const pages = setPages(view, attempt.pages());
       sizeAll(view);
       if (pages.every(fits)) {
         return pages;
@@ -402,12 +424,13 @@ function (event, funcs) {
 
   // Last resort and the way of the small screens: each panel on its own page(s)
   const layoutOneByOne = (view) => {
-    const { pattern, hardware, presets } = view;
+    const { play, sound, pattern, hardware, presets } = view;
     gather(view);
+    view.root.setAttribute('data-together', '0');
 
     // Each purpose on a page of its own (more than one if the tiles do not fit)
     const tilePanels = hardware.flatMap((part) => paginate(part, linesOf(view, part) * part.columns, part.columns));
-    const pages = setPages(view, [pattern.panel, ...tilePanels, presets.panel].map((panel) => [panel]));
+    const pages = setPages(view, [play, sound, pattern.panel, ...tilePanels, presets.panel].map((panel) => [panel]));
     sizeAll(view);          // now that the panels are on a page, they have a width to measure
     return pages;
   };
@@ -489,7 +512,11 @@ function (event, funcs) {
     root.setAttribute('data-w', width >= WIDE_PX ? 'l' : width >= MEDIUM_PX ? 'm' : 's');
     root.setAttribute('data-h', height < SHORT_PX ? 's' : 'm');
 
+    // The editor is only shown while Custom plays, but the room for it is kept: measure as if it were there
+    const custom = root.getAttribute('data-custom');
+    root.setAttribute('data-custom', '1');
     (width >= MEDIUM_PX && layoutTogether(view, width >= WIDE_PX)) || layoutOneByOne(view);
+    root.setAttribute('data-custom', custom || '0');
 
     goToPage(view, keep, false);
     view.laying = false;
@@ -561,21 +588,10 @@ function (event, funcs) {
     setText(el.name, name);
     el.modes.forEach((button) => button.setAttribute('aria-checked', String(Number(button.getAttribute('data-mode')) === state.mode)));
     el.mono.setAttribute('aria-pressed', String(state.mono));
+    el.monoSettings.setAttribute('aria-pressed', String(state.mono));
 
     // What the two lanes draw is only built again when it changes
-    el.lanes.forEach((lane) => {
-      const side = lane.getAttribute('data-side') === 'l' ? 'left' : 'right';
-      const key = endings ? `e${state.ending}/${state.length}/${state.bpm}` : `p${stepsOf(state, state.pattern)[side]}`;
-      const cells = lane.querySelector('.hm-steps');
-
-      if (cells.getAttribute('data-key') !== key) {
-        cells.setAttribute('data-key', key);
-        cells.setAttribute('data-kind', endings ? 'ending' : 'pattern');
-        cells.style.gridTemplateColumns = `repeat(${endings ? ENDING_CELLS : DISPLAYED_STEPS}, minmax(0, 1fr))`;
-        cells.innerHTML = endings ? endingHtml(state, side === 'left' ? 0 : 1) : stepsHtml(stepsOf(state, state.pattern)[side]);
-        cells.setAttribute('aria-label', `${side === 'left' ? 'The left' : 'The right'} side of ${name}`);
-      }
-    });
+    el.lanes.forEach((lane) => drawLane(state, lane, lane.querySelector('.hm-steps'), name));
 
     el.bpm.innerHTML = `<b>${state.bpm}</b> BPM`;
     el.lengthValue.innerHTML = `<b>${state.length}</b> beats`;
@@ -586,12 +602,65 @@ function (event, funcs) {
     setText(el.edgeValue, edgeText(state.edge));
   };
 
+  // The lanes of the big view and of the pedal draw the same: only built again when what they draw changes
+  const drawLane = (state, lane, cells, name) => {
+    const endings = state.mode === 1;
+    const side = lane.getAttribute('data-side') === 'l' ? 'left' : 'right';
+    const key = endings ? `e${state.ending}/${state.length}/${state.bpm}` : `p${stepsOf(state, state.pattern)[side]}`;
+
+    if (cells.getAttribute('data-key') !== key) {
+      cells.setAttribute('data-key', key);
+      cells.setAttribute('data-kind', endings ? 'ending' : 'pattern');
+      cells.style.gridTemplateColumns = `repeat(${endings ? ENDING_CELLS : DISPLAYED_STEPS}, minmax(0, 1fr))`;
+      cells.innerHTML = endings ? endingHtml(state, side === 'left' ? 0 : 1) : stepsHtml(stepsOf(state, state.pattern)[side]);
+      cells.setAttribute('aria-label', `${side === 'left' ? 'The left' : 'The right'} side of ${name}`);
+    }
+  };
+
   const drawSettings = (event) => {
     const { state, el } = event.data;
     const custom = state.custom;
     const playing = state.mode === 0 && state.pattern === CUSTOM;
+    const endings = state.mode === 1;
+    const family = endings ? ENDINGS : PATTERNS;
+    const current = endings ? state.ending : state.pattern;
+    const name = (family[current] || family[0]).name;
 
-    setText(el.now, state.mode === 1 ? (ENDINGS[state.ending] || ENDINGS[0]).name : (PATTERNS[state.pattern] || PATTERNS[0]).name);
+    setText(el.now, name);
+
+    // What is playing: the whole family to choose from, and what each side does
+    el.settingsRoot.setAttribute('data-mode', String(state.mode));
+    el.settingsRoot.setAttribute('data-custom', playing ? '1' : '0');
+    el.settingsRoot.classList.toggle('is-bypassed', state.bypassed);
+    el.modesSettings.forEach((button) => button.setAttribute('aria-checked', String(Number(button.getAttribute('data-mode')) === state.mode)));
+    setText(el.playKind, endings ? 'Ending' : 'Pattern');
+    setText(el.playName, name);
+    setText(el.playHint, endings
+      ? 'An ending plays once, as soon as you switch the effect on, and ends in silence. Its length is set under Tempo and feel.'
+      : playing ? 'Your own pattern: tap the steps below to write it.' : 'The rhythm of the two sides. Choose Custom to write your own.');
+    if (el.choices.getAttribute('data-family') !== String(state.mode)) {
+      el.choices.setAttribute('data-family', String(state.mode));
+      el.choices.setAttribute('aria-label', endings ? 'Endings' : 'Patterns');
+      el.choices.innerHTML = family.map((item, i) => `<button type="button" class="hms-choice" role="radio" data-index="${i}" aria-checked="false">${item.name}</button>`).join('');
+    }
+    Array.from(el.choices.children).forEach((button) => button.setAttribute('aria-checked', String(Number(button.getAttribute('data-index')) === current)));
+    el.viewLanes.forEach(({ lane, cells }) => drawLane(state, lane, cells, name));
+
+    // Tempo and feel
+    setText(el.bpmValue, String(state.bpm));
+    el.bpmInput.value = String(state.bpm);
+    el.bpmInput.style.setProperty('--hm-fill', `${((state.bpm - BPM.min) / (BPM.max - BPM.min)) * 100}%`);
+    el.segmentsSettings.forEach((button) => button.setAttribute('aria-checked', String(Number(button.getAttribute('data-speed')) === state.speed)));
+    setText(el.endingLength, String(state.length));
+    el.endingLengthDown.disabled = state.length <= LENGTH.min;
+    el.endingLengthUp.disabled = state.length >= LENGTH.max;
+    setSlider(el.depthSettings, state.depth, 0, 100);
+    setText(el.depthValueSettings, `${Math.round(state.depth)}%`);
+    setSlider(el.edgeSettings, edgeToSlider(state.edge), 0, EDGE_SLIDER);
+    setText(el.edgeValueSettings, edgeText(state.edge));
+
+    setText(el.power, state.bypassed ? 'Bypassed' : 'On');
+    el.power.setAttribute('aria-pressed', String(!state.bypassed));
 
     SIDES.forEach((side) => {
       el.cells[side].forEach((cell, i) => {
@@ -662,6 +731,8 @@ function (event, funcs) {
     el.next.addEventListener('click', () => step(event, 1));
     el.open.addEventListener('click', () => openSettings(event));
     el.mono.addEventListener('click', () => setMono(event, !state().mono));
+    el.monoSettings.addEventListener('click', () => setMono(event, !state().mono));
+    el.modesSettings.forEach((button) => button.addEventListener('click', () => setMode(event, Number(button.getAttribute('data-mode')))));
     el.modes.forEach((button) => button.addEventListener('click', () => setMode(event, Number(button.getAttribute('data-mode')))));
     holdToRepeat(event, el.down, () => setBpm(event, state().bpm - 1));
     holdToRepeat(event, el.up, () => setBpm(event, state().bpm + 1));
@@ -669,6 +740,33 @@ function (event, funcs) {
     holdToRepeat(event, el.lengthBeatsUp, () => setLengthBeats(event, state().length + 1));
 
     el.segments.forEach((button) => button.addEventListener('click', () => setSpeed(event, Number(button.getAttribute('data-speed')))));
+
+    // The big view and the controls of the settings page: the same actions as on the pedal
+    el.choices.addEventListener('click', (e) => {
+      const button = e.target.closest('button[data-index]');
+      if (button) { choose(event, Number(button.getAttribute('data-index'))); }
+    });
+    el.editPattern.addEventListener('click', () => {
+      const view = event.data.view;
+      goToPage(view, Array.from(view.pager.children).findIndex((page) => page.contains(view.pattern.panel)), true);
+    });
+    el.power.addEventListener('click', () => event.icon.find('[mod-role="bypass"]').first().trigger('click'));
+    holdToRepeat(event, el.bpmDown, () => setBpm(event, state().bpm - 1));
+    holdToRepeat(event, el.bpmUp, () => setBpm(event, state().bpm + 1));
+    el.bpmInput.addEventListener('input', () => setBpm(event, Number(el.bpmInput.value)));
+    holdToRepeat(event, el.endingLengthDown, () => setLengthBeats(event, state().length - 1));
+    holdToRepeat(event, el.endingLengthUp, () => setLengthBeats(event, state().length + 1));
+    el.segmentsSettings.forEach((button) => button.addEventListener('click', () => setSpeed(event, Number(button.getAttribute('data-speed')))));
+    el.depthSettings.addEventListener('input', () => {
+      state().depth = Number(el.depthSettings.value);
+      sendThrottled(event, 'depth', state().depth);
+      draw(event);
+    });
+    el.edgeSettings.addEventListener('input', () => {
+      state().edge = Math.round(sliderToEdge(Number(el.edgeSettings.value)) * 100) / 100;
+      sendThrottled(event, 'edge', state().edge);
+      draw(event);
+    });
 
     el.depth.addEventListener('input', () => {
       state().depth = Number(el.depth.value);
@@ -769,6 +867,28 @@ function (event, funcs) {
       beatUp: inSettings('.hms-beat-up'),
       from: inSettings('.hms-from'),
       use: inSettings('.hms-use'),
+      monoSettings: inSettings('.hms-mono'),
+      modesSettings: Array.from(settings.querySelectorAll('.hms-mode')),
+      settingsRoot: inSettings('.hms'),
+      power: inSettings('.hms-power'),
+      editPattern: inSettings('.hms-edit-pattern'),
+      playKind: inSettings('.hms-play-kind'),
+      playName: inSettings('.hms-play-name'),
+      playHint: inSettings('.hms-play-hint'),
+      choices: inSettings('.hms-choices'),
+      viewLanes: Array.from(settings.querySelectorAll('.hms-view-lane')).map((lane) => ({ lane, cells: lane.querySelector('.hms-view-steps') })),
+      bpmValue: inSettings('.hms-bpm b'),
+      bpmDown: inSettings('.hms-bpm-down'),
+      bpmUp: inSettings('.hms-bpm-up'),
+      bpmInput: inSettings('.hms-bpm-input'),
+      segmentsSettings: Array.from(settings.querySelectorAll('.hms-segment')),
+      endingLength: inSettings('.hms-ending-length b'),
+      endingLengthDown: inSettings('.hms-ending-length-down'),
+      endingLengthUp: inSettings('.hms-ending-length-up'),
+      depthSettings: inSettings('.hms-depth-input'),
+      depthValueSettings: inSettings('.hms-depth-value'),
+      edgeSettings: inSettings('.hms-edge-input'),
+      edgeValueSettings: inSettings('.hms-edge-value'),
     };
   };
 
