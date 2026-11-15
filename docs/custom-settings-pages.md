@@ -70,7 +70,7 @@ them the page looks fine and does not work.
 Notes:
 
 * The assignment button is the *whole* hardware-assignment feature: MOD UI opens its dialog when it is clicked. Make
-  the button your own tile (a name, a "+" that becomes a check mark when `addressed`), but keep its attributes.
+  the button your own tile (a name and the standard icon, see section 7), but keep its attributes.
   `mod-port-symbol` is the port symbol of the TTL, which is saved in users' pedalboards: never rename it.
 * The `.mod-presets` block is rewired by MOD UI once, right after rendering, by element references. **Moving
   these elements in the DOM afterwards is fine, replacing or cloning them is not** (see section 5).
@@ -233,7 +233,39 @@ assignments as a topic of their own:
 
 * **Say the catch where it bites.** Pop-ups only show on a device page that has the control addressed; the text above says
   so, instead of leaving the user to wonder why nothing appears.
-* **Show the state on the tile**: a "+" while free and a check mark when `addressed`, in colour *and* shape.
+* **Use the icon of the device for "assign", not your own.** MOD UI and the MOD Dwarf draw the assignment button
+  everywhere as the **faders** icon (three sliders), so a user who knows it will look for it; a "+" or a link symbol
+  is something new to learn and says less. It is MOD UI's own `html/img/icons/36/faders.png`, white and 36 x 36.
+  The icon may take **the colour of your plugin** (it does not have to be white): Tetr4 Switch has it light blue, Hept7
+  Switch turquoise, Gossiper amber. What matters is the shape.
+* **Draw it as a mask, so that it takes any colour and needs nothing from MOD UI.** Put the PNG in the stylesheet as
+  a `data:` URI (273 bytes) and paint a pseudo-element with the colour you want. MOD UI's own path
+  (`/img/icons/...`) works on the device but not in the preview, and a plain `<img>` cannot be recoloured:
+
+  ```css
+  .xs-assign-state {                       /* a 36 x 36 disc inside the button, with the plugin's colours */
+    width: 36px; height: 36px; border-radius: 50%;
+    color: var(--accent); background: var(--ink);
+  }
+  .xs-assign-state::before {
+    content: ""; display: block; width: 100%; height: 100%;
+    background-color: currentColor;        /* the colour of the icon */
+    -webkit-mask: url("data:image/png;base64,...") center / 36px 36px no-repeat;
+            mask: url("data:image/png;base64,...") center / 36px 36px no-repeat;
+  }
+  ```
+
+  Keep it at 36 px, where the picture is drawn pixel for pixel as in MOD UI (the glyph occupies 23 px of it); a
+  smaller size blurs it. Both `-webkit-mask` and `mask` are needed (Safari still wants the prefixed one).
+* **Show the state on the tile with colour, not with a different icon**: the icon stays the same, so it is always
+  recognised. While free, the accent on a dark disc; when `addressed`, the reverse (dark icon on a disc filled with
+  the accent), and the tile itself gets a border and a tint in the same accent. Do not replace it with a check mark:
+  the user would have to learn two symbols for one button, and a check mark says "done", not "assigned to something
+  you can change".
+* **Do not add a bypass (ON/OFF) switch to the page.** MOD UI adds the plugin's bypass switch and its assignment
+  button to the generic settings window; a custom template that does not contain them has neither. (There is no TTL
+  property that says "this plugin has no bypass": MOD UI only knows a short fixed list of host-implemented plugins,
+  `PLUGINS_WITHOUT_BYPASS`, in the code that is going to be 1.15.)
 * Keep the text on screens where there is room, drop it on short ones, and never drop it for a group that is alone on
   its page.
 
@@ -315,6 +347,7 @@ what the user sees (pages, swipe, the arrows).
 
 - [ ] Controls grouped by purpose, each group with a title and a sentence for beginners; the topic named
       (*Hardware assignment*)
+- [ ] The assignment button shows the faders icon of MOD UI (as a mask, in the colour of the plugin), in both states
 - [ ] Names edited by the user show everywhere (icon, top bar, assignment tiles)
 - [ ] Targets of 44 px or more, real buttons, ARIA state, visible focus, reduced motion
 
