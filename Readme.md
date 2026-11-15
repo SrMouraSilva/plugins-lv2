@@ -37,7 +37,7 @@ The pedal, with the controls moved from outside as a MIDI controller would, and 
   <img src="./plugins/resources/gossiper.lv2/docs/images/gossiper-settings.gif" alt="The settings page of Gossiper">
 </picture>
 
-[User manual](./plugins/resources/gossiper.lv2/docs/manual.md) ([PDF](./plugins/resources/gossiper.lv2/modgui/manual.pdf)) · [Forum thread](https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happening-when-you-are-looking-it/9660)
+[User manual](./plugins/resources/gossiper.lv2/docs/manual.md) ([PDF](./plugins/resources/gossiper.lv2/modgui/manual.pdf)) · [Store page](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9nb3NzaXBlcg==) · [Forum thread](https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happening-when-you-are-looking-it/9660)
 
 ## Tetr4 Switch
 
@@ -64,7 +64,7 @@ With it, is possible to define four presets of active CV and change between them
 * **Custom HMI**: the preset footswitches and the preset selector knob get their own LED colour (preset 1 red, 2 yellow, 3 cyan, 4 magenta; lit while the preset is active, off otherwise), and the label of the active preset is shown as a notification on the device screen (like Gossiper, it needs a page with one of the notify parameters assigned). The HMI `WidgetControl` feature is optional, so the plugin also loads on hosts without it, such as the MOD Duo
 * Ports organised in groups (preset selection, one group per preset)
 * 4 factory presets: *Four-scene guitar rig*, *One-of-four selector*, *Arrangement builder* and *Rhythm / Lead / Ambient / Kill*
-* [User manual](./plugins/resources/tetr4-switch.lv2/docs/manual.md) (an HTML page with the same text is what the device opens: [manual.html](./plugins/resources/tetr4-switch.lv2/modgui/manual.html); the original [PDF](./plugins/resources/tetr4-switch.lv2/modgui/manual.pdf) is kept) · [Forum thread](https://forum.mod.audio/t/tetr4-switch-plugin-in-beta-store/8998)
+* [User manual](./plugins/resources/tetr4-switch.lv2/docs/manual.md) (an HTML page with the same text is what the device opens: [manual.html](./plugins/resources/tetr4-switch.lv2/modgui/manual.html); the original [PDF](./plugins/resources/tetr4-switch.lv2/modgui/manual.pdf) is kept) · [Store page](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy90ZXRyNC1zd2l0Y2g=) · [Forum thread](https://forum.mod.audio/t/tetr4-switch-plugin-in-beta-store/8998)
 
 ### TODO
 
@@ -94,7 +94,7 @@ The big sibling of Tetr4 Switch, in turquoise: **7 presets** (one footswitch eac
 * **Custom preset labels**, **custom HMI** (LED colours, active preset pop-up) and the optional HMI `WidgetControl` feature work as in Tetr4 Switch
 * The eight CV jacks sit on a back plate that is part of the plugin, in two columns (1-4 and 5-8), instead of floating next to it
 * 3 factory presets: *One-to-one selector*, *Seven-scene guitar rig* and *Layer builder*
-* [User manual](./plugins/resources/hept7-switch.lv2/docs/manual.md) ([PDF](./plugins/resources/hept7-switch.lv2/modgui/manual.pdf)); the device opens the HTML version, [manual.html](./plugins/resources/hept7-switch.lv2/modgui/manual.html)
+* [User manual](./plugins/resources/hept7-switch.lv2/docs/manual.md) ([PDF](./plugins/resources/hept7-switch.lv2/modgui/manual.pdf)); the device opens the HTML version, [manual.html](./plugins/resources/hept7-switch.lv2/modgui/manual.html) · [Store page](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9oZXB0Ny1zd2l0Y2g=)
 
 <picture>
   <source srcset="./plugins/resources/hept7-switch.lv2/docs/images/hept7-switch-demo.webp" type="image/webp">
@@ -118,6 +118,33 @@ Binaries for **MOD Duo**, **MOD Duo X** and **MOD Dwarf** are built by [GitHub A
 Each release has one archive per plugin and device (`gossiper-duo.lv2.tar.gz`, `tetr4-switch-duo-x.lv2.tar.gz`, `gossiper-dwarf.lv2.tar.gz`, ...); each one contains the `.lv2` bundle folder.
 
 The release marked **Latest** is the most recent build of `master`. Builds from other branches are published as pre-releases.
+
+### Install on the device
+
+MOD UI has an endpoint that installs a plugin archive, the same one the plugin SDK uses: no SSH, no copying files, no restart. It removes the installed version of the bundle, installs the new one and tells the open MOD UI pages to rescan. Replace the address with your device's (`192.168.51.1` is the MOD Dwarf over USB; the Duo and Duo X answer on `modduo.local`, or on the address of their network).
+
+```bash
+DEVICE=192.168.51.1
+TAG=20261114-1642-feature-hept7-switch-ffb748d    # the release to install, from the Releases page
+for plugin in gossiper tetr4-switch hept7-switch; do
+  curl -sL -o $plugin.tar.gz "https://github.com/SrMouraSilva/plugins-lv2/releases/download/$TAG/$plugin-dwarf.lv2.tar.gz"
+  base64 -i $plugin.tar.gz | curl -s -F "package=@-;filename=$plugin.tar.gz" http://$DEVICE/sdk/install
+  echo
+done
+```
+
+For the Duo or Duo X, download `$plugin-duo.lv2.tar.gz` or `$plugin-duo-x.lv2.tar.gz` instead. A successful call answers with the plugins that were removed and installed:
+
+```json
+{"ok": true, "installed": ["http://srmourasilva.github.io/plugins/gossiper"], "removed": ["http://srmourasilva.github.io/plugins/gossiper"]}
+```
+
+* The archive must go **base64-encoded**, in a multipart field named `package` (that is what `base64 ... | curl -F "package=@-;..."` does). A raw `.tar.gz` (`curl -F package=@file.tar.gz`) is not decoded and fails with `No plugins found in bundle`; `--data-binary` fails with `500` / `KeyError: 'package'`.
+* On Linux use `base64 -w0 $plugin.tar.gz` (macOS' `base64 -i` writes a single line already).
+* The archive is extracted as it is: the `.lv2` bundle folder must be at its root, as in the release archives. The bundle goes to `~/.lv2` on the device, which is writable (on the Dwarf, `/root/.lv2`).
+* The plugin is unloaded while it is replaced, so do not install it while a pedalboard that uses it is playing. After an update of the interface, reload the MOD UI page.
+* Tested on a MOD Dwarf; the Duo and Duo X run the same MOD UI endpoint, but this was not tried there.
+* Another plugin version in the same folder is replaced by the one installed. To go back, install an older release the same way.
 
 ## Development
 

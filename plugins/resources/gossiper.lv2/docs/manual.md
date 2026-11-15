@@ -1,4 +1,4 @@
-# Gossiper — User Manual 
+# Gossiper — User Manual
 
 Gossiper gives you screen and CV feedback for controls that don't have any
 of their own — typically an external MIDI foot controller or knob box with
@@ -6,14 +6,18 @@ no LEDs or display.
 
 ![The Gossiper panel: a display with the last control used, 7 footswitch indicators and 4 potentiometer meters](../modgui/screenshot.png)
 
-Assign one of its parameters to receive the MIDI (or
-CV, or device control), and Gossiper turns that into a plain CV signal
-*and* a pop-up notification on the device screen.
+Assign one of its parameters to receive the MIDI (or CV, or device control), and Gossiper turns that into a plain CV
+signal *and* a pop-up notification on the device screen.
 
-It is an "educated gossiper": it only gossips about a
-control if you're actually looking at it — a pop-up appears only on a
-device screen page that has one of Gossiper's four "Assign to notify"
-slots addressed to it. This is necessary because Mod devices only allow dialogs to be displayed if an `Assign to notify` parameter is linked to an endless knobs currently visible on the screen.
+It is an "educated gossiper": it only gossips about a control if you're actually looking at it. A pop-up appears only
+on a device screen page that has one of Gossiper's four `Assign to notify` slots addressed to it, because MOD devices
+only show a pop-up for a plugin whose parameter is linked to a control (a knob or a footswitch) that is currently
+visible on the screen.
+
+> [!NOTE] Good to know
+> Gossiper has no audio inputs or outputs, so it doesn't sit in your signal chain. Place it anywhere on the pedalboard.
+> The CV outputs, the display on the plugin and the pop-ups are three independent ways of using the same control: you
+> can use any of them, and the outputs keep working when the pop-ups cannot (an old firmware, a MOD Duo).
 
 [![Sample demonstration of the plugin in action](images/gossiper-youtube-preview.webp)](https://youtu.be/iV262pY_yZE)
 
@@ -53,6 +57,12 @@ confirmed on the device screen — without needing to look down at an
 unlit external box.
 
 ## 3. Setting it up on the device
+
+> [!TIP] The shortest path
+> Open the settings page, tap **Assign** next to *Footswitch 1* and press the button of your controller; then tap
+> **Assign** next to *Pop-up slot 1* and pick a knob or footswitch of the page you play from. Press the button again:
+> its name pops up on the device screen, the disc lights up on the plugin and `CV Foot - Out 1` goes to 10 V. The steps
+> below show each tap.
 
 Click **Settings** (or the gear icon above the plugin) to open the settings page. It has one panel for each thing
 you can link, and each panel starts with **Hardware assignment**: that is the step where you choose which control of
@@ -137,17 +147,79 @@ footswitch, and it's saved with the pedalboard/preset.
 
 ## 6. Why bother: one real example
 
-Gossiper can also be used to replaces stacks of "Control to CV" utility plugins —
-one Gossiper with several footswitches/potentiometers assigned does the job
-of many single-purpose CV converters, at a fraction of the CPU cost.
+Gossiper can also replace stacks of "Control to CV" utility plugins: one Gossiper with several
+footswitches and potentiometers assigned does the job of many single-purpose CV converters, at a fraction of the CPU
+cost.
 
-For instance, [Rom user once informed us that after its work replacing plugins to gossiper, the Dwarf's CPU usage was reduced from 81% down to 72%](https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happening-when-you-are-looking-it/9660/20?u=srmourasilva).
+For instance, [a forum user reported that, after replacing those plugins with Gossiper, the Dwarf's CPU usage went down
+from 81% to 72%](https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happening-when-you-are-looking-it/9660/20?u=srmourasilva).
 
-## 7. Port reference
+## 7. Tips
+
+### Name the footswitches after what they do
+
+The pop-up shows the label, so `Drive` or `Solo` says more on a screen than `Footswitch 3`. Rename them before you
+assign the controller, and you will recognise the message without counting buttons.
+
+### One notify slot per page you play from
+
+A pop-up shows only while the control you addressed to a slot is visible. If you play from two pages of the device,
+address a second slot to a control on the other page, and so on up to four.
+
+### Footswitch and CV in one go
+
+A footswitch that Gossiper receives is also `CV Foot - Out N` (0 V off, 10 V on). Address a plugin's On/Off to that
+output and a MIDI button turns the plugin on, with the name on the screen. The feedback and the action come from the
+same control.
+
+### Tame the range of a knob
+
+A potentiometer reaches its CV output scaled into `Minimum`–`Maximum` volts. Set `Minimum 2` to 2 V and `Maximum 2` to
+6 V and the whole sweep of the knob moves a parameter between 20 % and 60 % of a 0–10 V range, without losing
+resolution on the knob.
+
+### Do not use it as a meter
+
+The pop-up of a potentiometer waits for the value to settle, so it is for confirming a position, not for watching a
+value change continuously. Use the display on the plugin for that.
+
+## 8. Questions & answers
+
+### The pop-up never appears.
+
+Check, in this order: (1) the control that sent the message is assigned to a `Footswitch N` or `Pot N` parameter;
+(2) one `Assign to notify` slot is addressed to a control of the device; (3) **that control is visible on the screen**
+right now (it is the page the device is showing); (4) the firmware is MOD Dwarf v1.13 or newer. The CV outputs and the
+display on the plugin work without any of these.
+
+### Does it work on the MOD Duo and the MOD Duo X?
+
+The plugin loads and the CV outputs work on both. The MOD Duo has no screen for plugin pop-ups, so the **display on the
+plugin** (open the pedalboard in the browser) is where you see the last control used. Pop-ups need the HMI of the Dwarf.
+
+### Is it stereo? Does it add latency?
+
+Neither question applies: Gossiper has no audio ports. It only turns what it receives into control voltages.
+
+### Can I invert a knob with Min and Max?
+
+No. The two values are put in order, so `Minimum` 8 V and `Maximum` 2 V give the same range as 2 V and 8 V. To invert a
+control, use a plugin that does it on the CV.
+
+### Why can't I turn the footswitch indicator on by clicking it?
+
+The disc only shows what the footswitch received. Gossiper reports on a control that lives elsewhere; to change it, use
+the controller, or the parameter in the plugin's own addressing.
+
+### Are the names saved?
+
+Yes. The label of each footswitch is saved with the pedalboard and with the plugin presets.
+
+## 9. Port reference
 
 | Port | Type | Description |
 |---|---|---|
-| `CV Foot - Out 1`–`7` | CV output | 0 V/10 V, mirrors `Footswitch N`. |
+| `CV Foot - Out 1`–`4`, `CV Output 5`–`7` | CV output | 0 V / 10 V, mirrors `Footswitch N` (the first four have the longer name). |
 | `Footswitch 1`–`7` | Control input (toggle) | Assign this to receive MIDI/CV/device input. |
 | `Assign to notify 1`–`4` | Control input | No audio/CV effect; assign to a device page/control so pop-ups show there. |
 | `Pot 1`–`4` | Control input (0–1) | Assign this to receive MIDI/CV/device input. |
@@ -155,9 +227,23 @@ For instance, [Rom user once informed us that after its work replacing plugins t
 | `CV Pot - Out 1`–`4` | CV output | `Potentiometer N` scaled into `[Minimum N, Maximum N]` volts. |
 | Footswitch label 1–7 | Plugin property (patch) | The custom name for each footswitch, edited from the GUI text field. |
 
-## 8. Credits
+## 10. Specifications
 
-Gossiper is developed by Paulo Mateus (SrMouraSilva). Discuss the plugin,
-watch the demo video or follow its progress on the
-[MOD Audio forum thread](https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happening-when-you-are-looking-it/9660)
-or the [plugins-lv2 repository](https://github.com/SrMouraSilva/plugins-lv2).
+| Field | Value |
+|---|---|
+| Plugin name | Gossiper |
+| Category | Control Voltage · Utility |
+| Format | LV2 · URI `http://srmourasilva.github.io/plugins/gossiper` |
+| Audio I/O | None |
+| CV outputs | 7 × footswitch (0 V off / 10 V on) · 4 × potentiometer (scaled into `Minimum`–`Maximum`, 0–10 V) |
+| MIDI | None (the controller's messages arrive through the device's assignment) |
+| Assignable parameters | Footswitch 1–7 (toggle) · Pot 1–4 · Minimum / Maximum 1–4 · Assign to notify 1–4 |
+| Device feedback | Pop-up notifications (MOD HMI, Dwarf firmware v1.13 or newer) · display and indicators on the plugin |
+| Platforms | MOD Dwarf · MOD Duo X · MOD Duo |
+| Developer | Paulo Mateus (SrMouraSilva) |
+| License | Apache-2.0 |
+| Source code | [github.com/SrMouraSilva/plugins-lv2](https://github.com/SrMouraSilva/plugins-lv2) |
+| Store page | [Gossiper](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9nb3NzaXBlcg==) |
+| Forum thread | [forum.mod.audio – Gossiper](https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happening-when-you-are-looking-it/9660) |
+
+Gossiper is a community plugin. Feedback, bug reports and pull requests are welcome in the forum thread and on GitHub.

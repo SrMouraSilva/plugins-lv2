@@ -30,6 +30,10 @@
       "url": "https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happening-when-you-are-looking-it/9660"
     },
     {
+      "label": "Store page",
+      "url": "https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9nb3NzaXBlcg=="
+    },
+    {
       "label": "Source code",
       "url": "https://github.com/SrMouraSilva/plugins-lv2"
     }

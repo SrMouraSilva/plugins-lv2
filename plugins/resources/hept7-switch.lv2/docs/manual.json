@@ -26,6 +26,10 @@
   ],
   "links": [
     {
+      "label": "Store page",
+      "url": "https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9oZXB0Ny1zd2l0Y2g="
+    },
+    {
       "label": "Source code",
       "url": "https://github.com/SrMouraSilva/plugins-lv2"
     }
