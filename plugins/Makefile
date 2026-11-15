@@ -66,7 +66,8 @@ clean:
 
 # --------------------------------------------------------------
 
-install: build
+# One target per plugin, so a package of the MOD store can install only its own bundle (the .so is built by build-<plugin>)
+install-tetr4-switch:
 	install -d $(DESTDIR)$(PREFIX)/lib/lv2/$(TETR4_SWITCH).lv2
 
 	install -m 644 resources/$(TETR4_SWITCH).lv2/*.so  $(DESTDIR)$(PREFIX)/lib/lv2/$(TETR4_SWITCH).lv2/
@@ -74,7 +75,7 @@ install: build
 
 	cp -r resources/$(TETR4_SWITCH).lv2/modgui $(DESTDIR)$(PREFIX)/lib/lv2/$(TETR4_SWITCH).lv2/
 
-
+install-hept7-switch:
 	install -d $(DESTDIR)$(PREFIX)/lib/lv2/$(HEPT7_SWITCH).lv2
 
 	install -m 644 resources/$(HEPT7_SWITCH).lv2/*.so  $(DESTDIR)$(PREFIX)/lib/lv2/$(HEPT7_SWITCH).lv2/
@@ -82,7 +83,7 @@ install: build
 
 	cp -r resources/$(HEPT7_SWITCH).lv2/modgui $(DESTDIR)$(PREFIX)/lib/lv2/$(HEPT7_SWITCH).lv2/
 
-
+install-gossiper:
 	install -d $(DESTDIR)$(PREFIX)/lib/lv2/$(GOSSIPER).lv2
 
 	install -m 644 resources/$(GOSSIPER).lv2/*.so  $(DESTDIR)$(PREFIX)/lib/lv2/$(GOSSIPER).lv2/
@@ -90,13 +91,17 @@ install: build
 
 	cp -r resources/$(GOSSIPER).lv2/modgui $(DESTDIR)$(PREFIX)/lib/lv2/$(GOSSIPER).lv2/
 
-
+install-kill-switch:
 	install -d $(DESTDIR)$(PREFIX)/lib/lv2/$(KILL_SWITCH).lv2
 
 	install -m 644 resources/$(KILL_SWITCH).lv2/*.so  $(DESTDIR)$(PREFIX)/lib/lv2/$(KILL_SWITCH).lv2/
 	install -m 644 resources/$(KILL_SWITCH).lv2/*.ttl $(DESTDIR)$(PREFIX)/lib/lv2/$(KILL_SWITCH).lv2/
 
 	cp -r resources/$(KILL_SWITCH).lv2/modgui $(DESTDIR)$(PREFIX)/lib/lv2/$(KILL_SWITCH).lv2/
+
+# (a sub-make, so that with -j nothing is installed before everything is built)
+install: build
+	$(MAKE) install-tetr4-switch install-hept7-switch install-gossiper install-kill-switch
 
 install-user: build
 	install -d ~/.lv2/

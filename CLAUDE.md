@@ -45,7 +45,8 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
    users' pedalboards: **never rename or renumber them after a release**; add new ones at the end.
 2. `plugins/Makefile`: `build-<name>`, and add it to `build`, `clean`, `install`, `install-user`, `uninstall-user`.
 3. `plugins/srmourasilva-plugins.mk`: add `<name>.lv2` to `SRMOURASILVA_PLUGINS_BUNDLES` and **bump
-   `SRMOURASILVA_PLUGINS_VERSION`** (otherwise the builder does not rebuild).
+   `SRMOURASILVA_PLUGINS_VERSION`** (otherwise the builder does not rebuild). Add `install-<name>` to the Makefile and a recipe
+   `store/<name>.mk` (copy another one: the MOD store takes **one bundle per package**), then run `python3 tools/store/pin.py`.
 4. `.github/workflows/release.yml`: add it to `PLUGINS`.
 5. `Readme.md` section, `NOTICE` title, a user manual (below), screenshot and thumbnail, the two animations and the alternative
    thumbnail (and the plugin in `PLUGINS` of `tools/site/build_site.py`, so it is on the documentation site) (section "Animations and alternative thumbnails": add the plugin to `tools/media/scenarios.mjs` and `thumbnails.mjs`).

@@ -253,6 +253,21 @@ docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/gossiper.lv2/ 
 docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/kill-switch.lv2/ binaries/dwarf
 ```
 
+### One package per plugin, for the MOD store
+
+`plugins/srmourasilva-plugins.mk` builds the four plugins together, which is what the CI and a local `./build` use. The
+store (and [builder.mod.audio](https://builder.mod.audio/buildroot)) takes **one bundle per package**, so that a person
+installs only the plugin they want: each plugin has its own recipe in [store/](./store), `gossiper.mk`, `tetr4-switch.mk`,
+`hept7-switch.mk` and `kill-switch.mk`. A recipe clones this repository at a commit, builds `build-<plugin>` and installs
+`install-<plugin>` (see [plugins/Makefile](./plugins/Makefile)). The commit has to exist on GitHub:
+
+```bash
+git push
+python3 tools/store/pin.py        # writes the checked out commit in the four recipes (or: pin.py <commit>)
+```
+
+then upload the recipe of the plugin at <https://builder.mod.audio/buildroot>. After a change of any plugin, pin again.
+
 ## About 
 
 * https://wiki.mod.audio/wiki/How_To_Build_and_Deploy_LV2_Plugin_to_MOD_Duo
