@@ -43,8 +43,8 @@ GUIDES = [
      "A full-screen, touch-first settings page for your plugin: what MOD UI expects, fitting any screen with pages, accessibility and the cache."),
     ("tools/modgui-preview/README.md", "modgui-preview",
      "Look at, and click through, the interface of a plugin in your browser, on a phone or a tablet as MOD UI shows itself there. No device needed."),
-    ("docs/making-gifs.md", "making-gifs",
-     "Record a clean, reproducible GIF of your plugin being used, from a script, and keep it up to date with one command."),
+    ("docs/making-animations.md", "making-animations",
+     "Record a clean, reproducible animation of your plugin being used, as light animated WebP with a GIF fallback, and keep it up to date with one command."),
     ("docs/alternative-thumbnails.md", "alternative-thumbnails",
      "Draw the simple, abstract picture of a plugin that stores show first, as light WebP with transparency."),
     ("docs/html-manuals.md", "html-manuals",
@@ -57,7 +57,7 @@ GUIDE_TITLES = {"modgui-preview": "Previewing a modgui in the browser"}
 GUIDE_TAGLINES = {
     "custom-settings-pages": "A settings page that fits every screen.",
     "modgui-preview": "The interface of your plugin, in a browser.",
-    "making-gifs": "A GIF of your plugin, from a script.",
+    "making-animations": "An animation of your plugin, from a script.",
     "alternative-thumbnails": "A picture that says what the plugin is.",
     "html-manuals": "One Markdown file, one beautiful manual.",
 }
@@ -134,7 +134,9 @@ def build(out: Path, repo: str, ref: str) -> None:
         manual.build(name, target / "manual.html")
         docs = data["bundle"] / "docs"
         for source, dest in [(docs / "alternative-thumbnail.webp", "thumbnail.webp"),
+                             (docs / "images" / f"{name}-demo.webp", "demo.webp"),
                              (docs / "images" / f"{name}-demo.gif", "demo.gif"),
+                             (docs / "images" / f"{name}-settings.webp", "settings.webp"),
                              (docs / "images" / f"{name}-settings.gif", "settings.gif")]:
             if source.exists():
                 shutil.copy(source, target / dest)
@@ -170,8 +172,11 @@ def index(plugins: list, repo: str, ref: str) -> str:
         demo = ""
         if (ROOT / "plugins/resources" / f"{name}.lv2/docs/images/{name}-demo.gif").exists():
             demo = (f'<details class="demo"><summary>See it in action</summary>'
-                    f'<img src="plugins/{name}/demo.gif" alt="{esc(p["title"])} on a pedalboard" loading="lazy">'
-                    f'<img src="plugins/{name}/settings.gif" alt="The settings page of {esc(p["title"])}" loading="lazy"></details>')
+                    + "".join(
+                        f'<picture><source srcset="plugins/{name}/{kind}.webp" type="image/webp">'
+                        f'<img src="plugins/{name}/{kind}.gif" alt="{esc(alt)}" loading="lazy"></picture>'
+                        for kind, alt in (("demo", f'{p["title"]} on a pedalboard'), ("settings", f'The settings page of {p["title"]}')))
+                    + '</details>')
         return (f'<article class="plugin" style="--a:{accent}; --strip: linear-gradient(90deg, {strip})">'
                 f'<div class="plugin-head"><img class="plugin-thumb" src="plugins/{name}/thumbnail.webp" alt="" width="104" height="104">'
                 f'<div><h3>{esc(p["title"])}</h3><p class="tag">{esc(p.get("tagline", ""))}</p></div></div>'

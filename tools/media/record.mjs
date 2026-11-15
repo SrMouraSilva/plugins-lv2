@@ -122,6 +122,8 @@ async function record(plugin, kind) {
   const out = path.join(ROOT, 'plugins/resources', `${plugin}.lv2`, 'docs/images', `${plugin}-${kind}.gif`);
   fs.mkdirSync(path.dirname(out), { recursive: true });
   const built = spawnSync('python3', [path.join(ROOT, 'tools/media/build_gif.py'), dir, out], { stdio: 'inherit' });
+  // KEEP_FRAMES=DIR keeps the recorded frames (NNNN.png and durations.json) in DIR/<plugin>-<kind>, to tune build_gif.py
+  if (process.env.KEEP_FRAMES) fs.cpSync(dir, path.join(process.env.KEEP_FRAMES, `${plugin}-${kind}`), { recursive: true });
   fs.rmSync(dir, { recursive: true, force: true });
   if (built.status !== 0) throw new Error('build_gif.py failed');
 }

@@ -19,7 +19,7 @@ slots addressed to it. This is necessary because Mod devices only allow dialogs 
 
 ## 1. Plugin GUI overview
 
-![Gossiper at work: footswitches and potentiometers move from outside, as a MIDI controller would, and the display says which one was used last](images/gossiper-demo.gif)
+![Gossiper at work: footswitches and potentiometers move from outside, as a MIDI controller would, and the display says which one was used last](images/gossiper-demo.webp)
 
 ![The Gossiper panel](images/gossiper-overview.webp)
 
@@ -60,7 +60,7 @@ your device, your MIDI foot controller or your pedal drives that parameter.
 
 ![The settings page](images/plugin-settings.webp)
 
-![Going through the settings page: a footswitch is renamed, and every page is visited with the arrows of the top bar](images/gossiper-settings.gif)
+![Going through the settings page: a footswitch is renamed, and every page is visited with the arrows of the top bar](images/gossiper-settings.webp)
 
 On a small screen the page splits into several pages instead of scrolling: use the arrows in the top bar (they
 are always there), the dots between them, or swipe sideways on a touch screen.

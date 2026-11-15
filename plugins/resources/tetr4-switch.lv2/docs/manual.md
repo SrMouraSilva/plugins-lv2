@@ -18,7 +18,7 @@ the on/off (bypass) switch of one or more plugins, and that output becomes a loo
 > Tetr4 Switch has no audio inputs or outputs, so it doesn't sit in your signal chain. Place it anywhere on the pedalboard
 > and map its CV outputs to the plugins you want it to switch.
 
-![Tetr4 Switch in use: the DIP switches are tapped, the footswitches select the scene and the names are edited on the pedal](images/tetr4-switch-demo.gif)
+![Tetr4 Switch in use: the DIP switches are tapped, the footswitches select the scene and the names are edited on the pedal](images/tetr4-switch-demo.webp)
 
 [![Watch: Tetr4 Switch in action — Four scenes switched on a real pedalboard, with the CV outputs shown at the bottom (silent video).](images/video-pedalboard.jpg)](https://youtu.be/sHKzSBM5Z8U)
 
@@ -155,7 +155,7 @@ sideways too. A large screen shows everything at once; a phone shows each purpos
 
 ![The settings page on a phone](images/settings-phone.webp)
 
-![Going through the settings page: the switches, the names, and every page with the arrows of the top bar](images/tetr4-switch-settings.gif)
+![Going through the settings page: the switches, the names, and every page with the arrows of the top bar](images/tetr4-switch-settings.webp)
 
 ## 5. Hands-free control
 

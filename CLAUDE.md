@@ -10,9 +10,9 @@ plugins/src/                 C sources (shared code in lv2/, model/, utils/)
 plugins/resources/<name>.lv2 the bundle: <name>.ttl, manifest.ttl, modgui.ttl, presets.ttl, modgui/, docs/
 plugins/Makefile             build-<plugin> targets; srmourasilva-plugins.mk is the mod-plugin-builder package
 tools/modgui-preview/        browser preview of any plugin's modgui (no device needed)
-tools/media/                 GIFs and alternative thumbnails (recorded from the preview); see "GIFs and alternative thumbnails"
+tools/media/                 animations (animated WebP + GIF) and alternative thumbnails (from the preview); see "Animations and alternative thumbnails"
 tools/manual/                builds modgui/manual.html from docs/manual.md; see "HTML manuals"
-docs/                        guides for other developers: custom-settings-pages, making-gifs, alternative-thumbnails, html-manuals
+docs/                        guides for other developers: custom-settings-pages, making-animations, alternative-thumbnails, html-manuals
 .github/workflows/release.yml  builds Duo, Duo X and Dwarf; PLUGINS lists what is packaged
 ```
 
@@ -47,8 +47,8 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
 3. `plugins/srmourasilva-plugins.mk`: add `<name>.lv2` to `SRMOURASILVA_PLUGINS_BUNDLES` and **bump
    `SRMOURASILVA_PLUGINS_VERSION`** (otherwise the builder does not rebuild).
 4. `.github/workflows/release.yml`: add it to `PLUGINS`.
-5. `Readme.md` section, `NOTICE` title, a user manual (below), screenshot and thumbnail, the two GIFs and the alternative
-   thumbnail (and the plugin in `PLUGINS` of `tools/site/build_site.py`, so it is on the documentation site) (section "GIFs and alternative thumbnails": add the plugin to `tools/media/scenarios.mjs` and `thumbnails.mjs`).
+5. `Readme.md` section, `NOTICE` title, a user manual (below), screenshot and thumbnail, the two animations and the alternative
+   thumbnail (and the plugin in `PLUGINS` of `tools/site/build_site.py`, so it is on the documentation site) (section "Animations and alternative thumbnails": add the plugin to `tools/media/scenarios.mjs` and `thumbnails.mjs`).
 
 ## C code and LV2
 
@@ -142,27 +142,30 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   `modgui:documentation` points to the HTML where it exists.
   `docs/` is not installed on the device, only `modgui/` is. Images come from the preview tool.
 
-## GIFs and alternative thumbnails
+## Animations and alternative thumbnails
 
 Every plugin has, in `plugins/resources/<name>.lv2/docs/` (not installed on the device), and all of them are shown in the
 plugin's section of `Readme.md`:
 
-* `images/<name>-demo.gif`: the plugin on the pedalboard, used the way a musician would (a few taps on the footswitches
-  and switches, a rename). `images/<name>-settings.gif`: its settings page, going through every page with the arrows of
-  the top bar. A plugin without a settings page of its own has no second GIF.
+* `images/<name>-demo`: the plugin on the pedalboard, used the way a musician would (a few taps on the footswitches
+  and switches, a rename). `images/<name>-settings`: its settings page, going through every page with the arrows of
+  the top bar. A plugin without a settings page of its own has no second animation. **Each one is a pair of files with the
+  same name: `.webp` (animated, the one to show) and `.gif` (the fallback, for what cannot play WebP).** Show them together,
+  never the GIF alone: in the Readme and on the site as `<picture><source srcset="x.webp" type="image/webp"><img src="x.gif"></picture>`,
+  in `manual.md` as `![caption](images/x.webp)` (the manual builder finds the `.gif` next to it and writes the `<picture>`).
 * `alternative-thumbnail.webp` (400x400, transparent outside the rounded square), drawn by `alternative-thumbnail.html`
   next to it: a **simpler, more abstract** picture than `thumbnail.png`, like the first image of a plugin in the Anagram
   marketplace: flat shapes in the colours of the plugin, **no text**, no real UI. It is for internal use (MOD UI does not
   read it); keep it in the Readme next to the title of the plugin.
 
-The full guides, written for other developers, are [docs/making-gifs.md](docs/making-gifs.md) and
+The full guides, written for other developers, are [docs/making-animations.md](docs/making-animations.md) and
 [docs/alternative-thumbnails.md](docs/alternative-thumbnails.md): keep them in step with the tools. In short (needs Node 22+, Google Chrome and `pip install pillow`; the preview starts by itself):
 
 ```bash
-node tools/media/record.mjs all                    # every GIF
+node tools/media/record.mjs all                    # every animation (.webp and .gif)
 node tools/media/record.mjs tetr4-switch settings  # one: <plugin> <demo|settings>
 node tools/media/thumbnails.mjs                    # every alternative-thumbnail.webp
-node tools/media/shots.mjs all                     # the pictures of the steps of the manuals (docs/images/step-*.webp)
+node tools/media/shots.mjs all                     # the pictures of the manuals (docs/images/*.webp), modgui/screenshot.png and thumbnail.png
 ```
 
 * `record.mjs` drives the preview (`tools/modgui-preview/frame.html`) through the Chrome DevTools, runs the script of
@@ -172,9 +175,9 @@ node tools/media/shots.mjs all                     # the pictures of the steps o
 * **Pictures in `docs/` are WebP, not PNG** (`docs/images/*.webp`, `alternative-thumbnail.webp`): they need transparency
   (JPEG cannot), and WebP keeps it at a fifth of the size of PNG. The tools write WebP directly; for a picture that comes from
   elsewhere, `python3 tools/media/to_webp.py FILE.png` converts it and rewrites the Markdown that mentions it (`--docs`: every
-  PNG of the docs). The PNGs that MOD UI reads (`modgui/screenshot.png`, `thumbnail.png`) stay PNG. GIFs and photos (JPEG) stay as they are.
+  PNG of the docs). The PNGs that MOD UI reads (`modgui/screenshot.png`, `thumbnail.png`) stay PNG. The animations are written by `record.mjs` as WebP and GIF; photos (JPEG) stay as they are.
 * A scenario is short (10 to 20 s, under about 1 MB), starts and ends on the first preset, and shows the point of the plugin:
-  what a press does, which output lights up, that a name is editable. The settings GIF is recorded at 860 px wide
+  what a press does, which output lights up, that a name is editable. The settings animation is recorded at 860 px wide
   (tablet size: it has pages); the pedalboard one is clipped to the plugin on the dark of a pedalboard. Plugins that only
   show what a controller did (Gossiper) are driven from outside with `send({type: 'change', symbol, value})`. Taps on
   hardware-assignment tiles mark them as `addressed`, which is what MOD UI does once its dialog is confirmed; do not
@@ -196,7 +199,7 @@ conventions of the Markdown (steps, callouts, video cards, recipes, FAQ, pins on
   indented by four spaces with a blank line around it, or the numbered list breaks.
 * **`manual.md` is the source; never edit `manual.html`.** Rebuild in the commit that changes the text or the interface.
 * The page must be **self-contained**: MOD UI serves it from `/effect/file/documentation`, where relative links do not
-  work, so the builder embeds the CSS, the JS and every image. Keep images small; GIFs only where they tell something.
+  work, so the builder embeds the CSS, the JS and every image. Keep images small; animations only where they tell something (the manual embeds both the WebP and its GIF fallback).
 * Pictures must stay in proportion at every width (phone 390, tablet 820, desktop 1440; light and dark theme): look at
   the three widths before committing, especially the cover picture.
 * **Pictures of the interface in a manual go stale when the interface changes** (a step that shows a button, a settings
@@ -215,10 +218,10 @@ the preview's README) that `.github/workflows/docs.yml` publishes on GitHub Page
 so they look like the manuals of the device.
 
 * **A new plugin** appears on the site by being added to `PLUGINS` in `tools/site/build_site.py` and having `docs/manual.md`,
-  `docs/manual.json` (title, tagline, badges, colours, links), `docs/alternative-thumbnail.webp` and the two GIFs. **A new guide**
+  `docs/manual.json` (title, tagline, badges, colours, links), `docs/alternative-thumbnail.webp` and the two animations (.webp and .gif). **A new guide**
   is added to `GUIDES` (and `GUIDE_TAGLINES`) in the same file.
 * A link from a guide to another guide becomes a link to its page; a link to any other file becomes a link to it on GitHub: write
-  guides with relative links to files (`../CLAUDE.md`, `./making-gifs.md`), never with absolute URLs of this repository.
+  guides with relative links to files (`../CLAUDE.md`, `./making-animations.md`), never with absolute URLs of this repository.
 * Fenced code blocks inside a list item are turned into code blocks after the item (Python-Markdown does not nest them);
   prefer a fence at the left margin.
 * **The workflow publishes from the development branch for now** (a TODO at its top): when the branch is merged, replace it by

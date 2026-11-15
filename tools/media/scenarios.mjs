@@ -8,15 +8,21 @@
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// The plugin alone, on the dark of a pedalboard, with a margin around it
-const around = (selector, margin = 14) =>
-  `(() => { const r = document.querySelector('${selector}').getBoundingClientRect(); return { x: r.left - ${margin}, y: r.top - ${margin}, width: r.width + ${margin * 2}, height: r.height + ${margin * 2} }; })()`;
+// The plugin alone, on the dark of a pedalboard, with a margin around it. With jacks the rectangle also holds them:
+// a column of jacks rests on the outer edge of the plugin and its plugs stick out
+const around = (selector, margin = 14, jacks = false) =>
+  `(() => {
+    let r = document.querySelector('${selector}').getBoundingClientRect();
+    const j = ${jacks} && document.querySelector('.mod-pedal-output')?.getBoundingClientRect();
+    if (j) r = { left: Math.min(r.left, j.left), top: Math.min(r.top, j.top), right: Math.max(r.right, j.right), bottom: Math.max(r.bottom, j.bottom) };
+    return { x: r.left - ${margin}, y: r.top - ${margin}, width: r.right - r.left + ${margin * 2}, height: r.bottom - r.top + ${margin * 2} };
+  })()`;
 
 const pedalboard = (plugin, selector, jacks, run) => ({
   viewport: { width: 900, height: 640 },
   query: `view=shot&latency=150${jacks ? '&jacks=1' : ''}`,
   background: '#14161d',
-  clip: around(selector),
+  clip: around(selector, 14, jacks),
   run,
 });
 

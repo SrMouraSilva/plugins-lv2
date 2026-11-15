@@ -171,8 +171,19 @@ def figures(page: str, base: Path) -> str:
                 style = f' style="max-width:{width}px"'
         except Exception:
             pass
-        return f'<figure{style}><img src="{src}" alt="{alt}" loading="lazy">{caption}</figure>'
+        return f'<figure{style}>{picture(src, alt, base)}{caption}</figure>'
     return FIGURE.sub(one, page)
+
+
+def picture(src: str, alt: str, base: Path) -> str:
+    """
+    An animation is an animated WebP with a GIF of the same name as its fallback (what docs/making-animations.md calls the
+    pair): write the .webp in the Markdown and, when a .gif sits next to it, the browser gets both and plays the WebP
+    """
+    gif = Path(src).with_suffix(".gif")
+    if src.lower().endswith(".webp") and (base / gif).is_file():
+        return f'<picture><source srcset="{src}" type="image/webp"><img src="{gif.as_posix()}" alt="{alt}" loading="lazy"></picture>'
+    return f'<img src="{src}" alt="{alt}" loading="lazy">'
 
 
 def faq(section: str) -> str:
@@ -222,7 +233,7 @@ def embed(page: str, base: Path) -> str:
         return f'{match.group(1)}"{data_uri(path)}"'
 
     parts = re.split(r"(<pre>.*?</pre>)", page, flags=re.S)
-    return "".join(part if part.startswith("<pre>") else re.sub(r'(\bsrc=)"([^"]+)"', one, part) for part in parts)
+    return "".join(part if part.startswith("<pre>") else re.sub(r'(\bsrc(?:set)?=)"([^"]+)"', one, part) for part in parts)
 
 
 # --------------------------------------------------------------------------------------------------------------------

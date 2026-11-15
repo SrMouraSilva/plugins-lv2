@@ -27,8 +27,11 @@ over 150 KB are re-encoded as WebP). It also works offline and when the file is 
 
 Keep the images small (a 2x screenshot of the plugin is enough) and **use WebP** for screenshots and drawings: they need
 the transparency that JPEG lacks, and WebP is about a fifth of the size of PNG (`python3 tools/media/to_webp.py FILE.png`;
-the tools of `tools/media/` already write WebP). A PNG or JPEG over 150 KB is re-encoded by the builder anyway and use the GIFs of [making-gifs.md](./making-gifs.md)
-only where they tell something: they are the largest part of the file (a manual is typically 1 to 3 MB).
+the tools of `tools/media/` already write WebP). A PNG or JPEG over 150 KB is re-encoded by the builder anyway.
+Use the animations of [making-animations.md](./making-animations.md) only where they tell something: they are the largest part of
+the file (a manual is typically 2 to 4 MB). An animation is a pair of files, an animated WebP and a GIF with the same name:
+write the `.webp` in the Markdown, `![caption](images/x-demo.webp)`, and when `images/x-demo.gif` exists the builder
+embeds both, as `<picture>` (the browser plays the WebP; the GIF is for what cannot).
 
 ## 2. Files
 
@@ -95,7 +98,7 @@ Plain Markdown, plus a few conventions that the builder turns into components. T
 * **Callouts**, with GitHub's alert syntax and an optional title: `> [!NOTE] Good to know`, `[!TIP]`, `[!WARNING]`,
   `[!IMPORTANT]`. A plain `>` quote is a neutral callout.
 * **Figures**: an image alone in a paragraph, `![caption](images/x.webp)`; the alt text is the caption. A picture narrower
-  than 760 px is not stretched (a phone screenshot, a GIF); wider ones fill the column; click to enlarge.
+  than 760 px is not stretched (a phone screenshot, an animation); wider ones fill the column; click to enlarge.
 * **Videos**: `[![Title — description](images/thumb.jpg)](https://youtu.be/ID)` (a link to YouTube around a thumbnail; the
   " — " separates the title from the description) becomes a card with a play button. The same with another address is a
   card without the button (an example pedalboard, a store page).
@@ -160,7 +163,7 @@ Raw HTML, with the position of each pin in percent of the picture. Describe the 
 ## 6. Pictures for the steps
 
 A step is much easier to follow with a picture of what to tap. `tools/media/shots.mjs` takes them from the modgui preview
-(see [making-gifs.md](./making-gifs.md) for the preview and the finger), so they are **reproducible and stay in step with
+(see [making-animations.md](./making-animations.md) for the preview and the finger), so they are **reproducible and stay in step with
 the interface**: when the interface changes, run it again.
 
 ```bash

@@ -12,7 +12,7 @@ a **display** that shows the preset (and announces every change of it), and a
 
 ![Hept7 Switch on the pedalboard](images/hept7-pedalboard.webp)
 
-![Hept7 Switch in use: the buttons select the preset and the display announces it, the squares turn the outputs on and off, the name is edited right there](images/hept7-switch-demo.gif)
+![Hept7 Switch in use: the buttons select the preset and the display announces it, the squares turn the outputs on and off, the name is edited right there](images/hept7-switch-demo.webp)
 
 ## 1. The plugin on the pedalboard
 
@@ -67,7 +67,7 @@ section gets a page of its own.
 
 ![The settings page on a phone](images/hept7-settings-phone.webp)
 
-![Going through the settings page: the matrix, a name, the cycle switch and every page with the arrows of the top bar](images/hept7-switch-settings.gif)
+![Going through the settings page: the matrix, a name, the cycle switch and every page with the arrows of the top bar](images/hept7-switch-settings.webp)
 
 ## 3. Switching presets with hardware
 

@@ -28,7 +28,7 @@
   var big = box.querySelector('img');
   document.addEventListener('click', function (event) {
     var image = event.target.closest('figure img, .sheet p > img');
-    if (image) { big.src = image.src; box.hidden = false; return; }
+    if (image) { big.src = image.currentSrc || image.src; box.hidden = false; return; }
     if (!box.hidden) { box.hidden = true; }
   });
   document.addEventListener('keydown', function (event) { if (event.key === 'Escape') { box.hidden = true; } });

@@ -27,9 +27,15 @@ Shows a lv2-hmi notification when a button is turned on or turned off. Useful if
 
 The pedal, with the controls moved from outside as a MIDI controller would, and its settings page:
 
-![Gossiper on a pedalboard](./plugins/resources/gossiper.lv2/docs/images/gossiper-demo.gif)
+<picture>
+  <source srcset="./plugins/resources/gossiper.lv2/docs/images/gossiper-demo.webp" type="image/webp">
+  <img src="./plugins/resources/gossiper.lv2/docs/images/gossiper-demo.gif" alt="Gossiper on a pedalboard">
+</picture>
 
-![The settings page of Gossiper](./plugins/resources/gossiper.lv2/docs/images/gossiper-settings.gif)
+<picture>
+  <source srcset="./plugins/resources/gossiper.lv2/docs/images/gossiper-settings.webp" type="image/webp">
+  <img src="./plugins/resources/gossiper.lv2/docs/images/gossiper-settings.gif" alt="The settings page of Gossiper">
+</picture>
 
 [User manual](./plugins/resources/gossiper.lv2/docs/manual.md) ([PDF](./plugins/resources/gossiper.lv2/modgui/manual.pdf)) · [Forum thread](https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happening-when-you-are-looking-it/9660)
 
@@ -41,9 +47,15 @@ LV2 audio plugin inspired on loop/preset switchers for guitar rigs, but focused 
 
 With it, is possible to define four presets of active CV and change between them with a footswitch.
 
-![Tetr4 Switch on a pedalboard](./plugins/resources/tetr4-switch.lv2/docs/images/tetr4-switch-demo.gif)
+<picture>
+  <source srcset="./plugins/resources/tetr4-switch.lv2/docs/images/tetr4-switch-demo.webp" type="image/webp">
+  <img src="./plugins/resources/tetr4-switch.lv2/docs/images/tetr4-switch-demo.gif" alt="Tetr4 Switch on a pedalboard">
+</picture>
 
-![The settings page of Tetr4 Switch](./plugins/resources/tetr4-switch.lv2/docs/images/tetr4-switch-settings.gif)
+<picture>
+  <source srcset="./plugins/resources/tetr4-switch.lv2/docs/images/tetr4-switch-settings.webp" type="image/webp">
+  <img src="./plugins/resources/tetr4-switch.lv2/docs/images/tetr4-switch-settings.gif" alt="The settings page of Tetr4 Switch">
+</picture>
 
 * 4 CV outputs, with a dip switch per output in each of the 4 presets, and a footswitch-assignable selector per preset
 * **New look**: the four banks of mini DIP switches stay, and the bank of the playing preset lights up in the colour of its preset. Each footswitch is a ring that is part of the casing (it is the LED) with a raised cap in the middle: only the cap goes down when it is pressed. The names are edited on the pedal, and *Edit scenes* opens the settings page
@@ -84,9 +96,15 @@ The big sibling of Tetr4 Switch, in turquoise: **7 presets** (one footswitch eac
 * 3 factory presets: *One-to-one selector*, *Seven-scene guitar rig* and *Layer builder*
 * [User manual](./plugins/resources/hept7-switch.lv2/docs/manual.md) ([PDF](./plugins/resources/hept7-switch.lv2/modgui/manual.pdf)); the device opens the HTML version, [manual.html](./plugins/resources/hept7-switch.lv2/modgui/manual.html)
 
-![Hept7 Switch on a pedalboard](./plugins/resources/hept7-switch.lv2/docs/images/hept7-switch-demo.gif)
+<picture>
+  <source srcset="./plugins/resources/hept7-switch.lv2/docs/images/hept7-switch-demo.webp" type="image/webp">
+  <img src="./plugins/resources/hept7-switch.lv2/docs/images/hept7-switch-demo.gif" alt="Hept7 Switch on a pedalboard">
+</picture>
 
-![The settings page of Hept7 Switch](./plugins/resources/hept7-switch.lv2/docs/images/hept7-switch-settings.gif)
+<picture>
+  <source srcset="./plugins/resources/hept7-switch.lv2/docs/images/hept7-switch-settings.webp" type="image/webp">
+  <img src="./plugins/resources/hept7-switch.lv2/docs/images/hept7-switch-settings.gif" alt="The settings page of Hept7 Switch">
+</picture>
 
 ## Download
 
@@ -140,17 +158,18 @@ python3 tools/modgui-preview/serve.py        # http://localhost:8000/?plugin=hep
 [tools/modgui-preview](./tools/modgui-preview/README.md) shows the interface of any plugin in a browser: the pedalboard icon, the settings page at several screen sizes (including a phone or a tablet *as MOD UI shows itself on it*), factory presets, and a simulated host that answers late, as the real one does. It does not replace a test on a device.
 
 * [docs/custom-settings-pages.md](./docs/custom-settings-pages.md): how to build a custom settings page (what MOD UI expects, fitting any screen with pages instead of scrolling, touch and accessibility, the cache)
-* [docs/making-gifs.md](./docs/making-gifs.md), [docs/alternative-thumbnails.md](./docs/alternative-thumbnails.md), [docs/html-manuals.md](./docs/html-manuals.md): GIFs, alternative thumbnails and HTML manuals for your own plugin
+* [docs/making-animations.md](./docs/making-animations.md), [docs/alternative-thumbnails.md](./docs/alternative-thumbnails.md), [docs/html-manuals.md](./docs/html-manuals.md): animations (animated WebP with a GIF fallback), alternative thumbnails and HTML manuals for your own plugin
 * [CLAUDE.md](./CLAUDE.md): the practices of this repository (C and LV2, TTL, modgui, documentation, git)
 
-### GIFs and alternative thumbnails
+### Animations and alternative thumbnails
 
 ```bash
-node tools/media/record.mjs all          # the GIFs: plugins/resources/<plugin>.lv2/docs/images/<plugin>-demo.gif and -settings.gif
+node tools/media/record.mjs all          # the animations: docs/images/<plugin>-demo and -settings, each as .webp (animated) and .gif (fallback)
+node tools/media/shots.mjs all           # the pictures of the manuals, modgui/screenshot.png and thumbnail.png
 node tools/media/thumbnails.mjs          # plugins/resources/<plugin>.lv2/docs/alternative-thumbnail.webp
 ```
 
-The GIFs are recorded from the preview (a script taps the interface; the circle is the finger), so re-record them whenever the interface changes. `alternative-thumbnail.webp` is a simpler, more abstract picture of each plugin (400x400), drawn by `docs/alternative-thumbnail.html`; it is for internal use and is not read by MOD UI. Needs Node 22+, Google Chrome and `pip install pillow`. Guides for doing the same in another plugin: [making GIFs](./docs/making-gifs.md) and [alternative thumbnails](./docs/alternative-thumbnails.md).
+The animations (an animated WebP, with a GIF of the same name as its fallback) are recorded from the preview (a script taps the interface; the circle is the finger), so re-record them whenever the interface changes. `alternative-thumbnail.webp` is a simpler, more abstract picture of each plugin (400x400), drawn by `docs/alternative-thumbnail.html`; it is for internal use and is not read by MOD UI. Needs Node 22+, Google Chrome and `pip install pillow`. Guides for doing the same in another plugin: [making animations](./docs/making-animations.md) and [alternative thumbnails](./docs/alternative-thumbnails.md).
 
 ### HTML manuals
 

@@ -1,17 +1,24 @@
-# Making GIFs of a plugin
+# Making animations of a plugin (animated WebP, with a GIF as the fallback)
 
-A short GIF of the plugin being used is the best first thing a visitor sees in a Readme or in a manual. This guide
-explains how this repository records them (`tools/media/`), so that **you can do the same for your own plugin**, and
-what makes a good one. The GIFs are not screen recordings: a script drives the interface in a browser, so they are
-**reproducible**, clean (no desktop, no cursor jitter) and can be re-recorded in one command whenever the interface
+A short animation of the plugin being used is the best first thing a visitor sees in a Readme or in a manual. This
+guide explains how this repository records them (`tools/media/`), so that **you can do the same for your own plugin**,
+and what makes a good one. The animations are not screen recordings: a script drives the interface in a browser, so they
+are **reproducible**, clean (no desktop, no cursor jitter) and can be re-recorded in one command whenever the interface
 changes.
 
-Every plugin of this repository has two:
+> [!IMPORTANT]
+> **Show the animated WebP; keep the GIF only as the fallback.** Every animation is written twice, with the same
+> name: `name.webp` (the one to show: full colour, 24-bit, every current browser plays it) and `name.gif` (what an old
+> browser, a viewer or an e-mail client shows when it cannot play WebP: 256 colours at most, so it is a little worse).
+> They go together in a `<picture>` (section 7): the browser takes the first `<source>` it understands, so nobody
+> downloads both. Do not link the GIF alone.
 
-| GIF | Shows | Example |
+Every plugin of this repository has two animations, each as a pair:
+
+| Animation | Shows | Example |
 |---|---|---|
-| `<plugin>-demo.gif` | The plugin on the pedalboard, used the way a musician would use it | `plugins/resources/tetr4-switch.lv2/docs/images/tetr4-switch-demo.gif` |
-| `<plugin>-settings.gif` | Its custom settings page, going through every page | `.../tetr4-switch-settings.gif` |
+| `<plugin>-demo.webp` + `.gif` | The plugin on the pedalboard, used the way a musician would use it | `plugins/resources/tetr4-switch.lv2/docs/images/tetr4-switch-demo.webp` |
+| `<plugin>-settings.webp` + `.gif` | Its custom settings page, going through every page | `.../tetr4-switch-settings.webp` |
 
 Contents
 
@@ -19,7 +26,7 @@ Contents
 2. [What you need](#2-what-you-need)
 3. [Use it in your repository](#3-use-it-in-your-repository)
 4. [Writing a scenario](#4-writing-a-scenario)
-5. [What makes a good GIF](#5-what-makes-a-good-gif)
+5. [What makes a good animation](#5-what-makes-a-good-animation)
 6. [Checking the result](#6-checking-the-result)
 7. [Putting it in the Readme and the manual](#7-putting-it-in-the-readme-and-the-manual)
 8. [Troubleshooting](#8-troubleshooting)
@@ -29,8 +36,9 @@ Contents
 ## 1. How it works
 
 ```
-scenarios.mjs  ──►  record.mjs  ──►  frames (PNG) + durations  ──►  build_gif.py  ──►  <plugin>-<kind>.gif
- (what to do)      drives Chrome         captured while the                Pillow
+                                                                        ┌──►  <plugin>-<kind>.webp  (animated, shown)
+scenarios.mjs  ──►  record.mjs  ──►  frames (PNG) + durations  ──►  build_gif.py ─┤
+ (what to do)      drives Chrome         captured while the           Pillow       └──►  <plugin>-<kind>.gif   (fallback)
                    through DevTools      script runs
                         ▲
                         └── the modgui preview (tools/modgui-preview): renders your icon and settings templates
@@ -38,7 +46,7 @@ scenarios.mjs  ──►  record.mjs  ──►  frames (PNG) + durations  ─�
 ```
 
 * **The preview** (`python3 tools/modgui-preview/serve.py`, see its README) loads the modgui of any bundle. It starts
-  by itself when you record. Nothing runs on a device, so the plugin's own sound is not part of the GIF: only its
+  by itself when you record. Nothing runs on a device, so the plugin's own sound is not part of the animation: only its
   interface.
 * **`record.mjs`** opens the preview in headless Google Chrome through the DevTools protocol (`cdp.mjs`, no
   dependencies), runs a *scenario*, and captures frames in the background for as long as the scenario runs. A frame
@@ -46,14 +54,16 @@ scenarios.mjs  ──►  record.mjs  ──►  frames (PNG) + durations  ─�
 * **The finger.** Input is shown as a translucent circle that glides to what is tapped, shrinks while it is pressed and
   fades when released: modgui interfaces are touch first, so a mouse pointer would be the wrong picture. The taps are
   real mouse events (`Input.dispatchMouseEvent`), so `:hover` and `:active` states are recorded too.
-* **`build_gif.py`** merges identical frames in a row (a hold costs one frame), builds **one palette** from frames spread
-  over the whole GIF (no flicker, and a colour that shows up in one scene only, such as a preset colour, is not lost) and
-  saves an endless loop.
+* **`build_gif.py`** merges identical frames in a row (a hold costs one frame) and writes **both files from the same
+  frames**, so they show the same thing for the same time, as an endless loop:
+  * the **WebP** keeps every colour (lossy, `WEBP_QUALITY`);
+  * the **GIF** has 256 colours at most: it builds **one palette** from frames spread over the whole animation (no
+    flicker, and a colour that shows up in one scene only, such as a preset colour, is not lost).
 
 ## 2. What you need
 
 * Node 22 or newer (the global `WebSocket` is used) and Google Chrome (`CHROME_BIN` if it is not in the usual place).
-* Python 3 with Pillow: `pip install pillow`.
+* Python 3 with Pillow: `pip install pillow` (the wheels come with WebP, including animated; `python3 -c "from PIL import features; print(features.check('webp'))"` says `True`).
 * The preview needs a checkout of [mod-ui](https://github.com/moddevices/mod-ui) next to your repository (see
   `tools/modgui-preview/README.md`). Only its CSS and JavaScript are used.
 
@@ -67,8 +77,9 @@ Copy two folders: `tools/modgui-preview/` and `tools/media/`. Then change what i
 | `tools/media/scenarios.mjs` | the scenarios: one object per plugin (see below) |
 
 ```bash
-node tools/media/record.mjs all                    # every GIF of every plugin in scenarios.mjs
-node tools/media/record.mjs my-plugin demo         # one GIF: <plugin> <kind>
+node tools/media/record.mjs all                    # every animation (.webp and .gif) of every plugin in scenarios.mjs
+node tools/media/record.mjs my-plugin demo         # one animation: <plugin> <kind>
+KEEP_FRAMES=/tmp/frames node tools/media/record.mjs my-plugin demo   # also keep the frames, to try other encoder settings
 PREVIEW_PORT=8123 node tools/media/record.mjs all  # when 8000 is taken
 ```
 
@@ -118,41 +129,60 @@ Things that work well:
   the preview does not have; the scenarios mark the tile as `addressed` afterwards, which is what MOD UI does once the
   dialog is confirmed. That is the only kind of shortcut that is acceptable.
 
-## 5. What makes a good GIF
+## 5. What makes a good animation
 
 * **Tell one story in 10 to 20 seconds**: what a press does, which output lights up, that a name is editable. Start and
   end in the same state (the first preset), so that the loop is seamless.
 * **Hold on the result.** After a tap, wait long enough to read what changed (600 to 900 ms; 2 s when something is
-  announced, such as a toast). A GIF that never rests is tiring.
-* **Show the plugin only.** Clip to the plugin with a margin; the settings GIF fills the window.
-* **Size**: under about 1 MB. The recorder merges identical frames; a calmer scenario is smaller. If a GIF is too big,
-  shorten it before reducing the colours.
+  announced, such as a toast). An animation that never rests is tiring.
+* **Show the plugin only.** Clip to the plugin with a margin, **jacks included** when they stick out of its body (the
+  `around(selector, margin, jacks)` of `scenarios.mjs`); the settings animation fills the window.
+* **Size**: under about 1 MB each. The recorder merges identical frames; a calmer scenario is smaller. If one is too
+  big, shorten it before lowering the quality. The WebP is encoded lossy at quality 80 with `minimize_size`
+  (`build_gif.py`): in this repository it is **a third to a half smaller than the GIF** of the same frames, and keeps every
+  colour (Hept7 Switch demo: 208 KB against 347 KB; Gossiper settings: 530 KB against 860 KB). Lossless would be four to
+  five times larger than the GIF: do not use it.
 * **Frame durations below 40 ms** are raised to 40 ms by `build_gif.py` (browsers show anything shorter than 20 ms as
   100 ms).
 * **No text baked into the picture.** Captions belong in the Readme or in the manual, where they can be translated.
 
 ## 6. Checking the result
 
-Never commit a GIF you have not looked at. Pull some frames out with Pillow and look at them:
+Never commit an animation you have not looked at. Pull some frames out of **both** files with Pillow and look at them:
 
 ```python
 from PIL import Image
-gif = Image.open('my-plugin-demo.gif')
-print(gif.n_frames, gif.size)
-for i in (0, gif.n_frames // 3, 2 * gif.n_frames // 3):
-    gif.seek(i); gif.convert('RGB').save(f'frame{i}.png')
+for name in ('my-plugin-demo.webp', 'my-plugin-demo.gif'):
+    animation = Image.open(name)
+    print(name, animation.n_frames, animation.size)       # the same number of frames, the same size
+    for i in (0, animation.n_frames // 3, 2 * animation.n_frames // 3):
+        animation.seek(i); animation.convert('RGB').save(f'{name}-{i}.png')
 ```
 
-Look for: a colour that turned grey (the palette was built from too few frames: more variety in the scenario, or raise
-`COLORS`/`SAMPLE_FRAMES` in `build_gif.py`), a control cut by the clip, the finger on the wrong element, a name field
-left in focus at the end.
+Look for: a colour that turned grey **in the GIF** (the palette was built from too few frames: more variety in the
+scenario, or raise `COLORS`/`SAMPLE_FRAMES` in `build_gif.py`; the WebP does not have this problem), a control cut by the
+clip (the jacks!), the finger on the wrong element, a name field left in focus at the end. The two files must
+tell the same story: if they differ in the number of frames, one of them was not rebuilt.
 
 ## 7. Putting it in the Readme and the manual
 
-* **Readme**: a normal image, under the title of the plugin: `![Name on a pedalboard](path/to/name-demo.gif)`.
-* **HTML manual** (see [html-manuals.md](./html-manuals.md)): the same line in `docs/manual.md`. The builder embeds the
-  GIF in the page. Use the demo GIF near the top and the settings GIF in the settings section; they are the largest files
-  of the manual.
+The animation is a `<picture>`: the WebP first, the GIF as the image it falls back to.
+
+* **Readme** (GitHub shows it; Markdown has no syntax for this, so it is HTML), under the title of the plugin:
+
+  ```html
+  <picture>
+    <source srcset="path/to/name-demo.webp" type="image/webp">
+    <img src="path/to/name-demo.gif" alt="Name on a pedalboard">
+  </picture>
+  ```
+
+* **HTML manual** (see [html-manuals.md](./html-manuals.md)): in `docs/manual.md` write the **WebP only**, as a normal
+  figure, `![Name in use](images/name-demo.webp)`. When `images/name-demo.gif` sits next to it the builder embeds both
+  and writes the `<picture>` itself. Use the demo near the top and the settings animation in the settings section; they
+  are the largest files of the manual.
+* **A web page of your own**: the same `<picture>`, with `loading="lazy"` on the `<img>` (the documentation site does).
+* **Do not use** an animated WebP in `modgui/` or in anything MOD UI reads (`screenshot.png`, `thumbnail.png` stay PNG).
 * **Re-record in the commit that changes the interface**, like the screenshot and the manual.
 
 ## 8. Troubleshooting
@@ -161,8 +191,9 @@ left in focus at the end.
 |---|---|
 | `ModuleNotFoundError: PIL` | Pillow is not installed for the `python3` that `record.mjs` runs; do not run it with `python3 -I` (that hides user-installed packages) |
 | Chrome does not start | set `CHROME_BIN` to the executable |
-| The GIF is cut at the bottom | the `viewport` is smaller than the `clip` |
+| The animation is cut at the bottom or on the right | the `viewport` is smaller than the `clip`, or the clip leaves out the jacks that stick out of the plugin |
+| The WebP shows no animation (one frame) | an old Pillow without animated WebP: update it (`pip install -U pillow`); the GIF is still written |
 | The tap does nothing | the element is covered (the preview shows a red bar for this), or the selector matches an earlier, hidden element: `tap` uses the first match |
-| A colour is wrong | see section 6 (the palette) |
+| A colour is wrong in the GIF | see section 6 (the palette); the WebP keeps every colour |
 | `--virtual-time-budget` screenshots look different from the recording | do not use it for pages that measure themselves (layout scripts run on real time); `record.mjs` runs in real time |
 | The page shows an old interface | the preview reads the files on every request; reload, and check that you edited the bundle the scenario loads |
