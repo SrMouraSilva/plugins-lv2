@@ -142,8 +142,24 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   fallback before any `color-mix()`.
 * On the MOD Duo there are no plugin pop-ups: if the plugin changes something the musician should notice, the
   icon itself must show it.
+* **The vendor is on the face of the plugin**: the header of every icon has the name of the plugin and, under it, the vendor
+  in small type (`{{brand}}`, which is the `modgui:brand` of `modgui.ttl`: never write it by hand). The plugins other than Gossiper have no
+  mark beside the name; Gossiper keeps its speech bubble.
 * `screenshot.png` is about 500 px wide and `thumbnail.png` about 150 px, both transparent around the plugin. They stay **PNG**:
-  MOD UI and MOD's tools read them (`modgui:screenshot`, `modgui:thumbnail`).
+  MOD UI and MOD's tools read them (`modgui:screenshot`, `modgui:thumbnail`). The standard picture of a MOD pedal shows the
+  **sockets** on both sides (the part of a jack box that sticks out: 6 to 16 px) and **no plug**: `shots.mjs` makes them with
+  `plugs=0` and a crop that takes the sockets, the 2 px ring of the body and its shadow, so nothing is cut. A socket must stick out
+  of the ring: a body with a `box-shadow` ring needs its output column moved out by the width of the ring (Tetr4 does).
+* **Read-only information must not look like a control.** On the settings pages, what only shows a state (the pattern that plays,
+  the active preset, the last control used, the preview of a pattern, the number tags of the rows) is flat: no fill, no shadow, no
+  pill, no sunken box (raised means button, sunken means text field). A rule at its side in the colour of the state, the caption in small capitals and the value
+  as plain text. Details in `docs/custom-settings-pages.md` (section 9).
+* **The settings page has every control the icon has** (and more room to show it): the page of a plugin with a pedal face is the
+  place to play it from a phone or a tablet, so nothing that is on the pedal may exist only there. Half Mouco and Kill Switch:
+  the first page is the choice of pattern (every one at hand, with a small picture of it, which only shows), tempo and feel,
+  and the editor of the custom pattern, which appears under the choice only while Custom is chosen (`data-together` /
+  `data-custom` of `.hms` / `.kss`; the layout reserves the room for it, so the page does not jump). When the editor does not fit
+  with the rest, it has a page of its own and a button on the first page takes to it. On and off (and Mono) are in the top bar.
 
 ## Documentation
 
@@ -177,6 +193,7 @@ node tools/media/record.mjs all                    # every animation (.webp and 
 node tools/media/record.mjs tetr4-switch settings  # one: <plugin> <demo|settings>
 node tools/media/thumbnails.mjs                    # every alternative-thumbnail.webp
 node tools/media/shots.mjs all                     # the pictures of the manuals (docs/images/*.webp), modgui/screenshot.png and thumbnail.png
+node tools/media/shots.mjs kill-switch screenshot.png   # one picture of one plugin
 ```
 
 * `record.mjs` drives the preview (`tools/modgui-preview/frame.html`) through the Chrome DevTools, runs the script of

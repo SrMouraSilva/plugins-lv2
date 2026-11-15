@@ -177,6 +177,20 @@ Rules that make this safe:
   inside each page as padding (`margin: 0 calc(-1 * var(--pad))` on the strip, `padding: 4px var(--pad)` on the page),
   and keep the blur of the shadow smaller than that padding.
 
+### Everything the icon has, and what goes on the first page
+
+A settings page is also the way to play the plugin from a phone or a tablet, and the pedalboard is not always at hand. So it has
+**every control of the icon**, not only the ones that need space (the editor of a pattern, the hardware tiles): the choice of
+what plays, tempo, depth and the rest, the on/off switch and any option of the face (Half Mouco's Mono). Use the room: what the
+icon shows in a corner (a row of indicator squares) is only an indicator, and must not take more than that; what you play with
+(the choice of pattern) can be a grid of buttons to tap, not two arrows.
+
+Put on the first page what is played together: the choice, what it does, the editor and the sliders, side by side. An editor that
+only matters for one choice (a custom pattern) opens **in place** when that choice is made, and the layout keeps its room (measure
+with it open, then hide it) so that the page does not jump. When everything does not fit, the editor gets a page of its own and a
+button on the first page takes to it; the same code tries the layouts in order and falls back to one panel per page (see
+`layoutTogether` in Half Mouco's script). Half Mouco's and Kill Switch's pages are the reference.
+
 ## 6. JavaScript: one function, many instances
 
 The JavaScript of a modgui is **one function that serves every instance** of the plugin, for the icon and for the
@@ -294,6 +308,12 @@ assignments as a topic of their own:
   needs a higher one with `pointer-events: none`. The settings window sits above everything (`z-index: 1000`).
 * **No vertical scrolling in the root** (`overflow: hidden`); the only scrolling things are the pager (sideways) and
   the saved-presets list (which has an unknown number of items).
+* **What only shows a state must not look like a control.** A raised, filled, rounded thing with a shadow is a button, and
+  a sunken dark box is a field; a pill with "Playing Custom" or a ring with a number in it is taken for the first. Give
+  read-only information its own look, flat and without a box: a thin rule on its side in the colour of the state, the caption
+  in small capitals and the value as plain text (`.hms-now`, `.hms-view`); a tag that only says which row it is (the number of a
+  footswitch) is tinted and flat, not a disc with a ring (`.gps-led`, `.gps-chip`). Do not use the sunken look for it: the
+  text fields already use it. A caption such as *Preview* says it, and `cursor: default; user-select: none` backs it up.
 
 ## 10. Testing
 
@@ -345,6 +365,8 @@ what the user sees (pages, swipe, the arrows).
 
 **Content**
 
+- [ ] Every control of the icon is also on the page (choice, tempo, depth, on/off, options), laid out for the room: what only
+      indicates takes little space, what is played is big; what is played together is on the first page
 - [ ] Controls grouped by purpose, each group with a title and a sentence for beginners; the topic named
       (*Hardware assignment*)
 - [ ] The assignment button shows the faders icon of MOD UI (as a mask, in the colour of the plugin), in both states

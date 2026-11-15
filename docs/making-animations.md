@@ -117,7 +117,8 @@ page, for anything else).
 Things that work well:
 
 * **`view=shot`** shows the icon alone on a transparent page (add `jacks=1` when the jacks are part of the plugin's
-  panel). **`view=settings`** shows the settings page at the size of the window: use a tablet-sized window
+  panel, inputs on the left and outputs on the right; add `plugs=0` too for the picture of the store, which shows the
+  sockets and not the plugs that MOD UI draws on the outputs). **`view=settings`** shows the settings page at the size of the window: use a tablet-sized window
   (860 px wide) so that the page has several pages and the arrows are part of the story.
 * **Pages of a settings page**: tap the arrow of the top bar, wait for the scroll to end (about 900 ms), then tap
   something on the new page. `visitPages()` in `scenarios.mjs` does this for any plugin and comes back to the first page.
