@@ -386,42 +386,41 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 10px 4px 8px;
+  gap: 6px;
+  padding: 9px 6px 8px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.07);
+  background: color-mix(in srgb, var(--c) 13%, transparent);
   box-shadow: inset 0 0 0 1px var(--gp-line);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 28%, transparent);
   transition: background-color 0.2s, box-shadow 0.2s;
 }
 
-/* The one used last */
+/* The whole card is the colour of its footswitch: it says which one it is without a button-like disc. The one used last
+   has a firmer outline, and a footswitch that is on has a fuller tint and an outline of its colour (no light: it is calm) */
 .gp-fs.is-last {
-  background: rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--c) 18%, transparent);
+  box-shadow: inset 0 0 0 2px var(--c);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--c) 70%, transparent);
+}
+
+.gp-fs.is-on {
+  background: rgba(255, 255, 255, 0.14);
+  background: color-mix(in srgb, var(--c) 24%, transparent);
   box-shadow: inset 0 0 0 2px var(--c);
 }
 
-/* The disc: dark with a rim of its colour while off, filled and glowing while on */
+/* The number: only text in the colour of the card */
 .gp-led {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 800;
+  line-height: 1;
   color: var(--c);
-  background: radial-gradient(circle at 50% 35%, #2b313d, #12151b);
-  box-shadow: inset 0 0 0 4px color-mix(in srgb, var(--c) 40%, #12151b), 0 2px 4px rgba(0, 0, 0, 0.6);
-  box-shadow: inset 0 0 0 4px #3a404c, 0 2px 4px rgba(0, 0, 0, 0.6);
-  box-shadow: inset 0 0 0 4px color-mix(in srgb, var(--c) 40%, #12151b), 0 2px 4px rgba(0, 0, 0, 0.6);
-  transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+  transition: text-shadow 0.2s;
 }
 
-.gp-fs.is-on .gp-led {
-  color: #0b0e13;
-  background: radial-gradient(circle at 50% 35%, #fff, var(--c) 60%);
-  box-shadow: inset 0 0 0 4px var(--c), 0 0 18px 2px var(--c);
-}
+.gp-fs.is-on .gp-led { text-shadow: 0 0 8px var(--c); }
 
 /* The name of the footswitch: the text of its pop-up, so it is editable right here */
 .gp-label {
