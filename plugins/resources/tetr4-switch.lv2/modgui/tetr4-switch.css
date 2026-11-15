@@ -878,20 +878,30 @@
 .t4s-assign-title[data-preset="3"] { --dot: var(--t4-c3); }
 .t4s-assign-title[data-preset="4"] { --dot: var(--t4-c4); }
 
-/* "+" while free, a check once the control is addressed */
+/* The state of the assignment button: a dark disc that holds the icon (below), filled when the control is addressed */
 .t4s-assign-state {
   flex: 0 0 auto;
   width: 36px;
   height: 36px;
-  line-height: 36px;
   border-radius: 50%;
-  text-align: center;
-  font-size: 22px;
-  font-weight: 800;
   color: var(--t4-accent);
   background: var(--t4-ink-3);
 }
-.t4s-assign-state::before { content: "+"; }
+/*
+ * The icon of the assignment button: the one MOD UI and the device use for it everywhere (faders), so it is
+ * recognised at once. It is MOD UI's own img/icons/36/faders.png (36 x 36, white) used as a mask, so it takes the
+ * colour of the plugin and nothing has to be loaded from MOD UI. Free: the accent on a dark disc; addressed: the
+ * reverse.
+ */
+.t4s-assign-state::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACOSURBVFiF7ZZRCoAwDEOteP8rxy9B0I1lbUcHeZ+CEPqybschhBBfACDz+5uTi5ZPSiAzs9l/r8ggf0rYcHsq8yhg6SpjFUQET1E2crxblOtQV9nK7jwMTcijgMWlLGOCU4sxYgG2KFfqcoGGYEvtOQSuyxUARrrDdK6csnKBQt9DLZiVsHRCelMLIXbgBkToOCu2t7NaAAAAAElFTkSuQmCC") center / 36px 36px no-repeat;
+  mask: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACOSURBVFiF7ZZRCoAwDEOteP8rxy9B0I1lbUcHeZ+CEPqybschhBBfACDz+5uTi5ZPSiAzs9l/r8ggf0rYcHsq8yhg6SpjFUQET1E2crxblOtQV9nK7jwMTcijgMWlLGOCU4sxYgG2KFfqcoGGYEvtOQSuyxUARrrDdK6csnKBQt9DLZiVsHRCelMLIXbgBkToOCu2t7NaAAAAAElFTkSuQmCC") center / 36px 36px no-repeat;
+}
 
 .t4s .mod-address.t4s-address.addressed {
   background-color: rgba(143, 243, 247, 0.14);
@@ -901,7 +911,6 @@
   color: var(--t4-ink);
   background: var(--t4-accent);
 }
-.t4s .mod-address.t4s-address.addressed .t4s-assign-state::before { content: "\2713"; }
 
 /* Saved presets: MOD UI wires up this markup, it is only restyled here */
 .t4s-presets-panel {

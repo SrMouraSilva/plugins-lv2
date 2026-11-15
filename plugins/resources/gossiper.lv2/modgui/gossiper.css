@@ -87,21 +87,42 @@
  * ========================================================================== */
 
 /*
- * Eleven CV jacks (seven footswitches, four knobs) in two columns on a back plate that is part of the plugin: the
- * footswitches in the first column (1-6) and the top of the second (7), the knobs under it (P1-P4)
+ * Eleven CV jacks (seven footswitches, four knobs) in two columns: the footswitches in the first column (1-6) and the
+ * top of the second (7), the knobs under it (P1-P4). Each socket has a flange on its left that is meant to rest against
+ * a wall, so each column has one:
+ *   - the first column rests against the left edge of a narrow plate that is part of the plugin (.gp-jacks);
+ *   - the second column rests against the outer edge of the plugin, as the jacks of every MOD plugin do, and its plugs
+ *     stick out to the right.
+ * MOD UI draws a cable under the icon, so whatever the icon paints hides the start of it: that is why the plate holds
+ * only the first column, and only the 41px of an unconnected plug. A connected jack is drawn 80px wide (the cable
+ * starts at its right edge), so the columns are 88px apart: the first one's does not touch the second column.
+ * The plate is 50px wide and sits 38px from the edge of the plugin (the second column starts at the edge).
  */
 .gossiper-base.mod-pedal .mod-pedal-output {
-  top: 22px;
-  right: 30px;
-  width: 174px;
+  top: 32px;
+  right: -80px;
+  width: 168px;
   display: grid;
   grid-template-rows: repeat(6, 56px);
   grid-template-columns: repeat(2, 80px);
-  gap: 10px 14px;
+  gap: 4px 8px;
 }
 
 .gossiper-base.mod-pedal .mod-pedal-output .mod-cv-output {
   margin-bottom: 0;
+}
+
+/*
+ * "Manage CV Ports": MOD UI puts a checkbox and a ~250px text field in every jack. The first column's go to the left,
+ * over the plugin (only while that mode is on), so they do not run under the second column's jacks; the second
+ * column's stay on the right. The inline style MOD UI writes on them (left/top) needs !important to be overridden.
+ */
+.gossiper-base.mod-pedal .mod-pedal-output .mod-cv-output:nth-child(-n+6) .output-cv-checkbox {
+  left: auto !important;
+  right: 100% !important;
+  top: 10px !important;
+  flex-direction: row-reverse;
+  margin-right: 2px;
 }
 
 .gossiper-base.mod-pedal .mod-pedal-output .mod-cv-output:nth-child(-n+6) { grid-column: 1; }
@@ -140,7 +161,7 @@
 .gossiper-base.mod-pedal .mod-pedal-output .mod-cv-output:nth-child(11)::before { content: "P4"; }
 
 .gossiper {
-  --gossiper-width: 920px;
+  --gossiper-width: 798px;
   --gossiper-height: 430px;
 
   box-sizing: border-box;
@@ -151,7 +172,7 @@
   width: var(--gossiper-width);
   min-width: var(--gossiper-width);
   height: var(--gossiper-height);
-  padding: 16px 22px 22px;
+  padding: 16px 38px 22px 22px;
 
   color: var(--gp-text);
   text-align: left;
@@ -175,10 +196,12 @@
   gap: 12px;
 }
 
-/* The back plate of the CV jacks */
+/* The back plate of the first column of CV jacks: their flanges rest against its left edge (see the jacks above) */
 .gp-jacks {
-  flex: 0 0 188px;
-  border-radius: 16px;
+  flex: 0 0 50px;
+  align-self: center;
+  height: 356px;
+  border-radius: 10px;
   background: linear-gradient(170deg, #0f1217, #07090c);
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.12);
 }
@@ -983,20 +1006,30 @@
 }
 .gps-address-small .gps-assign-name { display: none; }
 
-/* "+" while free, a check once the control is linked */
+/* The state of the assignment button: a dark disc that holds the icon (below), filled when the control is addressed */
 .gps-assign-state {
   flex: 0 0 auto;
   width: 36px;
   height: 36px;
-  line-height: 36px;
   border-radius: 50%;
-  text-align: center;
-  font-size: 22px;
-  font-weight: 800;
   color: var(--gp-accent);
   background: var(--gp-ink-3);
 }
-.gps-assign-state::before { content: "+"; }
+/*
+ * The icon of the assignment button: the one MOD UI and the device use for it everywhere (faders), so it is
+ * recognised at once. It is MOD UI's own img/icons/36/faders.png (36 x 36, white) used as a mask, so it takes the
+ * colour of the plugin and nothing has to be loaded from MOD UI. Free: the accent on a dark disc; addressed: the
+ * reverse.
+ */
+.gps-assign-state::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACOSURBVFiF7ZZRCoAwDEOteP8rxy9B0I1lbUcHeZ+CEPqybschhBBfACDz+5uTi5ZPSiAzs9l/r8ggf0rYcHsq8yhg6SpjFUQET1E2crxblOtQV9nK7jwMTcijgMWlLGOCU4sxYgG2KFfqcoGGYEvtOQSuyxUARrrDdK6csnKBQt9DLZiVsHRCelMLIXbgBkToOCu2t7NaAAAAAElFTkSuQmCC") center / 36px 36px no-repeat;
+  mask: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACOSURBVFiF7ZZRCoAwDEOteP8rxy9B0I1lbUcHeZ+CEPqybschhBBfACDz+5uTi5ZPSiAzs9l/r8ggf0rYcHsq8yhg6SpjFUQET1E2crxblOtQV9nK7jwMTcijgMWlLGOCU4sxYgG2KFfqcoGGYEvtOQSuyxUARrrDdK6csnKBQt9DLZiVsHRCelMLIXbgBkToOCu2t7NaAAAAAElFTkSuQmCC") center / 36px 36px no-repeat;
+}
 
 .gps .mod-address.addressed {
   background-color: rgba(255, 200, 97, 0.14);
@@ -1006,7 +1039,6 @@
   color: #0b0e13;
   background: var(--gp-accent);
 }
-.gps .mod-address.addressed .gps-assign-state::before { content: "\2713"; }
 
 /* The pop-up slots */
 .gps-tiles {
