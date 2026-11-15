@@ -185,7 +185,20 @@
   font-weight: 800;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  line-height: 1.15;
   color: var(--h7-ink);
+}
+
+/* The vendor (modgui:brand), under the name */
+.h7-vendor {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  white-space: nowrap;
+  opacity: 0.62;
 }
 
 .h7-open {
@@ -585,28 +598,28 @@
   white-space: nowrap;
 }
 
+/* Only tells the state (it cannot be pressed): flat, with no fill, no shadow and no box, so it is neither a button
+   (raised) nor a field (sunk): a rule at its side in the colour of the state, the caption and the value as text */
 .h7s-now {
   display: flex;
   align-items: center;
   gap: 10px;
   min-width: 0;
   max-width: 100%;
-  padding: 5px 18px 5px 5px;
-  border-radius: 999px;
-  background: var(--h7-ink-2);
-  box-shadow: 0 3px 0 var(--h7-ink);
+  padding: 2px 0 2px 12px;
+  border-left: 3px solid var(--h7-ink);
+  color: var(--h7-ink);
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .h7s-now-num {
   flex: 0 0 auto;
-  width: 36px;
-  height: 36px;
-  line-height: 36px;
-  border-radius: 50%;
-  text-align: center;
+  font-size: 24px;
   font-weight: 800;
+  line-height: 1;
   color: var(--h7-ink);
-  background: var(--c-active, var(--h7-c1));
 }
 
 .h7s-now-label {
