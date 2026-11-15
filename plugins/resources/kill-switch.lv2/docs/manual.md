@@ -131,7 +131,7 @@ Cut, half, pass, and back to cut: keep tapping a step until it shows the level y
 
 Your pattern is made of controls of the plugin, so it is saved with the **pedalboard**, with your own **saved presets** and
 with **snapshots**. The factory presets do not touch it. The page has more than one page when the screen is small: use the
-arrows of the top bar (or swipe sideways) to go to the **Controls** (the assignments) and to the **Saved presets**.
+arrows of the top bar (or swipe sideways) to go to the assignments (**On / off** and **Controls**) and to the **Saved presets**.
 
 ![Going through the settings page: the steps of the custom pattern, the length, the steps per beat and every page](images/kill-switch-settings.webp)
 
@@ -139,7 +139,7 @@ arrows of the top bar (or swipe sideways) to go to the **Controls** (the assignm
 
 Every control of the plugin can be assigned to a device control (a footswitch, a knob, an expression pedal), the way you
 assign any parameter: open the settings of the plugin (the gear icon, or **Edit pattern**) and click the tile of the
-control to assign, in the **Controls** panel.
+control to assign. The bypass has a panel of its own, **On / off**, and the other five controls are in **Controls**.
 
 | Control | Good to assign it to |
 |---|---|

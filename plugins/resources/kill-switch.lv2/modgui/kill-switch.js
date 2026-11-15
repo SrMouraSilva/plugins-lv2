@@ -172,13 +172,16 @@ function (event, funcs) {
 
   // The panels, the lists they hold, and what moves them: found once, on 'start'
   const findPanels = (root) => {
-    const hardware = root.querySelector('[data-panel="hardware"]');
+    // The hardware assignments are told apart by purpose: the bypass on its own, and the controls of the effect
+    const hardware = Array.from(root.querySelectorAll('[data-panel^="hardware"]')).map((panel) => ({
+      panel, body: panel.querySelector('.kss-assign'), items: Array.from(panel.querySelectorAll('.kss-assign > li')), minTile: TILE_MIN_PX, columns: 1,
+    }));
     return {
       root,
       pager: root.querySelector('.kss-pager'),
       stock: root.querySelector('.kss-stock'),
       pattern: { panel: root.querySelector('[data-panel="pattern"]'), body: root.querySelector('.kss-steps') },
-      hardware: { panel: hardware, body: hardware.querySelector('.kss-assign'), items: Array.from(hardware.querySelectorAll('.kss-assign > li')), minTile: TILE_MIN_PX, columns: 1 },
+      hardware,
       presets: { panel: root.querySelector('[data-panel="presets"]') },
       page: 0,
       key: '',
@@ -213,8 +216,8 @@ function (event, funcs) {
 
   // Everything back in the stock, in the order it was written, and the pages (with their copies) thrown away
   const gather = (view) => {
-    view.stock.append(view.pattern.panel, view.hardware.panel, view.presets.panel);
-    view.hardware.body.append(...view.hardware.items);
+    view.stock.append(view.pattern.panel, ...view.hardware.map((part) => part.panel), view.presets.panel);
+    view.hardware.forEach((part) => part.body.append(...part.items));
     view.pager.textContent = '';
     view.root.querySelectorAll('.kss-range').forEach((rangeEl) => { rangeEl.textContent = ''; });
   };
@@ -240,10 +243,12 @@ function (event, funcs) {
     }
     steps.style.setProperty('--kss-cols', columns);
 
-    const list = view.hardware.body;
-    const gap = px(getComputedStyle(list).columnGap);
-    view.hardware.columns = clamp(Math.floor((list.clientWidth + gap) / (view.hardware.minTile + gap)), 1, Math.min(TILE_MAX_COLUMNS, view.hardware.items.length));
-    list.style.setProperty('--kss-cols', view.hardware.columns);
+    view.hardware.forEach((part) => {
+      const list = part.body;
+      const gap = px(getComputedStyle(list).columnGap);
+      part.columns = clamp(Math.floor((list.clientWidth + gap) / (part.minTile + gap)), 1, Math.min(TILE_MAX_COLUMNS, part.items.length));
+      list.style.setProperty('--kss-cols', part.columns);
+    });
   };
 
   const fits = (page) => [page, ...page.querySelectorAll('.kss-panel, .kss-stack, .kss-row')]
@@ -254,9 +259,12 @@ function (event, funcs) {
   const layoutTogether = (view, wide) => {
     const { pattern, hardware, presets } = view;
     const stack = (...nodes) => { const el = element('kss-stack'); el.append(...nodes); return el; };
+    const row = (...nodes) => { const el = element('kss-row'); el.append(...nodes); return el; };
+    const panels = hardware.map((part) => part.panel);
     const attempts = [
-      ...(wide ? [() => { const row = element('kss-row'); row.append(stack(pattern.panel, hardware.panel), presets.panel); return [[row]]; }] : []),
-      () => [[stack(pattern.panel, hardware.panel)], [presets.panel]],
+      // The editor over the hardware panels (side by side), the saved presets in a column of their own
+      ...(wide ? [() => [[row(stack(pattern.panel, row(...panels)), presets.panel)]]] : []),
+      () => [[stack(pattern.panel, row(...panels))], [presets.panel]],
     ];
 
     for (const attempt of attempts) {
@@ -306,7 +314,8 @@ function (event, funcs) {
     const { pattern, hardware, presets } = view;
     gather(view);
 
-    const tilePanels = paginate(hardware, linesOf(view, hardware) * hardware.columns, hardware.columns);
+    // Each purpose on a page of its own (more than one if the tiles do not fit)
+    const tilePanels = hardware.flatMap((part) => paginate(part, linesOf(view, part) * part.columns, part.columns));
     const pages = setPages(view, [pattern.panel, ...tilePanels, presets.panel].map((panel) => [panel]));
     sizeAll(view);          // now that the panels are on a page, they have a width to measure
     return pages;

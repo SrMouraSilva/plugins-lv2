@@ -66,19 +66,29 @@
           </div>
         </section>
 
-        <section class="kss-panel kss-assign-panel kss-hardware" data-panel="hardware">
+        <section class="kss-panel kss-assign-panel kss-hw-bypass" data-panel="hardware-bypass">
           <div class="kss-panel-head">
             <span class="kss-eyebrow">Hardware assignment</span>
-            <h2>Controls<span class="kss-range"></span></h2>
-            <p>Play it from your device. Link the bypass to a footswitch (choose <b>Momentary</b> to chop only while you hold it), and the other controls to knobs, an expression pedal or footswitches.</p>
+            <h2>On / off<span class="kss-range"></span></h2>
+            <p>Turn the effect on and off with a footswitch. Choose <b>Momentary</b> in the dialog to chop only while you hold it, as with the switch on a guitar.</p>
           </div>
           <ul class="kss-assign">
             <li>
               <button type="button" class="mod-address kss-address" mod-role="bypass-address" title="Assign Bypass to a hardware control">
-                <span class="kss-assign-name"><span class="kss-assign-title">Bypass</span><small>footswitch, momentary or toggle</small></span>
+                <span class="kss-assign-name"><span class="kss-assign-title">Bypass</span><small>footswitch</small></span>
                 <span class="kss-assign-state" aria-hidden="true"></span>
               </button>
             </li>
+          </ul>
+        </section>
+
+        <section class="kss-panel kss-assign-panel kss-hardware" data-panel="hardware-controls">
+          <div class="kss-panel-head">
+            <span class="kss-eyebrow">Hardware assignment</span>
+            <h2>Controls<span class="kss-range"></span></h2>
+            <p>Play it from your device. Link the pattern, the tempo, the speed, the depth and the edge to knobs, an expression pedal or footswitches.</p>
+          </div>
+          <ul class="kss-assign">
             <li>
               <button type="button" class="mod-address kss-address" mod-role="input-control-address" mod-port-symbol="pattern" title="Assign Pattern to a hardware control">
                 <span class="kss-assign-name"><span class="kss-assign-title">Pattern</span><small>knob or footswitch</small></span>

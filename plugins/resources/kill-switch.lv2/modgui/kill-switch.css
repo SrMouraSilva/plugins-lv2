@@ -204,7 +204,7 @@
   transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
 }
 
-.ks-steps i.on {
+.ks-steps i.l2 {
   background: var(--ks-red);
   box-shadow: 0 0 10px -1px var(--ks-red);
 }
@@ -216,7 +216,7 @@
 .ks-steps i.start { margin-left: 3px; }
 .ks-steps i.first { margin-left: 0; }
 
-.kill-switch.is-bypassed .ks-steps i.on {
+.kill-switch.is-bypassed .ks-steps i.l2 {
   background: #7c4a43;
   box-shadow: none;
 }
@@ -1287,7 +1287,7 @@
 .kss[data-h="s"] .kss-cell[data-level="2"] .kss-cell-bar { height: calc(100% - 44px); }
 
 /* The editor and the controls in one column, the saved presets in another */
-.kss-row > .kss-stack { flex: 3 1 0; }
+.kss-row > .kss-stack { flex: 5 1 0; }
 .kss-row > .kss-presets-panel { flex: 2 1 0; }
 .kss-stack > .kss-pattern-panel { flex: 0 0 auto; }
 
@@ -1301,3 +1301,9 @@
 .kss[data-w="s"] .kss-select { width: 100%; }
 .kss[data-w="s"] .kss-use { margin-left: 0; }
 .kss[data-h="s"] .kss-pattern-panel .kss-panel-head p { display: none; }
+
+/* The bypass panel is the narrow one of the two hardware panels */
+.kss-row > .kss-hw-bypass { flex: 2 1 0; }
+.kss-row > .kss-hardware { flex: 3 1 0; }
+.kss-stack > .kss-row { flex: 0 0 auto; align-items: stretch; }
+.kss-stack > .kss-row > .kss-panel { flex-grow: 1; }
