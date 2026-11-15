@@ -1,0 +1,155 @@
+@prefix lv2:    <http://lv2plug.in/ns/lv2core#> .
+@prefix doap:   <http://usefulinc.com/ns/doap#> .
+@prefix foaf:   <http://xmlns.com/foaf/0.1/> .
+@prefix mod:    <http://moddevices.com/ns/mod#> .
+@prefix pprops: <http://lv2plug.in/ns/ext/port-props#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix units:  <http://lv2plug.in/ns/extensions/units#> .
+@prefix pg:     <http://lv2plug.in/ns/ext/port-groups#> .
+@prefix plug:   <http://srmourasilva.github.io/plugins/kill-switch#> .
+
+plug:group_pattern
+    a pg:Group ;
+    lv2:symbol "pattern" ;
+    lv2:name "Pattern" .
+
+plug:group_feel
+    a pg:Group ;
+    lv2:symbol "feel" ;
+    lv2:name "Feel" .
+
+<http://srmourasilva.github.io/plugins/kill-switch>
+    a lv2:Plugin, lv2:GatePlugin ;
+
+    doap:name "Kill Switch" ;
+    doap:license <http://opensource.org/licenses/Apache-2.0> ;
+    doap:developer [
+        foaf:name "Paulo Mateus" ;
+        foaf:homepage <> ;
+    ] ;
+    doap:maintainer [
+        foaf:name "SrMouraSilva" ;
+        foaf:homepage <https://github.com/SrMouraSilva/plugins-lv2> ;
+    ] ;
+
+    lv2:optionalFeature lv2:hardRTCapable ;
+
+    # Raise the micro version whenever the modgui changes (MOD UI caches it for a year, keyed by this version)
+    lv2:majorVersion 1 ;
+    lv2:minorVersion 0 ;
+    lv2:microVersion 1 ;
+
+    rdfs:comment """
+Kill Switch chops the signal in a rhythm, like the momentary kill switch some guitars have. While the plugin is on, a looping step pattern lets the signal through or cuts it; bypassed, the signal is clean. Pick a pattern, set the tempo, and use Depth and Edge to decide how deep and how hard the cuts are.
+""" ;
+
+    lv2:port
+    [
+        a lv2:InputPort, lv2:AudioPort ;
+        lv2:index 0 ;
+        lv2:symbol "in" ;
+        lv2:name "In"
+    ],
+    [
+        a lv2:OutputPort, lv2:AudioPort ;
+        lv2:index 1 ;
+        lv2:symbol "out" ;
+        lv2:name "Out"
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 2 ;
+        lv2:symbol "pattern" ;
+        lv2:name "Pattern" ;
+        pg:group plug:group_pattern ;
+        rdfs:comment "The rhythm of the cuts. Every pattern starts with its first step each time the plugin is switched on. Assign it to a knob or a footswitch to change pattern while you play." ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 9 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        # Keep in step with PATTERNS in src/kill-switch.c and in modgui/kill-switch.js
+        lv2:scalePoint [ rdfs:label "Chop 8ths" ; rdf:value 0 ] ,
+                       [ rdfs:label "Chop 16ths" ; rdf:value 1 ] ,
+                       [ rdfs:label "Triplet chop" ; rdf:value 2 ] ,
+                       [ rdfs:label "Machine gun" ; rdf:value 3 ] ,
+                       [ rdfs:label "Syncopated 3-3-2" ; rdf:value 4 ] ,
+                       [ rdfs:label "Gallop" ; rdf:value 5 ] ,
+                       [ rdfs:label "Morello solo chop" ; rdf:value 6 ] ,
+                       [ rdfs:label "Morello toggle solo" ; rdf:value 7 ] ,
+                       [ rdfs:label "Greenwood chunk" ; rdf:value 8 ] ,
+                       [ rdfs:label "Buckethead burst" ; rdf:value 9 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 3 ;
+        lv2:symbol "bpm" ;
+        lv2:name "Tempo" ;
+        pg:group plug:group_pattern ;
+        rdfs:comment "How fast the pattern plays, in beats per minute. Set it by hand or assign it to a knob or an expression pedal." ;
+        lv2:default 120 ;
+        lv2:minimum 40 ;
+        lv2:maximum 240 ;
+        lv2:portProperty lv2:integer ;
+        units:unit [
+            a units:Unit ;
+            rdfs:label "BPM" ;
+            units:symbol "BPM" ;
+            units:render "%d BPM"
+        ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 4 ;
+        lv2:symbol "speed" ;
+        lv2:name "Speed" ;
+        pg:group plug:group_pattern ;
+        rdfs:comment "Plays the pattern at half, normal, double or four times its speed, without changing the tempo. Assign it to a footswitch to double the speed while you hold it." ;
+        lv2:default 1 ;
+        lv2:minimum 0 ;
+        lv2:maximum 3 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "1/2x" ; rdf:value 0 ] ,
+                       [ rdfs:label "1x" ; rdf:value 1 ] ,
+                       [ rdfs:label "2x" ; rdf:value 2 ] ,
+                       [ rdfs:label "4x" ; rdf:value 3 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 5 ;
+        lv2:symbol "depth" ;
+        lv2:name "Depth" ;
+        pg:group plug:group_feel ;
+        rdfs:comment "How much of the signal a cut removes: 100% is silence, lower values only dip the level." ;
+        lv2:default 100 ;
+        lv2:minimum 0 ;
+        lv2:maximum 100 ;
+        units:unit units:pc
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 6 ;
+        lv2:symbol "edge" ;
+        lv2:name "Edge" ;
+        pg:group plug:group_feel ;
+        rdfs:comment "How long each cut takes to open and close. Short is a hard, percussive chop; long is a soft swell." ;
+        lv2:default 1.5 ;
+        lv2:minimum 0.1 ;
+        lv2:maximum 20 ;
+        lv2:portProperty pprops:logarithmic ;
+        units:unit units:ms
+    ],
+    [
+        # The bypass of the host: MOD UI hides this port and drives it from the footswitch (mod-role="bypass").
+        # The plugin does the bypass itself, with a 10 ms ramp, and the pattern restarts when it is switched on.
+        # Keep it the last port.
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 7 ;
+        lv2:symbol "lv2_enabled" ;
+        lv2:name "Enabled" ;
+        lv2:default 1 ;
+        lv2:minimum 0 ;
+        lv2:maximum 1 ;
+        lv2:portProperty lv2:integer, lv2:toggled ;
+        lv2:designation lv2:enabled
+    ] .

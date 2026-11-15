@@ -1,0 +1,34 @@
+{
+  "title": "Kill Switch",
+  "eyebrow": "SrMouraSilva · Plugin manual",
+  "tagline": "Chop your signal in rhythm.",
+  "subtitle": "A rhythmic kill-switch effect for MOD Dwarf, MOD Duo X and MOD Duo",
+  "badges": [
+    "10 patterns",
+    "Tempo 40-240 BPM",
+    "Depth and Edge"
+  ],
+  "edition": "User manual · November 2026 edition",
+  "version": "v1.0",
+  "hero": "../modgui/screenshot.png",
+  "brand": "#2a1d19",
+  "brand2": "#120d0b",
+  "accent": "#b8261c",
+  "accentDark": "#ff8a80",
+  "colors": [
+    "#ff4a3d",
+    "#ff9f43",
+    "#ffd23d",
+    "#f6ede9"
+  ],
+  "links": [
+    {
+      "label": "Store page",
+      "url": "https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9raWxsLXN3aXRjaA=="
+    },
+    {
+      "label": "Source code",
+      "url": "https://github.com/SrMouraSilva/plugins-lv2"
+    }
+  ]
+}

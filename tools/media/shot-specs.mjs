@@ -90,6 +90,22 @@ export const shots = {
     settings('step-assign-notify.webp', tile('Assign_to_notify_1')),
   ],
 
+  'kill-switch': [
+    ...store('.kill-switch', 'jacks=1'),
+    // The cover of the manual (2x)
+    alone('panel.webp', '.kill-switch', { margin: 0, scale: 2, query: 'jacks=1' }),
+    // Quick start, step 3: the arrows and the steps of the pattern
+    icon('step-pattern.webp', '.kill-switch', {
+      setup: ['send({type:"change",symbol:"pattern",value:6})', 'send({type:"change",symbol:"bpm",value:89})'],
+      highlight: ['.ks-prev', '.ks-next', '.ks-steps'], finger: '.ks-next',
+    }),
+    // Step 5: Depth and Edge
+    icon('step-feel.webp', '.kill-switch', {
+      setup: ['send({type:"change",symbol:"depth",value:60})', 'send({type:"change",symbol:"edge",value:6})'],
+      highlight: ['.ks-depth', '.ks-edge'], finger: '.ks-edge-input', fingerAt: [0.8, 0.5],
+    }),
+  ],
+
   'gossiper': [
     ...store('.gossiper', 'jacks=1'),
     // Footswitch 2 is on, Pot 1 at 20% and Pot 3 at 63%: the display says which control moved last

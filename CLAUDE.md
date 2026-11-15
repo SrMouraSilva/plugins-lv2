@@ -1,12 +1,12 @@
 # CLAUDE.md
 
 LV2 utility plugins for MOD devices (MOD Dwarf first; Duo and Duo X must keep working). Plugins: **Gossiper**,
-**Tetr4 Switch** and **Hept7 Switch**. Code, comments, commits and docs are in English.
+**Tetr4 Switch**, **Hept7 Switch** and **Kill Switch**. Code, comments, commits and docs are in English.
 
 ## Layout
 
 ```
-plugins/src/                 C sources (shared code in lv2/, model/, utils/)
+plugins/src/                 C sources (shared code in lv2/, model/, utils/; kill-switch.c is standalone)
 plugins/resources/<name>.lv2 the bundle: <name>.ttl, manifest.ttl, modgui.ttl, presets.ttl, modgui/, docs/
 plugins/Makefile             build-<plugin> targets; srmourasilva-plugins.mk is the mod-plugin-builder package
 tools/modgui-preview/        browser preview of any plugin's modgui (no device needed)
@@ -52,6 +52,8 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
 
 ## C code and LV2
 
+* **Kill Switch is one standalone file** (`src/kill-switch.c`, only LV2's core header): its bypass is the `lv2:enabled`
+  port (1 = on), kept last, and `PATTERNS` is repeated in its modgui script and in the scale points of `pattern`.
 * **One code base, several plugins.** Tetr4 and Hept7 Switch are the same sources sized by `src/config.h`
   (`-DHEPT7_SWITCH`). Do not copy files to make a variant: parametrise (`TOTAL_PRESETS`, `TOTAL_OUTPUTS`).
 * **Port layout lives in `src/model/ports.h`** as contiguous ranges (`PORT_*_FIRST`), never as one `case` per port.

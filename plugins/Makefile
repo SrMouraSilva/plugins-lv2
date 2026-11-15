@@ -7,6 +7,7 @@ include Makefile.mk
 TETR4_SWITCH = tetr4-switch
 HEPT7_SWITCH = hept7-switch
 GOSSIPER = gossiper
+KILL_SWITCH = kill-switch
 
 # Tetr4 Switch and Hept7 Switch are the same code base, sized by -DHEPT7_SWITCH (see src/config.h)
 SWITCH_SOURCES = src/utils/utils.c \
@@ -33,7 +34,7 @@ INSTALL_PATH = /usr/local/lib/lv2
 all: build
 #build: build-gossiper
 #build: build-tetr4-switch
-build: build-gossiper build-tetr4-switch build-hept7-switch
+build: build-gossiper build-tetr4-switch build-hept7-switch build-kill-switch
 
 build-tetr4-switch:
 	$(CC) $(SWITCH_SOURCES) \
@@ -50,12 +51,18 @@ build-gossiper:
 		  src/gossiper.c \
 		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(GOSSIPER).lv2/$(GOSSIPER).so
 
+# Kill Switch shares no code with the others: one file, and only LV2's core header
+build-kill-switch:
+	$(CC) src/kill-switch.c \
+		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(KILL_SWITCH).lv2/$(KILL_SWITCH).so
+
 # --------------------------------------------------------------
 
 clean:
 	rm -f $(TETR4_SWITCH).lv2/$(TETR4_SWITCH)$(LIB_EXT)
 	rm -f $(HEPT7_SWITCH).lv2/$(HEPT7_SWITCH)$(LIB_EXT)
 	rm -f $(GOSSIPER).lv2/$(GOSSIPER)$(LIB_EXT)
+	rm -f $(KILL_SWITCH).lv2/$(KILL_SWITCH)$(LIB_EXT)
 
 # --------------------------------------------------------------
 
@@ -83,11 +90,20 @@ install: build
 
 	cp -r resources/$(GOSSIPER).lv2/modgui $(DESTDIR)$(PREFIX)/lib/lv2/$(GOSSIPER).lv2/
 
+
+	install -d $(DESTDIR)$(PREFIX)/lib/lv2/$(KILL_SWITCH).lv2
+
+	install -m 644 resources/$(KILL_SWITCH).lv2/*.so  $(DESTDIR)$(PREFIX)/lib/lv2/$(KILL_SWITCH).lv2/
+	install -m 644 resources/$(KILL_SWITCH).lv2/*.ttl $(DESTDIR)$(PREFIX)/lib/lv2/$(KILL_SWITCH).lv2/
+
+	cp -r resources/$(KILL_SWITCH).lv2/modgui $(DESTDIR)$(PREFIX)/lib/lv2/$(KILL_SWITCH).lv2/
+
 install-user: build
 	install -d ~/.lv2/
 	cp -r resources/$(TETR4_SWITCH).lv2/ ~/.lv2/$(TETR4_SWITCH).lv2
 	cp -r resources/$(HEPT7_SWITCH).lv2/ ~/.lv2/$(HEPT7_SWITCH).lv2
 	cp -r resources/$(GOSSIPER).lv2/ ~/.lv2/$(GOSSIPER).lv2
+	cp -r resources/$(KILL_SWITCH).lv2/ ~/.lv2/$(KILL_SWITCH).lv2
 
 # --------------------------------------------------------------
 
@@ -95,5 +111,6 @@ uninstall-user:
 	rm -r ~/.lv2/$(TETR4_SWITCH).lv2
 	rm -r ~/.lv2/$(HEPT7_SWITCH).lv2
 	rm -r ~/.lv2/$(GOSSIPER).lv2
+	rm -r ~/.lv2/$(KILL_SWITCH).lv2
 
 # --------------------------------------------------------------

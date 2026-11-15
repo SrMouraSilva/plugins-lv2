@@ -113,6 +113,33 @@ export const scenarios = {
     }),
   },
 
+  'kill-switch': {
+    // The bypass footswitch is driven by MOD UI, not by the preview: a tap on it is followed by what MOD UI then tells the plugin
+    demo: pedalboard('kill-switch', '.kill-switch', true, async (ctx) => {
+      const bypass = (value) => ctx.eval(`send({ type: 'change', symbol: ':bypass', value: ${value} })`);
+      const bpm = () => ctx.eval(`Number(document.querySelector('.ks-bpm b').textContent)`);
+      await ctx.sleep(900);
+      await ctx.tap('.ks-next');                                          // Chop 16ths
+      await ctx.sleep(600);
+      await ctx.tap('.ks-next');                                          // Triplet chop
+      await ctx.sleep(600);
+      await ctx.tap('.ks-segment[data-speed="2"]');                       // 2x
+      await ctx.sleep(600);
+      await ctx.tap('.ks-bpm-up', 1300);                                  // held: it goes on
+      await ctx.sleep(600);
+      await ctx.tap('.ks-foot'); await bypass(1);                         // bypassed
+      await ctx.sleep(1300);
+      await ctx.tap('.ks-foot'); await bypass(0);                         // on again
+      await ctx.sleep(900);
+      await ctx.tap('.ks-prev');
+      await ctx.tap('.ks-prev');                                          // back to Chop 8ths
+      await ctx.tap('.ks-segment[data-speed="1"]');                       // 1x
+      await ctx.tap('.ks-bpm-down', 1300);                                // held: it goes back down
+      while ((await bpm()) !== 120) await ctx.tap((await bpm()) > 120 ? '.ks-bpm-down' : '.ks-bpm-up', 60);
+      await ctx.sleep(700);
+    }),
+  },
+
   'gossiper': {
     // Gossiper only shows what a controller did: the controls are moved from outside, as MIDI would
     demo: pedalboard('gossiper', '.gossiper', true, async (ctx) => {

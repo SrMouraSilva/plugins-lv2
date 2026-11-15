@@ -106,6 +106,25 @@ The big sibling of Tetr4 Switch, in turquoise: **7 presets** (one footswitch eac
   <img src="./plugins/resources/hept7-switch.lv2/docs/images/hept7-switch-settings.gif" alt="The settings page of Hept7 Switch">
 </picture>
 
+## Kill Switch
+
+<img src="./plugins/resources/kill-switch.lv2/docs/alternative-thumbnail.webp" alt="Kill Switch" width="120" align="right">
+
+A rhythmic signal-cut effect, like the momentary kill switch some guitars have: while the plugin is on, a looping step pattern lets the signal through or cuts it, in time with the tempo. Bypassed, the signal is clean. A mono audio effect, in red and charcoal.
+
+* **10 patterns**: six generic grooves (*Chop 8ths*, *Chop 16ths*, *Triplet chop*, *Machine gun*, *Syncopated 3-3-2*, *Gallop*) and four inspired by guitarists famous for the kill switch (the rhythms are an approximation, not a transcription). Every pattern starts from its first step, a cut, each time the plugin is switched on
+* **Tempo** (40-240 BPM) and **Speed** (1/2x, 1x, 2x, 4x) set how fast it plays; **Depth** (how much of the signal a cut removes) and **Edge** (how long a cut takes to close and open, 0.1-20 ms) set how hard it is. The plugin has its own tempo: it does not follow the pedalboard's
+* **An interface drawn for touch**: the arrows change the pattern and a row of sixteen squares shows it (lit: the signal passes), a stepper for the tempo, a segmented control for the speed, sliders for depth and edge, and a footswitch that is the bypass of the plugin. No settings page of its own: MOD UI's generic window assigns the controls
+* **In-plugin bypass** (`lv2:enabled`) with a 10 ms ramp back to the dry signal. Assigned in *Momentary* mode, the effect is on only while the footswitch is held, like the switch on a guitar
+* A single C file against LV2's core header, with no dependencies and no allocation after `instantiate`; no latency
+* 11 factory presets
+* [User manual](./plugins/resources/kill-switch.lv2/docs/manual.md); the device opens the HTML version, [manual.html](./plugins/resources/kill-switch.lv2/modgui/manual.html) · [Store page](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9raWxsLXN3aXRjaA==) (coming soon)
+
+<picture>
+  <source srcset="./plugins/resources/kill-switch.lv2/docs/images/kill-switch-demo.webp" type="image/webp">
+  <img src="./plugins/resources/kill-switch.lv2/docs/images/kill-switch-demo.gif" alt="Kill Switch on a pedalboard">
+</picture>
+
 ## Download
 
 Binaries for **MOD Duo**, **MOD Duo X** and **MOD Dwarf** are built by [GitHub Actions](./.github/workflows/release.yml) on every push and published on the [Releases](../../releases) page. Releases have no version number; they are named after the commit they were built from:
@@ -126,7 +145,7 @@ MOD UI has an endpoint that installs a plugin archive, the same one the plugin S
 ```bash
 DEVICE=192.168.51.1
 TAG=20261114-1642-feature-hept7-switch-ffb748d    # the release to install, from the Releases page
-for plugin in gossiper tetr4-switch hept7-switch; do
+for plugin in gossiper tetr4-switch hept7-switch kill-switch; do
   curl -sL -o $plugin.tar.gz "https://github.com/SrMouraSilva/plugins-lv2/releases/download/$TAG/$plugin-dwarf.lv2.tar.gz"
   base64 -i $plugin.tar.gz | curl -s -F "package=@-;filename=$plugin.tar.gz" http://$DEVICE/sdk/install
   echo
@@ -231,6 +250,7 @@ rm -r /root/mod-workdir/moddwarf/build/srmourasilva-plugins-*
 docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/tetr4-switch.lv2/ binaries/dwarf
 docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/hept7-switch.lv2/ binaries/dwarf
 docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/gossiper.lv2/ binaries/dwarf
+docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/kill-switch.lv2/ binaries/dwarf
 ```
 
 ## About 

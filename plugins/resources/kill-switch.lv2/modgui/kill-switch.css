@@ -1,0 +1,437 @@
+/*
+ * Copyright 2021-2026 Paulo Mateus
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * Kill Switch: a charcoal pedal with a red accent. The pattern (name and steps) on top, tempo, speed, depth and edge
+ * under it, and the footswitch (the bypass of the plugin) on the right.
+ *
+ * Every rule is namespaced (.kill-switch / .ks-*), because MOD UI loads this file into the whole page.
+ */
+
+.kill-switch {
+  /* Charcoal and red (modgui:color is #7d1d12) */
+  --ks-ink: #120d0b;       /* the darkest: slots, the display */
+  --ks-ink-2: #1d1512;     /* panels */
+  --ks-ink-3: #2c201c;     /* raised controls */
+  --ks-line: rgba(255, 235, 228, 0.14);
+  --ks-text: #f6ede9;
+  --ks-muted: #b9a199;
+  --ks-red: #ff4a3d;       /* a step that passes, the LED, the filled part of a slider */
+  --ks-red-deep: #b8261c;
+  --ks-cut: #33231f;       /* a step that is cut */
+
+  font-family: "Avenir Next Rounded", "SF Pro Rounded", ui-rounded, "Nunito", "Varela Round", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Resets with no specificity, so every component rule below wins over them */
+:where(.kill-switch) :where(button, input, output) {
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+  text-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/*
+ * MOD UI covers the whole icon with a drag handle (.mod-drag-handle, absolute, z-index 20) so the plugin can be
+ * moved by dragging it. Whatever must be clickable has to sit above it; the rest still drags the plugin.
+ */
+.ks-step-button,
+.ks-segment,
+.ks-slider,
+.ks-foot {
+  position: relative;
+  z-index: 30;
+}
+
+.kill-switch button:focus-visible,
+.kill-switch input:focus-visible {
+  outline: 3px solid #ffd0ca;
+  outline-offset: 2px;
+}
+
+
+/* ==========================================================================
+ * The plugin on the pedalboard
+ * ========================================================================== */
+
+/* One jack on each side, at the middle of the plugin (300 px tall, a jack is 56 px) */
+.kill-switch-base.mod-pedal .mod-pedal-input,
+.kill-switch-base.mod-pedal .mod-pedal-output {
+  top: 122px;
+}
+
+.kill-switch {
+  --ks-width: 520px;
+  --ks-height: 300px;
+
+  box-sizing: border-box;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 104px;
+  gap: 14px;
+
+  width: var(--ks-width);
+  min-width: var(--ks-width);
+  height: var(--ks-height);
+  padding: 12px 16px 14px 18px;
+
+  color: var(--ks-text);
+  text-align: center;
+
+  background:
+    radial-gradient(110% 70% at 6% 0%, rgba(255, 120, 90, 0.14), rgba(255, 120, 90, 0) 60%),
+    linear-gradient(170deg, #2a1d19 0%, #17100d 100%);
+  border-radius: 22px;
+  box-shadow:
+    inset 0 2px 1px rgba(255, 235, 228, 0.18),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.5),
+    0 0 0 2px #3a2520;
+}
+
+.ks-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ks-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 24px;
+}
+
+.ks-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* A mark: a signal that passes, is cut, passes... */
+.ks-brand::before {
+  content: "";
+  width: 24px;
+  height: 12px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--ks-red) 0 25%, var(--ks-cut) 0 50%, var(--ks-red) 0 75%, var(--ks-cut) 0);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+.ks-state {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ks-ink);
+  background: var(--ks-red);
+  box-shadow: 0 0 12px -2px var(--ks-red);
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.kill-switch.is-bypassed .ks-state {
+  color: var(--ks-muted);
+  background: var(--ks-ink-3);
+  box-shadow: none;
+}
+
+
+/* The display: the name of the pattern and its steps */
+.ks-display {
+  flex: 0 0 auto;
+  padding: 6px 8px 10px;
+  border-radius: 14px;
+  background: var(--ks-ink);
+  box-shadow: inset 0 0 0 1px var(--ks-line), inset 0 3px 8px rgba(0, 0, 0, 0.6);
+}
+
+.ks-pattern {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 6px;
+}
+
+.ks-pattern-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.ks-steps {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  gap: 3px;
+  height: 18px;
+  padding: 0 4px;
+}
+
+.ks-steps i {
+  display: block;
+  border-radius: 4px;
+  background: var(--ks-cut);
+  transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+
+.ks-steps i.on {
+  background: var(--ks-red);
+  box-shadow: 0 0 10px -1px var(--ks-red);
+}
+
+/* The pattern repeats: only its first run is the pattern, the rest shows where it goes on */
+.ks-steps i.again { opacity: 0.4; }
+
+/* Where the pattern starts again */
+.ks-steps i.start { margin-left: 3px; }
+.ks-steps i.first { margin-left: 0; }
+
+.kill-switch.is-bypassed .ks-steps i.on {
+  background: #7c4a43;
+  box-shadow: none;
+}
+
+
+/* Tempo, speed, depth and edge */
+.ks-controls {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 6px 14px;
+}
+
+.ks-control {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.ks-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 2px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ks-muted);
+}
+
+.ks-label output {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--ks-text);
+}
+
+.ks-step-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ks-text);
+  background: var(--ks-ink-3);
+  box-shadow: 0 2px 0 #0b0706, inset 0 1px 0 rgba(255, 235, 228, 0.1);
+  transition: background-color 0.15s;
+}
+.ks-step-button:hover { background: #3d2b26; }
+.ks-step-button:active { transform: translateY(1px); box-shadow: 0 1px 0 #0b0706; background: var(--ks-red-deep); }
+
+/* Tempo: - 120 BPM + */
+.ks-stepper {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 4px;
+}
+
+.ks-bpm {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--ks-muted);
+}
+.ks-bpm b {
+  display: block;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--ks-text);
+}
+
+/* Speed: four buttons that act as one */
+.ks-segments {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  height: 44px;
+  padding: 3px;
+  gap: 3px;
+  border-radius: 14px;
+  background: var(--ks-ink);
+  box-shadow: inset 0 0 0 1px var(--ks-line), inset 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.ks-segment {
+  min-width: 0;
+  border-radius: 11px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ks-muted);
+  transition: background-color 0.15s, color 0.15s;
+}
+.ks-segment:hover { color: var(--ks-text); }
+.ks-segment[aria-checked="true"] {
+  color: var(--ks-ink);
+  background: var(--ks-red);
+  box-shadow: 0 0 12px -2px var(--ks-red);
+}
+
+/* Depth and edge: sliders with a 44 px tall touch area and a thin track */
+.ks-slider {
+  display: block;
+  width: 100%;
+  height: 44px;
+  cursor: pointer;
+  background: transparent;
+  --ks-fill: 100%;
+}
+
+.ks-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--ks-red) 0 var(--ks-fill), var(--ks-ink) var(--ks-fill) 100%);
+  box-shadow: inset 0 0 0 1px var(--ks-line);
+}
+.ks-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 26px;
+  height: 26px;
+  margin-top: -9px;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 0, #ecdcd7 40%, #b79d96 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+.ks-slider::-moz-range-track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--ks-ink);
+  box-shadow: inset 0 0 0 1px var(--ks-line);
+}
+.ks-slider::-moz-range-progress {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--ks-red);
+}
+.ks-slider::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 0, #ecdcd7 40%, #b79d96 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+
+/* The footswitch: a metal cap in a ring that is the LED (lit while the plugin is on) */
+.ks-pedal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-top: 6px;
+}
+
+.ks-led {
+  width: 44px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--ks-ink);
+  box-shadow: inset 0 0 0 1px var(--ks-line);
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+.kill-switch:not(.is-bypassed) .ks-led {
+  background: var(--ks-red);
+  box-shadow: 0 0 14px 1px var(--ks-red);
+}
+
+.ks-foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: radial-gradient(circle at 50% 35%, #3a2b26, #130d0b);
+  box-shadow: 0 0 0 3px var(--ks-ink-3), inset 0 3px 8px rgba(0, 0, 0, 0.7), 0 6px 10px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.2s;
+}
+.kill-switch:not(.is-bypassed) .ks-foot {
+  box-shadow: 0 0 0 3px var(--ks-red), 0 0 18px 0 rgba(255, 74, 61, 0.55), inset 0 3px 8px rgba(0, 0, 0, 0.7), 0 6px 10px rgba(0, 0, 0, 0.5);
+}
+
+.ks-cap {
+  display: block;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 55%),
+    repeating-conic-gradient(from 0deg, #8d7f7a 0 8deg, #b6a8a3 8deg 16deg);
+  box-shadow: 0 4px 0 #3b2c28, 0 6px 8px rgba(0, 0, 0, 0.6);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.ks-foot:active .ks-cap {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #3b2c28, 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.ks-foot-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ks-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kill-switch * {
+    transition: none !important;
+  }
+}
