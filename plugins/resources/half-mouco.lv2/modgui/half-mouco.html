@@ -1,0 +1,94 @@
+<div class="mod-pedal half-mouco-base mod-no-shadow">
+    <div mod-role="drag-handle" class="mod-drag-handle"></div>
+
+    <div class="half-mouco is-bypassed" data-mode="0">
+      <div class="hm-main">
+        <div class="hm-head">
+          <span class="hm-brand">Half Mouco</span>
+          <button type="button" class="hm-chip hm-mono" aria-pressed="false" title="Mono input: the left input feeds both sides">Mono</button>
+          <button type="button" class="hm-chip hm-open" title="Write your own pattern, and assign the controls">Edit</button>
+          <span class="hm-state" aria-live="polite">Bypassed</span>
+        </div>
+
+        <!-- What plays: its name, the buttons that change it and, for each side, its steps (the patterns) or its
+             level along the ending (the endings) -->
+        <div class="hm-display">
+          <div class="hm-pattern">
+            <button type="button" class="hm-step-button hm-prev" aria-label="Previous" title="Previous"><span aria-hidden="true">&#9664;</span></button>
+            <div class="hm-pattern-name" aria-live="polite">Ping-pong 8ths</div>
+            <button type="button" class="hm-step-button hm-next" aria-label="Next" title="Next"><span aria-hidden="true">&#9654;</span></button>
+          </div>
+          <div class="hm-lane" data-side="l"><b aria-hidden="true">L</b><div class="hm-steps" role="img" aria-label="The left side"></div></div>
+          <div class="hm-lane" data-side="r"><b aria-hidden="true">R</b><div class="hm-steps" role="img" aria-label="The right side"></div></div>
+        </div>
+
+        <div class="hm-controls">
+          <div class="hm-control hm-tempo">
+            <span class="hm-label">Tempo</span>
+            <div class="hm-stepper">
+              <button type="button" class="hm-step-button hm-bpm-down" aria-label="Slower" title="Slower"><span aria-hidden="true">&minus;</span></button>
+              <output class="hm-bpm" aria-label="Tempo in beats per minute"><b>120</b> BPM</output>
+              <button type="button" class="hm-step-button hm-bpm-up" aria-label="Faster" title="Faster"><span aria-hidden="true">+</span></button>
+            </div>
+          </div>
+
+          <!-- Patterns: the speed. Endings: how long they last -->
+          <div class="hm-control hm-speed">
+            <span class="hm-label">Speed</span>
+            <div class="hm-segments" role="radiogroup" aria-label="Speed of the pattern">
+              <button type="button" class="hm-segment" role="radio" aria-checked="false" data-speed="0">&frac12;x</button>
+              <button type="button" class="hm-segment" role="radio" aria-checked="true" data-speed="1">1x</button>
+              <button type="button" class="hm-segment" role="radio" aria-checked="false" data-speed="2">2x</button>
+              <button type="button" class="hm-segment" role="radio" aria-checked="false" data-speed="3">4x</button>
+            </div>
+          </div>
+          <div class="hm-control hm-length">
+            <span class="hm-label">Length</span>
+            <div class="hm-stepper">
+              <button type="button" class="hm-step-button hm-length-down" aria-label="Shorter" title="Shorter"><span aria-hidden="true">&minus;</span></button>
+              <output class="hm-length-value" aria-label="Length of the ending in beats"><b>8</b> beats</output>
+              <button type="button" class="hm-step-button hm-length-up" aria-label="Longer" title="Longer"><span aria-hidden="true">+</span></button>
+            </div>
+          </div>
+
+          <div class="hm-control hm-depth">
+            <div class="hm-label"><span>Depth</span><output class="hm-depth-value">100%</output></div>
+            <input type="range" class="hm-slider hm-depth-input" min="0" max="100" step="1" value="100" aria-label="Depth: how much of the signal a cut removes" />
+          </div>
+
+          <div class="hm-control hm-edge">
+            <div class="hm-label"><span>Edge</span><output class="hm-edge-value">1.5 ms</output></div>
+            <input type="range" class="hm-slider hm-edge-input" min="0" max="1000" step="1" value="511" aria-label="Edge: how long a cut takes to open and close" />
+          </div>
+        </div>
+      </div>
+
+      <!-- MOD UI drives the footswitch (mod-role="bypass"): it is the bypass of the plugin. What is drawn follows
+           the class is-bypassed of .half-mouco, which the script sets from the port ':bypass' -->
+      <div class="hm-pedal">
+        <div class="hm-modes" role="radiogroup" aria-label="What plays">
+          <button type="button" class="hm-mode" role="radio" aria-checked="true" data-mode="0">Patterns</button>
+          <button type="button" class="hm-mode" role="radio" aria-checked="false" data-mode="1">Endings</button>
+        </div>
+        <span class="hm-led" aria-hidden="true"></span>
+        <button type="button" class="hm-foot" mod-role="bypass" aria-label="Bypass" title="Bypass"><span class="hm-cap" aria-hidden="true"></span></button>
+        <span class="hm-foot-label">On</span>
+      </div>
+    </div>
+
+    <div class="mod-pedal-input">
+        {{#effect.ports.audio.input}}
+        <div class="mod-input mod-input-disconnected" title="{{name}}" mod-role="input-audio-port" mod-port-symbol="{{symbol}}">
+            <div class="mod-pedal-input-image"></div>
+        </div>
+        {{/effect.ports.audio.input}}
+    </div>
+
+    <div class="mod-pedal-output">
+        {{#effect.ports.audio.output}}
+        <div class="mod-output mod-output-disconnected" title="{{name}}" mod-role="output-audio-port" mod-port-symbol="{{symbol}}">
+            <div class="mod-pedal-output-image"></div>
+        </div>
+        {{/effect.ports.audio.output}}
+    </div>
+</div>

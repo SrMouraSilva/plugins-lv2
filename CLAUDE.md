@@ -1,12 +1,12 @@
 # CLAUDE.md
 
 LV2 utility plugins for MOD devices (MOD Dwarf first; Duo and Duo X must keep working). Plugins: **Gossiper**,
-**Tetr4 Switch**, **Hept7 Switch** and **Kill Switch**. Code, comments, commits and docs are in English.
+**Tetr4 Switch**, **Hept7 Switch**, **Kill Switch** and **Half Mouco**. Code, comments, commits and docs are in English.
 
 ## Layout
 
 ```
-plugins/src/                 C sources (shared code in lv2/, model/, utils/; kill-switch.c is standalone)
+plugins/src/                 C sources (shared code in lv2/, model/, utils/; kill-switch.c and half-mouco.c are standalone)
 plugins/resources/<name>.lv2 the bundle: <name>.ttl, manifest.ttl, modgui.ttl, presets.ttl, modgui/, docs/
 plugins/Makefile             build-<plugin> targets; srmourasilva-plugins.mk is the mod-plugin-builder package
 tools/modgui-preview/        browser preview of any plugin's modgui (no device needed)
@@ -58,6 +58,11 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   three levels ('0' cut, '1' half, '2' pass); the built-in patterns use 0 and 2, and the custom one is the ports
   `custom_length`, `custom_steps_per_beat` and `custom_step_1..16` (the value 10 of `pattern`). A new port goes before
   `lv2_enabled` only while the plugin is unreleased (the TTL indices, `PortIndex` and the harness must agree).
+* **Half Mouco is Kill Switch in stereo** (`src/half-mouco.c`, also standalone): a row of steps for each side, plus *endings*,
+  one-shot effects that are functions of the time since the plugin was switched on (`ending_gate` in C, `ENDINGS[].gate` in the
+  modgui script: keep them in step, the script draws the ending along its time). Its `PATTERNS`, the scale points of `pattern` and
+  `ending` and the modgui script must agree too. The ports are `mode`, `pattern`, `ending`, ..., `custom_left_step_1..16`,
+  `custom_right_step_1..16`, and `lv2_enabled` last (index 47).
 * **One code base, several plugins.** Tetr4 and Hept7 Switch are the same sources sized by `src/config.h`
   (`-DHEPT7_SWITCH`). Do not copy files to make a variant: parametrise (`TOTAL_PRESETS`, `TOTAL_OUTPUTS`).
 * **Port layout lives in `src/model/ports.h`** as contiguous ranges (`PORT_*_FIRST`), never as one `case` per port.

@@ -1,0 +1,1458 @@
+/*
+ * Copyright 2021-2026 Paulo Mateus
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * Half Mouco: a charcoal pedal with a red accent. The pattern (name and steps) on top, tempo, speed, depth and edge
+ * under it, and the footswitch (the bypass of the plugin) on the right.
+ *
+ * Every rule is namespaced (.half-mouco / .hm-*), because MOD UI loads this file into the whole page.
+ */
+
+.half-mouco,
+.hms {
+  /* Charcoal and red (modgui:color is #0f3d4a) */
+  --hm-ink: #0a1315;       /* the darkest: slots, the display */
+  --hm-ink-2: #11201f;     /* panels */
+  --hm-ink-3: #1b3030;     /* raised controls */
+  --hm-line: rgba(220, 248, 244, 0.14);
+  --hm-text: #eaf7f5;
+  --hm-muted: #93b6b3;
+  --hm-accent: #7fe3d3;    /* titles and marks on the settings page */
+  --hm-red: #4fe0c5;       /* a step that passes, the LED, the filled part of a slider */
+  --hm-red-deep: #1f8f7d;
+  --hm-cut: #1c2d2d;       /* a step that is cut */
+
+  --hm-half: #2a9a8a;      /* a step at the middle level */
+
+  font-family: "Avenir Next Rounded", "SF Pro Rounded", ui-rounded, "Nunito", "Varela Round", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Resets with no specificity, so every component rule below wins over them */
+:where(.half-mouco, .hms) :where(button, input, output, select) {
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+  text-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/*
+ * MOD UI covers the whole icon with a drag handle (.mod-drag-handle, absolute, z-index 20) so the plugin can be
+ * moved by dragging it. Whatever must be clickable has to sit above it; the rest still drags the plugin.
+ */
+.hm-chip,
+.hm-mode,
+.hm-step-button,
+.hm-segment,
+.hm-slider,
+.hm-foot {
+  position: relative;
+  z-index: 30;
+}
+
+.half-mouco button:focus-visible,
+.half-mouco input:focus-visible,
+.hms button:focus-visible,
+.hms input:focus-visible,
+.hms select:focus-visible {
+  outline: 3px solid #c8fff4;
+  outline-offset: 2px;
+}
+
+
+/* ==========================================================================
+ * The plugin on the pedalboard
+ * ========================================================================== */
+
+/* One jack on each side, at the middle of the plugin (318 px tall, a jack is 56 px) */
+.half-mouco-base.mod-pedal .mod-pedal-input,
+.half-mouco-base.mod-pedal .mod-pedal-output {
+  top: 131px;
+}
+
+.half-mouco {
+  --hm-width: 520px;
+  --hm-height: 318px;
+
+  box-sizing: border-box;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 104px;
+  gap: 14px;
+
+  width: var(--hm-width);
+  min-width: var(--hm-width);
+  height: var(--hm-height);
+  padding: 12px 16px 14px 18px;
+
+  color: var(--hm-text);
+  text-align: center;
+
+  background:
+    radial-gradient(110% 70% at 6% 0%, rgba(90, 230, 210, 0.12), rgba(90, 230, 210, 0) 60%),
+    linear-gradient(170deg, #16282a 0%, #0c1618 100%);
+  border-radius: 22px;
+  box-shadow:
+    inset 0 2px 1px rgba(220, 248, 244, 0.18),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.5),
+    0 0 0 2px #1c3335;
+}
+
+.hm-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hm-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 24px;
+}
+
+.hm-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* A mark: a signal that passes, is cut, passes... */
+.hm-brand::before {
+  content: "";
+  width: 24px;
+  height: 12px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--hm-red) 0 25%, var(--hm-cut) 0 50%, var(--hm-red) 0 75%, var(--hm-cut) 0);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+.hm-state {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hm-ink);
+  background: var(--hm-red);
+  box-shadow: 0 0 12px -2px var(--hm-red);
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.half-mouco.is-bypassed .hm-state {
+  color: var(--hm-muted);
+  background: var(--hm-ink-3);
+  box-shadow: none;
+}
+
+
+/* The display: the name of the pattern and its steps */
+.hm-display {
+  flex: 0 0 auto;
+  padding: 6px 8px 10px;
+  border-radius: 14px;
+  background: var(--hm-ink);
+  box-shadow: inset 0 0 0 1px var(--hm-line), inset 0 3px 8px rgba(0, 0, 0, 0.6);
+}
+
+.hm-pattern {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 6px;
+}
+
+.hm-pattern-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.hm-steps {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  gap: 3px;
+  height: 18px;
+  padding: 0 4px;
+}
+
+.hm-steps i {
+  display: block;
+  border-radius: 4px;
+  background: var(--hm-cut);
+  transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+
+.hm-steps i.l2 {
+  background: var(--hm-red);
+  box-shadow: 0 0 10px -1px var(--hm-red);
+}
+
+/* The pattern repeats: only its first run is the pattern, the rest shows where it goes on */
+.hm-steps i.again { opacity: 0.4; }
+
+/* Where the pattern starts again */
+.hm-steps i.start { margin-left: 3px; }
+.hm-steps i.first { margin-left: 0; }
+
+.half-mouco.is-bypassed .hm-steps i.l2 {
+  background: #3d6a63;
+  box-shadow: none;
+}
+
+
+/* Tempo, speed, depth and edge */
+.hm-controls {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 6px 14px;
+}
+
+.hm-control {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.hm-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 2px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--hm-muted);
+}
+
+.hm-label output {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--hm-text);
+}
+
+.hm-step-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--hm-text);
+  background: var(--hm-ink-3);
+  box-shadow: 0 2px 0 #050b0c, inset 0 1px 0 rgba(220, 248, 244, 0.1);
+  transition: background-color 0.15s;
+}
+.hm-step-button:hover { background: #25403f; }
+.hm-step-button:active { transform: translateY(1px); box-shadow: 0 1px 0 #050b0c; background: var(--hm-red-deep); }
+
+/* Tempo: - 120 BPM + */
+.hm-stepper {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 4px;
+}
+
+.hm-bpm,
+.hm-length-value {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--hm-muted);
+}
+.hm-bpm b,
+.hm-length-value b {
+  display: block;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--hm-text);
+}
+
+/* Speed: four buttons that act as one */
+.hm-segments {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  height: 44px;
+  padding: 3px;
+  gap: 3px;
+  border-radius: 14px;
+  background: var(--hm-ink);
+  box-shadow: inset 0 0 0 1px var(--hm-line), inset 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.hm-segment {
+  min-width: 0;
+  border-radius: 11px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--hm-muted);
+  transition: background-color 0.15s, color 0.15s;
+}
+.hm-segment:hover { color: var(--hm-text); }
+.hm-segment[aria-checked="true"] {
+  color: var(--hm-ink);
+  background: var(--hm-red);
+  box-shadow: 0 0 12px -2px var(--hm-red);
+}
+
+/* Depth and edge: sliders with a 44 px tall touch area and a thin track */
+.hm-slider {
+  display: block;
+  width: 100%;
+  height: 44px;
+  cursor: pointer;
+  background: transparent;
+  --hm-fill: 100%;
+}
+
+.hm-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--hm-red) 0 var(--hm-fill), var(--hm-ink) var(--hm-fill) 100%);
+  box-shadow: inset 0 0 0 1px var(--hm-line);
+}
+.hm-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 26px;
+  height: 26px;
+  margin-top: -9px;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 0, #dcecea 40%, #9fb2af 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+.hm-slider::-moz-range-track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--hm-ink);
+  box-shadow: inset 0 0 0 1px var(--hm-line);
+}
+.hm-slider::-moz-range-progress {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--hm-red);
+}
+.hm-slider::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 0, #dcecea 40%, #9fb2af 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+
+/* The footswitch: a metal cap in a ring that is the LED (lit while the plugin is on) */
+.hm-pedal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-top: 6px;
+}
+
+.hm-led {
+  width: 44px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--hm-ink);
+  box-shadow: inset 0 0 0 1px var(--hm-line);
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+.half-mouco:not(.is-bypassed) .hm-led {
+  background: var(--hm-red);
+  box-shadow: 0 0 14px 1px var(--hm-red);
+}
+
+.hm-foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: radial-gradient(circle at 50% 35%, #27403f, #0b1516);
+  box-shadow: 0 0 0 3px var(--hm-ink-3), inset 0 3px 8px rgba(0, 0, 0, 0.7), 0 6px 10px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.2s;
+}
+.half-mouco:not(.is-bypassed) .hm-foot {
+  box-shadow: 0 0 0 3px var(--hm-red), 0 0 18px 0 rgba(79, 224, 197, 0.55), inset 0 3px 8px rgba(0, 0, 0, 0.7), 0 6px 10px rgba(0, 0, 0, 0.5);
+}
+
+.hm-cap {
+  display: block;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 55%),
+    repeating-conic-gradient(from 0deg, #7d8b89 0 8deg, #a9b8b6 8deg 16deg);
+  box-shadow: 0 4px 0 #1d3636, 0 6px 8px rgba(0, 0, 0, 0.6);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.hm-foot:active .hm-cap {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #1d3636, 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.hm-foot-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--hm-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .half-mouco * {
+    transition: none !important;
+  }
+}
+
+
+/* ==========================================================================
+ * The settings page: takes the whole screen, built for touch
+ * ========================================================================== */
+
+.hms {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  /* Never scrolls: what does not fit goes on another page (see the pager) */
+  overflow: hidden;
+  overscroll-behavior: contain;
+
+  /* The margins of the screen. The pager reaches the edges and its pages keep these margins inside, so the shadows of
+     the panels fade out on the page instead of being cut a few pixels from the panel */
+  --hms-gy: 14px;
+  --hms-pl: max(14px, env(safe-area-inset-left));
+  --hms-pr: max(14px, env(safe-area-inset-right));
+  --hms-pb: max(var(--hms-gy), env(safe-area-inset-bottom));
+  padding: max(var(--hms-gy), env(safe-area-inset-top)) var(--hms-pr) var(--hms-pb) var(--hms-pl);
+
+  color: var(--hm-text);
+  font-size: 16px;
+  line-height: 1.3;
+  background:
+    radial-gradient(90% 60% at 12% 0%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(165deg, #1c3335 0%, #10201f 45%, #0a1213 100%);
+}
+
+
+.hms *,
+.hms *::before,
+.hms *::after {
+  box-sizing: border-box;
+}
+
+
+.hms h1,
+.hms h2,
+.hms p {
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  text-transform: none;
+  text-shadow: none;
+  letter-spacing: normal;
+}
+
+
+.hms-shell {
+  max-width: 1500px;
+  height: 100%;
+  margin: 0 auto;
+}
+
+
+.hms-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+
+.hms-stock[hidden] { display: none; }
+
+
+.hms-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+
+/* Top bar, straight on the background */
+.hms-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px 18px;
+  flex-wrap: wrap;
+  flex: 0 0 auto;
+}
+
+
+.hms-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin-right: auto;
+}
+
+
+.hms h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--hm-text);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+}
+
+
+.hms .js-close {
+  min-width: 100px;
+  min-height: 48px;
+  padding: 0 26px;
+  border-radius: 24px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--hm-text);
+  background: var(--hm-ink-2);
+  box-shadow: 0 3px 0 var(--hm-ink);
+  transition: transform 0.08s, box-shadow 0.08s, background-color 0.15s;
+}
+
+.hms .js-close:hover { background: var(--hm-ink-3); }
+
+.hms .js-close:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--hm-ink);
+}
+
+
+/* Page controls: always there. Swiping the pager does the same */
+.hms-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+
+.hms-step {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  cursor: pointer;
+  color: var(--hm-text);
+  background: var(--hm-ink-2);
+  box-shadow: 0 3px 0 var(--hm-ink);
+  transition: transform 0.08s, box-shadow 0.08s, background-color 0.15s, opacity 0.15s;
+}
+
+.hms-step:hover { background: var(--hm-ink-3); }
+
+.hms-step:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--hm-ink);
+}
+
+.hms-step:disabled {
+  opacity: 0.35;
+  cursor: default;
+  transform: none;
+  box-shadow: 0 3px 0 var(--hm-ink);
+}
+
+
+/* One dot per page, the current one filled. A tap on one goes to its page, but the arrows are the controls */
+.hms-dots {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+}
+
+
+.hms-dot {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 36px;
+  cursor: pointer;
+}
+
+.hms-dot::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.4;
+  transition: width 0.2s, height 0.2s, opacity 0.2s;
+}
+
+.hms-dot.is-current::before {
+  width: 12px;
+  height: 12px;
+  opacity: 1;
+}
+
+
+/*
+ * The pages sit side by side in a strip that scrolls (and snaps) horizontally: a swipe on a touch screen, the
+ * arrows elsewhere. Vertically it never scrolls; each page is cut to its height by the script
+ */
+.hms-pager {
+  flex: 1 1 0;
+  min-height: 0;
+  margin: 0 calc(-1 * var(--hms-pr)) calc(-1 * var(--hms-pb)) calc(-1 * var(--hms-pl));
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior: contain;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.hms-pager::-webkit-scrollbar { display: none; }
+
+
+.hms-page {
+  flex: 0 0 100%;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  /* the margins of the screen, and room for the shadow of the panels, which the page clips */
+  padding: 4px var(--hms-pr) var(--hms-pb) var(--hms-pl);
+  overflow: hidden;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+
+
+/* Panels */
+.hms-panel {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 16px;
+  border-radius: 20px;
+  background: var(--hm-ink-2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), inset 0 0 0 1px var(--hm-line);
+}
+
+
+.hms-panel-head {
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+
+.hms-eyebrow {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hm-muted);
+}
+
+
+.hms-range {
+  margin-left: 8px;
+  color: var(--hm-muted);
+  letter-spacing: 0.04em;
+}
+
+
+.hms h2 {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--hm-accent);
+}
+
+
+.hms-panel-head p {
+  margin-top: 3px;
+  font-size: 14px;
+  color: var(--hm-muted);
+}
+
+
+
+/* Hardware assignments: every tile is the button that opens the assignment dialog */
+.hms-assign {
+  display: grid;
+  /* The script sets the number of columns from the width of the panel */
+  grid-template-columns: repeat(var(--hms-cols, 2), minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+
+.hms .mod-address.hms-address {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  height: auto;
+  min-height: 56px;
+  padding: 6px 8px 6px 14px;
+  border-radius: 14px;
+  text-align: left;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.05);
+  background-image: none;
+  box-shadow: inset 0 0 0 1px var(--hm-line);
+  transition: background-color 0.15s, box-shadow 0.15s;
+}
+
+
+.hms .mod-address.hms-address:hover { background-color: rgba(255, 255, 255, 0.1); }
+
+
+.hms-assign-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+
+.hms-assign-title,
+.hms-assign-name small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.hms-assign-name small {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hm-muted);
+}
+
+
+/* The state of the assignment button: a dark disc that holds the icon (below), filled when the control is addressed */
+.hms-assign-state {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--hm-accent);
+  background: var(--hm-ink-3);
+}
+
+/*
+ * The icon of the assignment button: the one MOD UI and the device use for it everywhere (faders), so it is
+ * recognised at once. It is MOD UI's own img/icons/36/faders.png (36 x 36, white) used as a mask, so it takes the
+ * colour of the plugin and nothing has to be loaded from MOD UI. Free: the accent on a dark disc; addressed: the
+ * reverse.
+ */
+.hms-assign-state::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACOSURBVFiF7ZZRCoAwDEOteP8rxy9B0I1lbUcHeZ+CEPqybschhBBfACDz+5uTi5ZPSiAzs9l/r8ggf0rYcHsq8yhg6SpjFUQET1E2crxblOtQV9nK7jwMTcijgMWlLGOCU4sxYgG2KFfqcoGGYEvtOQSuyxUARrrDdK6csnKBQt9DLZiVsHRCelMLIXbgBkToOCu2t7NaAAAAAElFTkSuQmCC") center / 36px 36px no-repeat;
+  mask: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACOSURBVFiF7ZZRCoAwDEOteP8rxy9B0I1lbUcHeZ+CEPqybschhBBfACDz+5uTi5ZPSiAzs9l/r8ggf0rYcHsq8yhg6SpjFUQET1E2crxblOtQV9nK7jwMTcijgMWlLGOCU4sxYgG2KFfqcoGGYEvtOQSuyxUARrrDdK6csnKBQt9DLZiVsHRCelMLIXbgBkToOCu2t7NaAAAAAElFTkSuQmCC") center / 36px 36px no-repeat;
+}
+
+
+.hms .mod-address.hms-address.addressed {
+  background-color: rgba(127, 227, 211, 0.16);
+  box-shadow: inset 0 0 0 2px var(--hm-accent);
+}
+
+.hms .mod-address.hms-address.addressed .hms-assign-state {
+  color: var(--hm-ink);
+  background: var(--hm-accent);
+}
+
+
+/* Saved presets: MOD UI wires up this markup, it is only restyled here */
+.hms-presets-panel {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+}
+
+
+.hms .mod-presets {
+  position: relative;
+  float: none;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+  width: auto !important;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  background: none;
+}
+
+
+.hms .mod-presets > span.mod-enumerated-title {
+  display: block;
+  height: auto;
+  margin-bottom: 8px;
+  overflow: visible !important;
+}
+
+
+.hms .mod-presets form {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+}
+
+
+.hms .mod-presets form > span {
+  flex: 1 1 0;
+}
+
+
+.hms .mod-presets form label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--hm-ink-3);
+}
+
+
+.hms .mod-presets .radio-preset {
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+  accent-color: var(--hm-accent);
+  -webkit-appearance: radio;
+  appearance: auto;
+}
+
+
+.hms .mod-presets > div.mod-enumerated-list {
+  float: none;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  min-height: 150px;
+  flex: 1 1 0;
+  padding: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  background: var(--hm-ink);
+}
+
+
+.hms .mod-presets .mod-enumerated-list > div[mod-role="enumeration-option"] {
+  height: auto;
+  min-height: 46px;
+  padding: 12px 14px;
+  margin: 0 0 1px;
+  line-height: 1.2;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--hm-text);
+  background: var(--hm-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.hms .mod-presets .mod-enumerated-list > div[mod-role="enumeration-option"]:hover { background: var(--hm-ink-3); }
+
+.hms .mod-presets .mod-enumerated-list > div[mod-role="enumeration-option"].selected {
+  color: var(--hm-ink);
+  background: var(--hm-accent);
+}
+
+
+.hms .mod-presets footer {
+  position: static;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  margin: 10px 0 0;
+  padding: 0;
+  background: none;
+}
+
+
+.hms .mod-presets .btn {
+  float: none;
+  width: auto;
+  min-width: 48px;
+  min-height: 48px;
+  margin: 0;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--hm-text);
+  background-color: var(--hm-ink-3);
+  background-repeat: no-repeat;
+  background-position: center center;
+  box-shadow: inset 0 0 0 1px var(--hm-line);
+}
+
+
+.hms .mod-presets .btn.preset-btn-save,
+.hms .mod-presets .btn.preset-btn-save-as,
+.hms .mod-presets .btn.preset-btn-delete {
+  width: 48px;
+  margin-right: 0;
+}
+
+
+.hms .mod-presets .btn.preset-btn-rename { width: 56px !important; font-size: 13px; }
+
+
+.hms .mod-presets .btn:hover { background-color: #2d4a49; }
+
+.hms .mod-presets .btn.disabled { opacity: 0.35; cursor: default; }
+
+.hms .mod-presets .btn.disabled:hover { background-color: var(--hm-ink-3); }
+
+
+.hms .mod-presets .assign-all { margin-left: auto; }
+
+.hms .mod-presets .btn.preset-btn-assign-all.addressed {
+  color: var(--hm-ink);
+  background-color: var(--hm-accent);
+}
+
+
+
+/* --------------------------------------------------------------------------
+ * Sizes. The script measures the box the page is drawn in (MOD UI's own page has no viewport meta tag, so media
+ * queries cannot tell a phone from a desktop there) and says so with data-w (s < 700px, m < 1100px, l) and
+ * data-h (s: short, m), and with .is-row on the scenes when a card is wide enough for its name to sit beside the switches
+ * -------------------------------------------------------------------------- */
+
+/* A column of panels, and a row of them (wide screens) */
+.hms-stack {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-self: stretch;
+  min-width: 0;
+  min-height: 0;
+}
+
+.hms-stack > .hms-panel { flex: 0 0 auto; }
+
+.hms-stack > .hms-presets-panel { flex: 1 1 0; min-height: 0; }
+
+
+.hms-row {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.hms-row > .hms-presets-panel { flex: 3 1 0; align-self: stretch; }
+
+
+/* Narrow: the logo, the preset playing and the close button, and under them the page controls across the width */
+.hms[data-w="s"] { font-size: 15px; }
+
+.hms[data-w="s"] .hms-bar { gap: 8px 10px; }
+
+.hms[data-w="s"] h1 { display: none; }
+
+.hms[data-w="s"] .hms-title { margin-right: 0; }
+
+.hms[data-w="s"] .hms-close { order: 3; min-width: 88px; padding: 0 20px; }
+
+.hms[data-w="s"] .hms-nav { order: 4; flex: 1 1 100%; justify-content: space-between; }
+
+.hms[data-w="s"] .hms-dots { flex: 1 1 auto; justify-content: center; }
+
+.hms[data-w="s"] .hms-panel { padding: 12px; border-radius: 18px; }
+
+.hms[data-w="s"] .hms-panel-head { margin-bottom: 8px; }
+
+
+/* Short (a phone on its side): tighter, with no room for the descriptions; 44px is still the smallest target */
+.hms[data-h="s"] { --hms-gy: 8px; }
+
+.hms[data-h="s"] .hms-screen { gap: 6px; }
+
+.hms[data-h="s"] .hms-panel { padding: 10px 12px; }
+
+.hms[data-h="s"] .hms-panel-head { margin-bottom: 8px; }
+
+.hms[data-h="s"] .hms-step,
+.hms[data-h="s"] .hms-close { min-height: 44px; height: 44px; }
+
+.hms[data-h="s"] .hms-assign { gap: 4px; }
+
+.hms[data-h="s"] .hms-presets-panel .mod-presets > div.mod-enumerated-list { min-height: 64px; }
+
+
+@media (prefers-reduced-motion: reduce) {
+  .tetr4-switch *, .hms * { transition: none !important; }
+}
+
+
+/* The mark and the pattern that is playing, in the top bar */
+.hms-logo {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 32px;
+  border-radius: 10px;
+  background:
+    linear-gradient(90deg, var(--hm-red) 0 25%, var(--hm-cut) 0 50%, var(--hm-red) 0 75%, var(--hm-cut) 0) center / 24px 12px no-repeat,
+    var(--hm-ink);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 1px var(--hm-line);
+}
+
+.hms-now {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 5px 18px 5px 14px;
+  border-radius: 999px;
+  background: var(--hm-ink-2);
+  box-shadow: 0 3px 0 var(--hm-ink);
+}
+.hms-now small {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hm-muted);
+}
+.hms-now-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+
+/* ==========================================================================
+ * The custom pattern: a row of steps, each with three levels that a tap goes through in a circle
+ * ========================================================================== */
+
+.hms-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* The script chooses the columns (16, 8 or 4: every line is full) from the width of the panel */
+.hms-steps {
+  display: grid;
+  grid-template-columns: repeat(var(--hms-cols, 8), minmax(0, 1fr));
+  gap: 8px;
+}
+
+.hms-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  height: var(--hms-cell, 84px);
+  padding: 6px 4px 5px;
+  border-radius: 14px;
+  cursor: pointer;
+  overflow: hidden;
+  text-align: center;
+  color: var(--hm-text);
+  background: var(--hm-ink);
+  box-shadow: inset 0 0 0 1px var(--hm-line), 0 3px 0 rgba(0, 0, 0, 0.45);
+  transition: opacity 0.15s, box-shadow 0.15s;
+}
+.hms-cell:active { transform: translateY(2px); box-shadow: inset 0 0 0 1px var(--hm-line), 0 1px 0 rgba(0, 0, 0, 0.45); }
+
+/* The level as a bar that fills the cell from the bottom: nothing (cut), half, all (pass) */
+.hms-cell-bar {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 22px;
+  height: 0;
+  border-radius: 7px;
+  background: var(--hm-red);
+  transition: height 0.15s, background-color 0.15s;
+}
+.hms-cell[data-level="0"] .hms-cell-bar { height: 4px; background: var(--hm-cut); }
+.hms-cell[data-level="1"] .hms-cell-bar { height: calc((100% - 52px) / 2); background: var(--hm-half); }
+.hms-cell[data-level="2"] .hms-cell-bar { height: calc(100% - 52px); box-shadow: 0 0 12px -2px var(--hm-red); }
+
+.hms-cell-n {
+  position: relative;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--hm-muted);
+}
+.hms-cell-level {
+  position: relative;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+/* A step beyond the length of the pattern is not played */
+.hms-cell.is-off { opacity: 0.4; }
+.hms-cell.is-off .hms-cell-level::after { content: " ·"; }
+
+.hms-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 18px;
+}
+
+.hms-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.hms-field > span {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hm-muted);
+}
+
+.hms-stepper {
+  display: grid;
+  grid-template-columns: 48px minmax(64px, auto) 48px;
+  align-items: center;
+  gap: 4px;
+}
+.hms-stepper output {
+  color: var(--hm-text);
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+}
+.hms-stepper output small {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--hm-muted);
+}
+
+.hms-button,
+.hms-select {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--hm-text);
+  background: var(--hm-ink-3);
+  box-shadow: 0 3px 0 var(--hm-ink), inset 0 0 0 1px var(--hm-line);
+  transition: background-color 0.15s;
+}
+.hms-button:hover,
+.hms-select:hover { background: #25403f; }
+.hms-button:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--hm-ink), inset 0 0 0 1px var(--hm-line); }
+.hms-select { appearance: auto; -webkit-appearance: menulist; padding: 0 10px; }
+.hms-select option { color: #0a1315; background: #fff; }
+
+/* "Play this pattern": pressed while Pattern is on Custom */
+.hms-use {
+  margin-left: auto;
+  color: var(--hm-ink);
+  background: var(--hm-red);
+  box-shadow: 0 3px 0 var(--hm-red-deep);
+}
+.hms-use:hover { background: #7aefd9; }
+.hms-use[aria-pressed="true"] {
+  color: var(--hm-text);
+  background: var(--hm-ink-3);
+  box-shadow: inset 0 0 0 2px var(--hm-red), 0 3px 0 var(--hm-ink);
+}
+
+/* The hardware tiles of this plugin: no extra colour of their own */
+.hms-hardware .hms-assign-name small { white-space: normal; }
+
+/* A pattern is written on the pedal too: the button that opens this page */
+.hm-open {
+  min-height: 24px;
+  padding: 0 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hm-text);
+  background: var(--hm-ink-3);
+  box-shadow: 0 2px 0 #050b0c;
+  transition: background-color 0.15s;
+}
+.hm-open:hover { background: #25403f; }
+.hm-open:active { transform: translateY(1px); box-shadow: 0 1px 0 #050b0c; }
+
+/* The steps of the pattern on the pedal: the middle level */
+.hm-steps i.l1 {
+  background: var(--hm-half);
+}
+.half-mouco.is-bypassed .hm-steps i.l1 { background: #2b5c55; }
+
+.hms[data-h="s"] .hms-cell { --hms-cell: 64px; }
+.hms[data-h="s"] .hms-cell-bar { bottom: 20px; }
+.hms[data-h="s"] .hms-cell[data-level="1"] .hms-cell-bar { height: calc((100% - 44px) / 2); }
+.hms[data-h="s"] .hms-cell[data-level="2"] .hms-cell-bar { height: calc(100% - 44px); }
+
+/* The editor and the controls in one column, the saved presets in another */
+.hms-row > .hms-stack { flex: 5 1 0; }
+.hms-row > .hms-presets-panel { flex: 2 1 0; }
+.hms-stack > .hms-pattern-panel { flex: 0 0 auto; }
+
+/* A phone: smaller steps, the two steppers side by side, then "start from" and "play" */
+.hms[data-w="s"] .hms-cell { --hms-cell: 60px; }
+.hms[data-w="s"] .hms-cell-bar { bottom: 20px; }
+.hms[data-w="s"] .hms-cell[data-level="1"] .hms-cell-bar { height: calc((100% - 44px) / 2); }
+.hms[data-w="s"] .hms-cell[data-level="2"] .hms-cell-bar { height: calc(100% - 44px); }
+.hms[data-w="s"] .hms-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; gap: 8px 10px; }
+.hms[data-w="s"] .hms-stepper { grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 2px; }
+.hms[data-w="s"] .hms-select { width: 100%; }
+.hms[data-w="s"] .hms-use { margin-left: 0; }
+.hms[data-h="s"] .hms-pattern-panel .hms-panel-head p { display: none; }
+
+/* The bypass panel is the narrow one of the two hardware panels */
+.hms-row > .hms-hw-bypass { flex: 2 1 0; }
+.hms-row > .hms-hardware { flex: 3 1 0; }
+.hms-stack > .hms-row { flex: 0 0 auto; align-items: stretch; }
+
+
+/* ==========================================================================
+ * Half Mouco: what is different from the single-channel pedal this look comes from
+ * ========================================================================== */
+
+.half-mouco,
+.hms {
+  --hm-l: #3ec9ff;         /* the left side */
+  --hm-r: #ffb347;         /* the right side */
+}
+
+.hm-lane,
+.hms-lane {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+.hm-lane[data-side="l"], .hms-lane[data-side="l"] { --lane: var(--hm-l); --lane-half: #1d7fa3; --lane-off: #2d5461; }
+.hm-lane[data-side="r"], .hms-lane[data-side="r"] { --lane: var(--hm-r); --lane-half: #a8742a; --lane-off: #6a5632; }
+.hm-lane > b, .hms-lane > b {
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+  color: var(--lane);
+}
+
+/* The display: the name, and a row for each side */
+.hm-display { display: flex; flex-direction: column; gap: 4px; padding-bottom: 8px; }
+.hm-display .hm-pattern { margin-bottom: 2px; }
+.hm-steps { height: 14px; padding: 0; }
+.hm-lane .hm-steps i.l2 { background: var(--lane); box-shadow: 0 0 10px -1px var(--lane); }
+.hm-lane .hm-steps i.l1 { background: var(--lane-half); box-shadow: none; }
+.half-mouco.is-bypassed .hm-lane .hm-steps i.l2,
+.half-mouco.is-bypassed .hm-lane .hm-steps i.l1 { background: var(--lane-off); box-shadow: none; }
+/* An ending is drawn along its time, in thin columns that are as bright as the gate is open */
+.hm-steps[data-kind="ending"] { gap: 1px; }
+.hm-steps[data-kind="ending"] i { border-radius: 2px; }
+.hm-steps[data-kind="ending"] i.l0 { background: var(--hm-cut); }
+.hm-steps[data-kind="ending"] i.start { margin-left: 0; }
+
+/* The head: the name, the mono chip, the button of the settings page and the state */
+.hm-head { gap: 8px; }
+.hm-brand { margin-right: auto; white-space: nowrap; }
+.hm-head > * { white-space: nowrap; }
+.hm-chip {
+  min-height: 24px;
+  padding: 0 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hm-text);
+  background: var(--hm-ink-3);
+  box-shadow: 0 2px 0 #050b0c;
+  transition: background-color 0.15s;
+}
+.hm-chip:hover { background: #25403f; }
+.hm-chip:active { transform: translateY(1px); box-shadow: 0 1px 0 #050b0c; }
+.hm-mono[aria-pressed="true"] { color: var(--hm-ink); background: var(--hm-red); box-shadow: 0 2px 0 var(--hm-red-deep); }
+
+/* Patterns have a speed, endings a length */
+.half-mouco[data-mode="0"] .hm-length,
+.half-mouco[data-mode="1"] .hm-speed { display: none; }
+
+/* The two families, one above the other in the column of the footswitch */
+.hm-pedal { gap: 8px; }
+.hm-modes {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 3px;
+  gap: 3px;
+  border-radius: 14px;
+  background: var(--hm-ink);
+  box-shadow: inset 0 0 0 1px var(--hm-line), inset 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+.hm-mode {
+  min-height: 44px;
+  min-width: 0;
+  border-radius: 11px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--hm-muted);
+  transition: background-color 0.15s, color 0.15s;
+}
+.hm-mode:hover { color: var(--hm-text); }
+.hm-mode[aria-checked="true"] { color: var(--hm-ink); background: var(--hm-red); box-shadow: 0 0 12px -2px var(--hm-red); }
+.hm-foot { width: 80px; height: 80px; }
+.hm-cap { width: 56px; height: 56px; }
+
+/* ==========================================================================
+ * The settings page: two rows of steps, one for each side
+ * ========================================================================== */
+
+.hms-editor { gap: 8px; }
+.hms-pattern-panel { --hms-cell: 66px; }
+.hms-lane .hms-steps { min-width: 0; }
+.hms-lane > b { font-size: 13px; }
+.hms-lane .hms-cell[data-level="2"] .hms-cell-bar { background: var(--lane); box-shadow: 0 0 12px -2px var(--lane); }
+.hms-lane .hms-cell[data-level="1"] .hms-cell-bar { background: var(--lane-half); }
+.hms-lane .hms-cell[data-level="0"] .hms-cell-bar { background: var(--hm-cut); }
+.hms-lane { grid-template-columns: 18px minmax(0, 1fr); }
+.hms[data-w="s"] .hms-pattern-panel { --hms-cell: 56px; }
+.hms[data-w="s"] .hms-lane { grid-template-columns: 14px minmax(0, 1fr); gap: 4px; }
+.hms[data-h="s"] .hms-pattern-panel { --hms-cell: 52px; }
+
+/* Small screens (a phone, upright or on its side): two rows of steps do not fit with tall cells, so a step is 44 px high,
+   and its level is how much of it is filled, behind its name */
+.hms[data-w="s"] .hms-pattern-panel .hms-panel-head p,
+.hms[data-h="s"] .hms-pattern-panel .hms-panel-head p { display: none; }
+.hms[data-w="s"] .hms-cell,
+.hms[data-h="s"] .hms-cell {
+  --hms-cell: 44px;
+  justify-content: center;
+  padding: 0;
+}
+.hms[data-w="s"] .hms-cell-n,
+.hms[data-h="s"] .hms-cell-n { display: none; }
+.hms[data-w="s"] .hms-cell-bar,
+.hms[data-h="s"] .hms-cell-bar {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0;
+  box-shadow: none;
+  opacity: 0.9;
+}
+.hms[data-w="s"] .hms-cell[data-level="0"] .hms-cell-bar,
+.hms[data-h="s"] .hms-cell[data-level="0"] .hms-cell-bar { height: 3px; }
+.hms[data-w="s"] .hms-cell[data-level="1"] .hms-cell-bar,
+.hms[data-h="s"] .hms-cell[data-level="1"] .hms-cell-bar { height: 50%; }
+.hms[data-w="s"] .hms-cell[data-level="2"] .hms-cell-bar,
+.hms[data-h="s"] .hms-cell[data-level="2"] .hms-cell-bar { height: 100%; }
+.hms[data-w="s"] .hms-cell-level,
+.hms[data-h="s"] .hms-cell-level { font-size: 12px; }
+.hms[data-w="s"] .hms-cell[data-level="2"] .hms-cell-level,
+.hms[data-h="s"] .hms-cell[data-level="2"] .hms-cell-level { color: #04161c; }
+.hms[data-w="s"] .hms-steps,
+.hms[data-h="s"] .hms-steps { gap: 4px; }
+.hms[data-w="s"] .hms-editor,
+.hms[data-h="s"] .hms-editor { gap: 6px; }

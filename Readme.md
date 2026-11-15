@@ -126,6 +126,30 @@ A rhythmic signal-cut effect, like the momentary kill switch some guitars have: 
   <img src="./plugins/resources/kill-switch.lv2/docs/images/kill-switch-demo.gif" alt="Kill Switch on a pedalboard">
 </picture>
 
+## Half Mouco
+
+<img src="./plugins/resources/half-mouco.lv2/docs/alternative-thumbnail.webp" alt="Half Mouco" width="120" align="right">
+
+The stereo sibling of [Kill Switch](#kill-switch), in teal, blue and amber: a rhythmic signal-cut effect in which **the left and the right side each have a row of steps**, so the sound changes with the side (a ping-pong, an ear that is chopped while the other is not). *Mouco* is Portuguese for hard of hearing: *half mouco* is half deaf.
+
+* **Two families.** *Patterns* loop for as long as the plugin is on: nine built-in ones (*Ping-pong 8ths* and *16ths*, *Triplet pong*, *Half deaf: left* and *right*, *Gallop sides*, *Stagger*, *Seesaw*, *Syncopated sides*) and one you write. *Endings* play **once** when the plugin is switched on and finish in silence, for the end of a song: *Bouncing ball* (tam---tam--tam-tam-ta-ta-t-t-ttt), *Helicopter* (blades that go from one side to the other, slower and fainter), *Stutter out*, *Side fade* and *Ping-pong out*. The endings are chosen, not drawn: only Ending, Length (in beats), Tempo, Depth and Edge
+* **Write your own pattern** on a settings page (`modgui:settingsTemplate`): two rows of up to 16 steps (left and right), each step with **three levels** (cut, half, pass) that a tap goes through in a circle, a length, the steps per beat and *Copy from…* a built-in pattern. The steps are control ports (`custom_left_step_N`, `custom_right_step_N`), so the pattern is saved with the pedalboard, the presets and the snapshots. The page also holds the assignment tiles (the bypass has a panel of its own) and the saved presets, spread over pages like the other settings pages; the two rows fit a phone upright or on its side
+* **Mono input** switch: the left input feeds both sides, for a single instrument
+* **In-plugin bypass** (`lv2:enabled`) with a 10 ms ramp. A pattern or an ending starts from its beginning each time the plugin is switched on. Assigned in *Momentary* mode, the effect is on only while the footswitch is held
+* A single C file against LV2's core header, with no dependencies and no allocation after `instantiate`; no latency. The endings are functions of the time since the plugin was switched on, repeated in the modgui script to draw them along their time
+* 11 factory presets (they do not touch the custom pattern)
+* [User manual](./plugins/resources/half-mouco.lv2/docs/manual.md); the device opens the HTML version, [manual.html](./plugins/resources/half-mouco.lv2/modgui/manual.html) · [Store page](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9oYWxmLW1vdWNv) (coming soon)
+
+<picture>
+  <source srcset="./plugins/resources/half-mouco.lv2/docs/images/half-mouco-demo.webp" type="image/webp">
+  <img src="./plugins/resources/half-mouco.lv2/docs/images/half-mouco-demo.gif" alt="Half Mouco on a pedalboard">
+</picture>
+
+<picture>
+  <source srcset="./plugins/resources/half-mouco.lv2/docs/images/half-mouco-settings.webp" type="image/webp">
+  <img src="./plugins/resources/half-mouco.lv2/docs/images/half-mouco-settings.gif" alt="The settings page of Half Mouco">
+</picture>
+
 ## Download
 
 Binaries for **MOD Duo**, **MOD Duo X** and **MOD Dwarf** are built by [GitHub Actions](./.github/workflows/release.yml) on every push and published on the [Releases](../../releases) page. Releases have no version number; they are named after the commit they were built from:
@@ -146,7 +170,7 @@ MOD UI has an endpoint that installs a plugin archive, the same one the plugin S
 ```bash
 DEVICE=192.168.51.1
 TAG=20261114-1642-feature-hept7-switch-ffb748d    # the release to install, from the Releases page
-for plugin in gossiper tetr4-switch hept7-switch kill-switch; do
+for plugin in gossiper tetr4-switch hept7-switch kill-switch half-mouco; do
   curl -sL -o $plugin.tar.gz "https://github.com/SrMouraSilva/plugins-lv2/releases/download/$TAG/$plugin-dwarf.lv2.tar.gz"
   base64 -i $plugin.tar.gz | curl -s -F "package=@-;filename=$plugin.tar.gz" http://$DEVICE/sdk/install
   echo
@@ -252,6 +276,7 @@ docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/tetr4-switch.l
 docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/hept7-switch.lv2/ binaries/dwarf
 docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/gossiper.lv2/ binaries/dwarf
 docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/kill-switch.lv2/ binaries/dwarf
+docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/half-mouco.lv2/ binaries/dwarf
 ```
 
 ### One package per plugin, for the MOD store
@@ -259,7 +284,7 @@ docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/kill-switch.lv
 `plugins/srmourasilva-plugins.mk` builds the four plugins together, which is what the CI and a local `./build` use. The
 store (and [builder.mod.audio](https://builder.mod.audio/buildroot)) takes **one bundle per package**, so that a person
 installs only the plugin they want: each plugin has its own recipe in [store/](./store), `gossiper.mk`, `tetr4-switch.mk`,
-`hept7-switch.mk` and `kill-switch.mk`. A recipe clones this repository at a commit, builds `build-<plugin>` and installs
+`hept7-switch.mk`, `kill-switch.mk` and `half-mouco.mk`. A recipe clones this repository at a commit, builds `build-<plugin>` and installs
 `install-<plugin>` (see [plugins/Makefile](./plugins/Makefile)). The commit has to exist on GitHub:
 
 ```bash

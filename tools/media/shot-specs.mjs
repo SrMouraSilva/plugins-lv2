@@ -43,6 +43,8 @@ const phone = (file, height, extra = {}) => window_(file, 1024, Math.round(heigh
 
 // The display shows the control that moved last: the footswitch on the pedal, the knob in the settings page
 const gossiper = (symbol, value) => `send({ type: 'change', symbol: '${symbol}', value: ${value} })`;
+// Half Mouco: the custom pattern on (Pattern = Custom)
+const HM_CUSTOM = `send({ type: 'change', symbol: 'pattern', value: 9 })`;
 // Kill Switch: the custom pattern on (Pattern = Custom), with its three levels in use
 const KS_CUSTOM = `send({ type: 'change', symbol: 'pattern', value: 10 })`;
 const GOSSIPER_PEDAL = [gossiper('Potentiometer_1', 0.2), gossiper('Potentiometer_3', 0.63), gossiper('Footswitch_2', 1)];
@@ -112,6 +114,32 @@ export const shots = {
     icon('step-feel.webp', '.kill-switch', {
       setup: ['send({type:"change",symbol:"depth",value:60})', 'send({type:"change",symbol:"edge",value:6})'],
       highlight: ['.ks-depth', '.ks-edge'], finger: '.ks-edge-input', fingerAt: [0.8, 0.5],
+    }),
+  ],
+
+  'half-mouco': [
+    ...store('.half-mouco', 'jacks=1'),
+    // The cover of the manual (2x)
+    alone('panel.webp', '.half-mouco', { margin: 0, scale: 2, query: 'jacks=1' }),
+    // Quick start, step 4: the arrows and the two rows
+    icon('step-pattern.webp', '.half-mouco', {
+      setup: ['send({type:"change",symbol:"pattern",value:7})', 'send({type:"change",symbol:"bpm",value:90})'],
+      highlight: ['.hm-prev', '.hm-next', '.hm-lane'], finger: '.hm-next',
+    }),
+    // Step 6: the Endings tab, and the ending drawn along its time
+    icon('step-endings.webp', '.half-mouco', {
+      setup: ['send({type:"change",symbol:"mode",value:1})', 'send({type:"change",symbol:"ending",value:0})'],
+      highlight: ['.hm-mode[data-mode="1"]', '.hm-lane'], finger: '.hm-mode[data-mode="1"]',
+    }),
+    // The helicopter, along its time (section 4)
+    icon('ending-helicopter.webp', '.hm-display', {
+      setup: ['send({type:"change",symbol:"mode",value:1})', 'send({type:"change",symbol:"ending",value:1})', `document.querySelector('.half-mouco').classList.remove('is-bypassed')`], margin: 6,
+    }),
+    // The settings page: the editor of the custom pattern, the controls to assign and the saved presets
+    window_('settings.webp', 1366, 800, { setup: [HM_CUSTOM] }),
+    phone('settings-phone.webp', 844, { setup: [HM_CUSTOM] }),
+    settings('step-custom-pattern.webp', '.hms-steps', {
+      setup: [HM_CUSTOM], highlight: ['.hms-steps[data-side="l"] .hms-cell:nth-child(3)', '.hms-steps[data-side="r"] .hms-cell:nth-child(3)'], finger: '.hms-steps[data-side="r"] .hms-cell:nth-child(3)', crop: { closest: 'section', of: '.hms-steps' },
     }),
   ],
 

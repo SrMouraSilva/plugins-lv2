@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PLUGINS: gossiper tetr4-switch hept7-switch kill-switch
+  PLUGINS: gossiper tetr4-switch hept7-switch kill-switch half-mouco
 
 jobs:
   version:

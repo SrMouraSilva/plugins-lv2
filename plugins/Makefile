@@ -8,6 +8,7 @@ TETR4_SWITCH = tetr4-switch
 HEPT7_SWITCH = hept7-switch
 GOSSIPER = gossiper
 KILL_SWITCH = kill-switch
+HALF_MOUCO = half-mouco
 
 # Tetr4 Switch and Hept7 Switch are the same code base, sized by -DHEPT7_SWITCH (see src/config.h)
 SWITCH_SOURCES = src/utils/utils.c \
@@ -34,7 +35,7 @@ INSTALL_PATH = /usr/local/lib/lv2
 all: build
 #build: build-gossiper
 #build: build-tetr4-switch
-build: build-gossiper build-tetr4-switch build-hept7-switch build-kill-switch
+build: build-gossiper build-tetr4-switch build-hept7-switch build-kill-switch build-half-mouco
 
 build-tetr4-switch:
 	$(CC) $(SWITCH_SOURCES) \
@@ -56,6 +57,11 @@ build-kill-switch:
 	$(CC) src/kill-switch.c \
 		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(KILL_SWITCH).lv2/$(KILL_SWITCH).so
 
+# Half Mouco, the stereo sibling of Kill Switch, is one file too
+build-half-mouco:
+	$(CC) src/half-mouco.c \
+		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(HALF_MOUCO).lv2/$(HALF_MOUCO).so
+
 # --------------------------------------------------------------
 
 clean:
@@ -63,6 +69,7 @@ clean:
 	rm -f $(HEPT7_SWITCH).lv2/$(HEPT7_SWITCH)$(LIB_EXT)
 	rm -f $(GOSSIPER).lv2/$(GOSSIPER)$(LIB_EXT)
 	rm -f $(KILL_SWITCH).lv2/$(KILL_SWITCH)$(LIB_EXT)
+	rm -f $(HALF_MOUCO).lv2/$(HALF_MOUCO)$(LIB_EXT)
 
 # --------------------------------------------------------------
 
@@ -100,8 +107,16 @@ install-kill-switch:
 	cp -r resources/$(KILL_SWITCH).lv2/modgui $(DESTDIR)$(PREFIX)/lib/lv2/$(KILL_SWITCH).lv2/
 
 # (a sub-make, so that with -j nothing is installed before everything is built)
+install-half-mouco:
+	install -d $(DESTDIR)$(PREFIX)/lib/lv2/$(HALF_MOUCO).lv2
+
+	install -m 644 resources/$(HALF_MOUCO).lv2/*.so  $(DESTDIR)$(PREFIX)/lib/lv2/$(HALF_MOUCO).lv2/
+	install -m 644 resources/$(HALF_MOUCO).lv2/*.ttl $(DESTDIR)$(PREFIX)/lib/lv2/$(HALF_MOUCO).lv2/
+
+	cp -r resources/$(HALF_MOUCO).lv2/modgui $(DESTDIR)$(PREFIX)/lib/lv2/$(HALF_MOUCO).lv2/
+
 install: build
-	$(MAKE) install-tetr4-switch install-hept7-switch install-gossiper install-kill-switch
+	$(MAKE) install-tetr4-switch install-hept7-switch install-gossiper install-kill-switch install-half-mouco
 
 install-user: build
 	install -d ~/.lv2/
@@ -109,6 +124,7 @@ install-user: build
 	cp -r resources/$(HEPT7_SWITCH).lv2/ ~/.lv2/$(HEPT7_SWITCH).lv2
 	cp -r resources/$(GOSSIPER).lv2/ ~/.lv2/$(GOSSIPER).lv2
 	cp -r resources/$(KILL_SWITCH).lv2/ ~/.lv2/$(KILL_SWITCH).lv2
+	cp -r resources/$(HALF_MOUCO).lv2/ ~/.lv2/$(HALF_MOUCO).lv2
 
 # --------------------------------------------------------------
 
@@ -117,5 +133,6 @@ uninstall-user:
 	rm -r ~/.lv2/$(HEPT7_SWITCH).lv2
 	rm -r ~/.lv2/$(GOSSIPER).lv2
 	rm -r ~/.lv2/$(KILL_SWITCH).lv2
+	rm -r ~/.lv2/$(HALF_MOUCO).lv2
 
 # --------------------------------------------------------------

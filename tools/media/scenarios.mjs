@@ -156,6 +156,52 @@ export const scenarios = {
     }, 540),
   },
 
+  'half-mouco': {
+    // The bypass footswitch is driven by MOD UI, not by the preview: a tap on it is followed by what MOD UI then tells the plugin
+    demo: pedalboard('half-mouco', '.half-mouco', true, async (ctx) => {
+      const send = (symbol, value) => ctx.eval(`send({ type: 'change', symbol: '${symbol}', value: ${value} })`);
+      await ctx.sleep(900);
+      await ctx.tap('.hm-next');                                          // Ping-pong 16ths
+      await ctx.sleep(600);
+      await ctx.tap('.hm-next');                                          // Triplet pong
+      await ctx.sleep(600);
+      await ctx.tap('.hm-segment[data-speed="2"]');                       // 2x
+      await ctx.sleep(700);
+      await ctx.tap('.hm-mode[data-mode="1"]');                           // the endings
+      await ctx.sleep(900);
+      await ctx.tap('.hm-next');                                          // Helicopter
+      await ctx.sleep(900);
+      await ctx.tap('.hm-length-up', 1100);                               // held: it goes on
+      await ctx.sleep(900);
+      await ctx.tap('.hm-foot'); await send(':bypass', 1);                // bypassed
+      await ctx.sleep(1100);
+      await ctx.tap('.hm-foot'); await send(':bypass', 0);                // on again
+      await ctx.sleep(700);
+      await ctx.tap('.hm-mode[data-mode="0"]');                           // back to the patterns
+      await ctx.sleep(500);
+      await ctx.tap('.hm-segment[data-speed="1"]');
+      await ctx.tap('.hm-prev'); await ctx.tap('.hm-prev');               // Ping-pong 8ths
+      // The ending and its length go back to the start, as a controller would put them
+      await send('ending', 0); await send('length', 8);
+      await ctx.sleep(700);
+    }),
+    // The editor of the custom pattern: a step goes through its three levels in a circle, on each side
+    settings: settings('half-mouco', async (ctx) => {
+      await ctx.sleep(700);
+      for (let i = 0; i < 3; i++) { await ctx.tap('.hms-steps[data-side="l"] .hms-cell:nth-child(1)', 100); await ctx.sleep(450); }   // cut, half, pass, and cut again
+      for (let i = 0; i < 3; i++) { await ctx.tap('.hms-steps[data-side="r"] .hms-cell:nth-child(1)', 100); await ctx.sleep(450); }
+      await ctx.tap('.hms-length-up', 100); await ctx.tap('.hms-length-up', 100);
+      await ctx.tap('.hms-beat-up', 100);
+      await ctx.sleep(700);
+      await visitPages(ctx, { next: '.hms-next', dot: '.hms-dot', tile: true, tileSymbol: (page) => ['', 'mode', ''][page] || '' });
+      // Back to the start, as a controller would put it (the first edit switched Pattern to Custom)
+      for (const [symbol, value] of [['pattern', 0], ['custom_length', 8], ['custom_steps_per_beat', 2]]) {
+        await ctx.eval(`send({ type: 'change', symbol: '${symbol}', value: ${value} })`);
+      }
+      await ctx.sleep(600);
+    }, 540),
+  },
+
   'gossiper': {
     // Gossiper only shows what a controller did: the controls are moved from outside, as MIDI would
     demo: pedalboard('gossiper', '.gossiper', true, async (ctx) => {
