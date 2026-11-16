@@ -332,7 +332,8 @@ python3 tools/modgui-preview/serve.py        # http://localhost:8000/?plugin=<na
   `scenarios.html` if the plugin selects a preset at a time.
 * Measure, do not just look: for each size, count the pages and check that no control sticks out of its page. The
   preview can be driven from a script (headless Chrome with a DevTools connection and `Page.captureScreenshot`) for
-  this, which is how the Hept7 sizes from 360x640 to 1920x1080 were checked.
+  this, which is how the Hept7 sizes from 360x640 to 1920x1080 were checked. Such a script must close its Chrome in a `finally` and
+  delete its profile, see [Cleaning up after Chrome](./making-animations.md#9-cleaning-up-after-chrome).
 * **Still try it on a real device and a real pedalboard** before calling it done: the stacking over the pedals, the
   scale on a physical phone and the HMI are not covered by the preview.
 

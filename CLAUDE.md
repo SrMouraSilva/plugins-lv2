@@ -200,6 +200,12 @@ node tools/media/shots.mjs kill-switch screenshot.png   # one picture of one plu
   `tools/media/scenarios.mjs`, captures frames while it runs and `build_gif.py` puts them together (identical frames are
   merged, one palette, endless loop). The input is shown as a **finger** (a circle that glides to what is tapped), not as
   a mouse pointer: the interfaces are touch first. The taps are real mouse events, so `:active` states are recorded.
+* **Chrome must be cleaned up** (full rules: [docs/making-animations.md](docs/making-animations.md#9-cleaning-up-after-chrome)).
+  Each picture/animation starts a headless Chrome with a 50-150 MB profile (`media-chrome-*` in the temporary folder);
+  the tools remove it on a normal end only. Scratch scripts use `launch()` from `cdp.mjs` with `try/finally { page.close() }`
+  (or `--user-data-dir="$(mktemp -d)"` and `rm -rf` it), never a Chrome started with `&`. After a failed or interrupted run, and
+  at the end of any session that recorded a lot: `pgrep -fl 'media-chrome-'`, `pkill -f 'media-chrome-'`, then
+  `rm -rf "${TMPDIR:-/tmp}"/media-chrome-* "${TMPDIR:-/tmp}"/frames-*`. Leaked profiles have filled the disk before.
 * **Pictures in `docs/` are WebP, not PNG** (`docs/images/*.webp`, `alternative-thumbnail.webp`): they need transparency
   (JPEG cannot), and WebP keeps it at a fifth of the size of PNG. The tools write WebP directly; for a picture that comes from
   elsewhere, `python3 tools/media/to_webp.py FILE.png` converts it and rewrites the Markdown that mentions it (`--docs`: every

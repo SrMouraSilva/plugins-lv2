@@ -30,6 +30,7 @@ Contents
 6. [Checking the result](#6-checking-the-result)
 7. [Putting it in the Readme and the manual](#7-putting-it-in-the-readme-and-the-manual)
 8. [Troubleshooting](#8-troubleshooting)
+9. [Cleaning up after Chrome](#9-cleaning-up-after-chrome)
 
 ---
 
@@ -197,4 +198,44 @@ The animation is a `<picture>`: the WebP first, the GIF as the image it falls ba
 | The tap does nothing | the element is covered (the preview shows a red bar for this), or the selector matches an earlier, hidden element: `tap` uses the first match |
 | A colour is wrong in the GIF | see section 6 (the palette); the WebP keeps every colour |
 | `--virtual-time-budget` screenshots look different from the recording | do not use it for pages that measure themselves (layout scripts run on real time); `record.mjs` runs in real time |
+| The disk fills up after a few runs | a run that failed or was interrupted left its Chrome and its `media-chrome-*` profile: see section 9 |
 | The page shows an old interface | the preview reads the files on every request; reload, and check that you edited the bundle the scenario loads |
+
+## 9. Cleaning up after Chrome
+
+Every picture and every animation starts its **own headless Chrome** (`launch()` in `cdp.mjs`) with a throw-away profile,
+`media-chrome-*` in the temporary folder. A profile is **50 to 150 MB**, and a Chrome that is never closed keeps running
+besides: a few forgotten runs are enough to fill a small disk. The tools clean up after themselves, **as long as they
+end normally**:
+
+* `page.close()` closes the connection, stops Chrome and deletes the profile. `record.mjs`, `shots.mjs` and
+  `thumbnails.mjs` call it when a picture or an animation is done.
+* `record.mjs` also deletes its frames (`frames-<plugin>-<kind>-*`) when the animation is built, and the three scripts
+  stop the preview server they started.
+
+What is **not** covered: a run that dies half-way (a scenario that throws, a selector that matches nothing, Ctrl-C, a
+terminal that is closed). The page is not closed in a `finally`, so that Chrome stays alive and its profile (and the
+frames) stay on disk. **After any run that failed or was interrupted, look:**
+
+```bash
+pgrep -fl 'media-chrome-'                                   # Chrome started by these tools and still alive
+pkill -f 'media-chrome-'                                    # stop it (your own Chrome has no media-chrome- in its command line)
+ls -d "${TMPDIR:-/tmp}"/media-chrome-* "${TMPDIR:-/tmp}"/frames-* 2>/dev/null
+rm -rf "${TMPDIR:-/tmp}"/media-chrome-* "${TMPDIR:-/tmp}"/frames-*     # only after the pkill: Chrome writes to its profile until it ends
+df -h /                                                     # what is free now
+```
+
+Rules for the scripts you write yourself (to measure a layout, to try a picture, to check a size):
+
+* **Use `launch()` from `cdp.mjs`, not a Chrome of your own**, and put the work in `try { ... } finally { await page.close(); }`:
+  the `finally` is what makes the cleanup survive an error.
+* **If you must start Chrome by hand**, always pass `--user-data-dir="$(mktemp -d)"` and delete that folder afterwards.
+  Without the flag Chrome uses (or hijacks) your everyday profile; with a fixed name it keeps a profile per run
+  (a forgotten `cdp-profile-<number>` folder per run is how 36 profiles, 780 MB, piled up in the past).
+* **One Chrome at a time, in the foreground.** Do not start a Chrome with `&` or `nohup` inside a script and walk away:
+  nobody is left to close it. When a long run must go to the background, run the whole loop there, in the foreground
+  of that background job, and check afterwards that nothing is left (`pgrep -fl 'media-chrome-'`).
+* **Do not leave scratch files** (frames kept with `KEEP_FRAMES`, comparison pictures, throw-away scripts) in the
+  temporary folder: delete them when the work is done, or put them in a folder you remove at the end.
+* **Look before you finish** a work session that recorded or shot a lot: run the commands above once more. Nothing
+  should be left; if something is, the run that left it is the one to fix.

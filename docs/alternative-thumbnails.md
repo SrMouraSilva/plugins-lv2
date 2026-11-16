@@ -109,10 +109,15 @@ and Google Chrome; `CHROME_BIN` if Chrome is not in the usual place). Without th
 write PNG, so render a PNG and convert it (`pip install pillow`):
 
 ```bash
+profile="$(mktemp -d)"                      # a throw-away profile: never your everyday one
 google-chrome --headless=new --disable-gpu --default-background-color=00000000 --window-size=400,400 \
-  --screenshot=alternative-thumbnail.png file://$PWD/alternative-thumbnail.html
+  --user-data-dir="$profile" --screenshot=alternative-thumbnail.png file://$PWD/alternative-thumbnail.html
+rm -rf "$profile"                           # 50 to 150 MB that nobody else will delete
 python3 tools/media/to_webp.py alternative-thumbnail.png      # writes alternative-thumbnail.webp and removes the PNG
 ```
+
+Every run of the script starts a Chrome of its own with a temporary profile and removes both when it ends. If a run
+failed or was interrupted, see [Cleaning up after Chrome](./making-animations.md#9-cleaning-up-after-chrome).
 
 Then **look at it small**: put the pictures of all your plugins side by side, reduced to 100 px, on a white and on a
 dark background. Show it in the Readme next to the title of the plugin:
