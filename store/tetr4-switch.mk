@@ -4,7 +4,7 @@
 # Assembled from store/ of https://github.com/SrMouraSilva/plugins-lv2 -- keep the four in step (see tools/store/pin.py).
 
 # The commit of the repository that is built: it must exist on GitHub. Update it with `python3 tools/store/pin.py`.
-TETR4_SWITCH_VERSION = b3237cf273968ddd13b6ffb972b4aa89239d03b7
+TETR4_SWITCH_VERSION = f0c6699975c7c715f5bb77820179be3492598025
 TETR4_SWITCH_SITE = https://github.com/SrMouraSilva/plugins-lv2.git
 TETR4_SWITCH_SITE_METHOD = git
 TETR4_SWITCH_BUNDLES = tetr4-switch.lv2
