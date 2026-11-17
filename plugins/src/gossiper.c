@@ -17,6 +17,7 @@
 #include "model/gossiper.h"
 #include "lv2/gossiper/lv2-gossiper.h"
 #include "lv2/gossiper/lv2-hmi-gossiper.h"
+#include "lv2/gossiper/lv2-gossiper-widgets.h"
 
 static void Gossiper_apply_patch_messages(Gossiper* self);
 static void Gossiper_apply_patch_set(Gossiper* self, const LV2_Atom_Object* obj);
@@ -68,6 +69,8 @@ instantiate(const LV2_Descriptor*     descriptor,
     }
 
     // Atom_instantiate(self);
+
+    LV2_Gossiper_Widgets_initialize(self, features, rate);
 
     return (LV2_Handle) self;
 }
@@ -191,6 +194,7 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
 
     LV2_HMI_Gossiper_run(self);
     //Atom_run(self);
+    LV2_Gossiper_Widgets_run(self, n_samples);
 
     Gossiper_finish_atom_forge(self, &notify_frame);
 }
@@ -201,6 +205,7 @@ static void deactivate(LV2_Handle instance) {}
 static void cleanup(LV2_Handle instance) {
     Gossiper* self = (Gossiper*) instance;
 
+    LV2_Gossiper_Widgets_cleanup(self);
     free(self->lv2);
     self->lv2 = NULL;
 
@@ -216,7 +221,11 @@ static const void* extension_data(const char* uri) {
     if (!strcmp(uri, LV2_STATE__interface)) {
         return &state;
     }
-    
+
+    if (!strcmp(uri, ALABS_HMI__WidgetNotification)) {
+        return LV2_Gossiper_Widgets_notification();
+    }
+
     return NULL;
 }
 

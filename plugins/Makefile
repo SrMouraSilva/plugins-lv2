@@ -47,7 +47,7 @@ build-hept7-switch:
 
 build-gossiper:
 	$(CC) src/utils/utils.c \
-		  src/lv2/gossiper/lv2-gossiper.c src/lv2/gossiper/lv2-hmi-gossiper.c \
+		  src/lv2/gossiper/lv2-gossiper.c src/lv2/gossiper/lv2-hmi-gossiper.c src/lv2/gossiper/lv2-gossiper-widgets.c \
 		  src/model/gossiper.c \
 		  src/gossiper.c \
 		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(GOSSIPER).lv2/$(GOSSIPER).so
