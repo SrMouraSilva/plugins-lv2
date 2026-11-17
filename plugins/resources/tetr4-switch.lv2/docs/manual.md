@@ -404,7 +404,7 @@ Move it to the page you play from. On the MOD Duo there are no pop-ups at all: i
 | Field | Value |
 |---|---|
 | Plugin name | Tetr4 switch |
-| Version | 1.0.0 |
+| Version | 1.2.7 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/tetr4-switch` |
 | Audio I/O | None |

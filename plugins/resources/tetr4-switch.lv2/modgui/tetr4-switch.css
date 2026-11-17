@@ -1126,6 +1126,27 @@
   gap: 14px;
 }
 
+/* A phone: the name stands over the number, two fields to a line, and the description goes */
+.t4s-midi.is-compact .t4s-field {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 4px;
+  min-height: 0;
+  padding: 6px;
+}
+.t4s-midi.is-compact .t4s-field-name { flex-direction: row; align-items: baseline; gap: 6px; }
+.t4s-midi.is-compact .t4s-field-name small { display: none; }
+.t4s-midi.is-compact .t4s-num { justify-content: space-between; }
+.t4s-midi.is-compact .t4s-num-value { flex: 1 1 0; width: auto; min-width: 0; }
+.t4s-midi.is-compact .t4s-switch { align-items: stretch; }
+.t4s-midi.is-compact .t4s-switch-track { align-self: flex-end; }
+.t4s[data-w="s"] .t4s-midi-panel .t4s-panel-head p { display: none; }
+.t4s-midi.is-tight { gap: 8px; }
+.t4s-midi.is-tight .t4s-midi-title { margin-bottom: 4px; }
+.t4s-midi.is-tight .t4s-midi-items { gap: 4px; }
+.t4s-midi.is-tight .t4s-field { padding: 4px 6px; gap: 2px; }
+
 .t4s-midi-items {
   display: grid;
   grid-template-columns: repeat(var(--t4s-cols, 2), minmax(0, 1fr));

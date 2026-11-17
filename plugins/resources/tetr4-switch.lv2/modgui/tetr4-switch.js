@@ -141,6 +141,10 @@ function (event, funcs) {
   // From this width the two groups of the MIDI panel sit side by side (one column of fields, then two), which is a lot
   // less tall: what a tablet, or a screen that is wide and short, needs
   const MIDI_SIDE_PX = MIDI_TILE_MIN_PX * 3 + 14 + 12;
+  // Narrower than two fields side by side, but from this width: a phone. The fields then stand up (the name over its
+  // number) and go in two columns, so that they fit the height of the screen
+  const MIDI_COMPACT_MIN_PX = 260;
+  const MIDI_TIGHT_PX = 700;
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const px = (value) => parseFloat(value) || 0;
@@ -249,10 +253,18 @@ function (event, funcs) {
     const list = view.midi.panel.querySelector('.t4s-midi');
     const [sending, outputs] = view.midiGroups;
     const side = list.clientWidth >= MIDI_SIDE_PX;
+    const compact = !side && list.clientWidth < MIDI_TILE_MIN_PX * 2 + 6 && list.clientWidth >= MIDI_COMPACT_MIN_PX;
 
     list.classList.toggle('is-side', side);
+    list.classList.toggle('is-compact', compact);
+    // Less air between the fields when the screen is low (a small phone): what is on a page must not need scrolling
+    list.classList.toggle('is-tight', compact && view.root.clientHeight < MIDI_TIGHT_PX);
 
-    if (side) {
+    if (compact) {
+      sending.columns = outputs.columns = 2;
+      sending.body.style.setProperty('--t4s-cols', 2);
+      outputs.body.style.setProperty('--t4s-cols', 2);
+    } else if (side) {
       sending.columns = 1;
       outputs.columns = 2;
       sending.body.style.setProperty('--t4s-cols', 1);
