@@ -267,7 +267,20 @@ export const scenarios = {
       await ctx.tap('.hms-length-up', 100); await ctx.tap('.hms-length-up', 100);
       await ctx.tap('.hms-beat-up', 100);
       await ctx.sleep(700);
-      await visitPages(ctx, { next: '.hms-next', dot: '.hms-dot', tile: true, tileSymbol: () => 'mode' });
+      // from the first page, going through every page with the arrows; the small button beside Patterns / Endings assigns
+      // the mode to the device (marked as MOD UI does once its dialog is confirmed) on the page that shows it
+      await ctx.tap('.hms-dot[data-page="0"]', 120);
+      await ctx.sleep(900);
+      let assigned = false;
+      const assignMode = async () => {
+        if (assigned || !(await ctx.eval(`!!document.querySelector('[mod-port-symbol="mode"]')?.offsetParent`))) return;
+        assigned = true;
+        await ctx.tap('[mod-port-symbol="mode"]', 120);
+        await ctx.eval(`document.querySelector('[mod-port-symbol="mode"]').classList.add('addressed')`);
+        await ctx.sleep(600);
+      };
+      await assignMode();
+      await visitPages(ctx, { next: '.hms-next', dot: '.hms-dot', tile: false, onPage: assignMode });
       // Back to the start, as a controller would put it
       for (const [symbol, value] of [['mode', 0], ['ending', 0], ['pattern', 0], ['custom_length', 8], ['custom_steps_per_beat', 2]]) {
         await send(symbol, value);
