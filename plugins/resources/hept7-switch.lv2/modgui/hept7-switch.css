@@ -106,7 +106,7 @@
  * The plate is 50px wide and sits 38px from the edge of the plugin (the second column starts at the edge).
  */
 .hept7-switch-base.mod-pedal .mod-pedal-output {
-  top: 27px;
+  top: 15px;
   right: -80px;
   width: 168px;
   display: grid;
@@ -236,7 +236,7 @@
 .h7-jacks {
   flex: 0 0 50px;
   align-self: flex-start;
-  margin-top: 12px;   /* behind the jacks 1-4 (the MIDI out under them has no plate) */
+  margin-top: 0;   /* behind the jacks 1-4 (the MIDI out under them has no plate) */
   height: 232px;
   border-radius: 10px;
   background: linear-gradient(170deg, var(--h7-turq-dark), var(--h7-turq-deep));
@@ -830,7 +830,7 @@
 .h7s-row {
   --c: var(--h7-c1);
   display: grid;
-  grid-template-columns: var(--h7s-head-w) minmax(104px, 1.1fr) minmax(0, 3.2fr);
+  grid-template-columns: 48px minmax(104px, 1.1fr) minmax(0, 3.2fr);
   align-items: center;
   gap: 8px;
   padding: 4px;
@@ -868,21 +868,13 @@
 
 .h7s-cells {
   display: grid;
-  /* The CV outputs, then "In the cycle" */
-  grid-template-columns: repeat(8, minmax(0, 1fr)) minmax(0, 1.25fr);
+  /* The CV outputs, then "In the cycle", then the button that assigns the preset */
+  grid-template-columns: repeat(8, minmax(0, 1fr)) minmax(0, 1.25fr) 48px;
   gap: 6px;
 }
 
-/* The width of the play button and the assign button: the same on every row, and on the head, which has nothing there */
-.h7s { --h7s-head-w: 102px; }
-.h7s[data-h="s"] { --h7s-head-w: 94px; }
-
-.h7s-rowhead {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.h7s-row-assign { flex: 0 0 auto; display: block; }
+/* The button that assigns the preset sits at the end of the row, beside the cycle cell it goes with in the eye */
+.h7s-row-assign { display: block; }
 
 .h7s-rowpad {
   flex: 0 0 auto;
@@ -967,6 +959,7 @@
 /* Set apart from the CV outputs: it is not a CV output */
 .h7s-cell-cycle,
 .h7s-col-cycle { margin-left: 10px; }
+.h7s-col-assign { text-align: center; }
 
 .h7s-cell.h7s-cell-cycle.is-on {
   background: var(--h7-turq);
@@ -1444,13 +1437,13 @@
 
 /* A preset takes two lines (its name, then the outputs and the cycle switch) when the panel is not wide enough for one */
 .h7s-matrix.is-two-lines .h7s-row.h7s-head { display: none; }
-.h7s-matrix.is-two-lines .h7s-row { grid-template-columns: var(--h7s-head-w) minmax(0, 1fr); gap: 6px 8px; padding: 6px; }
+.h7s-matrix.is-two-lines .h7s-row { grid-template-columns: 48px minmax(0, 1fr); gap: 6px 8px; padding: 6px; }
 .h7s-matrix.is-two-lines .h7s-cells { grid-column: 1 / -1; }
 .h7s-matrix.is-two-lines .h7s-cell::before { display: block; font-size: 15px; }
 
 /* ... and three when the outputs would be too small: the name, the CV outputs (4 + 4) and the cycle switch */
 .h7s-matrix.is-stacked .h7s-row.h7s-head { display: none; }
-.h7s-matrix.is-stacked .h7s-row { grid-template-columns: var(--h7s-head-w) minmax(0, 1fr); gap: 6px 8px; padding: 6px; }
+.h7s-matrix.is-stacked .h7s-row { grid-template-columns: 48px minmax(0, 1fr); gap: 6px 8px; padding: 6px; }
 .h7s-matrix.is-stacked .h7s-rowpad { width: 48px; height: 48px; }
 .h7s-matrix.is-stacked .h7s-label { height: 48px; font-size: 18px; }
 .h7s-matrix.is-stacked .h7s-cells { grid-column: 1 / -1; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
@@ -1458,7 +1451,8 @@
 .h7s-matrix.is-stacked .h7s-cell::before { display: block; font-size: 16px; }
 
 /* A line of its own under the outputs, with its name written in it */
-.h7s-matrix.is-stacked .h7s-cell-cycle { grid-column: 1 / -1; margin-left: 0; height: 44px; }
+.h7s-matrix.is-stacked .h7s-cell-cycle { grid-column: 1 / 4; margin-left: 0; height: 44px; }
+.h7s-matrix.is-stacked .h7s-row-assign { grid-column: 4; }
 .h7s-matrix.is-stacked .h7s-cell-cycle::after { content: "\2715  Out of the cycle"; font-size: 15px; }
 .h7s-matrix.is-stacked .h7s-cell-cycle.is-on::after { content: "\21BB  In the cycle of Current preset"; font-size: 15px; }
 
@@ -1475,10 +1469,10 @@
 .h7s[data-h="s"] .h7s-step,
 .h7s[data-h="s"] .h7s-close { min-height: 44px; height: 44px; }
 .h7s[data-h="s"] .h7s-matrix { gap: 4px; }
-.h7s[data-h="s"] .h7s-matrix.is-one-line .h7s-row { padding: 3px; grid-template-columns: var(--h7s-head-w) minmax(104px, 1.1fr) minmax(0, 3.2fr); }
+.h7s[data-h="s"] .h7s-matrix.is-one-line .h7s-row { padding: 3px; grid-template-columns: 48px minmax(104px, 1.1fr) minmax(0, 3.2fr); }
 .h7s[data-h="s"] .h7s-matrix:not(.is-stacked) :is(.h7s-rowpad, .h7s-label, .h7s-cell) { height: 44px; }
 .h7s[data-h="s"] .h7s-matrix:not(.is-stacked) .h7s-rowpad { width: 44px; }
-.h7s[data-h="s"] .h7s-matrix.is-two-lines .h7s-row { grid-template-columns: var(--h7s-head-w) minmax(0, 1fr); padding: 4px; gap: 4px 6px; }
+.h7s[data-h="s"] .h7s-matrix.is-two-lines .h7s-row { grid-template-columns: 48px minmax(0, 1fr); padding: 4px; gap: 4px 6px; }
 .h7s[data-h="s"] .h7s-assign { gap: 4px; }
 .h7s[data-h="s"] .h7s-presets-panel .mod-presets > div.mod-enumerated-list { min-height: 64px; }
 

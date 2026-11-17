@@ -71,15 +71,14 @@ function (event, funcs) {
     const cycle = `<button type="button" role="switch" aria-checked="true" class="h7s-cell h7s-cell-cycle" data-preset="${preset}" ` +
       `aria-label="Preset ${preset} is in the cycle of Current preset" title="Preset ${preset} - In the cycle of Current preset (footswitch, B+C, knob)"></button>`;
 
-    // The button that plays the preset, and beside it (the slot) the one that assigns the preset to a hardware control
+    // The slot after the cycle cell is where the button that assigns the preset to a hardware control goes
+    const assign = `<span class="h7s-row-assign" data-preset="${preset}"></span>`;
+
     return `<div class="h7s-row p${preset}" data-preset="${preset}">` +
-      `<div class="h7s-rowhead">` +
       `<button type="button" class="h7s-rowpad" data-preset="${preset}" aria-pressed="false" title="Make preset ${preset} the active preset"><b>${preset}</b></button>` +
-      `<span class="h7s-row-assign" data-preset="${preset}"></span>` +
-      `</div>` +
       `<input type="text" class="h7s-label" data-preset="${preset}" maxlength="${LABEL_MAX_LENGTH}" autocomplete="off" autocapitalize="off" spellcheck="false" ` +
       `aria-label="Name of preset ${preset}" value="Preset ${preset}" />` +
-      `<div class="h7s-cells">${cells}${cycle}</div>` +
+      `<div class="h7s-cells">${cells}${cycle}${assign}</div>` +
       `</div>`;
   };
 
@@ -124,11 +123,12 @@ function (event, funcs) {
 
     const head = '<div class="h7s-row h7s-head" aria-hidden="true"><span class="h7s-corner">Preset</span><span class="h7s-spacer"></span>' +
       '<div class="h7s-cells">' + range(1, OUTPUTS).map((o) => `<span class="h7s-col">${o}</span>`).join('') +
-      '<span class="h7s-col h7s-col-cycle" title="In the cycle of Current preset">Cycle</span></div></div>';
+      '<span class="h7s-col h7s-col-cycle" title="In the cycle of Current preset">Cycle</span>' +
+      '<span class="h7s-col h7s-col-assign" title="Assign the preset to a control of your device">Assign</span></div></div>';
 
     settings.find('.h7s-matrix').html(head + range(1, PRESETS).map(rowHtml).join(''));
 
-    // MOD UI has wired the assignment buttons of the template: each one moves to the row of its preset, not copied
+    // MOD UI has wired the assignment buttons of the template: each one moves to the end of the row of its preset, not copied
     range(1, PRESETS).forEach((preset) => {
       settings.find(`.h7s-row-assign[data-preset="${preset}"]`).append(settings.find(`.h7s-address[mod-port-symbol="Preset_selector_${preset}"]`));
     });

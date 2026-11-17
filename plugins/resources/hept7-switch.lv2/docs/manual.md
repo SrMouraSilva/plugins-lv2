@@ -34,9 +34,9 @@ any drive plugin and any delay plugin in the chain.
    announces the preset in its colour.
 6. **Put it under your feet.** Assign `Preset 1` and `Preset 2` to two device footswitches. Their LEDs light up in the
    colour of the preset while it is active. On the settings page ([section 3](#the-settings-page)) the small
-   button beside the number of each preset's row does this in one tap.
+   button at the end of each preset's row, after *Cycle*, does this in one tap.
 
-    ![Step 6: the small button beside the number of Preset 1 and Preset 2 opens the assignment](images/step-assign-preset-buttons.webp)
+    ![Step 6: the small button at the end of the row of Preset 1 and Preset 2 opens the assignment](images/step-assign-preset-buttons.webp)
 
 > [!TIP] The one trick to learn
 > **Plan your outputs before your presets.** Each output is one "loop": a group of plugins that always switch on and off
@@ -74,12 +74,12 @@ screen and is made for touch: big cells, nothing smaller than a fingertip.
 ![The settings page](images/hept7-settings.webp)
 
 * **Scenes**: one row per preset. The numbered button on the left makes that
-  preset the active one, and the small button beside it assigns the preset to a
+  preset the active one, and the small button at the end of the row (*Assign*, after *Cycle*) assigns the preset to a
   footswitch, a knob or another control of your device (it fills in once it is
-  assigned); the field next to them is its name; then one cell per CV output. A lit cell means that output is **on** while that preset is active.
+  assigned); the field next to it is its name; then one cell per CV output. A lit cell means that output is **on** while that preset is active.
   The row of the active preset is highlighted, and its lit cells are the CV
   signals actually leaving the plugin right now.
-* **Cycle**: the last cell of each row, set apart from the CV outputs. On (↻,
+* **Cycle**: the cell before the *Assign* button of each row, set apart from the CV outputs. On (↻,
   turquoise), the preset is one of those `Current preset` goes through when it
   is assigned to a footswitch, to the B+C pair or to a knob; off (✕), they skip
   it. See section 4.
@@ -113,9 +113,9 @@ page, or the usual assignment dialog) to the control you want to use:
 | `Preset 1`–`7` | One footswitch per preset. Turning one on turns the others off. |
 | `Current preset` | One control that goes through the presets: a footswitch (each press goes to the next preset), the B+C pair of footswitches (previous / next), or a knob. Also a CV or MIDI value. |
 
-On the settings page, tap the small button beside the number of the preset and choose the control in the dialog that opens:
+On the settings page, tap the small button at the end of the row of the preset and choose the control in the dialog that opens:
 
-![The small button beside the number of Preset 1 and Preset 2 opens the assignment](images/step-assign-preset-buttons.webp)
+![The small button at the end of the row of Preset 1 and Preset 2 opens the assignment](images/step-assign-preset-buttons.webp)
 
 ### Choosing which presets `Current preset` goes through
 
@@ -388,7 +388,7 @@ They are saved with the pedalboard and with the plugin presets.
 | Field | Value |
 |---|---|
 | Plugin name | Hept7 switch |
-| Version | 1.0.21 (the version of the plugin this manual is for) |
+| Version | 1.0.23 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/hept7-switch` |
 | Audio I/O | None |
