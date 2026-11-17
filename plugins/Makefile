@@ -12,7 +12,7 @@ HALF_MOUCO = half-mouco
 
 # Tetr4 Switch and Hept7 Switch are the same code base, sized by -DHEPT7_SWITCH (see src/config.h)
 SWITCH_SOURCES = src/utils/utils.c \
-		  src/lv2/controller/lv2-controller.c src/lv2/controller/lv2-hmi-extension.c \
+		  src/lv2/controller/lv2-controller.c src/lv2/controller/lv2-hmi-extension.c src/lv2/controller/lv2-widgets.c \
 		  src/model/controller.c \
 		  src/tetr4-switch.c
 

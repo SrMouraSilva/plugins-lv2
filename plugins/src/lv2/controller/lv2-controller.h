@@ -80,6 +80,8 @@ typedef struct {
      */
     LV2_Worker_Schedule* worker;
 
+    /** The display widgets (lv2-widgets.c owns it; NULL when it could not be allocated): opaque here */
+    void* widgets;
 
     /**
      * Initialize the lv2 capabilities

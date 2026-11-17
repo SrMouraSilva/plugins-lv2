@@ -19,6 +19,7 @@
 
 #include "lv2/controller/lv2-controller.h"
 #include "lv2/controller/lv2-hmi-extension.h"
+#include "lv2/controller/lv2-widgets.h"
 
 static void Controller_apply_patch_messages(Controller* self);
 static void Controller_apply_patch_set(Controller* self, const LV2_Atom_Object* obj);
@@ -75,6 +76,8 @@ instantiate(const LV2_Descriptor*     descriptor,
         free(self);
         return NULL;
     }
+
+    LV2_Widgets_initialize(self, features, rate);
 
     return (LV2_Handle) self;
 }
@@ -172,6 +175,8 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
 
     Controller_sync_selector_ports(self);
 
+    LV2_Widgets_run(self, n_samples);
+
     Controller_finish_atom_forge(self, &notify_frame);
 }
 
@@ -221,6 +226,7 @@ static void deactivate(LV2_Handle instance) {}
 static void cleanup(LV2_Handle instance) {
     Controller* self = (Controller*) instance;
 
+    free(self->lv2->widgets);
     free(self->lv2);
     self->lv2 = NULL;
 
@@ -239,6 +245,10 @@ static const void* extension_data(const char* uri) {
 
     if (!strcmp(uri, LV2_WORKER__interface)) {
         return &worker;
+    }
+
+    if (!strcmp(uri, ALABS_HMI__WidgetNotification)) {
+        return LV2_Widgets_notification();
     }
 
     return NULL;
