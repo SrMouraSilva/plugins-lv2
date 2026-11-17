@@ -398,7 +398,7 @@
   box-sizing: border-box;
 }
 
-.t4s h1,
+.t4s-name,
 .t4s h2,
 .t4s h3,
 .t4s p {
@@ -469,7 +469,7 @@
 .t4s-logo i:nth-child(3) { height: 75%; background: var(--t4-c3); }
 .t4s-logo i:nth-child(4) { height: 30%; background: var(--t4-c4); }
 
-.t4s h1 {
+.t4s-name {
   font-size: 24px;
   font-weight: 800;
   color: var(--t4-text);
@@ -1300,7 +1300,7 @@
 /* Narrow: the logo, the preset playing and the close button, and under them the page controls across the width */
 .t4s[data-w="s"] { font-size: 15px; }
 .t4s[data-w="s"] .t4s-bar { gap: 8px 10px; }
-.t4s[data-w="s"] h1 { display: none; }
+.t4s[data-w="s"] .t4s-name { display: none; }
 .t4s[data-w="s"] .t4s-title { margin-right: 0; }
 .t4s[data-w="s"] .t4s-now { order: 2; flex: 1 1 0; }
 .t4s[data-w="s"] .t4s-close { order: 3; min-width: 88px; padding: 0 20px; }
@@ -1336,3 +1336,6 @@
 @media (prefers-reduced-motion: reduce) {
   .tetr4-switch *, .t4s * { transition: none !important; }
 }
+
+/* In MOD UI's Performance view the page lives beside the plugin list: the window is not there to be closed */
+[data-performance] .t4s-close { display: none; }

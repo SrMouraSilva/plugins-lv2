@@ -132,6 +132,15 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   Every clickable element of the icon (buttons, inputs) needs `position: relative; z-index: 30`, or it cannot be
   clicked on a real pedalboard. A script's `.click()` does not notice this; the preview shows a red bar for it.
   The settings window is opened by MOD UI with `z-index: 1000`, above the pedals.
+* **MOD UI's Performance view (aLabs) shows the settings page too**, in `.js-performance-plugin-settings`, and breaks it twice.
+  First, its stylesheet has `#performance header {position: fixed; height: 45px; ...}` and `#performance h1 {...}`: an ID beats any
+  class, so **never use `<header>` or `<h1>` in a settings template** (a `div` with a class, `role="heading"` for the title).
+  Second, it renders the template a *second* time (`isPerformanceView`), which no script ever receives (`event.settings` is the first
+  copy): it stays the bare HTML. Each script has `adoptInPerformanceView`, which swaps the live page in while the view shows the
+  plugin and gives it back to `<body>` (where MOD UI keeps its window, hidden) when the view closes or shows another plugin;
+  `[data-performance]` hides the Close button. Test it by loading the device's MOD UI in a Chrome whose requests for
+  `/effect/file/{iconTemplate,settingsTemplate,stylesheet,javascript}` are answered with the local files (CDP `Fetch`, as
+  `text/plain`: the device serves them like that, and `application/javascript` makes jQuery run them).
   An overlay drawn over those controls (an announcement, a tooltip) then needs a higher one still, with `pointer-events: none`.
 * The icon must not rely on MOD UI's film/knob widgets; draw it yourself. Outputs are laid out by MOD UI
   (`.mod-pedal-output`, 56 px per jack): with many outputs use a CSS grid with several columns.

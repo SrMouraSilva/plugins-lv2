@@ -560,7 +560,7 @@
   box-sizing: border-box;
 }
 
-.gps h1,
+.gps-name,
 .gps h2,
 .gps p {
   margin: 0;
@@ -631,7 +631,7 @@
   background: var(--gp-accent);
 }
 
-.gps h1 {
+.gps-name {
   font-size: 24px;
   font-weight: 800;
   color: var(--gp-text);
@@ -1258,7 +1258,7 @@
 /* Narrow: the logo, the last control and the close button, and under them the page controls across the width */
 .gps[data-w="s"] { font-size: 15px; }
 .gps[data-w="s"] .gps-bar { gap: 8px 10px; }
-.gps[data-w="s"] h1 { display: none; }
+.gps[data-w="s"] .gps-name { display: none; }
 .gps[data-w="s"] .gps-title { margin-right: 0; }
 .gps[data-w="s"] .gps-now { order: 2; flex: 1 1 0; }
 .gps[data-w="s"] .gps-close { order: 3; min-width: 88px; padding: 0 20px; }
@@ -1287,3 +1287,6 @@
   .gossiper *, .gps * { transition: none !important; }
   .gp-display.is-changed { animation-duration: 0.01s; }
 }
+
+/* In MOD UI's Performance view the page lives beside the plugin list: the window is not there to be closed */
+[data-performance] .gps-close { display: none; }

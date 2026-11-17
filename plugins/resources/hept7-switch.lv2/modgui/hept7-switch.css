@@ -534,7 +534,7 @@
   box-sizing: border-box;
 }
 
-.h7s h1,
+.h7s-name,
 .h7s h2,
 .h7s h3,
 .h7s p {
@@ -598,7 +598,7 @@
   box-shadow: 0 2px 0 var(--h7-turq-deep);
 }
 
-.h7s h1 {
+.h7s-name {
   font-size: 24px;
   font-weight: 800;
   color: var(--h7-ink);
@@ -1424,7 +1424,7 @@
 /* Narrow: the logo, the preset playing and the close button, and under them the page controls across the width */
 .h7s[data-w="s"] { font-size: 15px; }
 .h7s[data-w="s"] .h7s-bar { gap: 8px 10px; }
-.h7s[data-w="s"] h1 { display: none; }
+.h7s[data-w="s"] .h7s-name { display: none; }
 .h7s[data-w="s"] .h7s-title { margin-right: 0; }
 .h7s[data-w="s"] .h7s-now { order: 2; flex: 1 1 0; }
 .h7s[data-w="s"] .h7s-close { order: 3; min-width: 88px; padding: 0 20px; }
@@ -1481,3 +1481,6 @@
   .h7-display.is-changed .h7-toast-num { animation: none; }
   .h7-display.is-changed .h7-toast { animation-duration: 1.2s; }
 }
+
+/* In MOD UI's Performance view the page lives beside the plugin list: the window is not there to be closed */
+[data-performance] .h7s-close { display: none; }

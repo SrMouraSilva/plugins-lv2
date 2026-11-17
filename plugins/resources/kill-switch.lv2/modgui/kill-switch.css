@@ -488,7 +488,7 @@
 }
 
 
-.kss h1,
+.kss-name,
 .kss h2,
 .kss p {
   margin: 0;
@@ -547,7 +547,7 @@
 }
 
 
-.kss h1 {
+.kss-name {
   font-size: 24px;
   font-weight: 800;
   color: var(--ks-text);
@@ -1014,7 +1014,7 @@
 
 .kss[data-w="s"] .kss-bar { gap: 8px 10px; }
 
-.kss[data-w="s"] h1 { display: none; }
+.kss[data-w="s"] .kss-name { display: none; }
 
 .kss[data-w="s"] .kss-title { order: 1; margin-right: 0; }
 
@@ -1526,3 +1526,6 @@
 .kss[data-h="s"] .kss-sound { gap: 12px 24px; }
 .kss[data-h="s"] .kss-knob { gap: 6px; }
 .kss[data-h="s"] .kss-ends { display: none; }
+
+/* In MOD UI's Performance view the page lives beside the plugin list: the window is not there to be closed */
+[data-performance] .kss-close { display: none; }

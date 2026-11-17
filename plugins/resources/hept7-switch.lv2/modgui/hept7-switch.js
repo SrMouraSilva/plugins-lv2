@@ -753,6 +753,41 @@ function (event, funcs) {
     event.icon.find('.mod-actions .mod-settings').first().trigger('click');
   };
 
+  // MOD UI's Performance view shows a second copy of the settings template (rendered with `isPerformanceView`), which no
+  // script ever sees: it would stay the bare HTML, never built. While that view shows this plugin, the live page
+  // (event.settings, the one this script builds and updates) takes the copy's place. MOD UI keeps the live page hidden in
+  // <body>, as its own window: it goes back there when the view closes or shows another plugin, or that window would not open.
+  // `data-performance` lets the stylesheet drop what makes no sense in the view (the Close button).
+  const adoptInPerformanceView = (event) => {
+    const host = document.querySelector('.js-performance-plugin-settings');
+    const view = document.getElementById('performance');
+    if (!host || !view || typeof MutationObserver !== 'function') return;
+    const live = event.settings[0];
+    const instance = live.getAttribute('mod-instance');
+    let home = null;
+
+    const release = () => {
+      if (!live.hasAttribute('data-performance')) return;
+      live.removeAttribute('data-performance');
+      live.style.display = 'none';
+      if (home) home.appendChild(live);
+    };
+    new MutationObserver(() => {
+      const copy = Array.from(host.children).find((el) => el !== live && el.getAttribute('mod-instance') === instance);
+      if (copy) {
+        if (!live.hasAttribute('data-performance')) home = live.parentNode;
+        copy.replaceWith(live);
+        live.style.display = 'block';
+        live.setAttribute('data-performance', '');
+      } else if (live.parentNode !== host) {
+        release();
+      }
+    }).observe(host, { childList: true });
+    new MutationObserver(() => {
+      if (getComputedStyle(view).display === 'none') release();
+    }).observe(view, { attributes: true, attributeFilter: ['class', 'style'] });
+  };
+
   const assignEvents = (event) => {
     const icon = event.icon;
     const settings = event.settings;
@@ -819,6 +854,8 @@ function (event, funcs) {
     } else {
       window.addEventListener('resize', () => scheduleLayout(event));
     }
+
+    adoptInPerformanceView(event);
   };
 
   // ---------------------------------------------------------------------------

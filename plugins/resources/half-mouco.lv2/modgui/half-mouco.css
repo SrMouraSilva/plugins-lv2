@@ -492,7 +492,7 @@
 }
 
 
-.hms h1,
+.hms-name,
 .hms h2,
 .hms p {
   margin: 0;
@@ -551,7 +551,7 @@
 }
 
 
-.hms h1 {
+.hms-name {
   font-size: 24px;
   font-weight: 800;
   color: var(--hm-text);
@@ -1039,7 +1039,7 @@
 
 .hms[data-w="s"] .hms-bar { gap: 8px 10px; }
 
-.hms[data-w="s"] h1 { display: none; }
+.hms[data-w="s"] .hms-name { display: none; }
 
 .hms[data-w="s"] .hms-title { order: 1; margin-right: 0; }
 
@@ -1766,3 +1766,6 @@
 /* The way to the editor, only while Custom plays and the editor is on a page of its own */
 .hms-edit-pattern { display: none; margin-top: 12px; width: 100%; }
 .hms[data-together="0"][data-custom="1"] .hms-edit-pattern { display: block; }
+
+/* In MOD UI's Performance view the page lives beside the plugin list: the window is not there to be closed */
+[data-performance] .hms-close { display: none; }
