@@ -159,7 +159,53 @@ and **Edge** beside their names. The button fills in once the control is assigne
 | `Depth` | A knob or an expression pedal: from a gentle tremolo to a full cut. |
 | `Edge` | A knob: from a hard chop to a soft swell. |
 
-The plugin shows nothing on the device screen, so there is no pop-up to set up.
+### On the screen of the device
+
+With the **aLabs Starless** image (Starless 19 or later) the MOD Dwarf and the MOD Duo X can show *widgets* of a plugin on their screens, drawn by
+the plugin itself. The stock MOD firmware does not have this: the plugin works the same there and simply shows nothing. On the MOD Duo there is no
+screen to draw on.
+
+![Kill Switch's widget on the MOD Dwarf (left) and on the MOD Duo X (right)](images/kill-switch-display.webp)
+
+A widget **is for looking, not for touching**: nothing on the screen reacts to a finger or to a button of the device. What changes it are the
+controls you assigned to the plugin, as always; the widget follows them.
+
+#### Placing the widget
+
+1. Open the **Display** dialog (the Device menu of MOD UI) and choose **Pattern** in the list of widgets of the pedalboard.
+2. **Place** it on an area of the screen: a column above a knob, two or three columns, a footer, both footers or the whole screen on the Dwarf; a
+   knob, two knobs, the four knobs, the encoder band, a footer, both footers or the whole screen on each display of the Duo X. The dialog only
+   offers the areas that are big enough for it.
+3. The dialog offers to assign **Pattern** and **Tempo** to controls of the device (you can change them or leave them out), so you can change them from the same page.
+4. **Save**. It can be placed on more than one area at once (a column and a footer, or one on each display of the Duo X).
+
+It draws what fits in the area it gets: a footer shows the bare essentials, the whole screen shows everything.
+
+#### Pattern
+
+Shows **the pattern that is playing**, so you see the rhythm of the cuts without looking at the pedalboard. It is offered in every area, from a footer
+up. What you see depends on the room:
+
+| MOD Dwarf | MOD Duo X | What you see |
+|---|---|---|
+| ![Pattern on the MOD Dwarf: one footer](images/kill-switch-pattern-dwarf-footC.webp)<small>One footer · 51 × 10</small> | ![Pattern on the MOD Duo X: one footer](images/kill-switch-pattern-duox-foot1.webp)<small>One footer · 64 × 8</small> | The row of **steps**, with a mark under the step that plays now. |
+| ![Pattern on the MOD Dwarf: both footers](images/kill-switch-pattern-dwarf-footB-C.webp)<small>Both footers · 104 × 10</small> | ![Pattern on the MOD Duo X: both footers](images/kill-switch-pattern-duox-foots.webp)<small>Both footers · 128 × 8</small> | The same, with the **tempo** at the left. |
+| ![Pattern on the MOD Dwarf: one column](images/kill-switch-pattern-dwarf-col1.webp)<small>One column · 40 × 37</small> | ![Pattern on the MOD Duo X: two knobs, one above the other](images/kill-switch-pattern-duox-knobs1-2.webp)<small>Two knobs, one above the other · 64 × 30</small> | The **name** of the pattern, the steps with the mark, the tempo and the **Speed** (×0.5, ×1, ×2, ×4). The name is cut when it does not fit. |
+| ![Pattern on the MOD Dwarf: two columns](images/kill-switch-pattern-dwarf-col1-2.webp)<small>Two columns · 82 × 37</small> | ![Pattern on the MOD Duo X: the four knobs](images/kill-switch-pattern-duox-knobs.webp)<small>The four knobs · 128 × 30</small> | The same, with more room for the name and the steps. |
+| ![Pattern on the MOD Dwarf: three columns](images/kill-switch-pattern-dwarf-col1-3.webp)<small>Three columns · 124 × 37</small> | ![Pattern on the MOD Duo X: encoder band and knobs](images/kill-switch-pattern-duox-enc-knobs.webp)<small>Encoder band and knobs · 128 × 47</small> | The same, with taller steps. |
+| ![Pattern on the MOD Dwarf: whole screen](images/kill-switch-pattern-dwarf-full.webp)<small>Whole screen · 128 × 64</small> | ![Pattern on the MOD Duo X: whole screen](images/kill-switch-pattern-duox-full.webp)<small>Whole screen · 128 × 64</small> | Everything above, and the **Depth**. |
+| *No area of this kind* | ![Pattern on the MOD Duo X: one knob](images/kill-switch-pattern-duox-knob1.webp)<small>One knob · 64 × 16</small> | Only the row of steps, with the mark. |
+| *No area of this kind* | ![Pattern on the MOD Duo X: two knobs side by side](images/kill-switch-pattern-duox-knobs1-3.webp)<small>Two knobs side by side · 128 × 16</small> | Only the row of steps, with the mark, wider. |
+
+A tall bar is a step that lets the signal through, a half-height bar is the middle level and a short line is a cut. The pattern that plays is the one
+of the `Pattern` control, your own pattern included.
+
+![The states of Pattern](images/kill-switch-pattern-states.webp)
+
+* **Playing:** the mark under the step moves with the tempo, from the first step each time the plugin is switched on.
+* **Your own pattern:** it is called *Custom* and has up to 16 steps.
+* **Too fast to follow:** above about 10 steps a second the eye cannot follow a mark, so a dotted line is drawn under the steps instead.
+* **Bypassed:** the steps go grey and the widget says **OFF** (where there is room for the word).
 
 ## 6. Factory presets
 
@@ -262,4 +308,4 @@ to compensate with a volume control.
 They are inspired by guitarists known for the kill switch, as a way to find the rhythm: the steps are our approximation of
 the style, not a transcription, and the plugin has no connection with the players or with their songs.
 
-*This manual is for version 1.0.13 of Kill Switch.*
+*This manual is for version 1.0.15 of Kill Switch.*
