@@ -4,7 +4,7 @@
 # Assembled from store/ of https://github.com/SrMouraSilva/plugins-lv2 -- keep the four in step (see tools/store/pin.py).
 
 # The commit of the repository that is built: it must exist on GitHub. Update it with `python3 tools/store/pin.py`.
-HEPT7_SWITCH_VERSION = 6ed47965586ff17d167b42e93970d5a957bd3668
+HEPT7_SWITCH_VERSION = b3237cf273968ddd13b6ffb972b4aa89239d03b7
 HEPT7_SWITCH_SITE = https://github.com/SrMouraSilva/plugins-lv2.git
 HEPT7_SWITCH_SITE_METHOD = git
 HEPT7_SWITCH_BUNDLES = hept7-switch.lv2
