@@ -591,9 +591,26 @@ function (event, funcs) {
     return true;
   };
 
+  // The pop-ups are drawn by the widgets of the device screen, which the MOD Duo does not have. MOD UI tells the page
+  // which device it is on (the PLATFORM global: duo, duox, dwarf...). Only the Duo is known not to have them: there the
+  // slots are disabled and a note says why
+  const hasScreenWidgets = () => !(typeof PLATFORM === 'string' && PLATFORM === 'duo');
+
+  const disableNotifyPanel = (settings) => {
+    const panel = settings.find('[data-panel="notify"]');
+
+    panel.addClass('is-unsupported');
+    panel.find('.gps-unsupported-note').prop('hidden', false);
+    panel.find('.gps-tile').prop('disabled', true).attr('aria-disabled', 'true');
+  };
+
   if (event.type === 'start') {
     event.data.state = newState();
     event.data.view = findPanels(event.settings.find('.gps')[0]);
+
+    if (!hasScreenWidgets()) {
+      disableNotifyPanel(event.settings);
+    }
 
     cacheElements(event);
     assignEvents(event);

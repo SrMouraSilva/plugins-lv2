@@ -113,7 +113,8 @@ potentiometer, and keeps your own presets (**Saved presets**).
 ![Min and Max: the CV range of a potentiometer, in volts](images/step-min-max.webp)
 
 > **No screen for pop-ups?** The MOD Duo (and any device without the HMI) cannot show pop-ups: the display on the
-> plugin itself (item A, section 1) is the feedback there. Open the pedalboard and look at it.
+> plugin itself (item A, section 1) is the feedback there. Open the pedalboard and look at it. On the MOD Duo the
+> *Screen pop-ups* slots of the settings page are disabled, with a note that says why.
 
 ## 4. How the pop-up decides when to appear
 
@@ -195,7 +196,8 @@ display on the plugin work without any of these.
 ### Does it work on the MOD Duo and the MOD Duo X?
 
 The plugin loads and the CV outputs work on both. The MOD Duo has no screen for plugin pop-ups, so the **display on the
-plugin** (open the pedalboard in the browser) is where you see the last control used. Pop-ups need the HMI of the Dwarf.
+plugin** (open the pedalboard in the browser) is where you see the last control used, and the *Screen pop-ups* slots of
+the settings page are disabled there. Pop-ups need the HMI of the Dwarf.
 
 ### Is it stereo? Does it add latency?
 
@@ -232,7 +234,7 @@ Yes. The label of each footswitch is saved with the pedalboard and with the plug
 | Field | Value |
 |---|---|
 | Plugin name | Gossiper |
-| Version | 1.1.11 (the version of the plugin this manual is for) |
+| Version | 1.1.13 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/gossiper` |
 | Audio I/O | None |
