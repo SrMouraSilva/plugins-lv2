@@ -191,7 +191,20 @@ export const scenarios = {
       await ctx.tap('.kss-length-up', 100); await ctx.tap('.kss-length-up', 100);
       await ctx.tap('.kss-beat-up', 100);
       await ctx.sleep(700);
-      await visitPages(ctx, { next: '.kss-next', dot: '.kss-dot', tile: true, tileSymbol: () => 'pattern' });
+      // from the first page, going through every page with the arrows; the small button beside the tempo assigns it to the
+      // device (marked as MOD UI does once its dialog is confirmed) on the page that shows it
+      await ctx.tap('.kss-dot[data-page="0"]', 120);
+      await ctx.sleep(900);
+      let assigned = false;
+      const assignTempo = async () => {
+        if (assigned || !(await ctx.eval(`!!document.querySelector('[mod-port-symbol="bpm"]')?.offsetParent`))) return;
+        assigned = true;
+        await ctx.tap('[mod-port-symbol="bpm"]', 120);
+        await ctx.eval(`document.querySelector('[mod-port-symbol="bpm"]').classList.add('addressed')`);
+        await ctx.sleep(600);
+      };
+      await assignTempo();
+      await visitPages(ctx, { next: '.kss-next', dot: '.kss-dot', tile: false, onPage: assignTempo });
       // Back to the start, as a controller would put it (the first edit switched Pattern to Custom)
       for (const [symbol, value] of [['pattern', 0], ['custom_step_4', 2], ['custom_length', 8], ['custom_steps_per_beat', 2]]) {
         await ctx.eval(`send({ type: 'change', symbol: '${symbol}', value: ${value} })`);
