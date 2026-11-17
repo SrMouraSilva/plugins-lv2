@@ -32,7 +32,7 @@ typedef struct {
     float* active_preset_output;
 
     /**
-     * MIDI (NULL when the plugin has no such ports: Hept7 Switch for now, which then sends nothing). The control
+     * MIDI (NULL when the host does not connect these ports, in which case nothing is sent). The control
      * change number of each CV output, the channel (0-15) and whether to leave out the ones that did not change
      */
     float* midi_cc[TOTAL_OUTPUTS];

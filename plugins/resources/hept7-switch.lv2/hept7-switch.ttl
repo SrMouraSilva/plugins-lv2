@@ -25,6 +25,10 @@
 #   76-77  Events in / out
 #   78-84  In the cycle of "Current preset", preset by preset (added after the events: ports are never renumbered)
 #   85     Active preset (output, for the interface)
+#   86-93  MIDI: the CC number of each CV output (added last, like the ports above: ports are never renumbered)
+#   94     MIDI channel (1-16)
+#   95     MIDI: send only the control changes that changed
+#   96     MIDI out (atom output, a control change per CV output when the preset changes)
 
 plug:preset_label_1
     a lv2:Parameter ;
@@ -82,6 +86,11 @@ plug:group_notifications
     a pg:Group ;
     lv2:symbol "notifications" ;
     lv2:name "Notifications" .
+
+plug:group_midi
+    a pg:Group ;
+    lv2:symbol "midi" ;
+    lv2:name "MIDI" .
 
 plug:group_preset_1
     a pg:Group ;
@@ -141,7 +150,7 @@ doap:maintainer [
 
     lv2:majorVersion 1 ;
     lv2:minorVersion 0 ;
-    lv2:microVersion 19 ;
+    lv2:microVersion 21 ;
 
 rdfs:comment """
 Hept7 switch is a loop switcher for CV, the big sibling of Tetr4 switch. Store which of its eight CV outputs are on in each of seven presets, and change between them with a footswitch. It comes with a full-screen, touch-friendly settings page and a small display that shows the preset on every device, even the ones without a screen for plugins.
@@ -1151,6 +1160,135 @@ lv2:port
     lv2:maximum 6 ;
     lv2:portProperty lv2:integer ;
     rdfs:comment "Output: the active preset (0 is preset 1), whatever selected it. Used by the interface of the plugin." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 86 ;
+    lv2:symbol "MIDI_CC_1" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 1" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 20 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 1 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 87 ;
+    lv2:symbol "MIDI_CC_2" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 2" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 21 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 2 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 88 ;
+    lv2:symbol "MIDI_CC_3" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 3" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 22 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 3 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 89 ;
+    lv2:symbol "MIDI_CC_4" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 4" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 23 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 4 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 90 ;
+    lv2:symbol "MIDI_CC_5" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 5" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 24 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 5 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 91 ;
+    lv2:symbol "MIDI_CC_6" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 6" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 25 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 6 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 92 ;
+    lv2:symbol "MIDI_CC_7" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 7" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 26 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 7 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 93 ;
+    lv2:symbol "MIDI_CC_8" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 8" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 27 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 8 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 94 ;
+    lv2:symbol "MIDI_channel" ;
+    pg:group plug:group_midi ;
+    lv2:name "MIDI channel" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 1 ;
+    lv2:minimum 1 ;
+    lv2:maximum 16 ;
+    rdfs:comment "MIDI channel (1 to 16) of the control changes." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 95 ;
+    lv2:symbol "MIDI_changes_only" ;
+    pg:group plug:group_midi ;
+    lv2:name "MIDI changes only" ;
+    lv2:portProperty lv2:integer, lv2:toggled ;
+    lv2:default 1 ;
+    lv2:minimum 0 ;
+    lv2:maximum 1 ;
+    rdfs:comment "On: when the preset changes, send only the control changes whose value differs from the last one sent. Off: send one for every output." ;
+],
+[
+    a lv2:OutputPort, atom:AtomPort ;
+    lv2:index 96 ;
+    lv2:symbol "MIDI_out" ;
+    lv2:name "MIDI out" ;
+    atom:bufferType atom:Sequence ;
+    atom:supports midi:MidiEvent ;
+    rdfs:comment "Sends a MIDI control change for each CV output when the preset changes, so the outputs can also drive MIDI gear." ;
 ] ;
 
 patch:writable plug:preset_label_1 ,

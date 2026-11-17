@@ -116,7 +116,6 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
 #endif
 
     } else if (port >= PORT_MIDI_CC_FIRST && port < PORT_MIDI_CHANNEL) {
-        // Tetr4 Switch only for now: Hept7 Switch's TTL has no MIDI ports, so they stay NULL and nothing is sent
         self->midi_cc[port - PORT_MIDI_CC_FIRST] = (float*) data;
 
     } else if (port == PORT_MIDI_CHANNEL) {

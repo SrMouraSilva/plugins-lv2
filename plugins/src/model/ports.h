@@ -22,13 +22,13 @@
  *   In the cycle      TOTAL_PRESETS ports, Hept7 Switch only (added after the events: ports are never renumbered)
  *   Active preset     1 output port, Hept7 Switch only
  *   MIDI              TOTAL_OUTPUTS CC numbers, the channel, "changes only" and the MIDI output (added last, for the
- *                     same reason). Tetr4 Switch only for now: Hept7 Switch has the room for them, but not the ports
+ *                     same reason)
  *
  * Tetr4 Switch (4x4):  outputs 0-3, selectors 4-7, current preset 8, notify 9-12, dips 13-28, events 29-30,
  *                      MIDI CC 31-34, MIDI channel 35, changes only 36, MIDI out 37
  * Hept7 Switch (7 presets x 8 outputs):  outputs 0-7, selectors 8-14, current preset 15, notify 16-19, dips 20-75,
- *                                        events 76-77, in the cycle 78-84, active preset 85
- *                                        (MIDI, when it gets them: CC 86-93, channel 94, changes only 95, out 96)
+ *                                        events 76-77, in the cycle 78-84, active preset 85,
+ *                                        MIDI CC 86-93, MIDI channel 94, changes only 95, MIDI out 96
  */
 #define PORT_OUTPUT_CV_FIRST          0
 #define PORT_PRESET_SELECTOR_FIRST    (PORT_OUTPUT_CV_FIRST + TOTAL_OUTPUTS)
@@ -69,6 +69,13 @@ _Static_assert(PORT_MIDI_CC_FIRST == 31, "tetr4-switch.ttl: MIDI CC numbers star
 _Static_assert(PORT_MIDI_CHANNEL == 35, "tetr4-switch.ttl: MIDI channel is port 35");
 _Static_assert(PORT_MIDI_CHANGES_ONLY == 36, "tetr4-switch.ttl: MIDI changes only is port 36");
 _Static_assert(PORT_MIDI_OUT == 37, "tetr4-switch.ttl: MIDI out is port 37");
+#else
+// The Hept7 Switch TTL is long and generated: guard the part added last, which is easy to get wrong
+_Static_assert(PORT_ACTIVE_PRESET == 85, "hept7-switch.ttl: active preset is port 85");
+_Static_assert(PORT_MIDI_CC_FIRST == 86, "hept7-switch.ttl: MIDI CC numbers start at port 86");
+_Static_assert(PORT_MIDI_CHANNEL == 94, "hept7-switch.ttl: MIDI channel is port 94");
+_Static_assert(PORT_MIDI_CHANGES_ONLY == 95, "hept7-switch.ttl: MIDI changes only is port 95");
+_Static_assert(PORT_MIDI_OUT == 96, "hept7-switch.ttl: MIDI out is port 96");
 #endif
 
 #endif
