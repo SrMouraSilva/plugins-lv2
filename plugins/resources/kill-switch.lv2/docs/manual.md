@@ -44,7 +44,7 @@ You need a pedalboard with an audio input and an output, and a guitar (or any so
 | Item | What it does |
 |---|---|
 | **Pattern: the arrows and the name** | Choose the pattern (section 3). The arrows go round: after the last pattern comes the first, and the last one is **Custom**, the pattern you write. |
-| **The sixteen squares** | The pattern. A bright red square lets the signal through, a dark one cuts it, and a darker red one is the middle level (only in your own patterns). A pattern shorter than sixteen steps is repeated; the first run is bright and the repetitions are dimmer, so you can see where it starts again. The squares go dim when the plugin is bypassed. |
+| **The sixteen squares** | The pattern. A bright white square lets the signal through, a dark one cuts it, and a grey one is the middle level (only in your own patterns). A pattern shorter than sixteen steps is repeated; the first run is bright and the repetitions are dimmer, so you can see where it starts again. The squares go dim when the plugin is bypassed. |
 | **Edit pattern** | Opens the settings page: everything on the plugin with more room, the editor of your own pattern and the buttons that assign each control to a device control (section 4). |
 | **Tempo: − and +** | The speed of the pattern, from 40 to 240 BPM. Hold a button to keep going. |
 | **Speed** | ½x, 1x, 2x or 4x: multiplies the speed of the pattern without changing the tempo. |
@@ -59,7 +59,7 @@ All five controls (and the bypass) can be assigned to a device control: see [sec
 
 Each pattern is a loop of steps. In every step the signal is either **let through** or **cut**; the plugin goes from one
 step to the next in time with the tempo, and from the last step back to the first. The grids show every pattern as sixteen
-steps (the shorter ones repeat): a coloured square lets the signal through and a grey one cuts it.
+steps (the shorter ones repeat): a white square lets the signal through and a dark one cuts it.
 
 ```recipe
 Generic grooves
@@ -262,4 +262,4 @@ to compensate with a volume control.
 They are inspired by guitarists known for the kill switch, as a way to find the rhythm: the steps are our approximation of
 the style, not a transcription, and the plugin has no connection with the players or with their songs.
 
-*This manual is for version 1.0.9 of Kill Switch.*
+*This manual is for version 1.0.11 of Kill Switch.*

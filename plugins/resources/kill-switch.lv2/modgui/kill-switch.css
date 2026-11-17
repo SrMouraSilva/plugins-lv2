@@ -13,19 +13,21 @@
 
 .kill-switch,
 .kss {
-  /* Charcoal and red (modgui:color is #7d1d12) */
-  --ks-ink: #120d0b;       /* the darkest: slots, the display */
-  --ks-ink-2: #1d1512;     /* panels */
-  --ks-ink-3: #2c201c;     /* raised controls */
-  --ks-line: rgba(255, 235, 228, 0.14);
-  --ks-text: #f6ede9;
-  --ks-muted: #b9a199;
-  --ks-accent: #ff8a80;    /* titles and marks on the settings page */
-  --ks-red: #ff4a3d;       /* a step that passes, the LED, the filled part of a slider */
-  --ks-red-deep: #b8261c;
-  --ks-cut: #33231f;       /* a step that is cut */
-
-  --ks-half: #b8453a;      /* a step at the middle level */
+  /* Neutral charcoal surfaces, warm white for what is lit or chosen, and one red (modgui:color is #a30d2b) kept for what is
+     ON (the power, the LED, the footswitch ring) and for the knobs of the sliders, so it is not on everything */
+  --ks-ink: #0d0e11;       /* the darkest: slots, the display */
+  --ks-ink-2: #16181d;     /* panels */
+  --ks-ink-3: #262930;     /* raised controls */
+  --ks-line: rgba(255, 255, 255, 0.13);
+  --ks-text: #f5f2ea;
+  --ks-muted: #a7a59e;
+  --ks-accent: #ece7d9;    /* titles and marks on the settings page */
+  --ks-lit: #f5f2ea;       /* a step that passes, the filled part of a slider, what is chosen */
+  --ks-lit-deep: #b9b5a9;
+  --ks-red: #e3213f;       /* ON, the LED, the knob of a slider */
+  --ks-red-deep: #9c1229;
+  --ks-cut: #2b2d34;       /* a step that is cut */
+  --ks-half: #8a877f;      /* a step at the middle level */
 
   font-family: "Avenir Next Rounded", "SF Pro Rounded", ui-rounded, "Nunito", "Varela Round", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
@@ -66,7 +68,7 @@
 .kss button:focus-visible,
 .kss input:focus-visible,
 .kss select:focus-visible {
-  outline: 3px solid #ffd0ca;
+  outline: 3px solid #fff;
   outline-offset: 2px;
 }
 
@@ -100,13 +102,13 @@
   text-align: center;
 
   background:
-    radial-gradient(110% 70% at 6% 0%, rgba(255, 120, 90, 0.14), rgba(255, 120, 90, 0) 60%),
-    linear-gradient(170deg, #2a1d19 0%, #17100d 100%);
+    radial-gradient(110% 70% at 6% 0%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(170deg, #2a2c33 0%, #14151a 100%);
   border-radius: 22px;
   box-shadow:
-    inset 0 2px 1px rgba(255, 235, 228, 0.18),
+    inset 0 2px 1px rgba(255, 255, 255, 0.16),
     inset 0 -4px 8px rgba(0, 0, 0, 0.5),
-    0 0 0 2px #3a2520;
+    0 0 0 2px #3a3d46;
 }
 
 .ks-main {
@@ -206,8 +208,8 @@
 }
 
 .ks-steps i.l2 {
-  background: var(--ks-red);
-  box-shadow: 0 0 10px -1px var(--ks-red);
+  background: var(--ks-lit);
+  box-shadow: 0 0 10px -2px var(--ks-lit);
 }
 
 /* The pattern repeats: only its first run is the pattern, the rest shows where it goes on */
@@ -218,7 +220,7 @@
 .ks-steps i.first { margin-left: 0; }
 
 .kill-switch.is-bypassed .ks-steps i.l2 {
-  background: #7c4a43;
+  background: #6f6d68;
   box-shadow: none;
 }
 
@@ -273,11 +275,11 @@
   line-height: 1;
   color: var(--ks-text);
   background: var(--ks-ink-3);
-  box-shadow: 0 2px 0 #0b0706, inset 0 1px 0 rgba(255, 235, 228, 0.1);
+  box-shadow: 0 2px 0 #07080a, inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: background-color 0.15s;
 }
-.ks-step-button:hover { background: #3d2b26; }
-.ks-step-button:active { transform: translateY(1px); box-shadow: 0 1px 0 #0b0706; background: var(--ks-red-deep); }
+.ks-step-button:hover { background: #343740; }
+.ks-step-button:active { transform: translateY(1px); box-shadow: 0 1px 0 #07080a; background: var(--ks-red-deep); }
 
 /* Tempo: - 120 BPM + */
 .ks-stepper {
@@ -325,8 +327,8 @@
 .ks-segment:hover { color: var(--ks-text); }
 .ks-segment[aria-checked="true"] {
   color: var(--ks-ink);
-  background: var(--ks-red);
-  box-shadow: 0 0 12px -2px var(--ks-red);
+  background: var(--ks-lit);
+  box-shadow: 0 0 12px -2px var(--ks-lit);
 }
 
 /* Depth and edge: sliders with a 44 px tall touch area and a thin track */
@@ -342,7 +344,7 @@
 .ks-slider::-webkit-slider-runnable-track {
   height: 8px;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--ks-red) 0 var(--ks-fill), var(--ks-ink) var(--ks-fill) 100%);
+  background: linear-gradient(90deg, var(--ks-lit) 0 var(--ks-fill), var(--ks-ink) var(--ks-fill) 100%);
   box-shadow: inset 0 0 0 1px var(--ks-line);
 }
 .ks-slider::-webkit-slider-thumb {
@@ -352,8 +354,8 @@
   margin-top: -9px;
   border: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff 0, #ecdcd7 40%, #b79d96 100%);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  background: radial-gradient(circle at 35% 30%, #ff6a80 0, var(--ks-red) 45%, var(--ks-red-deep) 100%);
+  box-shadow: 0 0 0 3px var(--ks-lit), 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 .ks-slider::-moz-range-track {
   height: 8px;
@@ -364,15 +366,15 @@
 .ks-slider::-moz-range-progress {
   height: 8px;
   border-radius: 4px;
-  background: var(--ks-red);
+  background: var(--ks-lit);
 }
 .ks-slider::-moz-range-thumb {
   width: 26px;
   height: 26px;
   border: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff 0, #ecdcd7 40%, #b79d96 100%);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  background: radial-gradient(circle at 35% 30%, #ff6a80 0, var(--ks-red) 45%, var(--ks-red-deep) 100%);
+  box-shadow: 0 0 0 3px var(--ks-lit), 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
 
@@ -407,12 +409,12 @@
   height: 88px;
   border-radius: 50%;
   cursor: pointer;
-  background: radial-gradient(circle at 50% 35%, #3a2b26, #130d0b);
+  background: radial-gradient(circle at 50% 35%, #34363e, #101114);
   box-shadow: 0 0 0 3px var(--ks-ink-3), inset 0 3px 8px rgba(0, 0, 0, 0.7), 0 6px 10px rgba(0, 0, 0, 0.5);
   transition: box-shadow 0.2s;
 }
 .kill-switch:not(.is-bypassed) .ks-foot {
-  box-shadow: 0 0 0 3px var(--ks-red), 0 0 18px 0 rgba(255, 74, 61, 0.55), inset 0 3px 8px rgba(0, 0, 0, 0.7), 0 6px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 0 3px var(--ks-red), 0 0 18px 0 rgba(227, 33, 63, 0.6), inset 0 3px 8px rgba(0, 0, 0, 0.7), 0 6px 10px rgba(0, 0, 0, 0.5);
 }
 
 .ks-cap {
@@ -422,13 +424,13 @@
   border-radius: 50%;
   background:
     radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 55%),
-    repeating-conic-gradient(from 0deg, #8d7f7a 0 8deg, #b6a8a3 8deg 16deg);
-  box-shadow: 0 4px 0 #3b2c28, 0 6px 8px rgba(0, 0, 0, 0.6);
+    repeating-conic-gradient(from 0deg, #8a8c92 0 8deg, #b4b6bb 8deg 16deg);
+  box-shadow: 0 4px 0 #2a2c32, 0 6px 8px rgba(0, 0, 0, 0.6);
   transition: transform 0.08s, box-shadow 0.08s;
 }
 .ks-foot:active .ks-cap {
   transform: translateY(3px);
-  box-shadow: 0 1px 0 #3b2c28, 0 2px 4px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 1px 0 #2a2c32, 0 2px 4px rgba(0, 0, 0, 0.6);
 }
 
 .ks-foot-label {
@@ -475,7 +477,7 @@
   line-height: 1.3;
   background:
     radial-gradient(90% 60% at 12% 0%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 60%),
-    linear-gradient(165deg, #3a2520 0%, #241613 45%, #170e0c 100%);
+    linear-gradient(165deg, #272a31 0%, #181a1f 45%, #0d0e11 100%);
 }
 
 
@@ -796,7 +798,7 @@
 
 
 .kss .mod-address.kss-address.addressed {
-  background-color: rgba(255, 138, 128, 0.16);
+  background-color: rgba(245, 242, 234, 0.12);
   box-shadow: inset 0 0 0 2px var(--ks-accent);
 }
 
@@ -956,7 +958,7 @@
 .kss .mod-presets .btn.preset-btn-rename { width: 56px !important; font-size: 13px; }
 
 
-.kss .mod-presets .btn:hover { background-color: #44312c; }
+.kss .mod-presets .btn:hover { background-color: #3a3d46; }
 
 .kss .mod-presets .btn.disabled { opacity: 0.35; cursor: default; }
 
@@ -1006,18 +1008,25 @@
 .kss-row > .kss-presets-panel { flex: 3 1 0; align-self: stretch; }
 
 
-/* Narrow: the logo, the preset playing and the close button, and under them the page controls across the width */
+/* Narrow: the logo, the pattern playing and the close button on the first line; under them the on/off (with its
+   assign button) and the page controls, side by side while they fit */
 .kss[data-w="s"] { font-size: 15px; }
 
 .kss[data-w="s"] .kss-bar { gap: 8px 10px; }
 
 .kss[data-w="s"] h1 { display: none; }
 
-.kss[data-w="s"] .kss-title { margin-right: 0; }
+.kss[data-w="s"] .kss-title { order: 1; margin-right: 0; }
+
+.kss[data-w="s"] .kss-now { order: 2; flex: 1 1 120px; min-width: 120px; }
+
+.kss[data-w="s"] .kss-now small { display: none; }
 
 .kss[data-w="s"] .kss-close { order: 3; min-width: 88px; padding: 0 20px; }
 
-.kss[data-w="s"] .kss-nav { order: 4; flex: 1 1 100%; justify-content: space-between; }
+.kss[data-w="s"] .kss-switches { order: 4; flex: 0 0 auto; }
+
+.kss[data-w="s"] .kss-nav { order: 5; flex: 1 1 150px; justify-content: space-between; }
 
 .kss[data-w="s"] .kss-dots { flex: 1 1 auto; justify-content: center; }
 
@@ -1054,8 +1063,8 @@
   height: 32px;
   border-radius: 10px;
   background:
-    linear-gradient(90deg, var(--ks-red) 0 25%, var(--ks-cut) 0 50%, var(--ks-red) 0 75%, var(--ks-cut) 0) center / 24px 12px no-repeat,
-    var(--ks-ink);
+    radial-gradient(circle at 50% 50%, var(--ks-red) 0 8px, transparent 8.5px),
+    var(--ks-lit);
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 1px var(--ks-line);
 }
 
@@ -1134,12 +1143,12 @@
   bottom: 22px;
   height: 0;
   border-radius: 7px;
-  background: var(--ks-red);
+  background: var(--ks-lit);
   transition: height 0.15s, background-color 0.15s;
 }
 .kss-cell[data-level="0"] .kss-cell-bar { height: 4px; background: var(--ks-cut); }
 .kss-cell[data-level="1"] .kss-cell-bar { height: calc((100% - 52px) / 2); background: var(--ks-half); }
-.kss-cell[data-level="2"] .kss-cell-bar { height: calc(100% - 52px); box-shadow: 0 0 12px -2px var(--ks-red); }
+.kss-cell[data-level="2"] .kss-cell-bar { height: calc(100% - 52px); box-shadow: 0 0 12px -2px var(--ks-lit); }
 
 .kss-cell-n {
   position: relative;
@@ -1214,7 +1223,7 @@
   transition: background-color 0.15s;
 }
 .kss-button:hover,
-.kss-select:hover { background: #3d2b26; }
+.kss-select:hover { background: #343740; }
 .kss-button:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ks-ink), inset 0 0 0 1px var(--ks-line); }
 .kss-select { appearance: auto; -webkit-appearance: menulist; padding: 0 10px; }
 .kss-select option { color: #120d0b; background: #fff; }
@@ -1223,10 +1232,10 @@
 .kss-use {
   margin-left: auto;
   color: var(--ks-ink);
-  background: var(--ks-red);
-  box-shadow: 0 3px 0 var(--ks-red-deep);
+  background: var(--ks-lit);
+  box-shadow: 0 3px 0 var(--ks-lit-deep);
 }
-.kss-use:hover { background: #ff6459; }
+.kss-use:hover { background: #fff; }
 .kss-use[aria-pressed="true"] {
   color: var(--ks-text);
   background: var(--ks-ink-3);
@@ -1245,17 +1254,17 @@
   text-transform: uppercase;
   color: var(--ks-text);
   background: var(--ks-ink-3);
-  box-shadow: 0 2px 0 #0b0706;
+  box-shadow: 0 2px 0 #07080a;
   transition: background-color 0.15s;
 }
-.ks-open:hover { background: #3d2b26; }
-.ks-open:active { transform: translateY(1px); box-shadow: 0 1px 0 #0b0706; }
+.ks-open:hover { background: #343740; }
+.ks-open:active { transform: translateY(1px); box-shadow: 0 1px 0 #07080a; }
 
 /* The steps of the pattern on the pedal: the middle level */
 .ks-steps i.l1 {
   background: var(--ks-half);
 }
-.kill-switch.is-bypassed .ks-steps i.l1 { background: #5a3a34; }
+.kill-switch.is-bypassed .ks-steps i.l1 { background: #4a4945; }
 
 .kss[data-h="s"] .kss-cell { --kss-cell: 64px; }
 .kss[data-h="s"] .kss-cell-bar { bottom: 20px; }
@@ -1324,12 +1333,26 @@
   box-shadow: 0 3px 0 var(--ks-ink), inset 0 0 0 1px var(--ks-line);
   transition: background-color 0.15s;
 }
-.kss-choice:hover { background: #3d2b26; }
+.kss-choice:hover { background: #343740; }
 .kss-choice:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ks-ink), inset 0 0 0 1px var(--ks-line); }
 .kss-choice[aria-checked="true"] {
+  position: relative;
   color: var(--ks-ink);
+  background: var(--ks-lit);
+  box-shadow: 0 3px 0 var(--ks-lit-deep), 0 0 14px -3px var(--ks-lit);
+}
+/* a red disc on the white of the chosen pattern */
+.kss-choice[aria-checked="true"]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  border-radius: 50%;
   background: var(--ks-red);
-  box-shadow: 0 3px 0 var(--ks-red-deep), 0 0 14px -3px var(--ks-red);
+  box-shadow: 0 0 8px -1px var(--ks-red);
 }
 
 /* What the pattern does: its steps, as on the pedal but a little bigger. It only shows what it is */
@@ -1363,12 +1386,12 @@
   background: var(--ks-cut);
   transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
 }
-.kss-view-steps i.l2 { background: var(--ks-red); box-shadow: 0 0 12px -1px var(--ks-red); }
+.kss-view-steps i.l2 { background: var(--ks-lit); box-shadow: 0 0 12px -2px var(--ks-lit); }
 .kss-view-steps i.l1 { background: var(--ks-half); }
 .kss-view-steps i.again { opacity: 0.4; }
 .kss-view-steps i.start { margin-left: 4px; }
-.kss.is-bypassed .kss-view-steps i.l2 { background: #7c4a43; box-shadow: none; }
-.kss.is-bypassed .kss-view-steps i.l1 { background: #5a3a34; }
+.kss.is-bypassed .kss-view-steps i.l2 { background: #6f6d68; box-shadow: none; }
+.kss.is-bypassed .kss-view-steps i.l1 { background: #4a4945; }
 
 /* Tempo and feel: one block for each thing the pedal has under its display */
 .kss-sound {
@@ -1429,7 +1452,7 @@
   transition: background-color 0.15s, color 0.15s;
 }
 .kss-segment:hover { color: var(--ks-text); }
-.kss-segment[aria-checked="true"] { color: var(--ks-ink); background: var(--ks-red); box-shadow: 0 0 12px -2px var(--ks-red); }
+.kss-segment[aria-checked="true"] { color: var(--ks-ink); background: var(--ks-lit); box-shadow: 0 0 12px -2px var(--ks-lit); }
 
 .kss-slider {
   display: block;
@@ -1442,7 +1465,7 @@
 .kss-slider::-webkit-slider-runnable-track {
   height: 10px;
   border-radius: 5px;
-  background: linear-gradient(90deg, var(--ks-red) 0 var(--ks-fill), var(--ks-ink) var(--ks-fill) 100%);
+  background: linear-gradient(90deg, var(--ks-lit) 0 var(--ks-fill), var(--ks-ink) var(--ks-fill) 100%);
   box-shadow: inset 0 0 0 1px var(--ks-line);
 }
 .kss-slider::-webkit-slider-thumb {
@@ -1452,17 +1475,35 @@
   margin-top: -10px;
   border: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff 0, #ecdcd8 40%, #b3a09b 100%);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  background: radial-gradient(circle at 35% 30%, #ff6a80 0, var(--ks-red) 45%, var(--ks-red-deep) 100%);
+  box-shadow: 0 0 0 3px var(--ks-lit), 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 .kss-slider::-moz-range-track { height: 10px; border-radius: 5px; background: var(--ks-ink); box-shadow: inset 0 0 0 1px var(--ks-line); }
-.kss-slider::-moz-range-progress { height: 10px; border-radius: 5px; background: var(--ks-red); }
-.kss-slider::-moz-range-thumb { width: 30px; height: 30px; border: 0; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff 0, #ecdcd8 40%, #b3a09b 100%); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
+.kss-slider::-moz-range-progress { height: 10px; border-radius: 5px; background: var(--ks-lit); }
+.kss-slider::-moz-range-thumb { width: 30px; height: 30px; border: 0; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ff6a80 0, var(--ks-red) 45%, var(--ks-red-deep) 100%); box-shadow: 0 0 0 3px var(--ks-lit), 0 2px 6px rgba(0, 0, 0, 0.6); }
 
 /* On/off, in the top bar: lit while the effect is on */
 .kss-switches { display: flex; align-items: center; gap: 10px; }
-.kss-power[aria-pressed="true"] { color: var(--ks-ink); background: var(--ks-red); box-shadow: 0 3px 0 var(--ks-red-deep); }
-.kss-power[aria-pressed="true"]:hover { background: #ff6459; }
+
+/* On/off: the switch and the button that assigns it to a footswitch of the device are one piece, so it is clear what
+   the small button is for */
+.kss-onoff {
+  gap: 2px;
+  padding: 4px;
+  border-radius: 28px;
+  background: var(--ks-ink-2);
+  box-shadow: inset 0 0 0 1px var(--ks-line);
+}
+.kss-onoff .kss-power { min-height: 44px; border-radius: 22px; }
+.kss .kss-onoff .mod-address.kss-address.kss-address-small {
+  border-radius: 22px;
+  background-color: transparent;
+  box-shadow: none;
+}
+.kss .kss-onoff .mod-address.kss-address.kss-address-small:hover { background-color: rgba(255, 255, 255, 0.08); }
+.kss .kss-onoff .mod-address.kss-address.kss-address-small.addressed { background-color: rgba(245, 242, 234, 0.12); }
+.kss-power[aria-pressed="true"] { color: #fff; background: var(--ks-red); box-shadow: 0 3px 0 var(--ks-red-deep); }
+.kss-power[aria-pressed="true"]:hover { background: #ff3b58; }
 
 /* What belongs on the first page, in a column: the editor only while Custom plays. The view stays: it is what the
    pattern does, and it is the same for every choice, so there is nothing new to learn when the choice is Custom */
@@ -1478,7 +1519,6 @@
 .kss[data-w="s"] .kss-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .kss[data-w="s"] .kss-play-hint { display: none; }
 .kss[data-w="s"] .kss-view-steps { height: 16px; gap: 3px; }
-.kss[data-w="s"] .kss-switches { order: 3; }
 .kss[data-h="s"] .kss-play-hint { display: none; }
 .kss[data-h="s"] .kss-view-steps { height: 14px; }
 .kss[data-h="s"] .kss-sound { gap: 12px 24px; }
