@@ -22,19 +22,27 @@
  *
  * modgui/half-mouco.js repeats the names, the steps and the endings (to draw them): keep them in step, and the scale
  * points of `pattern` and `ending` in half-mouco.ttl too.
+ *
+ * The display widget (`stereo`, for devices with the aLabs HMI widgets extension) is in hmi/half-mouco-widgets.c: it draws the row
+ * of each side and the step that plays, or the curve of the ending along its time. It is optional: without the
+ * extension the plugin does not draw anything.
  */
 
 #include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 
+#include "hmi/half-mouco-widgets.h"
+
 #define HALF_MOUCO_URI "http://srmourasilva.github.io/plugins/half-mouco"
 
 #define CUSTOM_MAX_STEPS 16
+_Static_assert(CUSTOM_MAX_STEPS == HALF_MOUCO_WIDGET_MAX_STEPS, "the widget keeps as many steps as the custom pattern has");
 #define CUSTOM_MAX_STEPS_PER_BEAT 8
 #define LEVEL_COUNT 3
 
@@ -155,6 +163,9 @@ typedef struct {
     float  gain_l;
     float  gain_r;
     bool   was_bypassed;
+
+    /** The display widgets: what they show and which are on a display (hmi/half-mouco-widgets.c) */
+    HalfMoucoWidgets widgets;
 } HalfMouco;
 
 static float clampf(float value, float min, float max) {
@@ -187,11 +198,9 @@ static void reset(HalfMouco* self) {
  *
  * modgui/half-mouco.js has the same functions (to draw the ending): keep them in step.
  */
-typedef struct {
-    int index;
-} EndingState;
+typedef HalfMoucoEndingState EndingState;
 
-static void ending_gate(Ending ending, double t, double total, double beat, EndingState* state, float* gate_l, float* gate_r) {
+static void ending_gate(int ending, double t, double total, double beat, EndingState* state, float* gate_l, float* gate_r) {
     *gate_l = 0.0f;
     *gate_r = 0.0f;
 
@@ -291,6 +300,7 @@ instantiate(const LV2_Descriptor*     descriptor,
 
     self->sample_rate = (float) rate;
     reset(self);
+    half_mouco_widgets_init(&self->widgets, features, ending_gate);
 
     return (LV2_Handle) self;
 }
@@ -329,6 +339,43 @@ static void activate(LV2_Handle instance) {
     reset((HalfMouco*) instance);
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+// The display widgets (hmi/half-mouco-widgets.c draws them; here only what they show is filled in)
+
+static void update_view(HalfMouco* self, bool bypassed, bool endings, int pattern_index, const char* steps_l, const char* steps_r,
+                        int count, float steps_per_second_factor, float bpm, Ending ending, double total, float length) {
+    HalfMoucoView* view = &self->widgets.view;
+
+    view->bypassed = bypassed;
+    view->endings = endings;
+    // (An ending's name is the widget's: it has the list)
+    snprintf(view->name, sizeof(view->name), "%s", pattern_index == CUSTOM_PATTERN ? "Custom" : PATTERNS[pattern_index].name);
+    if (!endings) {
+        memcpy(view->left, steps_l, (size_t) count);
+        memcpy(view->right, steps_r, (size_t) count);
+    }
+    view->left[endings ? 0 : count] = '\0';
+    view->right[endings ? 0 : count] = '\0';
+    view->count = endings ? 0 : count;
+    view->step = self->step;
+    view->bpm = bpm;
+    view->speed = choice(self->speed, SPEED_COUNT);
+    view->fast = !endings && (double) bpm * (double) steps_per_second_factor / 60.0 > HALF_MOUCO_WIDGET_MAX_FOLLOW_STEPS_PER_SECOND;
+    view->ending = (int) ending;
+    view->elapsed = self->elapsed;
+    view->total = total;
+    view->length = length;
+    view->floor_gain = 1.0f - clampf(self->depth ? *self->depth * 0.01f : 1.0f, 0.0f, 1.0f);
+}
+
+static void widget_shown(LV2_Handle instance, const char* symbol, ALABS_HMI_Widget widget, const ALABS_HMI_WidgetArea* area) {
+    widgets_shown(&((HalfMouco*) instance)->widgets.host, symbol, widget, area);
+}
+
+static void widget_hidden(LV2_Handle instance, ALABS_HMI_Widget widget) {
+    widgets_hidden(&((HalfMouco*) instance)->widgets.host, widget);
+}
+
 static void run(LV2_Handle instance, uint32_t frames) {
     HalfMouco* self = (HalfMouco*) instance;
 
@@ -358,6 +405,8 @@ static void run(LV2_Handle instance, uint32_t frames) {
     const char* steps_r = "2";
     int         steps_count = 1;
     double      step_length = 1.0;
+    // Steps per beat times the Speed multiplier (0 in the endings), for the display widget
+    float       steps_per_beat_scaled = 0.0f;
 
     // The ending: how long it lasts and how long a beat is
     const double beat = 60.0 / (double) bpm;
@@ -388,6 +437,7 @@ static void run(LV2_Handle instance, uint32_t frames) {
         }
 
         const float multiplier = SPEED_MULTIPLIER[choice(self->speed, SPEED_COUNT)];
+        steps_per_beat_scaled = (float) steps_per_beat * multiplier;
         step_length = 60.0 * (double) self->sample_rate / ((double) bpm * (double) steps_per_beat * (double) multiplier);
         if (step_length < 2.0) {
             step_length = 2.0;
@@ -468,7 +518,13 @@ static void run(LV2_Handle instance, uint32_t frames) {
             }
         }
     }
+
+    update_view(self, bypassed, endings, choice(self->pattern, PATTERN_COUNT), steps_l, steps_r, steps_count,
+                steps_per_beat_scaled, bpm, ending, total,
+                self->length ? *self->length : 8.0f);
+    half_mouco_widgets_run(&self->widgets, frames, (double) self->sample_rate);
 }
+
 
 static void deactivate(LV2_Handle instance) {}
 
@@ -477,6 +533,16 @@ static void cleanup(LV2_Handle instance) {
 }
 
 static const void* extension_data(const char* uri) {
+    static const ALABS_HMI_WidgetNotification widget_notification = {
+        sizeof(ALABS_HMI_WidgetNotification),
+        widget_shown,
+        widget_hidden,
+    };
+
+    if (strcmp(uri, ALABS_HMI__WidgetNotification) == 0) {
+        return &widget_notification;
+    }
+
     return NULL;
 }
 

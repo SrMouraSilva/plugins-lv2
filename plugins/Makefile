@@ -57,9 +57,9 @@ build-kill-switch:
 	$(CC) src/kill-switch.c src/hmi/kill-switch-widgets.c \
 		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(KILL_SWITCH).lv2/$(KILL_SWITCH).so
 
-# Half Mouco, the stereo sibling of Kill Switch, is one file too
+# Half Mouco, the stereo sibling of Kill Switch: its own file and its widgets
 build-half-mouco:
-	$(CC) src/half-mouco.c \
+	$(CC) src/half-mouco.c src/hmi/half-mouco-widgets.c \
 		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(HALF_MOUCO).lv2/$(HALF_MOUCO).so
 
 # --------------------------------------------------------------
