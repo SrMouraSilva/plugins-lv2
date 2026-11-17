@@ -170,6 +170,51 @@ colour of each preset.
 > display of the plugin is your feedback. On the MOD Duo the *Screen pop-ups* tiles
 > of the settings page are disabled, with a note that says why.
 
+### On the screen of the device
+
+With the **aLabs Starless** image (Starless 19 or later) the MOD Dwarf and the MOD Duo X can show *widgets* of a plugin on their screens, drawn by
+the plugin itself. The stock MOD firmware does not have this: the plugin works the same there and simply shows nothing. On the MOD Duo there is no
+screen to draw on.
+
+![Hept7 Switch's widget on the MOD Dwarf (left) and on the MOD Duo X (right)](images/hept7-switch-display.webp)
+
+A widget **is for looking, not for touching**: nothing on the screen reacts to a finger or to a button of the device. What changes it are the
+controls you assigned to the plugin, as always; the widget follows them.
+
+#### Placing the widget
+
+1. Open the **Display** dialog (the Device menu of MOD UI) and choose **Active preset** in the list of widgets of the pedalboard.
+2. **Place** it on an area of the screen: a column above a knob, two or three columns, a footer, both footers or the whole screen on the Dwarf; a
+   knob, two knobs, the four knobs, the encoder band, a footer, both footers or the whole screen on each display of the Duo X. The dialog only
+   offers the areas that are big enough for it.
+3. The dialog offers to assign **Current preset** to a control of the device (which goes through the presets that are in the cycle); choose the control you want, or leave it out if the preset is already chosen by other controls.
+4. **Save**. It can be placed on more than one area at once (a column and a footer, or one on each display of the Duo X).
+
+It draws what fits in the area it gets: a footer shows the bare essentials, the whole screen shows everything.
+
+#### Active preset
+
+Shows **which preset is on** and what it switches, wherever the pedalboard is being played from: a footswitch, the settings page, a MIDI controller
+or a snapshot. It follows the preset, so it is also the way to see it when the LEDs are out of sight. It is offered in every area, from a footer up.
+
+| MOD Dwarf | MOD Duo X | What you see |
+|---|---|---|
+| ![Active preset on the MOD Dwarf: one footer](images/hept7-switch-preset-dwarf-footC.webp)<small>One footer · 51 × 10</small> | ![Active preset on the MOD Duo X: one footer](images/hept7-switch-preset-duox-foot1.webp)<small>One footer · 64 × 8</small> | The **number** of the preset in an inverted box and its **name**. |
+| ![Active preset on the MOD Dwarf: both footers](images/hept7-switch-preset-dwarf-footB-C.webp)<small>Both footers · 104 × 10</small> | ![Active preset on the MOD Duo X: both footers](images/hept7-switch-preset-duox-foots.webp)<small>Both footers · 128 × 8</small> | The same, and the **8 outputs** at the right (filled: on in this preset). |
+| ![Active preset on the MOD Dwarf: one column](images/hept7-switch-preset-dwarf-col1.webp)<small>One column · 40 × 37</small> | ![Active preset on the MOD Duo X: two knobs, one above the other](images/hept7-switch-preset-duox-knobs1-2.webp)<small>Two knobs, one above the other · 64 × 30</small> | **Dwarf:** the number, big; the outputs in two rows; the name; and one box for each of the 7 presets (the active one filled). **Duo X:** a cell with the number of each preset (the active one filled), the **name** big and the outputs. |
+| ![Active preset on the MOD Dwarf: two columns](images/hept7-switch-preset-dwarf-col1-2.webp)<small>Two columns · 82 × 37</small> | ![Active preset on the MOD Duo X: the four knobs](images/hept7-switch-preset-duox-knobs.webp)<small>The four knobs · 128 × 30</small> | A cell with the number of each preset (the active one filled), the **name** big and the outputs. |
+| ![Active preset on the MOD Dwarf: three columns](images/hept7-switch-preset-dwarf-col1-3.webp)<small>Three columns · 124 × 37</small> | ![Active preset on the MOD Duo X: encoder band and knobs](images/hept7-switch-preset-duox-enc-knobs.webp)<small>Encoder band and knobs · 128 × 47</small> | A cell with the number of each preset (the active one filled), the **name** big and the outputs. |
+| ![Active preset on the MOD Dwarf: whole screen](images/hept7-switch-preset-dwarf-full.webp)<small>Whole screen · 128 × 64</small> | ![Active preset on the MOD Duo X: whole screen](images/hept7-switch-preset-duox-full.webp)<small>Whole screen · 128 × 64</small> | **All 7 presets** in a list, each with its name and its outputs; the active one inverted. In the list an output that is on is a small square and one that is off a dot. |
+| *No area of this kind* | ![Active preset on the MOD Duo X: one knob](images/hept7-switch-preset-duox-knob1.webp)<small>One knob · 64 × 16</small> | The **number** of the preset in an inverted box and its **name**. |
+| *No area of this kind* | ![Active preset on the MOD Duo X: two knobs side by side](images/hept7-switch-preset-duox-knobs1-3.webp)<small>Two knobs side by side · 128 × 16</small> | The same, and the **8 outputs** at the right. |
+
+The squares are the **CV outputs** of the active preset: a filled one is on (its DIP switch in the preset is up). In the lists a small square is an
+output that is on and a dot one that is off. The names are the ones you gave the presets, and the widget changes when you rename one.
+
+![The states of Active preset](images/hept7-switch-preset-states.webp)
+
+The widget needs no `Assign to notify` control: it is drawn where you place it, and stays there, unlike the pop-up, which goes away after a moment.
+
 ## 6. MIDI out
 
 Besides its eight CV outputs, Hept7 Switch has a **MIDI out** jack (the ninth, under the second column of jacks). Each
@@ -388,7 +433,7 @@ They are saved with the pedalboard and with the plugin presets.
 | Field | Value |
 |---|---|
 | Plugin name | Hept7 switch |
-| Version | 1.0.23 (the version of the plugin this manual is for) |
+| Version | 1.0.25 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/hept7-switch` |
 | Audio I/O | None |
