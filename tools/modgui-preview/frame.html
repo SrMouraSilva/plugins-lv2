@@ -46,10 +46,12 @@
  *          device=390x844 (the screen of a phone, as MOD UI shows itself on it: see the top of this file)
  *          preset=INDEX   addressed=Symbol,Symbol   click=CSS selector
  *          latency=MS (delay of the simulated host, 150)   simulate=0 (no simulated host)
+ *          platform=duo|duox|dwarf (the PLATFORM global MOD UI defines; a plugin can tell the devices apart by it, dwarf)
  * Outside: window.send(event) sends an event to the plugin javascript, window.portValues holds the ports.
  */
 const q = new URLSearchParams(location.search);
 const view = q.get('view') || 'icon';
+window.PLATFORM = q.get('platform') || 'dwarf';   // MOD UI's own global (index.html), read from the hardware descriptor of the device
 const log = (...a) => (window.__log = window.__log || []).push(a);
 const get = (plugin, file) => fetch(`/plugin/${plugin}/${file}`).then((r) => r.text());
 

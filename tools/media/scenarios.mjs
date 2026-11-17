@@ -36,7 +36,8 @@ const settings = (plugin, run, height = 540) => ({
 
 // Goes through every page with the arrow of the bar, tapping one assignment tile on the way (it is marked as assigned,
 // which is what MOD UI does when the dialog of the tile is confirmed), and comes back to the first page with its dot
-async function visitPages(ctx, { next, dot, tile, tileSymbol }) {
+// onPage(page): something to do on a page once it is shown (the MIDI page of Tetr4 Switch: its fields are touched)
+async function visitPages(ctx, { next, dot, tile, tileSymbol, onPage }) {
   const pages = await ctx.eval(`document.querySelectorAll('${dot}').length`);
   for (let page = 1; page < pages; page++) {
     await ctx.tap(next, 120);
@@ -46,6 +47,7 @@ async function visitPages(ctx, { next, dot, tile, tileSymbol }) {
       await ctx.eval(`document.querySelector('[mod-port-symbol="${tileSymbol(page)}"]').classList.add('addressed')`);
       await ctx.sleep(700);
     }
+    if (onPage) await onPage(page);
   }
   await ctx.sleep(500);
   await ctx.tap(`${dot}[data-page="0"]`, 120);
@@ -79,9 +81,24 @@ export const scenarios = {
       await ctx.sleep(500);
       await ctx.type('.t4s-label[data-preset="2"]', 'Lead');
       await ctx.tap('.t4s-dip[data-preset="2"][data-output="1"]');
-      await ctx.tap('.t4s-pad[data-preset="3"]');
-      await ctx.sleep(700);
-      await visitPages(ctx, { next: '.t4s-next', dot: '.t4s-dot', tile: true, tileSymbol: (page) => ['', 'Preset_selector_1', 'Preset_combobox', 'Assign_to_notify_1'][page] || '' });
+      // the button beside the round one assigns the preset to a control of the device (marked as MOD UI does once its dialog is confirmed)
+      await ctx.tap('[mod-port-symbol="Preset_selector_2"]', 120);
+      await ctx.eval(`document.querySelector('[mod-port-symbol="Preset_selector_2"]').classList.add('addressed')`);
+      await ctx.sleep(400);
+      // pages: scenes, Current preset, screen pop-ups, MIDI out, saved presets
+      await visitPages(ctx, {
+        next: '.t4s-next', dot: '.t4s-dot', tile: true,
+        tileSymbol: (page) => ['', 'Preset_combobox', 'Assign_to_notify_1'][page] || '',
+        onPage: async (page) => {
+          if (page !== 3) return;
+          await ctx.tap('.t4s-num[data-symbol="MIDI_channel"] [data-dir="1"]', 120);
+          await ctx.sleep(250);
+          await ctx.tap('.t4s-num[data-symbol="MIDI_CC_1"] [data-dir="1"]', 120);
+          await ctx.sleep(250);
+          await ctx.tap('.t4s-switch', 120);
+          await ctx.sleep(500);
+        },
+      });
     }, 360),
   },
 

@@ -68,6 +68,11 @@ export const shots = {
       setup: [`send({type:'change',symbol:'Preset_1_output_1',value:0})`, `send({type:'change',symbol:'Preset_2_output_1',value:1})`, 'hostSelects(2)'],
       highlight: ['.t4-foot[data-preset="1"]', '.t4-foot[data-preset="2"]'], finger: '.t4-foot[data-preset="2"]',
     }),
+    // The MIDI out panel: the channel is the first thing to set
+    {
+      file: 'step-midi.webp', view: 'settings', viewport: { width: 860, height: 540 }, scrollTo: '.t4s-midi-panel', crop: '.t4s-midi-panel',
+      highlight: ['.t4s-midi-group[data-group="sending"] .t4s-field'], finger: '.t4s-num[data-symbol="MIDI_channel"] [data-dir="1"]',
+    },
     // Step 6 and Option A: assign the presets to device footswitches
     settings('step-assign-preset-buttons.webp', tile('Preset_selector_1'), { highlight: [tile('Preset_selector_1'), tile('Preset_selector_2')] }),
     // Option B: one footswitch that cycles through the presets

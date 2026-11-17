@@ -23,6 +23,9 @@ every request, so edit `plugins/resources/<plugin>.lv2/modgui/*` and reload. Onl
   shrinks it to the screen; `@media` queries on the viewport then never match. The frame is drawn 1024px wide, scaled
   to the screen, and told it is a touch screen of that size (`screen.width`, `pointer: coarse`): what the Screen buttons
   (a plain narrow frame) cannot show. Hept7's settings page measures itself instead of using media queries
+* **Device**: MOD Dwarf, Duo X or Duo (also `?platform=dwarf|duox|duo` in the address of the page). It sets the `PLATFORM` global that MOD UI defines from the hardware descriptor of the
+  device (`dwarf` by default). A modgui script can tell the devices apart by it: Tetr4 Switch disables
+  its screen pop-up tiles on `duo`
 * **Preset**: starts the interface with the values of a factory preset
 * **Ports**: change a control port as the host would (a footswitch, a knob, MIDI...), to see how the interface
   reacts, for instance the display of Hept7 Switch announcing a change of preset (filter `selector`, tick one)
