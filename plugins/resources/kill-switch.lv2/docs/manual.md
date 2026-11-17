@@ -260,3 +260,5 @@ to compensate with a volume control.
 
 They are inspired by guitarists known for the kill switch, as a way to find the rhythm: the steps are our approximation of
 the style, not a transcription, and the plugin has no connection with the players or with their songs.
+
+*This manual is for version 1.0.7 of Kill Switch.*

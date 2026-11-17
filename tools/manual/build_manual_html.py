@@ -355,11 +355,24 @@ def render(source: str, docs: Path, config: dict, fallback_title: str = "Manual"
     return embed(document, docs)
 
 
+def plugin_version(bundle: Path, plugin: str) -> str:
+    """The version of the plugin in its TTL (lv2:majorVersion, minorVersion, microVersion), as '1.2.5'; '' when there is none"""
+    ttl = bundle / f"{plugin}.ttl"
+    text = ttl.read_text(encoding="utf-8") if ttl.exists() else ""
+    parts = [re.search(rf"lv2:{name}Version\s+(\d+)", text) for name in ("major", "minor", "micro")]
+    return ".".join(m.group(1) for m in parts) if all(parts) else ""
+
+
 def build(plugin: str, output: Path = None) -> Path:
     """docs/manual.md (+ manual.json) of a bundle -> its manual page (config["output"], or `output`)"""
     bundle = RESOURCES / f"{plugin}.lv2"
     docs = bundle / "docs"
     config = json.loads((docs / "manual.json").read_text()) if (docs / "manual.json").exists() else {}
+    # The manual says which version of the plugin it was written or updated for: the one in the TTL at that moment
+    version = plugin_version(bundle, plugin)
+    if version and config.get("version", "").lstrip("v") != version:
+        print(f"warning: {plugin}: manual.json says {config.get('version', '(nothing)')}, the TTL says {version}; "
+              "set \"version\" (and the version line of manual.md) to the version the manual was written for", file=sys.stderr)
     document = render((docs / "manual.md").read_text(encoding="utf-8"), docs, config, plugin)
     out = output or bundle / config.get("output", DEFAULTS["output"])
     out.parent.mkdir(parents=True, exist_ok=True)

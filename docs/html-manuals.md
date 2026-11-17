@@ -77,7 +77,8 @@ Rebuild in the commit that changes the manual **or the interface** (screenshots)
 
 | Field | Use |
 |---|---|
-| `title`, `tagline`, `subtitle`, `badges`, `eyebrow`, `edition`, `version` | the cover (all optional; the title falls back to the first `# ` of `manual.md`) |
+| `title`, `tagline`, `subtitle`, `badges`, `eyebrow`, `edition` | the cover (all optional; the title falls back to the first `# ` of `manual.md`) |
+| `version` | the version of the **plugin** the manual was written or updated for (`v1.2.5`: its TTL's major.minor.micro at that moment), not of the manual. Repeat it in `manual.md` (the Specifications table, or a last line). `build_manual_html.py` warns when it differs from the TTL |
 | `hero` | the picture on the cover, relative to `docs/` (a 2x screenshot of the plugin; default `../modgui/screenshot.png`) |
 | `brand`, `brand2` | the cover gradient, and the colour of headings and table headers on the light page |
 | `accent` | links and marks on the light page: **dark enough to read on white** (contrast 4.5 or more) |

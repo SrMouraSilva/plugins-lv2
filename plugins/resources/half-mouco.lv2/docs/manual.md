@@ -284,3 +284,5 @@ Yes, with the pedalboard, your saved presets and the snapshots. It is not in the
 
 Kill Switch is mono, with one row of steps. Half Mouco is stereo, with a row for each side, and it has the endings. They are separate plugins and can
 share a pedalboard.
+
+*This manual is for version 1.0.3 of Half Mouco.*

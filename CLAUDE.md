@@ -242,6 +242,11 @@ conventions of the Markdown (steps, callouts, video cards, recipes, FAQ, pins on
   manuals for what you changed. Pictures of MOD UI's own dialogs are not ours to redo.
 * Facts in a manual come from the plugin (the TTL, the factory presets, the code), not from memory: check a recipe or a
   port against `presets.ttl` / the TTL.
+* **The manual carries the version of the plugin it was written or updated for**: the `lv2:majorVersion.minorVersion.microVersion`
+  of its TTL at that moment (`1.2.5`). Put it in `manual.json` (`"version": "v1.2.5"`, the cover) and in `manual.md` (the `Version` row of
+  the Specifications table, or a last line *This manual is for version 1.2.5 of ...* when there is no table). Update both whenever you
+  change the manual or rebuild it for a changed interface, in the same commit as the version bump; the builder warns when
+  `manual.json` and the TTL differ.
 * Raise `lv2:microVersion` when the manual changes (the modgui cache).
 
 ## Documentation site
