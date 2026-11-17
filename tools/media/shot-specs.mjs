@@ -90,6 +90,11 @@ export const shots = {
     window_('hept7-settings.webp', 1366, 800, { query: 'preset=1' }),
     phone('hept7-settings-phone.webp', 844, { query: 'device=390x844&preset=1' }),
     settings('step-assign-preset-buttons.webp', tile('Preset_selector_1'), { highlight: [tile('Preset_selector_1'), tile('Preset_selector_2')] }),
+    // The MIDI out panel: the channel is the first thing to set
+    {
+      file: 'step-midi.webp', view: 'settings', viewport: { width: 860, height: 540 }, scrollTo: '.h7s-midi-panel', crop: '.h7s-midi-panel',
+      highlight: ['.h7s-midi-group[data-group="sending"] .h7s-field'], finger: '.h7s-num[data-symbol="MIDI_channel"] [data-dir="1"]',
+    },
     // Section 3: leave the presets you do not use out of the cycle of Current preset
     {
       file: 'step-cycle.webp', view: 'settings', viewport: { width: 1200, height: 760 },

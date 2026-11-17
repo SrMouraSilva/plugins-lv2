@@ -110,12 +110,17 @@
   right: -80px;
   width: 168px;
   display: grid;
-  grid-template-rows: repeat(4, 56px);
-  grid-auto-flow: column;
-  grid-auto-columns: 80px;
-  gap: 4px 8px;
+  grid-template-rows: repeat(5, 56px);
+  grid-template-columns: repeat(2, 80px);
+  grid-auto-flow: row dense;
+  gap: 2px 8px;
   counter-reset: h7-jack;
 }
+
+/* The CV outputs 1-4 in the first column (on the plate), 5-8 in the second, and the MIDI out under them, in the second
+   (the one that rests against the outer edge of the plugin, as the jacks of every MOD plugin do) */
+.hept7-switch-base.mod-pedal .mod-pedal-output .mod-output:nth-child(-n+4) { grid-column: 1; }
+.hept7-switch-base.mod-pedal .mod-pedal-output .mod-output:nth-child(n+5) { grid-column: 2; }
 
 /*
  * "Manage CV Ports": MOD UI puts a checkbox and a ~250px text field in every jack. Side by side the field of the
@@ -149,7 +154,7 @@
 
 .hept7 {
   --h7-width: 728px;
-  --h7-height: 300px;
+  --h7-height: 320px;   /* room for five rows of jacks: the eight CV outputs and the MIDI out */
 
   box-sizing: border-box;
   display: flex;
@@ -230,8 +235,9 @@
 /* The back plate of the first column of CV jacks: their flanges rest against its left edge (see the jacks above) */
 .h7-jacks {
   flex: 0 0 50px;
-  align-self: center;
-  height: 236px;
+  align-self: flex-start;
+  margin-top: 12px;   /* behind the jacks 1-4 (the MIDI out under them has no plate) */
+  height: 232px;
   border-radius: 10px;
   background: linear-gradient(170deg, var(--h7-turq-dark), var(--h7-turq-deep));
   box-shadow: inset 0 2px 6px rgba(6, 50, 58, 0.55), 0 1px 0 rgba(255, 255, 255, 0.35);
@@ -530,6 +536,7 @@
 
 .h7s h1,
 .h7s h2,
+.h7s h3,
 .h7s p {
   margin: 0;
   padding: 0;
@@ -761,8 +768,10 @@
 .h7s-col > .h7s-panel { flex: 0 0 auto; width: 100%; }
 .h7s-col > .h7s-presets-panel { flex: 1 1 0; min-height: 0; }
 
-/* The three hardware panels side by side (wide screens): the preset buttons get the most room */
-.h7s-page > .h7s-hw-presets { flex-grow: 3; }
+/* The hardware panels and the MIDI out side by side (wide screens): the MIDI out gets the most room */
+.h7s-page > .h7s-hw-current,
+.h7s-page > .h7s-hw-notify { flex-grow: 2; }
+.h7s-page > .h7s-midi-panel { flex-grow: 3; }
 
 .h7s-page > .h7s-scenes + .h7s-col,
 .h7s-page > .h7s-scenes + .h7s-presets-panel { flex: 0 0 340px; }
@@ -821,7 +830,7 @@
 .h7s-row {
   --c: var(--h7-c1);
   display: grid;
-  grid-template-columns: 48px minmax(104px, 1.1fr) minmax(0, 3.2fr);
+  grid-template-columns: var(--h7s-head-w) minmax(104px, 1.1fr) minmax(0, 3.2fr);
   align-items: center;
   gap: 8px;
   padding: 4px;
@@ -864,7 +873,19 @@
   gap: 6px;
 }
 
+/* The width of the play button and the assign button: the same on every row, and on the head, which has nothing there */
+.h7s { --h7s-head-w: 102px; }
+.h7s[data-h="s"] { --h7s-head-w: 94px; }
+
+.h7s-rowhead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.h7s-row-assign { flex: 0 0 auto; display: block; }
+
 .h7s-rowpad {
+  flex: 0 0 auto;
   position: relative;
   width: 48px;
   height: 48px;
@@ -1008,7 +1029,6 @@
   font-weight: 700;
 }
 
-.h7s-assign-title,
 .h7s-assign-name small {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1053,6 +1073,44 @@
 .h7s .mod-address.h7s-address.addressed .h7s-assign-state {
   color: var(--h7-ink);
   background: var(--h7-accent);
+}
+
+/* Only the icon, beside the control it assigns (as in Gossiper): 44px, with the disc that says whether it is addressed */
+.h7s .mod-address.h7s-address.h7s-address-small {
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  min-height: 48px;
+  padding: 0;
+  justify-content: center;
+}
+.h7s[data-h="s"] .mod-address.h7s-address.h7s-address-small { width: 44px; min-width: 44px; height: 44px; min-height: 44px; }
+
+.h7s .mod-address.h7s-address:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.h7s .mod-address.h7s-address:disabled:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+/* A panel the device cannot use: its note takes the place of the description */
+.h7s .h7s-unsupported-note { color: var(--h7-accent); font-weight: 600; }
+.h7s-panel.is-unsupported .h7s-panel-head p:not(.h7s-unsupported-note) { display: none; }
+
+
+/* Current preset: the preset that is playing, in its colour. Plain text, not a control (the tile around it is) */
+.h7s-playing {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.h7s-playing-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.h7s-playing-dot {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--c-active, var(--h7-c1));
 }
 
 /* Saved presets: MOD UI wires up this markup, it is only restyled here */
@@ -1202,6 +1260,169 @@
 
 
 /* --------------------------------------------------------------------------
+ * MIDI out: the channel, "changes only" and the CC number of each CV output. They are settings (controls), so they are
+ * drawn as such: raised buttons around a sunken field. The script sets the number of columns, as for the hardware tiles
+ * -------------------------------------------------------------------------- */
+.h7s-midi {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* A group of fields under a title. The title only names the group: plain small capitals, nothing that looks pressable */
+.h7s .h7s-midi-title {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--h7-muted);
+  text-align: left;
+}
+
+.h7s-midi.is-side {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  align-items: start;
+  gap: 14px;
+}
+
+/* A phone: the name stands over the number, two fields to a line, and the description goes */
+.h7s-midi.is-compact .h7s-field {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 4px;
+  min-height: 0;
+  padding: 6px;
+}
+.h7s-midi.is-compact .h7s-field-name { flex-direction: row; align-items: baseline; gap: 6px; }
+.h7s-midi.is-compact .h7s-field-name small { display: none; }
+.h7s-midi.is-compact .h7s-num { justify-content: space-between; }
+.h7s-midi.is-compact .h7s-num-value { flex: 1 1 0; width: auto; min-width: 0; }
+.h7s-midi.is-compact .h7s-switch { align-items: stretch; }
+.h7s-midi.is-compact .h7s-switch-track { align-self: flex-end; }
+.h7s[data-w="s"] .h7s-midi-panel .h7s-panel-head p { display: none; }
+.h7s-midi.is-tight { gap: 8px; }
+.h7s-midi.is-tight .h7s-midi-title { margin-bottom: 4px; }
+.h7s-midi.is-tight .h7s-midi-items { gap: 4px; }
+.h7s-midi.is-tight .h7s-field { padding: 4px 6px; gap: 2px; }
+
+.h7s-midi-items {
+  display: grid;
+  grid-template-columns: repeat(var(--h7s-cols, 2), minmax(0, 1fr));
+  gap: 6px;
+}
+
+.h7s-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  min-height: 60px;
+  padding: 6px 8px 6px 14px;
+  border-radius: 14px;
+  text-align: left;
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px var(--h7-line);
+}
+
+.h7s-field-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.h7s-field-name b { font-size: 15px; font-weight: 700; }
+.h7s-field-name small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--h7-muted);
+}
+
+.h7s-num {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.h7s-num-step {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--h7-text);
+  background: var(--h7-ink-3);
+  box-shadow: 0 3px 0 var(--h7-ink);
+  transition: transform 0.08s, box-shadow 0.08s, background-color 0.15s, opacity 0.15s;
+}
+.h7s-num-step:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--h7-ink); }
+.h7s-num-step:disabled { opacity: 0.35; cursor: default; transform: none; box-shadow: 0 3px 0 var(--h7-ink); }
+
+.h7s-num-value {
+  width: 56px;
+  height: 44px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--h7-text);
+  background: var(--h7-ink);
+  box-shadow: inset 0 0 0 1px var(--h7-line);
+  -webkit-user-select: text;
+  user-select: text;
+}
+.h7s-num-value:focus {
+  outline: none;
+  background: #000;
+  box-shadow: inset 0 0 0 2px var(--h7-accent);
+}
+
+/* "Changes only": the whole tile is the switch */
+.h7s-switch {
+  width: 100%;
+  cursor: pointer;
+  color: inherit;
+}
+.h7s-switch-track {
+  position: relative;
+  flex: 0 0 auto;
+  width: 56px;
+  height: 32px;
+  border-radius: 16px;
+  background: var(--h7-ink);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 0 0 1px var(--h7-line);
+  transition: background-color 0.15s;
+}
+.h7s-switch-track::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background: #e9ecff;
+  box-shadow: 0 2px 0 #7e88d6;
+  transition: transform 0.15s;
+}
+.h7s-switch.is-on .h7s-switch-track { background: var(--h7-turq-dark); }
+.h7s-switch.is-on .h7s-switch-track::before { transform: translateX(24px); }
+.h7s-switch:active .h7s-switch-track::before { box-shadow: 0 0 0 #7e88d6; }
+
+
+/* --------------------------------------------------------------------------
  * Sizes. The script measures the box the page is drawn in (MOD UI's own page has no viewport meta tag, so media
  * queries cannot tell a phone from a desktop there) and says so with data-w (s < 700px, m < 1100px, l) and
  * data-h (s: short, m), and with .is-stacked on the matrix when a preset does not fit on one line
@@ -1223,13 +1444,13 @@
 
 /* A preset takes two lines (its name, then the outputs and the cycle switch) when the panel is not wide enough for one */
 .h7s-matrix.is-two-lines .h7s-row.h7s-head { display: none; }
-.h7s-matrix.is-two-lines .h7s-row { grid-template-columns: 48px minmax(0, 1fr); gap: 6px 8px; padding: 6px; }
+.h7s-matrix.is-two-lines .h7s-row { grid-template-columns: var(--h7s-head-w) minmax(0, 1fr); gap: 6px 8px; padding: 6px; }
 .h7s-matrix.is-two-lines .h7s-cells { grid-column: 1 / -1; }
 .h7s-matrix.is-two-lines .h7s-cell::before { display: block; font-size: 15px; }
 
 /* ... and three when the outputs would be too small: the name, the CV outputs (4 + 4) and the cycle switch */
 .h7s-matrix.is-stacked .h7s-row.h7s-head { display: none; }
-.h7s-matrix.is-stacked .h7s-row { grid-template-columns: 48px minmax(0, 1fr); gap: 6px 8px; padding: 6px; }
+.h7s-matrix.is-stacked .h7s-row { grid-template-columns: var(--h7s-head-w) minmax(0, 1fr); gap: 6px 8px; padding: 6px; }
 .h7s-matrix.is-stacked .h7s-rowpad { width: 48px; height: 48px; }
 .h7s-matrix.is-stacked .h7s-label { height: 48px; font-size: 18px; }
 .h7s-matrix.is-stacked .h7s-cells { grid-column: 1 / -1; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
@@ -1246,14 +1467,18 @@
 .h7s[data-h="s"] .h7s-screen { gap: 6px; }
 .h7s[data-h="s"] .h7s-panel { padding: 10px 12px; }
 .h7s[data-h="s"] .h7s-panel-head { margin-bottom: 8px; }
-.h7s[data-h="s"] .h7s-scenes .h7s-panel-head p { display: none; }
+.h7s[data-h="s"] .h7s-scenes .h7s-panel-head p,
+.h7s[data-h="s"] .h7s-midi-panel .h7s-panel-head p { display: none; }
+.h7s[data-h="s"] .h7s-midi { gap: 8px; }
+.h7s[data-h="s"] .h7s-midi-title { margin-bottom: 4px; }
+.h7s[data-h="s"] .h7s-field { min-height: 52px; padding-top: 4px; padding-bottom: 4px; }
 .h7s[data-h="s"] .h7s-step,
 .h7s[data-h="s"] .h7s-close { min-height: 44px; height: 44px; }
 .h7s[data-h="s"] .h7s-matrix { gap: 4px; }
-.h7s[data-h="s"] .h7s-matrix.is-one-line .h7s-row { padding: 3px; grid-template-columns: 44px minmax(104px, 1.1fr) minmax(0, 3.2fr); }
+.h7s[data-h="s"] .h7s-matrix.is-one-line .h7s-row { padding: 3px; grid-template-columns: var(--h7s-head-w) minmax(104px, 1.1fr) minmax(0, 3.2fr); }
 .h7s[data-h="s"] .h7s-matrix:not(.is-stacked) :is(.h7s-rowpad, .h7s-label, .h7s-cell) { height: 44px; }
 .h7s[data-h="s"] .h7s-matrix:not(.is-stacked) .h7s-rowpad { width: 44px; }
-.h7s[data-h="s"] .h7s-matrix.is-two-lines .h7s-row { grid-template-columns: 44px minmax(0, 1fr); padding: 4px; gap: 4px 6px; }
+.h7s[data-h="s"] .h7s-matrix.is-two-lines .h7s-row { grid-template-columns: var(--h7s-head-w) minmax(0, 1fr); padding: 4px; gap: 4px 6px; }
 .h7s[data-h="s"] .h7s-assign { gap: 4px; }
 .h7s[data-h="s"] .h7s-presets-panel .mod-presets > div.mod-enumerated-list { min-height: 64px; }
 

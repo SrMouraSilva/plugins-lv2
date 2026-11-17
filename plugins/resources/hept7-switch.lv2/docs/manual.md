@@ -8,7 +8,9 @@ parameters of your plugins and a single press can turn a whole scene on.
 
 It is the bigger sibling of Tetr4 Switch, and it has two things of its own:
 a **display** that shows the preset (and announces every change of it), and a
-**full-screen settings page** made for touch screens.
+**full-screen settings page** made for touch screens. Besides CV it has a
+**MIDI out**: each change of preset sends a MIDI control change per output
+(section 6).
 
 ![Hept7 Switch on the pedalboard](images/hept7-pedalboard.webp)
 
@@ -31,10 +33,10 @@ any drive plugin and any delay plugin in the chain.
 5. **Click the buttons 1 and 2** of the plugin. The drive and the delay turn on and off together, and the display
    announces the preset in its colour.
 6. **Put it under your feet.** Assign `Preset 1` and `Preset 2` to two device footswitches. Their LEDs light up in the
-   colour of the preset while it is active. On the settings page ([section 3](#the-settings-page)) the tiles of the
-   *Hardware* section do this in one tap.
+   colour of the preset while it is active. On the settings page ([section 3](#the-settings-page)) the small
+   button beside the number of each preset's row does this in one tap.
 
-    ![Step 6: the tiles Preset 1 and Preset 2 of the settings page open the assignment](images/step-assign-preset-buttons.webp)
+    ![Step 6: the small button beside the number of Preset 1 and Preset 2 opens the assignment](images/step-assign-preset-buttons.webp)
 
 > [!TIP] The one trick to learn
 > **Plan your outputs before your presets.** Each output is one "loop": a group of plugins that always switch on and off
@@ -50,6 +52,7 @@ any drive plugin and any delay plugin in the chain.
 | **Seven buttons** | Select the preset. The button of the active preset lights up in its colour. There are seven because the device footswitch LEDs have seven colours (red, yellow, green, cyan, blue, magenta, white): each preset has its own, here and on the device. A button with its number **crossed out** is a preset left out of the cycle of `Current preset` (section 4); the button still selects it. |
 | **Edit scenes** | Opens the settings page (section 3). The gear icon above the plugin opens it too. |
 | **Eight CV jacks** | `CV Output 1`–`8`, on the back plate at the right, in two columns (1–4 and 5–8). |
+| **MIDI out** (jack) | The ninth jack, under the second column. It sends a MIDI control change for each output when the preset changes (section 6). |
 
 ### The display announces every change of preset
 
@@ -70,9 +73,10 @@ screen and is made for touch: big cells, nothing smaller than a fingertip.
 
 ![The settings page](images/hept7-settings.webp)
 
-* **Scenes**: one row per preset. The round button on the left makes that
-  preset the active one; the field next to it is its name; then one cell per
-  CV output. A lit cell means that output is **on** while that preset is active.
+* **Scenes**: one row per preset. The numbered button on the left makes that
+  preset the active one, and the small button beside it assigns the preset to a
+  footswitch, a knob or another control of your device (it fills in once it is
+  assigned); the field next to them is its name; then one cell per CV output. A lit cell means that output is **on** while that preset is active.
   The row of the active preset is highlighted, and its lit cells are the CV
   signals actually leaving the plugin right now.
 * **Cycle**: the last cell of each row, set apart from the CV outputs. On (↻,
@@ -80,10 +84,13 @@ screen and is made for touch: big cells, nothing smaller than a fingertip.
   is assigned to a footswitch, to the B+C pair or to a knob; off (✕), they skip
   it. See section 4.
 * **Hardware**: tiles to assign a footswitch, a knob or a device screen page to
-  the plugin's controls (section 4), told apart by purpose: the *preset
-  buttons* (1 to 7), *Current preset* and the *screen pop-ups*. A tile shows a
-  check mark once it is assigned.
-* **Saved presets**: the factory presets (section 6) and your own presets.
+  the plugin's controls (section 4), told apart by purpose: *Current preset*
+  (the tile also says which preset is playing) and the *screen pop-ups*. A tile
+  shows a check mark once it is assigned. The MOD Duo has no widgets on its
+  screen, so there the pop-up tiles are disabled and say so.
+* **MIDI out**: the channel, whether to send only what changed, and the CC
+  number of each output (section 6).
+* **Saved presets**: the factory presets (section 7) and your own presets.
 
 The page never scrolls up and down. What does not fit the screen goes on
 another **page**, to the right: the arrows in the top bar (always there) and the
@@ -98,17 +105,17 @@ section gets a page of its own.
 
 ## 4. Switching presets with hardware
 
-Assign one of the plugin's controls (the *Hardware* tiles, or the usual
-assignment dialog) to the control you want to use:
+Assign one of the plugin's controls (the buttons and tiles of the settings
+page, or the usual assignment dialog) to the control you want to use:
 
 | Control | Use |
 |---|---|
 | `Preset 1`–`7` | One footswitch per preset. Turning one on turns the others off. |
 | `Current preset` | One control that goes through the presets: a footswitch (each press goes to the next preset), the B+C pair of footswitches (previous / next), or a knob. Also a CV or MIDI value. |
 
-On the settings page, tap the tile of the preset and choose the control in the dialog that opens:
+On the settings page, tap the small button beside the number of the preset and choose the control in the dialog that opens:
 
-![The tiles Preset 1 and Preset 2 of the settings page open the assignment](images/step-assign-preset-buttons.webp)
+![The small button beside the number of Preset 1 and Preset 2 opens the assignment](images/step-assign-preset-buttons.webp)
 
 ### Choosing which presets `Current preset` goes through
 
@@ -160,9 +167,61 @@ colour of each preset.
 
 > The pop-up needs a firmware with the HMI feature. Without it (older firmware, or
 > a MOD Duo) the plugin works the same, only without the pop-up and the LEDs: the
-> display of the plugin is your feedback.
+> display of the plugin is your feedback. On the MOD Duo the *Screen pop-ups* tiles
+> of the settings page are disabled, with a note that says why.
 
-## 6. Recipes
+## 6. MIDI out
+
+Besides its eight CV outputs, Hept7 Switch has a **MIDI out** jack (the ninth, under the second column of jacks). Each
+time the active preset changes, it sends one MIDI **control change** (CC) for every output: **127** when that output is
+on in the new preset and **0** when it is off. Use it to switch a MIDI-controlled pedal or a looper with the same scenes
+you set for the CV outputs.
+
+1. **Connect the MIDI out jack** to a MIDI input: the MIDI output of your device, a MIDI loopback port or a plugin that
+   takes MIDI.
+2. Open the settings page and go to the **MIDI out** panel.
+
+    ![The MIDI out panel: channel, changes only and the CC number of each output](images/step-midi.webp)
+
+3. Choose the **channel** (1 to 16) and the **CC number of each output**. They start at 20 to 27, numbers that have no
+   standard meaning in MIDI. Tap the field to type a number, or use the buttons on its sides.
+4. **Change presets** as usual. The receiving device gets, for example, CC 20 = 127 and CC 21 = 0 when a preset turns
+   output 1 on and output 2 off.
+
+#### MIDI channel
+
+VALUES
+: 1 to 16
+
+DEFAULT
+: 1
+
+#### CC for output 1 – 8
+
+VALUES
+: 0 to 127. One number for each CV output
+
+DEFAULT
+: 20 to 27 (output 1 is 20, output 8 is 27)
+
+#### MIDI changes only
+
+VALUES
+: Off / On
+
+DEFAULT
+: On
+
+USE
+: On: when the preset changes, only the outputs whose value differs from the last one sent are sent. Off: every output
+  is sent on every change of preset. The plugin counts every output as "off" (0) until it sends something, so with this on
+  the first change after the plugin is loaded sends only the outputs that are on.
+
+> [!NOTE] When MIDI is sent
+> Only when the preset changes. Loading a pedalboard sends nothing, and flipping a cell of the active preset changes the
+> CV outputs right away but sends no MIDI until the next change of preset.
+
+## 7. Recipes
 
 Each recipe shows the preset x output matrix as a grid: rows are presets and columns are CV outputs 1–8. A coloured
 square means the output is on (10 V) and a grey square means it is off (0 V). Each one is also a factory preset of the
@@ -213,7 +272,7 @@ Each preset adds one more layer to the previous one, so you move through the son
 assign: **Assigning the Hept7 Switch:** Out 1 → base layer · Out 2 → second layer · ... · Out 7 → seventh layer
 ```
 
-## 7. Tips
+## 8. Tips
 
 ### One output, many plugins
 
@@ -260,7 +319,7 @@ snapshot also recalls which preset is active, so each song can start on the righ
 Hept7 only stores which loops are on. Change your delay time or drive gain whenever you like, and every preset uses the
 new setting.
 
-## 8. Questions & answers
+## 9. Questions & answers
 
 ### I switch presets but nothing happens to my plugins.
 
@@ -292,8 +351,8 @@ preset; see the note in [section 4](#switching-presets-with-hardware).
 ### I set up the pop-up, but nothing appears.
 
 The pop-up only appears while the control you assigned to an **Assign to notify** parameter is visible on the device
-screen. Move it to the page you play from. On a MOD Duo there are no plugin pop-ups at all: use the display of the
-plugin.
+screen. Move it to the page you play from. On a MOD Duo there are no plugin pop-ups at all (its settings page shows
+those tiles disabled): use the display of the plugin.
 
 ### Is it stereo? Does it add latency?
 
@@ -301,9 +360,10 @@ Neither question applies: Hept7 Switch has no audio ports. It only sends eight s
 
 ### Can it send MIDI instead of CV?
 
-No. As a workaround, route a CV output into a plugin that turns CV into MIDI messages.
+Yes, in addition to CV. The **MIDI out** sends a control change for each output whenever the preset changes
+(see [MIDI out](#midi-out)). The MIDI output was first prototyped for Tetr4 Switch by a community member, stiv bennett.
 
-## 9. Port reference
+## 10. Port reference
 
 | Port | Type | Description |
 |---|---|---|
@@ -314,23 +374,28 @@ No. As a workaround, route a CV output into a plugin that turns CV into MIDI mes
 | `Preset N - Output M` | Control input (toggle) | Dip switch: is CV output M on while preset N is active? |
 | `Preset N - In the cycle` | Control input (toggle) | Is preset N one of the presets `Current preset` goes through? On by default. |
 | `Active preset` | Control output | The active preset (0 is preset 1), whatever selected it. Used by the interface of the plugin. |
+| `CC for output 1`–`8` | Control input (integer) | The MIDI control change number sent for each CV output (0–127). Starts at 20–27. |
+| `MIDI channel` | Control input (integer) | The channel of the control changes (1–16). |
+| `MIDI changes only` | Control input (toggle) | Send only the control changes whose value changed. On by default. |
+| `MIDI out` | MIDI output | The control changes, when the preset changes (section 6). |
 | Preset label 1–7 | Plugin property (patch) | The name of each preset. Edited on the display or on the settings page. |
 
 Names use letters, digits, spaces and `+ - : _ .`; anything else is replaced with `_`.
 They are saved with the pedalboard and with the plugin presets.
 
-## 10. Specifications
+## 11. Specifications
 
 | Field | Value |
 |---|---|
 | Plugin name | Hept7 switch |
+| Version | 1.0.21 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/hept7-switch` |
 | Audio I/O | None |
 | CV outputs | 8 × CV, 0 V (off) / 10 V (on) |
-| MIDI | None |
+| MIDI | MIDI out: a control change (channel 1–16) per output when the preset changes |
 | Presets × outputs | 7 × 8 (56 toggle switches) |
-| Assignable parameters | Preset 1–7 (toggle) · Current preset (list) · Assign to notify 1–4 (toggle) · 56 dip switches · 7 Cycle switches |
+| Assignable parameters | Preset 1–7 (toggle) · Current preset (list) · Assign to notify 1–4 (toggle) · 56 dip switches · 7 Cycle switches · MIDI channel, CC 1–8 and changes only |
 | Device feedback | Footswitch LED colour + label, pop-up notifications (MOD HMI) · display on the plugin |
 | Platforms | MOD Dwarf · MOD Duo X · MOD Duo |
 | Developer | Paulo Mateus (SrMouraSilva) |

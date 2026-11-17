@@ -125,8 +125,25 @@ export const scenarios = {
       await ctx.sleep(500);
       await ctx.type('.h7s-label[data-preset="3"]', 'Crunch');
       await ctx.tap('.h7s-cell-cycle[data-preset="2"]');
-      await ctx.sleep(700);
-      await visitPages(ctx, { next: '.h7s-next', dot: '.h7s-dot', tile: true, tileSymbol: (page) => ['', '', '', 'Preset_selector_1', 'Preset_combobox', 'Assign_to_notify_1'][page] || '' });
+      await ctx.sleep(500);
+      // the button beside the number of the row assigns the preset to a control of the device (marked as MOD UI does once its dialog is confirmed)
+      await ctx.tap('[mod-port-symbol="Preset_selector_3"]', 120);
+      await ctx.eval(`document.querySelector('[mod-port-symbol="Preset_selector_3"]').classList.add('addressed')`);
+      await ctx.sleep(400);
+      // pages: scenes, Current preset, screen pop-ups, MIDI out, saved presets
+      await visitPages(ctx, {
+        next: '.h7s-next', dot: '.h7s-dot', tile: true,
+        tileSymbol: (page) => ['', 'Preset_combobox', 'Assign_to_notify_1'][page] || '',
+        onPage: async (page) => {
+          if (page !== 3) return;
+          await ctx.tap('.h7s-num[data-symbol="MIDI_channel"] [data-dir="1"]', 120);
+          await ctx.sleep(250);
+          await ctx.tap('.h7s-num[data-symbol="MIDI_CC_1"] [data-dir="1"]', 120);
+          await ctx.sleep(250);
+          await ctx.tap('.h7s-switch', 120);
+          await ctx.sleep(500);
+        },
+      });
     }),
   },
 
