@@ -177,15 +177,17 @@ A step has **three levels**, and a tap on it goes to the next one, round and rou
 
 Your pattern is made of controls of the plugin, so it is saved with the **pedalboard**, with your own **saved presets** and with
 **snapshots**. The factory presets do not touch it. The settings have more than one page: use the arrows of the top bar (or swipe
-sideways) to go to the assignments (**On / off** and **Controls**) and to the **Saved presets**.
+sideways) to go to the **Saved presets**. The settings page has everything the pedal has, and next to each control, a small button (the faders icon) that assigns it to a device control.
 
 ![Going through the settings page: the two rows of steps, the length, the steps per beat and every page](images/half-mouco-settings.webp)
 
 ## 6. Playing it live
 
 Every control of the plugin can be assigned to a device control (a footswitch, a knob, an expression pedal), the way you assign any
-parameter: open the settings of the plugin (the gear icon, or **Edit**) and click the tile of the control to assign. The bypass has a
-panel of its own, **On / off**, and the rest is in **Controls**.
+parameter: open the settings of the plugin (the gear icon, or **Edit**) and click the small button (the faders icon) next to the control to
+assign: **Mono** and **On / off** in the top bar, **Pattern** or **Ending** (the one that matches what plays) beside the name, **Mode** beside
+*Patterns* and *Endings*, and **Tempo**, **Speed**, **Length**, **Depth** and **Edge** beside their names. The button fills in once the
+control is assigned.
 
 | Control | Good to assign it to |
 |---|---|
@@ -285,4 +287,4 @@ Yes, with the pedalboard, your saved presets and the snapshots. It is not in the
 Kill Switch is mono, with one row of steps. Half Mouco is stereo, with a row for each side, and it has the endings. They are separate plugins and can
 share a pedalboard.
 
-*This manual is for version 1.0.3 of Half Mouco.*
+*This manual is for version 1.0.5 of Half Mouco.*

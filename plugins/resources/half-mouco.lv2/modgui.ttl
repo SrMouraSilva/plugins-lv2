@@ -18,5 +18,5 @@
         modgui:label "Half Mouco" ;
         modgui:model "boxy-small" ;
         modgui:panel "1-footswitch" ;
-        modgui:color "#0f3d4a" ;
+        modgui:color "#a30d2b" ;
     ] .

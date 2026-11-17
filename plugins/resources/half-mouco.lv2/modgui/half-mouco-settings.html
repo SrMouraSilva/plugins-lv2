@@ -14,8 +14,16 @@
 
         <!-- What the pedal has in its face and must be at hand on every page: on/off and Mono (the left input feeds both sides) -->
         <div class="hms-switches">
-          <button type="button" class="hms-button hms-mono" aria-pressed="false" title="Mono input: the left input feeds both sides">Mono</button>
-          <button type="button" class="hms-button hms-power" aria-pressed="false" title="Turn the effect on or off (the footswitch of the pedal)">Bypassed</button>
+          <!-- Each switch is joined to the button that assigns it to a footswitch of the device, so it is clear what that button is for -->
+          <div class="hms-pill hms-monopill" role="group" aria-label="Mono">
+            <button type="button" class="hms-button hms-mono" aria-pressed="false" title="Mono input: the left input feeds both sides">Mono</button>
+            <button type="button" class="mod-address hms-address hms-address-small" mod-role="input-control-address" mod-port-symbol="mono" title="Assign Mono to a hardware control (a footswitch)" aria-label="Assign Mono to a hardware control (a footswitch)"><span class="hms-assign-state" aria-hidden="true"></span></button>
+          </div>
+          <div class="hms-pill hms-onoff" role="group" aria-label="On / off">
+            <button type="button" class="hms-button hms-power" aria-pressed="false" title="Turn the effect on or off (the footswitch of the pedal)">Bypassed</button>
+            <!-- Choose Momentary in its dialog to chop only while it is held -->
+            <button type="button" class="mod-address hms-address hms-address-small" mod-role="bypass-address" title="Assign On/Off to a hardware control (a footswitch)" aria-label="Assign On/Off to a hardware control (a footswitch)"><span class="hms-assign-state" aria-hidden="true"></span></button>
+          </div>
         </div>
 
         <!-- The page being shown: always visible, whatever the input device (a swipe also changes it) -->
@@ -41,13 +49,21 @@
         <!-- What is playing: the choice of pattern or ending, and what each side does with it, as big as the page allows -->
         <section class="hms-panel hms-play-panel" data-panel="play">
           <div class="hms-panel-head hms-play-head">
-            <div>
-              <span class="hms-eyebrow hms-play-kind">Pattern</span>
-              <h2 class="hms-play-name">Ping-pong 8ths</h2>
+            <div class="hms-play-title">
+              <div>
+                <span class="hms-eyebrow hms-play-kind">Pattern</span>
+                <h2 class="hms-play-name">Ping-pong 8ths</h2>
+              </div>
+              <!-- The one that matches what plays: Pattern for the patterns, Ending for the endings -->
+              <button type="button" class="mod-address hms-address hms-address-small hms-assign-pattern" mod-role="input-control-address" mod-port-symbol="pattern" title="Assign Pattern to a hardware control (a knob or a footswitch)" aria-label="Assign Pattern to a hardware control (a knob or a footswitch)"><span class="hms-assign-state" aria-hidden="true"></span></button>
+              <button type="button" class="mod-address hms-address hms-address-small hms-assign-ending" mod-role="input-control-address" mod-port-symbol="ending" title="Assign Ending to a hardware control (a knob or a footswitch)" aria-label="Assign Ending to a hardware control (a knob or a footswitch)"><span class="hms-assign-state" aria-hidden="true"></span></button>
             </div>
-            <div class="hms-modes" role="radiogroup" aria-label="What plays">
-              <button type="button" class="hms-mode" role="radio" aria-checked="true" data-mode="0">Patterns</button>
-              <button type="button" class="hms-mode" role="radio" aria-checked="false" data-mode="1">Endings</button>
+            <div class="hms-pill hms-modepill">
+              <div class="hms-modes" role="radiogroup" aria-label="What plays">
+                <button type="button" class="hms-mode" role="radio" aria-checked="true" data-mode="0">Patterns</button>
+                <button type="button" class="hms-mode" role="radio" aria-checked="false" data-mode="1">Endings</button>
+              </div>
+              <button type="button" class="mod-address hms-address hms-address-small" mod-role="input-control-address" mod-port-symbol="mode" title="Assign Mode to a hardware control (a footswitch that jumps between patterns and endings)" aria-label="Assign Mode to a hardware control (a footswitch that jumps between patterns and endings)"><span class="hms-assign-state" aria-hidden="true"></span></button>
             </div>
           </div>
           <p class="hms-play-hint"></p>
@@ -69,7 +85,8 @@
           </div>
           <div class="hms-sound">
             <div class="hms-knob hms-tempo">
-              <div class="hms-knob-head"><span>Tempo</span></div>
+              <div class="hms-knob-head"><span>Tempo</span>
+                <button type="button" class="mod-address hms-address hms-address-small" mod-role="input-control-address" mod-port-symbol="bpm" title="Assign Tempo to a hardware control (a knob or an expression pedal)" aria-label="Assign Tempo to a hardware control (a knob or an expression pedal)"><span class="hms-assign-state" aria-hidden="true"></span></button></div>
               <div class="hms-stepper hms-stepper-big">
                 <button type="button" class="hms-button hms-bpm-down" aria-label="Slower" title="Slower">&minus;</button>
                 <output class="hms-bpm" aria-label="Tempo in beats per minute"><b>120</b><small>BPM</small></output>
@@ -80,7 +97,8 @@
 
             <!-- Patterns: how fast they run. Endings: how long they last -->
             <div class="hms-knob hms-speed">
-              <div class="hms-knob-head"><span>Speed</span><small>how fast the pattern runs</small></div>
+              <div class="hms-knob-head"><span>Speed</span><small>how fast the pattern runs</small>
+                <button type="button" class="mod-address hms-address hms-address-small" mod-role="input-control-address" mod-port-symbol="speed" title="Assign Speed to a hardware control (a footswitch)" aria-label="Assign Speed to a hardware control (a footswitch)"><span class="hms-assign-state" aria-hidden="true"></span></button></div>
               <div class="hms-segments" role="radiogroup" aria-label="Speed of the pattern">
                 <button type="button" class="hms-segment" role="radio" aria-checked="false" data-speed="0">&frac12;x</button>
                 <button type="button" class="hms-segment" role="radio" aria-checked="true" data-speed="1">1x</button>
@@ -89,7 +107,8 @@
               </div>
             </div>
             <div class="hms-knob hms-length-knob">
-              <div class="hms-knob-head"><span>Length</span><small>how long the ending lasts</small></div>
+              <div class="hms-knob-head"><span>Length</span><small>how long the ending lasts</small>
+              <button type="button" class="mod-address hms-address hms-address-small" mod-role="input-control-address" mod-port-symbol="length" title="Assign Length to a hardware control (a knob)" aria-label="Assign Length to a hardware control (a knob)"><span class="hms-assign-state" aria-hidden="true"></span></button></div>
               <div class="hms-stepper hms-stepper-big">
                 <button type="button" class="hms-button hms-ending-length-down" aria-label="Shorter" title="Shorter">&minus;</button>
                 <output class="hms-ending-length" aria-label="Length of the ending in beats"><b>8</b><small>beats</small></output>
@@ -98,12 +117,14 @@
             </div>
 
             <div class="hms-knob hms-depth">
-              <div class="hms-knob-head"><span>Depth</span><output class="hms-depth-value">100%</output></div>
+              <div class="hms-knob-head"><span>Depth</span><output class="hms-depth-value">100%</output>
+                <button type="button" class="mod-address hms-address hms-address-small" mod-role="input-control-address" mod-port-symbol="depth" title="Assign Depth to a hardware control (a knob or an expression pedal)" aria-label="Assign Depth to a hardware control (a knob or an expression pedal)"><span class="hms-assign-state" aria-hidden="true"></span></button></div>
               <input type="range" class="hms-slider hms-depth-input" min="0" max="100" step="1" value="100" aria-label="Depth: how much of the signal a cut removes" />
               <div class="hms-ends"><small>a cut barely dips</small><small>a cut is silence</small></div>
             </div>
             <div class="hms-knob hms-edge">
-              <div class="hms-knob-head"><span>Edge</span><output class="hms-edge-value">1.5 ms</output></div>
+              <div class="hms-knob-head"><span>Edge</span><output class="hms-edge-value">1.5 ms</output>
+                <button type="button" class="mod-address hms-address hms-address-small" mod-role="input-control-address" mod-port-symbol="edge" title="Assign Edge to a hardware control (a knob)" aria-label="Assign Edge to a hardware control (a knob)"><span class="hms-assign-state" aria-hidden="true"></span></button></div>
               <input type="range" class="hms-slider hms-edge-input" min="0" max="1000" step="1" value="511" aria-label="Edge: how long a cut takes to open and close" />
               <div class="hms-ends"><small>hard, percussive chop</small><small>soft swell</small></div>
             </div>
@@ -143,86 +164,6 @@
               <button type="button" class="hms-button hms-use" aria-pressed="false">Play this pattern</button>
             </div>
           </div>
-        </section>
-
-        <section class="hms-panel hms-assign-panel hms-hw-bypass" data-panel="hardware-bypass">
-          <div class="hms-panel-head">
-            <span class="hms-eyebrow">Hardware assignment</span>
-            <h2>On / off<span class="hms-range"></span></h2>
-            <p>Turn the effect on and off with a footswitch. Choose <b>Momentary</b> in the dialog to chop only while you hold it, as with the switch on a guitar.</p>
-          </div>
-          <ul class="hms-assign">
-            <li>
-              <button type="button" class="mod-address hms-address" mod-role="bypass-address" title="Assign Bypass to a hardware control">
-                <span class="hms-assign-name"><span class="hms-assign-title">Bypass</span><small>footswitch</small></span>
-                <span class="hms-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-          </ul>
-        </section>
-
-        <section class="hms-panel hms-assign-panel hms-hardware" data-panel="hardware-controls">
-          <div class="hms-panel-head">
-            <span class="hms-eyebrow">Hardware assignment</span>
-            <h2>Controls<span class="hms-range"></span></h2>
-            <p>Play it from your device. Link the mode to a footswitch to jump between patterns and endings, and the rest to knobs, an expression pedal or footswitches.</p>
-          </div>
-          <ul class="hms-assign">
-            <li>
-              <button type="button" class="mod-address hms-address" mod-role="input-control-address" mod-port-symbol="mode" title="Assign Mode to a hardware control">
-                <span class="hms-assign-name"><span class="hms-assign-title">Mode</span><small>footswitch: patterns or endings</small></span>
-                <span class="hms-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address hms-address" mod-role="input-control-address" mod-port-symbol="pattern" title="Assign Pattern to a hardware control">
-                <span class="hms-assign-name"><span class="hms-assign-title">Pattern</span><small>knob or footswitch</small></span>
-                <span class="hms-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address hms-address" mod-role="input-control-address" mod-port-symbol="ending" title="Assign Ending to a hardware control">
-                <span class="hms-assign-name"><span class="hms-assign-title">Ending</span><small>knob or footswitch</small></span>
-                <span class="hms-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address hms-address" mod-role="input-control-address" mod-port-symbol="bpm" title="Assign Tempo to a hardware control">
-                <span class="hms-assign-name"><span class="hms-assign-title">Tempo</span><small>knob or expression pedal</small></span>
-                <span class="hms-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address hms-address" mod-role="input-control-address" mod-port-symbol="speed" title="Assign Speed to a hardware control">
-                <span class="hms-assign-name"><span class="hms-assign-title">Speed</span><small>footswitch</small></span>
-                <span class="hms-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address hms-address" mod-role="input-control-address" mod-port-symbol="length" title="Assign Length to a hardware control">
-                <span class="hms-assign-name"><span class="hms-assign-title">Length</span><small>knob</small></span>
-                <span class="hms-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address hms-address" mod-role="input-control-address" mod-port-symbol="depth" title="Assign Depth to a hardware control">
-                <span class="hms-assign-name"><span class="hms-assign-title">Depth</span><small>knob or expression pedal</small></span>
-                <span class="hms-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address hms-address" mod-role="input-control-address" mod-port-symbol="edge" title="Assign Edge to a hardware control">
-                <span class="hms-assign-name"><span class="hms-assign-title">Edge</span><small>knob</small></span>
-                <span class="hms-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address hms-address" mod-role="input-control-address" mod-port-symbol="mono" title="Assign Mono to a hardware control">
-                <span class="hms-assign-name"><span class="hms-assign-title">Mono</span><small>footswitch</small></span>
-                <span class="hms-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-          </ul>
         </section>
 
         <section class="hms-panel hms-presets-panel" data-panel="presets">

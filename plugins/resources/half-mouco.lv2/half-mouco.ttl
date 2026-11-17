@@ -53,7 +53,7 @@ plug:group_custom
     # Raise the micro version whenever the modgui changes (MOD UI caches it for a year, keyed by this version)
     lv2:majorVersion 1 ;
     lv2:minorVersion 0 ;
-    lv2:microVersion 3 ;
+    lv2:microVersion 5 ;
 
     rdfs:comment """
 Half Mouco is the stereo sibling of Kill Switch: a rhythmic signal-cut effect in which the left and the right side have a row of steps each, so the sound changes with the side (a ping-pong, one ear chopped while the other is not). Besides the looping patterns (nine to choose from, and one you write yourself, with three levels per step) it has endings: effects for the end of a song, such as a bouncing ball or a helicopter that lands, that play once and finish in silence.

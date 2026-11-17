@@ -9,12 +9,12 @@
     "Your own pattern"
   ],
   "edition": "User manual · November 2026 edition",
-  "version": "v1.0.3",
+  "version": "v1.0.5",
   "hero": "../modgui/screenshot.png",
-  "brand": "#16282a",
-  "brand2": "#0a1315",
-  "accent": "#17717d",
-  "accentDark": "#7fe3d3",
+  "brand": "#272a31",
+  "brand2": "#0d0e11",
+  "accent": "#b30f2f",
+  "accentDark": "#ff7a8c",
   "colors": [
     "#3ec9ff",
     "#ffb347"
