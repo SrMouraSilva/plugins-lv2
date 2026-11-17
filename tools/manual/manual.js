@@ -27,7 +27,7 @@
   var box = document.querySelector('.lightbox');
   var big = box.querySelector('img');
   document.addEventListener('click', function (event) {
-    var image = event.target.closest('figure img, .sheet p > img');
+    var image = event.target.closest('figure img, .sheet p > img, td img');
     if (image) { big.src = image.currentSrc || image.src; box.hidden = false; return; }
     if (!box.hidden) { box.hidden = true; }
   });
