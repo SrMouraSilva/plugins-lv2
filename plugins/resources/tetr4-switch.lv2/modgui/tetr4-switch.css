@@ -86,13 +86,20 @@
 
 /* The sockets start at the outer edge of the 2px ring of the body, not under it: they are only 6px wide */
 .tetr4-switch-base.mod-pedal .mod-pedal-output {
-  top: 0px;
+  top: 10px;
   right: -89px;
+}
+
+/* Five jacks (the four CV outputs and the MIDI out) one under the other. MOD UI leaves 13px between jacks and a jack
+   is 56px high; a socket is shorter than that, so they are drawn 4px closer than the boxes (52px apart, 264px from the
+   top of the first to the bottom of the last) and the body is tall enough for the flange of the MIDI one */
+.tetr4-switch-base.mod-pedal .mod-pedal-output .mod-output {
+  margin-bottom: -4px;
 }
 
 .tetr4-switch {
   --t4-width: 600px;
-  --t4-height: 268px;
+  --t4-height: 296px;   /* room for five jacks at the side (four CV outputs and the MIDI out) */
 
   box-sizing: border-box;
   position: relative;
@@ -393,6 +400,7 @@
 
 .t4s h1,
 .t4s h2,
+.t4s h3,
 .t4s p {
   margin: 0;
   padding: 0;
@@ -674,8 +682,8 @@
 .t4s-card {
   --c: var(--t4-c1);
   display: grid;
-  grid-template-columns: 48px minmax(0, 1fr);
-  grid-template-areas: "pad label" "dips dips";
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "head label" "dips dips";
   align-content: start;
   gap: 8px;
   padding: 8px;
@@ -691,8 +699,17 @@
   box-shadow: inset 0 0 0 2px var(--c);
 }
 
+.t4s-card-head {
+  grid-area: head;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.t4s-card-assign { flex: 0 0 auto; display: block; }
+
 .t4s-pad {
-  grid-area: pad;
+  flex: 0 0 auto;
   position: relative;
   width: 48px;
   height: 48px;
@@ -806,7 +823,7 @@
 .t4s-grid.is-row { --t4s-trk: 64px; }
 .t4s-grid.is-row .t4s-card {
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
-  grid-template-areas: "pad dips" "label dips";
+  grid-template-areas: "head dips" "label dips";
   align-items: start;
 }
 .t4s-grid.is-row .t4s-dips { align-self: stretch; }
@@ -844,6 +861,27 @@
 
 .t4s .mod-address.t4s-address:hover { background-color: rgba(255, 255, 255, 0.1); }
 
+/* Only the icon, beside the control it assigns (as in Gossiper): 44px, with the disc that says whether it is addressed */
+.t4s .mod-address.t4s-address.t4s-address-small {
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  min-height: 48px;
+  padding: 0;
+  justify-content: center;
+}
+.t4s[data-h="s"] .mod-address.t4s-address.t4s-address-small { width: 44px; min-width: 44px; height: 44px; min-height: 44px; }
+
+.t4s .mod-address.t4s-address:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.t4s .mod-address.t4s-address:disabled:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+/* A panel the device cannot use: its note takes the place of the description */
+.t4s .t4s-unsupported-note { color: var(--t4-accent); font-weight: 600; }
+.t4s-panel.is-unsupported .t4s-panel-head p:not(.t4s-unsupported-note) { display: none; }
+
 .t4s-assign-name {
   display: flex;
   flex-direction: column;
@@ -852,7 +890,6 @@
   font-weight: 700;
 }
 
-.t4s-assign-title,
 .t4s-assign-name small {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -865,20 +902,21 @@
   color: var(--t4-muted);
 }
 
-/* The tiles of the preset buttons carry the colour of their preset */
-.t4s-assign-title[data-preset]::before {
-  content: "";
-  display: inline-block;
+/* Current preset: the preset that is playing, in its colour. Plain text, not a control (the tile around it is) */
+.t4s-playing {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.t4s-playing-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.t4s-playing-dot {
+  flex: 0 0 auto;
   width: 10px;
   height: 10px;
-  margin-right: 7px;
   border-radius: 50%;
-  background: var(--dot);
+  background: var(--c-active, var(--t4-c1));
 }
-.t4s-assign-title[data-preset="1"] { --dot: var(--t4-c1); }
-.t4s-assign-title[data-preset="2"] { --dot: var(--t4-c2); }
-.t4s-assign-title[data-preset="3"] { --dot: var(--t4-c3); }
-.t4s-assign-title[data-preset="4"] { --dot: var(--t4-c4); }
 
 /* The state of the assignment button: a dark disc that holds the icon (below), filled when the control is addressed */
 .t4s-assign-state {
@@ -1061,6 +1099,148 @@
 
 
 /* --------------------------------------------------------------------------
+ * MIDI out: the channel, "changes only" and the CC number of each CV output. They are settings (controls), so they are
+ * drawn as such: raised buttons around a sunken field. The script sets the number of columns, as for the hardware tiles
+ * -------------------------------------------------------------------------- */
+.t4s-midi {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* A group of fields under a title. The title only names the group: plain small capitals, nothing that looks pressable */
+.t4s .t4s-midi-title {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--t4-muted);
+  text-align: left;
+}
+
+.t4s-midi.is-side {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  align-items: start;
+  gap: 14px;
+}
+
+.t4s-midi-items {
+  display: grid;
+  grid-template-columns: repeat(var(--t4s-cols, 2), minmax(0, 1fr));
+  gap: 6px;
+}
+
+.t4s-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  min-height: 60px;
+  padding: 6px 8px 6px 14px;
+  border-radius: 14px;
+  text-align: left;
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px var(--t4-line);
+}
+
+.t4s-field-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.t4s-field-name b { font-size: 15px; font-weight: 700; }
+.t4s-field-name small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--t4-muted);
+}
+
+.t4s-num {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.t4s-num-step {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--t4-text);
+  background: var(--t4-ink-3);
+  box-shadow: 0 3px 0 var(--t4-ink);
+  transition: transform 0.08s, box-shadow 0.08s, background-color 0.15s, opacity 0.15s;
+}
+.t4s-num-step:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--t4-ink); }
+.t4s-num-step:disabled { opacity: 0.35; cursor: default; transform: none; box-shadow: 0 3px 0 var(--t4-ink); }
+
+.t4s-num-value {
+  width: 56px;
+  height: 44px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--t4-text);
+  background: var(--t4-ink);
+  box-shadow: inset 0 0 0 1px var(--t4-line);
+  -webkit-user-select: text;
+  user-select: text;
+}
+.t4s-num-value:focus {
+  outline: none;
+  background: #000;
+  box-shadow: inset 0 0 0 2px var(--t4-accent);
+}
+
+/* "Changes only": the whole tile is the switch */
+.t4s-switch {
+  width: 100%;
+  cursor: pointer;
+  color: inherit;
+}
+.t4s-switch-track {
+  position: relative;
+  flex: 0 0 auto;
+  width: 56px;
+  height: 32px;
+  border-radius: 16px;
+  background: var(--t4-ink);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 0 0 1px var(--t4-line);
+  transition: background-color 0.15s;
+}
+.t4s-switch-track::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background: #e9ecff;
+  box-shadow: 0 2px 0 #7e88d6;
+  transition: transform 0.15s;
+}
+.t4s-switch.is-on .t4s-switch-track { background: var(--t4-stored); }
+.t4s-switch.is-on .t4s-switch-track::before { transform: translateX(24px); }
+.t4s-switch:active .t4s-switch-track::before { box-shadow: 0 0 0 #7e88d6; }
+
+
+/* --------------------------------------------------------------------------
  * Sizes. The script measures the box the page is drawn in (MOD UI's own page has no viewport meta tag, so media
  * queries cannot tell a phone from a desktop there) and says so with data-w (s < 700px, m < 1100px, l) and
  * data-h (s: short, m), and with .is-row on the scenes when a card is wide enough for its name to sit beside the switches
@@ -1087,13 +1267,14 @@
   min-width: 0;
   min-height: 0;
 }
-.t4s-row > .t4s-hw-presets,
-.t4s-page > .t4s-hw-presets { flex-grow: 3; }
 .t4s-row > .t4s-hw-current,
 .t4s-row > .t4s-hw-notify,
 .t4s-page > .t4s-hw-current,
 .t4s-page > .t4s-hw-notify { flex-grow: 2; }
 .t4s-row > .t4s-presets-panel { flex: 3 1 0; align-self: stretch; }
+.t4s-row > .t4s-stack { flex: 2 1 0; align-self: flex-start; }
+.t4s-row > .t4s-midi-panel,
+.t4s-page > .t4s-midi-panel { flex-grow: 3; }
 
 /* Narrow: the logo, the preset playing and the close button, and under them the page controls across the width */
 .t4s[data-w="s"] { font-size: 15px; }
@@ -1114,12 +1295,16 @@
 .t4s[data-h="s"] .t4s-screen { gap: 6px; }
 .t4s[data-h="s"] .t4s-panel { padding: 10px 12px; }
 .t4s[data-h="s"] .t4s-panel-head { margin-bottom: 8px; }
-.t4s[data-h="s"] .t4s-scenes .t4s-panel-head p { display: none; }
+.t4s[data-h="s"] .t4s-scenes .t4s-panel-head p,
+.t4s[data-h="s"] .t4s-midi-panel .t4s-panel-head p { display: none; }
+.t4s[data-h="s"] .t4s-midi { gap: 8px; }
+.t4s[data-h="s"] .t4s-midi-title { margin-bottom: 4px; }
+.t4s[data-h="s"] .t4s-field { min-height: 52px; padding-top: 4px; padding-bottom: 4px; }
 .t4s[data-h="s"] .t4s-step,
 .t4s[data-h="s"] .t4s-close { min-height: 44px; height: 44px; }
 .t4s[data-h="s"] .t4s-grid { gap: 6px; --t4s-trk: 56px; }
 .t4s[data-h="s"] .t4s-grid.is-row { --t4s-trk: 52px; }
-.t4s[data-h="s"] .t4s-card { gap: 6px; padding: 6px; grid-template-columns: 44px minmax(0, 1fr); }
+.t4s[data-h="s"] .t4s-card { gap: 6px; padding: 6px; }
 .t4s[data-h="s"] .t4s-grid.is-row .t4s-card { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr); }
 .t4s[data-h="s"] .t4s-pad { width: 44px; height: 44px; }
 .t4s[data-h="s"] .t4s-label { height: 44px; }

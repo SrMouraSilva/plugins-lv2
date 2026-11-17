@@ -35,55 +35,39 @@
         <section class="t4s-panel t4s-scenes" data-panel="scenes">
           <div class="t4s-panel-head">
             <h2>Scenes<span class="t4s-range"></span></h2>
-            <p>Each card is a preset. Flip a switch up to turn that CV output on while the preset is active; tap the round button to play the preset.</p>
+            <p>Each card is a preset. Flip a switch up to turn that CV output on while the preset is active; tap the round button to play the preset, and the one beside it to assign the preset to a control of your device, such as a footswitch.</p>
           </div>
           <div class="t4s-grid" role="group" aria-label="Which CV outputs are on in each preset"></div>
         </section>
 
-        <section class="t4s-panel t4s-assign-panel t4s-hw-presets" data-panel="hardware-presets">
-          <div class="t4s-panel-head">
-            <span class="t4s-eyebrow">Hardware assignment</span>
-            <h2>Preset buttons<span class="t4s-range"></span></h2>
-            <p>Jump straight to a preset. Link one control of your device, such as a footswitch, to each preset: pressing it plays that preset.</p>
-          </div>
-          <ul class="t4s-assign">
-            <li>
-              <button type="button" class="mod-address t4s-address" mod-role="input-control-address" mod-port-symbol="Preset_selector_1" title="Assign Preset 1 to a hardware control">
-                <span class="t4s-assign-name"><span class="t4s-assign-title" data-preset="1">Preset 1</span><small>#1 &middot; footswitch</small></span>
-                <span class="t4s-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address t4s-address" mod-role="input-control-address" mod-port-symbol="Preset_selector_2" title="Assign Preset 2 to a hardware control">
-                <span class="t4s-assign-name"><span class="t4s-assign-title" data-preset="2">Preset 2</span><small>#2 &middot; footswitch</small></span>
-                <span class="t4s-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address t4s-address" mod-role="input-control-address" mod-port-symbol="Preset_selector_3" title="Assign Preset 3 to a hardware control">
-                <span class="t4s-assign-name"><span class="t4s-assign-title" data-preset="3">Preset 3</span><small>#3 &middot; footswitch</small></span>
-                <span class="t4s-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address t4s-address" mod-role="input-control-address" mod-port-symbol="Preset_selector_4" title="Assign Preset 4 to a hardware control">
-                <span class="t4s-assign-name"><span class="t4s-assign-title" data-preset="4">Preset 4</span><small>#4 &middot; footswitch</small></span>
-                <span class="t4s-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-          </ul>
-        </section>
+        <!-- The buttons that assign each preset to a hardware control (a footswitch of the device). The script moves each one
+             into the card of its preset, beside the button that plays it: MOD UI wires the buttons it finds here, and a
+             moved button keeps that -->
+        <div class="t4s-parking">
+          <button type="button" class="mod-address t4s-address t4s-address-small" mod-role="input-control-address" mod-port-symbol="Preset_selector_1" title="Assign preset 1 to a hardware control" aria-label="Assign preset 1 to a hardware control">
+            <span class="t4s-assign-state" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="mod-address t4s-address t4s-address-small" mod-role="input-control-address" mod-port-symbol="Preset_selector_2" title="Assign preset 2 to a hardware control" aria-label="Assign preset 2 to a hardware control">
+            <span class="t4s-assign-state" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="mod-address t4s-address t4s-address-small" mod-role="input-control-address" mod-port-symbol="Preset_selector_3" title="Assign preset 3 to a hardware control" aria-label="Assign preset 3 to a hardware control">
+            <span class="t4s-assign-state" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="mod-address t4s-address t4s-address-small" mod-role="input-control-address" mod-port-symbol="Preset_selector_4" title="Assign preset 4 to a hardware control" aria-label="Assign preset 4 to a hardware control">
+            <span class="t4s-assign-state" aria-hidden="true"></span>
+          </button>
+        </div>
 
         <section class="t4s-panel t4s-assign-panel t4s-hw-current" data-panel="hardware-current">
           <div class="t4s-panel-head">
             <span class="t4s-eyebrow">Hardware assignment</span>
             <h2>Current preset<span class="t4s-range"></span></h2>
-            <p>Choose the preset with a single control: a knob, or a footswitch that steps through the presets.</p>
+            <p>Choose the preset with a single control: a knob, or a footswitch that steps through the presets. The tile shows the preset that is playing.</p>
           </div>
           <ul class="t4s-assign">
             <li>
               <button type="button" class="mod-address t4s-address" mod-role="input-control-address" mod-port-symbol="Preset_combobox" title="Assign Current preset to a hardware control">
-                <span class="t4s-assign-name">Current preset<small>knob</small></span>
+                <span class="t4s-assign-name">Current preset<small class="t4s-playing"><span class="t4s-playing-dot" aria-hidden="true"></span><span class="t4s-playing-text">Preset 1</span></small></span>
                 <span class="t4s-assign-state" aria-hidden="true"></span>
               </button>
             </li>
@@ -95,6 +79,8 @@
             <span class="t4s-eyebrow">Hardware assignment</span>
             <h2>Screen pop-ups<span class="t4s-range"></span></h2>
             <p>Show an alert with the preset name on the device screen whenever it changes. Link each one to a page of the device: it only appears on pages that have one.</p>
+            <!-- Shown by the script on a device without widgets on its screen (the MOD Duo): the tiles below are then disabled -->
+            <p class="t4s-unsupported-note" hidden>The MOD Duo has no widgets on its screen, so these pop-ups are not available on it.</p>
           </div>
           <ul class="t4s-assign">
             <li>
@@ -122,6 +108,25 @@
               </button>
             </li>
           </ul>
+        </section>
+
+        <section class="t4s-panel t4s-midi-panel" data-panel="midi">
+          <div class="t4s-panel-head">
+            <span class="t4s-eyebrow">MIDI out</span>
+            <h2>Control changes</h2>
+            <p>When the preset changes, send one MIDI control change for each CV output: 127 if the output is on in that preset, 0 if it is off. Connect the MIDI out jack of the plugin to your MIDI gear.</p>
+          </div>
+          <div class="t4s-midi">
+            <!-- The fields are built by the script. How it sends, then the CC number of each CV output -->
+            <section class="t4s-midi-group" data-group="sending" aria-labelledby="t4s-midi-sending">
+              <h3 class="t4s-midi-title" id="t4s-midi-sending">Sending</h3>
+              <div class="t4s-midi-items"></div>
+            </section>
+            <section class="t4s-midi-group" data-group="outputs" aria-labelledby="t4s-midi-outputs">
+              <h3 class="t4s-midi-title" id="t4s-midi-outputs">CC number of each output</h3>
+              <div class="t4s-midi-items"></div>
+            </section>
+          </div>
         </section>
 
         <section class="t4s-panel t4s-presets-panel" data-panel="presets">

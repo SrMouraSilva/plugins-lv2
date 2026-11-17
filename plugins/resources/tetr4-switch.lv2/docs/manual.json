@@ -3,7 +3,7 @@
   "eyebrow": "MOD Audio · Plugin manual",
   "tagline": "Four scenes. One stomp.",
   "subtitle": "Programmable CV loop switcher for MOD Dwarf, MOD Duo X and MOD Duo",
-  "badges": ["4 presets", "4 CV outputs", "16 DIP switches"],
+  "badges": ["4 presets", "4 CV outputs", "MIDI out", "16 DIP switches"],
   "edition": "User manual · November 2026 edition",
   "version": "v1.0.0",
   "hero": "images/panel.webp",

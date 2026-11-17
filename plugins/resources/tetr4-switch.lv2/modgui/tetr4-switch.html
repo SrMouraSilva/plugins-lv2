@@ -97,15 +97,16 @@
             <div class="mod-pedal-output-image"></div>
         </div>
         {{/effect.ports.audio.output}}
-        {{#effect.ports.midi.output}}
-        <div class="mod-output mod-output-disconnected" title="{{name}}" mod-role="output-midi-port" mod-port-symbol="{{symbol}}">
-            <div class="mod-pedal-output-image"></div>
-        </div>
-        {{/effect.ports.midi.output}}
+        <!-- The four CV outputs, then the MIDI out under them (the control changes of a change of preset) -->
         {{#effect.ports.cv.output}}
         <div class="mod-output mod-output-disconnected" title="{{name}}" mod-role="output-cv-port" mod-port-symbol="{{symbol}}">
             <div class="mod-pedal-output-image"></div>
         </div>
         {{/effect.ports.cv.output}}
+        {{#effect.ports.midi.output}}
+        <div class="mod-output mod-output-disconnected" title="{{name}}" mod-role="output-midi-port" mod-port-symbol="{{symbol}}">
+            <div class="mod-pedal-output-image"></div>
+        </div>
+        {{/effect.ports.midi.output}}
     </div>
 </div>
