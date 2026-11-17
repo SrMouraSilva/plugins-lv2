@@ -43,7 +43,7 @@ plug:group_custom
     # Raise the micro version whenever the modgui changes (MOD UI caches it for a year, keyed by this version)
     lv2:majorVersion 1 ;
     lv2:minorVersion 0 ;
-    lv2:microVersion 11 ;
+    lv2:microVersion 13 ;
 
     rdfs:comment """
 Kill Switch chops the signal in a rhythm, like the momentary kill switch some guitars have. While the plugin is on, a looping step pattern lets the signal through or cuts it; bypassed, the signal is clean. Pick a pattern (or write your own, with three levels per step), set the tempo, and use Depth and Edge to decide how deep and how hard the cuts are.
