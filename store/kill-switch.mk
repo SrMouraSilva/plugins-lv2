@@ -4,7 +4,7 @@
 # Assembled from store/ of https://github.com/SrMouraSilva/plugins-lv2 -- keep the four in step (see tools/store/pin.py).
 
 # The commit of the repository that is built: it must exist on GitHub. Update it with `python3 tools/store/pin.py`.
-KILL_SWITCH_VERSION = 110131566a7256b3466352efb2494513927c0e4c
+KILL_SWITCH_VERSION = 161bc5fd1ccdaecec5b77710941db2811223eca5
 KILL_SWITCH_SITE = https://github.com/SrMouraSilva/plugins-lv2.git
 KILL_SWITCH_SITE_METHOD = git
 KILL_SWITCH_BUNDLES = kill-switch.lv2
