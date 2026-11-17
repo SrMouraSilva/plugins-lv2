@@ -45,7 +45,7 @@ You need a pedalboard with an audio input and an output, and a guitar (or any so
 |---|---|
 | **Pattern: the arrows and the name** | Choose the pattern (section 3). The arrows go round: after the last pattern comes the first, and the last one is **Custom**, the pattern you write. |
 | **The sixteen squares** | The pattern. A bright red square lets the signal through, a dark one cuts it, and a darker red one is the middle level (only in your own patterns). A pattern shorter than sixteen steps is repeated; the first run is bright and the repetitions are dimmer, so you can see where it starts again. The squares go dim when the plugin is bypassed. |
-| **Edit pattern** | Opens the settings page: everything on the plugin with more room, the editor of your own pattern and the controls to assign (section 4). |
+| **Edit pattern** | Opens the settings page: everything on the plugin with more room, the editor of your own pattern and the buttons that assign each control to a device control (section 4). |
 | **Tempo: − and +** | The speed of the pattern, from 40 to 240 BPM. Hold a button to keep going. |
 | **Speed** | ½x, 1x, 2x or 4x: multiplies the speed of the pattern without changing the tempo. |
 | **Depth** | From 0% to 100%: how much of the signal a cut removes. 100% is silence; lower values only dip the level, like a tremolo with sharp edges. |
@@ -139,15 +139,16 @@ Cut, half, pass, and back to cut: keep tapping a step until it shows the level y
 
 Your pattern is made of controls of the plugin, so it is saved with the **pedalboard**, with your own **saved presets** and
 with **snapshots**. The factory presets do not touch it. The settings have more than one page: use the arrows of the top bar
-(or swipe sideways) to go to the assignments (**On / off** and **Controls**) and to the **Saved presets**.
+(or swipe sideways) to go to the **Saved presets**. The settings page has everything the pedal has, and next to each control, a small button (the faders icon) that assigns it to a device control.
 
 ![Going through the settings page: the steps of the custom pattern, the length, the steps per beat and every page](images/kill-switch-settings.webp)
 
 ## 5. Playing it live
 
 Every control of the plugin can be assigned to a device control (a footswitch, a knob, an expression pedal), the way you
-assign any parameter: open the settings of the plugin (the gear icon, or **Edit pattern**) and click the tile of the
-control to assign. The bypass has a panel of its own, **On / off**, and the other five controls are in **Controls**.
+assign any parameter: open the settings of the plugin (the gear icon, or **Edit pattern**) and click the small button
+(the faders icon) next to the control to assign: **On / off** in the top bar, and **Pattern**, **Tempo**, **Speed**, **Depth**
+and **Edge** beside their names. The button fills in once the control is assigned.
 
 | Control | Good to assign it to |
 |---|---|
@@ -261,4 +262,4 @@ to compensate with a volume control.
 They are inspired by guitarists known for the kill switch, as a way to find the rhythm: the steps are our approximation of
 the style, not a transcription, and the plugin has no connection with the players or with their songs.
 
-*This manual is for version 1.0.7 of Kill Switch.*
+*This manual is for version 1.0.9 of Kill Switch.*

@@ -733,18 +733,6 @@
 
 
 
-/* Hardware assignments: every tile is the button that opens the assignment dialog */
-.kss-assign {
-  display: grid;
-  /* The script sets the number of columns from the width of the panel */
-  grid-template-columns: repeat(var(--kss-cols, 2), minmax(0, 1fr));
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-
 .kss .mod-address.kss-address {
   position: static;
   display: flex;
@@ -767,28 +755,16 @@
 
 .kss .mod-address.kss-address:hover { background-color: rgba(255, 255, 255, 0.1); }
 
-
-.kss-assign-name {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-
-.kss-assign-title,
-.kss-assign-name small {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-
-.kss-assign-name small {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ks-muted);
+/* Only the icon, beside the control it assigns (as in Gossiper): 44px, with the disc that says whether it is addressed */
+.kss .mod-address.kss-address.kss-address-small {
+  flex: 0 0 auto;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 14px;
 }
 
 
@@ -1062,7 +1038,6 @@
 .kss[data-h="s"] .kss-step,
 .kss[data-h="s"] .kss-close { min-height: 44px; height: 44px; }
 
-.kss[data-h="s"] .kss-assign { gap: 4px; }
 
 .kss[data-h="s"] .kss-presets-panel .mod-presets > div.mod-enumerated-list { min-height: 64px; }
 
@@ -1258,9 +1233,6 @@
   box-shadow: inset 0 0 0 2px var(--ks-red), 0 3px 0 var(--ks-ink);
 }
 
-/* The hardware tiles of this plugin: no extra colour of their own */
-.kss-hardware .kss-assign-name small { white-space: normal; }
-
 /* A pattern is written on the pedal too: the button that opens this page */
 .ks-open {
   min-height: 24px;
@@ -1306,12 +1278,6 @@
 .kss[data-w="s"] .kss-use { margin-left: 0; }
 .kss[data-h="s"] .kss-pattern-panel .kss-panel-head p { display: none; }
 
-/* The bypass panel is the narrow one of the two hardware panels */
-.kss-row > .kss-hw-bypass { flex: 2 1 0; }
-.kss-row > .kss-hardware { flex: 3 1 0; }
-.kss-stack > .kss-row { flex: 0 0 auto; align-items: stretch; }
-.kss-stack > .kss-row > .kss-panel { flex-grow: 1; }
-
 
 /* ==========================================================================
  * Settings page: what is playing, and tempo and feel (all that the pedal has in its face, with room to spare)
@@ -1331,7 +1297,8 @@
   text-transform: none;
   color: var(--ks-text);
 }
-.kss-play-head { margin-bottom: 6px; }
+.kss-play-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.kss-play-title { min-width: 0; }
 .kss-play-hint {
   margin: 0 0 12px;
   font-size: 14px;
@@ -1412,9 +1379,12 @@
 .kss-knob { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .kss-tempo,
 .kss-speed { grid-column: 1 / -1; }
+/* Depth and Edge side by side only when each has room for its name, value and button (the script says so: .is-narrow) */
+.kss-sound.is-narrow { grid-template-columns: minmax(0, 1fr); }
+/* The button that assigns the knob sits at the end of its head, where its name and value are */
 .kss-knob-head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
   font-size: 12px;
@@ -1423,8 +1393,13 @@
   text-transform: uppercase;
   color: var(--ks-muted);
 }
+/* The name takes what is left, the value and the button keep their size */
+.kss-knob-head > :first-child { margin-right: auto; }
+.kss-knob-head > .kss-address { margin-left: 4px; }
+.kss-depth .kss-knob-head output,
+.kss-edge .kss-knob-head output { font-size: 18px; }
 .kss-knob-head small { font-size: 12px; font-weight: 600; letter-spacing: 0; text-transform: none; }
-.kss-knob-head output { font-size: 20px; letter-spacing: 0; text-transform: none; color: var(--ks-text); }
+.kss-knob-head output { font-size: 20px; letter-spacing: 0; text-transform: none; white-space: nowrap; color: var(--ks-text); }
 .kss-ends { display: flex; justify-content: space-between; gap: 8px; margin-top: -6px; }
 .kss-ends small { font-size: 12px; color: var(--ks-muted); }
 

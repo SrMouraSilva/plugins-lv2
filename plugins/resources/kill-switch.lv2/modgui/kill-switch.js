@@ -157,7 +157,7 @@ function (event, funcs) {
   };
 
   // ---------------------------------------------------------------------------
-  // The settings page never scrolls vertically: its panels (the pattern editor, the hardware tiles, the saved presets)
+  // The settings page never scrolls vertically: its panels (the pattern editor, the saved presets)
   // are spread over horizontal pages, as few as the screen allows, one swipe (or one of the buttons of the top bar)
   // apart. What fits is measured here instead of left to @media queries: MOD UI's page has no <meta name="viewport">
   // and its body is at least 1024px wide, so a phone lays it out in about 980px and shrinks it to the screen, and a
@@ -167,15 +167,10 @@ function (event, funcs) {
   const MEDIUM_PX = 700;
   const SHORT_PX = 600;          // below this height, the descriptions go and everything gets tighter
   const CELL_MIN_PX = 44;        // the narrowest a step of the editor can be
-  const TILE_MIN_PX = 170;       // the hardware assignment tiles
-  const TILE_MAX_COLUMNS = 3;
+  const SOUND_TWO_COLUMNS_PX = 420;  // Depth and Edge side by side from this width of the panel
 
   // The panels, the lists they hold, and what moves them: found once, on 'start'
   const findPanels = (root) => {
-    // The hardware assignments are told apart by purpose: the bypass on its own, and the controls of the effect
-    const hardware = Array.from(root.querySelectorAll('[data-panel^="hardware"]')).map((panel) => ({
-      panel, body: panel.querySelector('.kss-assign'), items: Array.from(panel.querySelectorAll('.kss-assign > li')), minTile: TILE_MIN_PX, columns: 1,
-    }));
     return {
       root,
       pager: root.querySelector('.kss-pager'),
@@ -183,7 +178,6 @@ function (event, funcs) {
       play: root.querySelector('[data-panel="play"]'),
       sound: root.querySelector('[data-panel="sound"]'),
       pattern: { panel: root.querySelector('[data-panel="pattern"]'), body: root.querySelector('.kss-steps') },
-      hardware,
       presets: { panel: root.querySelector('[data-panel="presets"]') },
       page: 0,
       key: '',
@@ -218,10 +212,8 @@ function (event, funcs) {
 
   // Everything back in the stock, in the order it was written, and the pages (with their copies) thrown away
   const gather = (view) => {
-    view.stock.append(view.play, view.sound, view.pattern.panel, ...view.hardware.map((part) => part.panel), view.presets.panel);
-    view.hardware.forEach((part) => part.body.append(...part.items));
+    view.stock.append(view.play, view.sound, view.pattern.panel, view.presets.panel);
     view.pager.textContent = '';
-    view.root.querySelectorAll('.kss-range').forEach((rangeEl) => { rangeEl.textContent = ''; });
   };
 
   const setPages = (view, groups) => {
@@ -235,7 +227,7 @@ function (event, funcs) {
   };
 
   // What depends on the width of a panel (it must be on a page to be measured): the columns of the steps (16, 8 or 4,
-  // so that every line is full) and of the hardware tiles (never more columns than tiles)
+  // so that every line is full)
   const sizeAll = (view) => {
     const steps = view.pattern.body;
     const stepGap = px(getComputedStyle(steps).columnGap);
@@ -245,37 +237,34 @@ function (event, funcs) {
     }
     steps.style.setProperty('--kss-cols', columns);
 
-    view.hardware.forEach((part) => {
-      const list = part.body;
-      const gap = px(getComputedStyle(list).columnGap);
-      part.columns = clamp(Math.floor((list.clientWidth + gap) / (part.minTile + gap)), 1, Math.min(TILE_MAX_COLUMNS, part.items.length));
-      list.style.setProperty('--kss-cols', part.columns);
-    });
+    // Depth and Edge side by side need room for a name, a value and a button each
+    const sound = view.sound.querySelector('.kss-sound');
+    sound.classList.toggle('is-narrow', sound.clientWidth < SOUND_TWO_COLUMNS_PX);
   };
 
   const fits = (page) => [page, ...page.querySelectorAll('.kss-panel, .kss-stack, .kss-row')]
     .every((el) => el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1);
 
   // Roomy screens. The first page holds everything that is played with: the choice of pattern, what it does, the
-  // editor (only while Custom is chosen: `together`), and tempo and feel beside them; the hardware and the saved
-  // presets follow. When that does not fit, the editor goes back to the second page, with the hardware.
+  // editor (only while Custom is chosen: `together`), and tempo and feel beside them, with the buttons that assign
+  // each of those to a control of the device next to what they assign; the saved presets sit beside them, or follow.
+  // When the editor does not fit with them, it goes back to a page of its own.
   // Returns the pages, or null when none of them fits
   const layoutTogether = (view, wide) => {
-    const { play, sound, pattern, hardware, presets } = view;
+    const { play, sound, pattern, presets } = view;
     const stack = (...nodes) => { const el = element('kss-stack'); el.append(...nodes); return el; };
     const row = (...nodes) => { const el = element('kss-row'); el.append(...nodes); return el; };
-    const panels = hardware.map((part) => part.panel);
     const attempts = [
       ...(wide ? [
-        { together: true, pages: () => [[row(stack(play, pattern.panel), sound)], [row(stack(row(...panels)), presets.panel)]] },
-        { together: true, pages: () => [[row(stack(play, pattern.panel), sound)], [stack(row(...panels))], [presets.panel]] },
-        { together: false, pages: () => [[row(play, sound)], [row(stack(pattern.panel, row(...panels)), presets.panel)]] },
-        { together: false, pages: () => [[row(play, sound)], [stack(pattern.panel, row(...panels))], [presets.panel]] },
+        { together: true, pages: () => [[row(stack(play, pattern.panel), sound, presets.panel)]] },
+        { together: true, pages: () => [[row(stack(play, pattern.panel), sound)], [presets.panel]] },
+        { together: false, pages: () => [[row(play, sound, presets.panel)], [pattern.panel]] },
+        { together: false, pages: () => [[row(play, sound)], [row(pattern.panel, presets.panel)]] },
         // Short screens: the editor on a page of its own, the rest as before
-        { together: false, pages: () => [[row(play, sound)], [pattern.panel], [stack(row(...panels))], [presets.panel]] },
+        { together: false, pages: () => [[row(play, sound)], [pattern.panel], [presets.panel]] },
       ] : []),
-      { together: true, pages: () => [[row(stack(play, pattern.panel), sound)], [stack(row(...panels))], [presets.panel]] },
-      { together: false, pages: () => [[stack(play, sound)], [stack(pattern.panel, row(...panels))], [presets.panel]] },
+      { together: true, pages: () => [[row(stack(play, pattern.panel), sound)], [presets.panel]] },
+      { together: false, pages: () => [[stack(play, sound)], [pattern.panel], [presets.panel]] },
     ];
 
     for (const attempt of attempts) {
@@ -290,46 +279,13 @@ function (event, funcs) {
     return null;
   };
 
-  // How many lines of tiles fit on a page, measured with the panel alone on it
-  const linesOf = (view, part) => {
-    const [page] = setPages(view, [[part.panel]]);
-    sizeAll(view);
-
-    const style = getComputedStyle(page);
-    const gap = px(getComputedStyle(part.body).rowGap);
-    const room = page.clientHeight - px(style.paddingTop) - px(style.paddingBottom) - (part.panel.offsetHeight - part.body.offsetHeight);
-    return Math.max(1, Math.floor((room + gap) / (part.items[0].offsetHeight + gap)));
-  };
-
-  // Splits the tiles into as many panels as it takes, the same size each; returns them (the first is the panel itself)
-  const paginate = (part, capacity, perLine) => {
-    const count = Math.ceil(part.items.length / capacity);
-    const size = Math.ceil(Math.ceil(part.items.length / count) / perLine) * perLine;
-    const panels = [part.panel];
-
-    for (let i = 1; i < count; i++) {
-      const copy = part.panel.cloneNode(false);
-      const body = part.body.cloneNode(false);
-      copy.append(part.panel.querySelector('.kss-panel-head').cloneNode(true), body);
-      body.append(...part.items.slice(i * size, (i + 1) * size));
-      panels.push(copy);
-    }
-
-    if (count > 1) {
-      panels.forEach((panel, i) => { panel.querySelector('.kss-range').textContent = ` ${i + 1}/${count}`; });
-    }
-    return panels;
-  };
-
-  // Last resort and the way of the small screens: each panel on its own page(s)
+  // Last resort and the way of the small screens: each panel on its own page
   const layoutOneByOne = (view) => {
-    const { play, sound, pattern, hardware, presets } = view;
+    const { play, sound, pattern, presets } = view;
     gather(view);
     view.root.setAttribute('data-together', '0');
 
-    // Each purpose on a page of its own (more than one if the tiles do not fit)
-    const tilePanels = hardware.flatMap((part) => paginate(part, linesOf(view, part) * part.columns, part.columns));
-    const pages = setPages(view, [play, sound, pattern.panel, ...tilePanels, presets.panel].map((panel) => [panel]));
+    const pages = setPages(view, [play, sound, pattern.panel, presets.panel].map((panel) => [panel]));
     sizeAll(view);          // now that the panels are on a page, they have a width to measure
     return pages;
   };
