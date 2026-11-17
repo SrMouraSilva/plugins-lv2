@@ -22,19 +22,26 @@
  *
  * modgui/kill-switch.js repeats the names and the steps of PATTERNS (to draw them): keep the two in step, and the
  * scale points of the `pattern` port in kill-switch.ttl too.
+ *
+ * The display widget (`pattern`, for devices with the aLabs HMI widgets extension) is in hmi/kill-switch-widgets.c: it draws
+ * the pattern, the step that plays and the tempo. It is optional: without the extension the plugin does not draw anything.
  */
 
 #include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 
+#include "hmi/kill-switch-widgets.h"
+
 #define KILL_SWITCH_URI "http://srmourasilva.github.io/plugins/kill-switch"
 
 #define CUSTOM_MAX_STEPS 16
+_Static_assert(CUSTOM_MAX_STEPS == KILL_SWITCH_WIDGET_MAX_STEPS, "the widget keeps as many steps as the custom pattern has");
 #define CUSTOM_MAX_STEPS_PER_BEAT 8
 #define LEVEL_COUNT 3
 
@@ -114,6 +121,9 @@ typedef struct {
     /** Current gain: 1 = the signal passes, 1 - Depth = cut */
     float  gain;
     bool   was_bypassed;
+
+    /** The display widgets: what they show and which are on a display (hmi/kill-switch-widgets.c) */
+    KillSwitchWidgets widgets;
 } KillSwitch;
 
 static float clampf(float value, float min, float max) {
@@ -148,6 +158,7 @@ instantiate(const LV2_Descriptor*     descriptor,
 
     self->sample_rate = (float) rate;
     reset(self);
+    kill_switch_widgets_init(&self->widgets, features);
 
     return (LV2_Handle) self;
 }
@@ -176,6 +187,32 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
 
 static void activate(LV2_Handle instance) {
     reset((KillSwitch*) instance);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// The display widgets (hmi/kill-switch-widgets.c draw them; here only what they show is filled in)
+
+static void update_view(KillSwitch* self, bool bypassed, int pattern_index, const char* steps, int count, float steps_per_second_factor, float bpm) {
+    KillSwitchView* view = &self->widgets.view;
+
+    view->bypassed = bypassed;
+    snprintf(view->name, sizeof(view->name), "%s", pattern_index == CUSTOM_PATTERN ? "Custom" : PATTERNS[pattern_index].name);
+    memcpy(view->steps, steps, (size_t) count);
+    view->steps[count] = '\0';
+    view->count = count;
+    view->step = self->step;
+    view->bpm = bpm;
+    view->speed = choice(self->speed, SPEED_COUNT);
+    view->depth = (int) (clampf(self->depth ? *self->depth : 100.0f, 0.0f, 100.0f) + 0.5f);
+    view->fast = (double) bpm * (double) steps_per_second_factor / 60.0 > KILL_SWITCH_WIDGET_MAX_FOLLOW_STEPS_PER_SECOND;
+}
+
+static void widget_shown(LV2_Handle instance, const char* symbol, ALABS_HMI_Widget widget, const ALABS_HMI_WidgetArea* area) {
+    widgets_shown(&((KillSwitch*) instance)->widgets.host, symbol, widget, area);
+}
+
+static void widget_hidden(LV2_Handle instance, ALABS_HMI_Widget widget) {
+    widgets_hidden(&((KillSwitch*) instance)->widgets.host, widget);
 }
 
 static void run(LV2_Handle instance, uint32_t frames) {
@@ -270,6 +307,9 @@ static void run(LV2_Handle instance, uint32_t frames) {
             }
         }
     }
+
+    update_view(self, bypassed, pattern_index, steps, steps_count, steps_per_beat * multiplier, bpm);
+    kill_switch_widgets_run(&self->widgets, frames, (double) self->sample_rate);
 }
 
 static void deactivate(LV2_Handle instance) {}
@@ -279,6 +319,16 @@ static void cleanup(LV2_Handle instance) {
 }
 
 static const void* extension_data(const char* uri) {
+    static const ALABS_HMI_WidgetNotification widget_notification = {
+        sizeof(ALABS_HMI_WidgetNotification),
+        widget_shown,
+        widget_hidden,
+    };
+
+    if (strcmp(uri, ALABS_HMI__WidgetNotification) == 0) {
+        return &widget_notification;
+    }
+
     return NULL;
 }
 

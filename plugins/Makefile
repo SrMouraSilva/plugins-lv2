@@ -52,9 +52,9 @@ build-gossiper:
 		  src/gossiper.c \
 		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(GOSSIPER).lv2/$(GOSSIPER).so
 
-# Kill Switch shares no code with the others: one file, and only LV2's core header
+# Kill Switch shares no code with the others (only the display widgets' headers, src/hmi/): its own file, its widgets, and LV2's core header
 build-kill-switch:
-	$(CC) src/kill-switch.c \
+	$(CC) src/kill-switch.c src/hmi/kill-switch-widgets.c \
 		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(KILL_SWITCH).lv2/$(KILL_SWITCH).so
 
 # Half Mouco, the stereo sibling of Kill Switch, is one file too

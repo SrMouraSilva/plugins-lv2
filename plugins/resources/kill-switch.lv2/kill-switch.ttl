@@ -8,6 +8,7 @@
 @prefix units:  <http://lv2plug.in/ns/extensions/units#> .
 @prefix pg:     <http://lv2plug.in/ns/ext/port-groups#> .
 @prefix plug:   <http://srmourasilva.github.io/plugins/kill-switch#> .
+@prefix ahw:  <https://github.com/sejerpz/alabs-hmi-widgets#> .
 
 plug:group_pattern
     a pg:Group ;
@@ -38,12 +39,29 @@ plug:group_custom
         foaf:homepage <https://github.com/SrMouraSilva/plugins-lv2> ;
     ] ;
 
-    lv2:optionalFeature lv2:hardRTCapable ;
+    lv2:optionalFeature lv2:hardRTCapable, ahw:WidgetDraw ;
+    lv2:extensionData ahw:WidgetNotification ;
+
+    # Widgets for the display of devices with the aLabs HMI widgets extension (MOD Dwarf and Duo X on the Starless images):
+    # optional, a host without it never shows them. Keep the symbols in step with WIDGET_SYMBOLS in the source.
+    ahw:widget
+    [
+        a ahw:Widget ;
+        lv2:symbol "pattern" ;
+        lv2:name "Pattern" ;
+        rdfs:comment "The pattern that plays: its name, the steps with the one that is playing, and the tempo. Placing it offers to assign Pattern and Tempo to controls of the device." ;
+        ahw:minWidth 40 ;
+        ahw:minHeight 8 ;
+        ahw:naturalWidth 82 ;
+        ahw:naturalHeight 37 ;
+        ahw:pixelFormat ahw:Mono1 ;
+        ahw:suggestedPorts ( "pattern" "bpm" ) ;
+    ] ;
 
     # Raise the micro version whenever the modgui changes (MOD UI caches it for a year, keyed by this version)
     lv2:majorVersion 1 ;
     lv2:minorVersion 0 ;
-    lv2:microVersion 13 ;
+    lv2:microVersion 15 ;
 
     rdfs:comment """
 Kill Switch chops the signal in a rhythm, like the momentary kill switch some guitars have. While the plugin is on, a looping step pattern lets the signal through or cuts it; bypassed, the signal is clean. Pick a pattern (or write your own, with three levels per step), set the tempo, and use Depth and Edge to decide how deep and how hard the cuts are.
