@@ -10,6 +10,7 @@ plugins/src/                 C sources (shared code in lv2/, model/, utils/; kil
 plugins/resources/<name>.lv2 the bundle: <name>.ttl, manifest.ttl, modgui.ttl, presets.ttl, modgui/, docs/
 plugins/Makefile             build-<plugin> targets; srmourasilva-plugins.mk is the mod-plugin-builder package
 tools/modgui-preview/        browser preview of any plugin's modgui (no device needed)
+tools/hmi-preview/           pictures of the display widgets on the Dwarf and the Duo X (real plugins in a tiny host); see "Display widgets"
 tools/media/                 animations (animated WebP + GIF) and alternative thumbnails (from the preview); see "Animations and alternative thumbnails"
 tools/manual/                builds modgui/manual.html from docs/manual.md; see "HTML manuals"
 docs/                        guides for other developers: custom-settings-pages, making-animations, alternative-thumbnails, html-manuals
@@ -53,12 +54,12 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
 
 ## C code and LV2
 
-* **Kill Switch is one standalone file** (`src/kill-switch.c`, only LV2's core header): its bypass is the `lv2:enabled`
+* **Kill Switch is one standalone file** (`src/kill-switch.c`, only LV2's core header; its display widget is apart, in `src/hmi/kill-switch-widgets.c`, which only needs the headers of `src/hmi/` that every plugin shares): its bypass is the `lv2:enabled`
   port (1 = on), kept last, and `PATTERNS` is repeated in its modgui script and in the scale points of `pattern`. A step has
   three levels ('0' cut, '1' half, '2' pass); the built-in patterns use 0 and 2, and the custom one is the ports
   `custom_length`, `custom_steps_per_beat` and `custom_step_1..16` (the value 10 of `pattern`). A new port goes before
   `lv2_enabled` only while the plugin is unreleased (the TTL indices, `PortIndex` and the harness must agree).
-* **Half Mouco is Kill Switch in stereo** (`src/half-mouco.c`, also standalone): a row of steps for each side, plus *endings*,
+* **Half Mouco is Kill Switch in stereo** (`src/half-mouco.c`, also standalone; its widget is `src/hmi/half-mouco-widgets.c`, which draws the endings with the plugin's own `ending_gate`, handed to it): a row of steps for each side, plus *endings*,
   one-shot effects that are functions of the time since the plugin was switched on (`ending_gate` in C, `ENDINGS[].gate` in the
   modgui script: keep them in step, the script draws the ending along its time). Its `PATTERNS`, the scale points of `pattern` and
   `ending` and the modgui script must agree too. The ports are `mode`, `pattern`, `ending`, ..., `custom_left_step_1..16`,
@@ -87,6 +88,8 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   is never ambiguous and never lost, even after MOD UI gives the device the port's value again. The selectors and the
   `Active_preset` output (`modgui:monitoredOutputs`) say which preset is on, not the combobox. Run the cycle test
   (a host whose "device" keeps its own index) after touching this.
+* **Display widgets** (`src/hmi/`, section below) are drawn through the optional aLabs `ahw:WidgetDraw` feature. Never make a plugin
+  depend on it (stock firmware and the Duo do not have it): `widgets_init` leaves `draw` NULL and everything else does nothing.
 * **Pop-ups (`popup_message`) only show on a device page that has an `Assign to notify` control addressed.** Keep
   the four notify ports and say so in the manual.
 * Labels are plugin *properties* (`lv2:Parameter`, `atom:String`, `patch:writable`) read/written with
@@ -160,6 +163,25 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   and the editor of the custom pattern, which appears under the choice only while Custom is chosen (`data-together` /
   `data-custom` of `.hms` / `.kss`; the layout reserves the room for it, so the page does not jump). When the editor does not fit
   with the rest, it has a page of its own and a button on the first page takes to it. On and off (and Mono) are in the top bar.
+
+## Display widgets
+
+Plugins can draw on the display of a MOD Dwarf or Duo X where the device implements the aLabs HMI widgets extension
+(https://github.com/sejerpz/alabs-hmi-widgets, header copied in `src/hmi/`; ISC, listed in `NOTICE`). Details and the preview tool: `tools/hmi-preview/README.md`.
+
+* **The widget code stays out of the plugin's main file**: the plugin fills a view (what to show) and calls `*_widgets_run`; drawing, the list of what is on a display and the signature are in the widget file (`src/hmi/<plugin>-widgets.c`, `src/lv2/*/lv2-*-widgets.c`). Add the file to the plugin's `build-<name>` target.
+* A widget is declared in the TTL (`ahw:widget`, with `ahw:minWidth/minHeight`, a natural size and `ahw:suggestedPorts`) and has a
+  symbol that is kept in a pedalboard: **never rename it after a release**. The order of `WIDGET_SYMBOLS` is the plugin's own enum.
+* A widget **never assumes a size**: it learns the area in `widget_shown`, and draws the whole area every time. Dwarf areas run from
+  40 x 37 to 128 x 64 and footers of 10 px, the Duo X's from 63 x 8 to 128 x 64; a widget declares the smallest area it reads well in
+  (at most 51 x 8 for a footer, 40 x 30 for a column) and adapts by size, not by device.
+* The display is **1 bit**: no grey. Use the checker (`canvas_checker`) as a grey, the 5 x 7 font (6 px a character) where it fits
+  and the 3 x 5 one where it does not; a text is cut, never wrapped. Read-only widgets show state: do not draw buttons.
+* Drawing happens in `run()` through `widgets_run` (a *signature* of the state, redrawn when it changes, at most 20 Hz; the host
+  merges and queues, it never blocks). `widget_shown` and `widget_hidden` come from another thread: use the seqlock slots of
+  `hmi/widget-host.h`, do not keep the handle anywhere else.
+* **Compare before and after** like any change to `run()` (`host.c` has `hash` for the audio and CV outputs), check with
+  ASan/UBSan on every area size, and look at `tools/hmi-preview/preview.py gallery`. There is no device test here: say so.
 
 ## Documentation
 

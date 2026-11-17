@@ -234,6 +234,16 @@ python3 tools/modgui-preview/serve.py        # http://localhost:8000/?plugin=hep
 * [docs/making-animations.md](./docs/making-animations.md), [docs/alternative-thumbnails.md](./docs/alternative-thumbnails.md), [docs/html-manuals.md](./docs/html-manuals.md): animations (animated WebP with a GIF fallback), alternative thumbnails and HTML manuals for your own plugin
 * [CLAUDE.md](./CLAUDE.md): the practices of this repository (C and LV2, TTL, modgui, documentation, git)
 
+### Display widgets (MOD Dwarf and Duo X)
+
+Every plugin can draw on the display of a device that implements the [aLabs HMI widgets](https://github.com/sejerpz/alabs-hmi-widgets) extension (the Starless images for the Dwarf and the Duo X; stock firmware does not, and the plugins simply draw nothing there): the pattern of Kill Switch, the two sides of Half Mouco, the active preset of Tetr4 and Hept7 Switch, the footswitches and knobs of Gossiper. Each widget adapts to the area it is given, from a footer to the full screen.
+
+```bash
+python3 tools/hmi-preview/preview.py all   # sheets of every widget on every area, and a Dwarf and a Duo X (needs pillow and the .so files)
+```
+
+See [tools/hmi-preview](./tools/hmi-preview/README.md).
+
 ### Animations and alternative thumbnails
 
 ```bash
