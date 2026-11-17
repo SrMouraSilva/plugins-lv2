@@ -105,6 +105,7 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
     } else if (port == PORT_EVENTS_OUT) {
         self->lv2->events_out = (LV2_Atom_Sequence*) data;
 
+#ifdef HEPT7_SWITCH
     } else if (port >= PORT_PRESET_IN_CYCLE_FIRST && port < PORT_PRESET_IN_CYCLE_FIRST + TOTAL_PRESETS) {
         // Hept7 Switch only: Tetr4 Switch has no such ports, so the host never connects them
         self->presets_in_cycle[port - PORT_PRESET_IN_CYCLE_FIRST] = (float*) data;
@@ -112,6 +113,20 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
     } else if (port == PORT_ACTIVE_PRESET) {
         // Hept7 Switch only, as above
         self->active_preset_output = (float*) data;
+#endif
+
+    } else if (port >= PORT_MIDI_CC_FIRST && port < PORT_MIDI_CHANNEL) {
+        // Tetr4 Switch only for now: Hept7 Switch's TTL has no MIDI ports, so they stay NULL and nothing is sent
+        self->midi_cc[port - PORT_MIDI_CC_FIRST] = (float*) data;
+
+    } else if (port == PORT_MIDI_CHANNEL) {
+        self->midi_channel = (float*) data;
+
+    } else if (port == PORT_MIDI_CHANGES_ONLY) {
+        self->midi_changes_only = (float*) data;
+
+    } else if (port == PORT_MIDI_OUT) {
+        self->lv2->midi_out = (LV2_Atom_Sequence*) data;
     }
 }
 

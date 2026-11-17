@@ -12,6 +12,7 @@
 #include "lv2/log/logger.h"
 #include "lv2/atom/atom.h"
 #include "lv2/atom/forge.h"
+#include "lv2/midi/midi.h"
 #include "lv2/urid/urid.h"
 #include "lv2/worker/worker.h"
 
@@ -37,6 +38,8 @@ typedef struct {
     LV2_URID patch_Get;
     LV2_URID patch_property;
     LV2_URID patch_value;
+    LV2_URID atom_Sequence;
+    LV2_URID midi_MidiEvent;
     LV2_URID preset_label[TOTAL_PRESETS];
 } Controller_URIs;
 
@@ -45,6 +48,9 @@ typedef struct {
 
     const LV2_Atom_Sequence* events_in;
     LV2_Atom_Sequence* events_out;
+
+    /** The control changes (NULL when the plugin has no such port). Written on every cycle, even when empty */
+    LV2_Atom_Sequence* midi_out;
 
     /** Used to write patch:Set replies to events_out */
     LV2_Atom_Forge forge;

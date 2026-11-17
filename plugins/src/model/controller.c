@@ -6,6 +6,9 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
+
+#include <lv2/lv2plug.in/ns/ext/atom/util.h>
 
 #include "controller.h"
 #include "../utils/utils.h"
@@ -18,6 +21,7 @@ static unsigned int Controller_read_cycle_mask(const Controller* self);
 static unsigned int Controller_follow_combobox(const Controller* self, unsigned int combobox);
 static unsigned int Controller_next_in_cycle(const Controller* self, unsigned int from, int direction);
 static void Controller_update_output_cvs(const Controller* self, uint32_t n_samples);
+static void Controller_send_midi(Controller* self);
 
 
 Controller* Controller_instantiate(void) {
@@ -126,6 +130,7 @@ void Controller_run(Controller* self, uint32_t n_samples) {
     }
 
     Controller_update_output_cvs(self, n_samples);
+    Controller_send_midi(self);
 }
 
 bool Controller_has_cycle(const Controller* self) {
@@ -252,6 +257,77 @@ static void Controller_update_output_cvs(const Controller* self, uint32_t n_samp
 
         for (uint32_t i = 0; i < n_samples; i++) {
             buffer[i] = value;
+        }
+    }
+}
+
+/** A control change number, channel or such, as an integer of 0 to @p max whatever the host writes into the port */
+static uint8_t Controller_read_midi_value(const float* port, uint8_t max) {
+    const float value = *port;
+
+    if (!(value > 0.5f)) {  // also NaN
+        return 0;
+    }
+
+    return value >= (float) max ? max : (uint8_t) (value + 0.5f);
+}
+
+/**
+ * The control changes of the preset that became active: one per CV output, 127 when it is on in that preset and 0
+ * when it is off, or only the ones that differ from the last one sent (changes only). Nothing when the preset did not
+ * change. The buffer is written on every cycle, as the host reads whatever it holds
+ */
+static void Controller_send_midi(Controller* self) {
+    LV2_Atom_Sequence* const out = self->lv2->midi_out;
+
+    if (out == NULL) {
+        return;
+    }
+
+    // On entry the size of an output sequence is the room the host gives it
+    const uint32_t capacity = out->atom.size;
+
+    out->atom.type = self->lv2->uris.atom_Sequence;
+    lv2_atom_sequence_clear(out);
+
+    if (!self->preset_changed || self->midi_channel == NULL || self->midi_changes_only == NULL) {
+        return;
+    }
+
+    // The port counts channels from 1, as the musician does; the message from 0
+    const uint8_t channel = Controller_read_midi_value(self->midi_channel, 16) > 0
+        ? Controller_read_midi_value(self->midi_channel, 16) - 1
+        : 0;
+    const bool changes_only = !is_zero(*self->midi_changes_only);
+    float* const* dips = self->preset_outputs[self->current_preset];
+
+    for (unsigned int output = 0; output < TOTAL_OUTPUTS; output++) {
+        if (self->midi_cc[output] == NULL) {
+            continue;
+        }
+
+        const uint8_t value = is_zero(*dips[output]) ? 0 : 127;
+
+        if (changes_only && value == self->midi_last_sent[output]) {
+            continue;
+        }
+
+        struct {
+            LV2_Atom_Event event;
+            uint8_t message[3];
+        } cc;
+
+        memset(&cc, 0, sizeof(cc));
+        cc.event.time.frames = 0;
+        cc.event.body.type = self->lv2->uris.midi_MidiEvent;
+        cc.event.body.size = sizeof(cc.message);
+        cc.message[0] = (uint8_t) (0xB0 | channel);
+        cc.message[1] = Controller_read_midi_value(self->midi_cc[output], 127);
+        cc.message[2] = value;
+
+        // No room: the rest is dropped, and not taken as sent, so "changes only" sends it with the next change
+        if (lv2_atom_sequence_append_event(out, capacity, &cc.event) != NULL) {
+            self->midi_last_sent[output] = value;
         }
     }
 }

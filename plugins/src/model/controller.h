@@ -32,6 +32,17 @@ typedef struct {
     float* active_preset_output;
 
     /**
+     * MIDI (NULL when the plugin has no such ports: Hept7 Switch for now, which then sends nothing). The control
+     * change number of each CV output, the channel (0-15) and whether to leave out the ones that did not change
+     */
+    float* midi_cc[TOTAL_OUTPUTS];
+    float* midi_channel;
+    float* midi_changes_only;
+
+    /** The values (0 or 127) last sent, for "changes only" */
+    uint8_t midi_last_sent[TOTAL_OUTPUTS];
+
+    /**
      * Fixed size, so changing a label (a patch:Set, applied in run()) allocates nothing
      */
     char preset_labels[TOTAL_PRESETS][PRESET_LABEL_MAX_SIZE];
