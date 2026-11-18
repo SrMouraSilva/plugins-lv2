@@ -166,9 +166,10 @@ Raw HTML, with the position of each pin in percent of the picture. Describe the 
 
 ### A picture of a pedalboard
 
-A card made of a picture and a link (not a video) sits on the **dark, dotted board** of the interactive section. Give it a picture with a **transparent background**:
-`python3 tools/media/white_to_alpha.py IN.jpg OUT.webp` takes out the white that is connected to the border (a white pedal inside stays) and softens the edge, so
-there is no white fringe on the dark.
+A card made of a picture and a link (not a video) sits on the **dark, dotted board** of the interactive section, so give it a picture with a **transparent
+background**. The MOD pedalboards site serves one: `https://api.mod.audio/v2/pedalboards/<id>/screenshot` is a PNG with transparency (the `/preview` of the same
+address is a JPEG with a white background: do not use it). Scale it down and convert it to WebP, which keeps the transparency:
+`python3 tools/media/to_webp.py --width 1600 example-pedalboard.png`.
 
 ### The plugin inside the manual
 
