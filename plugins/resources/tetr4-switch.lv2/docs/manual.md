@@ -464,7 +464,7 @@ Move it to the page you play from. On the MOD Duo there are no pop-ups at all: i
 | Field | Value |
 |---|---|
 | Plugin name | Tetr4 switch |
-| Version | 1.2.15 (the version of the plugin this manual is for) |
+| Version | 1.2.16 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/tetr4-switch` |
 | Audio I/O | None |
@@ -476,7 +476,7 @@ Move it to the page you play from. On the MOD Duo there are no pop-ups at all: i
 | Platforms | MOD Dwarf · MOD Duo X · MOD Duo |
 | Developer | Paulo Mateus (SrMouraSilva) |
 | License | Apache-2.0 |
-| Source code | [github.com/SrMouraSilva/tetr4-switch-lv2](https://github.com/SrMouraSilva/tetr4-switch-lv2) |
+| Source code | [github.com/SrMouraSilva/plugins-lv2](https://github.com/SrMouraSilva/plugins-lv2) |
 | Store page | [Tetr4 switch](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy90ZXRyNC1zd2l0Y2g=) |
 | Forum thread | [forum.mod.audio – Tetr4 Switch plugin in Beta Store](https://forum.mod.audio/t/tetr4-switch-plugin-in-beta-store/8998) |
 | Example pedalboard | [MOD Pedalboards Feed](https://pedalboards.moddevices.com/pedalboards/66f8238d5e57562fcb26b0f3) |

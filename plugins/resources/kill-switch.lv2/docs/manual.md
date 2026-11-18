@@ -445,4 +445,21 @@ control.
 They are inspired by guitarists known for the kill switch, as a way to find the rhythm: the steps are our approximation of the style, not a transcription, and the plugin has no connection with
 the players or with their songs.
 
-*This manual is for version 1.0.25 of Kill Switch.*
+## 11. Specifications
+
+| Field | Value |
+|---|---|
+| Plugin name | Kill Switch |
+| Version | 1.0.26 (the version of the plugin this manual is for) |
+| Category | Dynamics · Gate |
+| Format | LV2 · URI `http://srmourasilva.github.io/plugins/kill-switch` |
+| Audio I/O | Stereo: 2 inputs, 2 outputs (no latency) |
+| Effects | 19 built-in patterns and Custom (your own) · 5 endings |
+| Device feedback | Display widget "Stereo pattern" (MOD Dwarf and Duo X with the aLabs HMI widgets) · the pedal itself |
+| Platforms | MOD Dwarf · MOD Duo X · MOD Duo |
+| Developer | Paulo Mateus (SrMouraSilva) |
+| License | Apache-2.0 |
+| Source code | [github.com/SrMouraSilva/plugins-lv2](https://github.com/SrMouraSilva/plugins-lv2) |
+| Store page | [Kill Switch](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9raWxsLXN3aXRjaA==) |
+
+Kill Switch is a community plugin. Feedback, bug reports and pull requests are welcome on GitHub.
