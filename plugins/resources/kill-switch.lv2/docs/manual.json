@@ -1,25 +1,24 @@
 {
   "title": "Kill Switch",
   "eyebrow": "SrMouraSilva · Plugin manual",
-  "tagline": "Chop your signal in rhythm.",
-  "subtitle": "A rhythmic kill-switch effect for MOD Dwarf, MOD Duo X and MOD Duo",
+  "tagline": "Chop your signal in rhythm, a different one in each ear.",
+  "subtitle": "A stereo rhythmic kill-switch effect with 20 patterns and endings for the end of a song, for MOD Dwarf, MOD Duo X and MOD Duo",
   "badges": [
-    "10 patterns + your own",
-    "Tempo 40-240 BPM",
-    "3 levels per step"
+    "20 patterns + your own",
+    "Stereo rows",
+    "5 endings",
+    "Momentary footswitch"
   ],
   "edition": "User manual · November 2026 edition",
-  "version": "v1.0.15",
+  "version": "v1.0.23",
   "hero": "../modgui/screenshot.png",
   "brand": "#272a31",
   "brand2": "#0d0e11",
   "accent": "#b30f2f",
   "accentDark": "#ff7a8c",
   "colors": [
-    "#e3213f",
     "#f5f2ea",
-    "#8a877f",
-    "#2b2d34"
+    "#ff3d58"
   ],
   "links": [
     {
