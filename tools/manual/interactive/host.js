@@ -198,6 +198,41 @@
   }
   Host.setMidi = function (spec) { midiSpec = spec; midi = { preset: activePreset(), last: [], log: [], timer: 0 }; drawMidi(); measure(); fit(); };
 
+  // ------------------------------------------------------------------------------------------ an external controller
+  // For a plugin that only shows what a control did from OUTSIDE (Gossiper: a MIDI foot controller or a knob box), the manual draws
+  // that controller under the plugin, so the reader can press its footswitches and turn its knobs. It is not part of the plugin and
+  // says so. spec (interactive.json): { title, buttons: { port: "Footswitch_{n}", count: 7 }, knobs: { port: "Potentiometer_{n}", count: 4, max: 1 } }
+  // A button toggles its port between 1 and 0; a knob writes its port as a fraction of max
+  Host.setController = function (spec) {
+    stage.find('.ix-controller').remove();
+    var box = $('<div class="ix-controller" role="group">').attr('aria-label', spec.title);
+    box.append($('<p class="ix-ctl-title">').append($('<b>').text(spec.title), $('<small>').text(spec.note || '')));
+    if (spec.buttons) {
+      var row = $('<div class="ix-ctl-buttons">').appendTo(box);
+      for (var n = 1; n <= spec.buttons.count; n++) {
+        $('<button type="button" class="ix-ctl-button" aria-pressed="false">').attr({ 'data-n': n, 'data-port': spec.buttons.port.replace('{n}', n), 'aria-label': 'Footswitch ' + n + ' of the controller' }).append($('<b>').text(n)).appendTo(row);
+      }
+    }
+    if (spec.knobs) {
+      var knobs = $('<div class="ix-ctl-knobs">').appendTo(box);
+      for (var k = 1; k <= spec.knobs.count; k++) {
+        $('<label class="ix-ctl-knob">').attr('data-n', k).append($('<span>').text('P' + k),
+          $('<input type="range" min="0" max="100" value="0">').attr({ 'data-port': spec.knobs.port.replace('{n}', k), 'aria-label': 'Knob ' + k + ' of the controller' })).appendTo(knobs);
+      }
+    }
+    stage.append(box);
+    box.css({ top: icon[0].offsetHeight + 64, width: icon[0].offsetWidth });
+    box.on('click', '.ix-ctl-button', function () {
+      var on = $(this).attr('aria-pressed') !== 'true';
+      $(this).attr('aria-pressed', String(on)).toggleClass('is-on', on);
+      send({ type: 'change', symbol: $(this).attr('data-port'), value: on ? 1 : 0 });
+    });
+    box.on('input', '.ix-ctl-knob input', function () {
+      send({ type: 'change', symbol: $(this).attr('data-port'), value: (Number(this.value) / 100) * (spec.knobs.max || 1) });
+    });
+    measure(); fit();
+  };
+
   // ------------------------------------------------------------------------------------------ views
   function setView(name, quiet) {
     if (name === 'settings' && !settings.children().length) { return; }
@@ -224,7 +259,7 @@
     var el = icon[0];
     var base = el.getBoundingClientRect();
     var box = { left: 0, top: 0, right: base.width, bottom: base.height };
-    icon.find('.mod-pedal-input, .mod-pedal-output, .mod-actions, .ix-volt, .ix-midi').each(function () {
+    stage.find('.mod-pedal-input, .mod-pedal-output, .mod-actions, .ix-volt, .ix-midi, .ix-controller').each(function () {
       var r = this.getBoundingClientRect();
       box.left = Math.min(box.left, r.left - base.left);
       box.top = Math.min(box.top, r.top - base.top);

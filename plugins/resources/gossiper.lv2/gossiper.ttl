@@ -142,7 +142,7 @@ doap:maintainer [
 
     lv2:majorVersion 1 ;
     lv2:minorVersion 1 ;
-    lv2:microVersion 17 ;
+    lv2:microVersion 19 ;
 
 rdfs:comment """
 Gossiper shows a notification when a button is turned on or turned off.

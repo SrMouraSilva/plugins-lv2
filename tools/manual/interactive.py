@@ -212,7 +212,7 @@ def load_config(docs: Path, model: dict) -> dict:
         steps = [{**step, "title": inline(step.get("title", "")), "text": markdown.markdown(step["text"])} for step in tour["steps"]]
         tours.append({**tour, "steps": steps})
 
-    return {"title": model["title"], "views": views, "areas": areas, "tours": tours, "meters": raw.get("meters"), "midi": raw.get("midi"), "text": {**TEXT, **raw.get("text", {})},
+    return {"title": model["title"], "views": views, "areas": areas, "tours": tours, "meters": raw.get("meters"), "midi": raw.get("midi"), "controller": raw.get("controller"), "text": {**TEXT, **raw.get("text", {})},
             "frameTitle": raw.get("frameTitle", f'{model["title"]}: the plugin, to try')}
 
 

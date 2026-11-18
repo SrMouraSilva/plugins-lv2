@@ -117,7 +117,7 @@ printed: it says that the part is interactive.
 | `views` | Optional. By default `pedalboard`, and `settings` when the bundle has a `modgui:settingsTemplate`. The labels are the buttons of the page |
 | `areas` | What a tap says (section 5). The **order matters**: a tap is given to the first area that matches, so write the specific ones before the general ones |
 | `tours` | The guided tours (section 6) |
-| `meters`, `midi` | Optional: a box beside each CV jack with its voltage, and one beside a MIDI jack with its messages (see below) |
+| `meters`, `midi`, `controller` | Optional: a box beside each CV jack with its voltage, one beside a MIDI jack with its messages, and an external controller drawn under the plugin (see below) |
 | `text` | Optional: any of the words of the page (`TEXT` in `interactive.py`), to translate or rephrase |
 | `frameTitle` | Optional: the title of the frame for a screen reader |
 
@@ -131,6 +131,12 @@ kept in step with it: `{"select": "<the MIDI jack>", "count": 4, "channel": "MID
 "on": "Preset_{active}_output_{n}"}`. When the preset **changes**, for each output `n` (1 to `count`) it sends the control change `cc` on `channel` with 127 if the
 `on` port is 1 and 0 if not; with `changesOnly` it skips the outputs whose value equals the last one sent (all start at 0). Nothing is sent at load or when a
 switch moves. Say in the area of the jack that the box is the manual's, and give a tour step that looks at it (`"ring": ".ix-midi"`).
+
+`controller` is for a plugin that only shows what a control did **from outside** (Gossiper: a MIDI foot controller): the manual draws that controller under the plugin,
+inside the frame, so the reader can press its buttons and turn its knobs, and so the finger and the tours can too. It is
+`{"title": "MIDI controller", "note": "drawn by this manual", "buttons": {"port": "Footswitch_{n}", "count": 7}, "knobs": {"port": "Potentiometer_{n}", "count": 4, "max": 1}}`:
+a button toggles its port between 1 and 0, a knob writes its port as a fraction of `max`; both reach the script of the plugin as `change` events,
+as the host's would. It is not part of the plugin: describe it in an area (`.ix-ctl-button`, `.ix-ctl-knob`) and say so.
 
 `title`, `chip` and `kicker` are one line, and `text` is Markdown (it becomes HTML at build time). Inside any of them, `{name}` is replaced by the
 `data-name` of the part that was tapped (`{preset}` and `{output}` for `data-preset` and `data-output`), and `{title}` by its `title`

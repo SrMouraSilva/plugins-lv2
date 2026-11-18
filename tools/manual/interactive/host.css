@@ -115,6 +115,39 @@ body { background: #14161d; font-family: system-ui, -apple-system, "Segoe UI", R
 .ix-midi .is-title.is-new { color: #7cd6ff; }
 .ix-midi .is-none { font-style: italic; white-space: normal; }
 
+/* The external controller the manual draws under a plugin that only shows what a control did from outside */
+.ix-controller {
+  position: absolute;
+  left: 0;
+  box-sizing: border-box;
+  padding: 12px 18px 16px;
+  border-radius: 16px;
+  color: #cfd3ea;
+  background: #171a26;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14), 0 12px 30px rgba(0, 0, 0, .4);
+}
+.ix-ctl-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0 0 10px; font-size: 12px; }
+.ix-ctl-title b { letter-spacing: .12em; text-transform: uppercase; color: #aab1d6; }
+.ix-ctl-title small { color: #7f86a6; }
+.ix-ctl-buttons { display: flex; justify-content: space-between; gap: 8px; }
+.ix-ctl-button {
+  flex: 1 1 0;
+  max-width: 76px;
+  min-height: 46px;
+  border: 0;
+  border-radius: 50%/48%;
+  font: 800 17px/1 system-ui, sans-serif;
+  color: #8f95b3;
+  background: #232738;
+  box-shadow: inset 0 0 0 2px #2f3550, 0 3px 0 #0e1019;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.ix-ctl-button.is-on { color: #2a1d00; background: #ffc22e; box-shadow: inset 0 0 0 2px #ffdf8a, 0 0 16px rgba(255, 194, 46, .5), 0 3px 0 #8a6200; }
+.ix-ctl-knobs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px 18px; margin-top: 14px; }
+.ix-ctl-knob { display: flex; align-items: center; gap: 10px; font: 800 12px/1 system-ui, sans-serif; color: #aab1d6; }
+.ix-ctl-knob input { flex: 1; min-width: 0; min-height: 44px; margin: 0; accent-color: #ffc22e; cursor: pointer; touch-action: manipulation; }
+
 /* The buttons of the saved presets: MOD UI draws their icons from its own stylesheet */
 .mod-presets .btn { background-repeat: no-repeat; background-position: center center; }
 .mod-presets .btn.preset-btn-save { background-image: url(@save); }

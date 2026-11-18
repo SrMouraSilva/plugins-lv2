@@ -311,7 +311,7 @@ conventions of the Markdown (steps, callouts, video cards, recipes, FAQ, pins on
 ### The interactive manual
 
 A manual can have one section in which **the real plugin runs inside the page**: a ```` ```interactive ```` block in `manual.md` plus `docs/interactive.json`
-(the areas to tap and the guided tours). Full guide: [docs/interactive-manuals.md](docs/interactive-manuals.md); read it first. Done so far: Tetr4 Switch.
+(the areas to tap and the guided tours). Full guide: [docs/interactive-manuals.md](docs/interactive-manuals.md); read it first. Every plugin has one (section 3 of Kill Switch, Hept7 Switch and Gossiper, section 4 of Tetr4 Switch).
 
 * **It is never a copy of the interface.** `tools/manual/interactive.py` embeds the bundle's own icon and settings templates, stylesheet and script
   (in a same-origin `srcdoc` iframe) and runs them against `tools/manual/interactive/host.js`, a stand-in for MOD UI (jQuery 1.9.1, the start event, `funcs`,

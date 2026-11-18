@@ -244,7 +244,7 @@ python3 tools/manual/build_manual_html.py all     # plugins/resources/<plugin>.l
 
 Each manual is written once in Markdown and built into one self-contained page (cover, navigation, steps, callouts, video cards, dark theme, print style) that MOD UI can serve as `modgui:documentation`. See [docs/html-manuals.md](./docs/html-manuals.md). Needs `pip install markdown pillow`.
 
-A manual can also hold an **interactive section** (so far, Tetr4 Switch): the real plugin loaded in a frame of the page, with its pedalboard and settings views, parts to tap to read what they do, and guided tours (played, or one step at a time) in which a finger shows where to tap. It is drawn by JavaScript from the real files of the plugin, so it follows the interface when the manual is rebuilt. See [docs/interactive-manuals.md](./docs/interactive-manuals.md).
+A manual can also hold an **interactive section** (every plugin has one): the real plugin loaded in a frame of the page, with its pedalboard and settings views, parts to tap to read what they do, and guided tours (played, or one step at a time) in which a finger shows where to tap. It is drawn by JavaScript from the real files of the plugin, so it follows the interface when the manual is rebuilt. See [docs/interactive-manuals.md](./docs/interactive-manuals.md).
 
 ## Build
 

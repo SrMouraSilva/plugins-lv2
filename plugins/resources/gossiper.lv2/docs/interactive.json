@@ -1,0 +1,454 @@
+{
+  "controller": {
+    "title": "MIDI controller",
+    "note": "drawn by this manual; it stands for yours",
+    "buttons": {
+      "port": "Footswitch_{n}",
+      "count": 7
+    },
+    "knobs": {
+      "port": "Potentiometer_{n}",
+      "count": 4,
+      "max": 1
+    }
+  },
+  "areas": [
+    {
+      "id": "gear",
+      "view": "pedalboard",
+      "select": ".mod-actions .mod-settings",
+      "title": "The gear (MOD UI)",
+      "text": "MOD UI puts this gear above every plugin. It opens the **settings page**, the same one that **Settings** opens.",
+      "chip": "Gear",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "settings",
+      "view": "pedalboard",
+      "select": ".gp-open",
+      "title": "Settings",
+      "text": "Opens the settings page: where you link each footswitch and knob to a control, name the footswitches, set the volts of each knob and assign the pop-up slots.",
+      "kicker": "On the pedalboard",
+      "links": [
+        {
+          "label": "Setting it up on the device",
+          "href": "#setting-it-up-on-the-device"
+        }
+      ]
+    },
+    {
+      "id": "display",
+      "view": "pedalboard",
+      "select": ".gp-display",
+      "title": "A — Display",
+      "text": "Says **which control was used last** and what it did: `Footswitch 2 — ON`, or `Pot 3 — 63%`. It stays on, and lights up for a moment each time a control is used. On a device with no screen for plugin pop-ups, such as the **MOD Duo**, this is how you see a message.",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "label",
+      "view": "pedalboard",
+      "select": ".gp-label",
+      "title": "C — Name of footswitch {n}",
+      "text": "Tap and type a name (up to 15 characters): it is the text the **pop-up** and the display show for this footswitch.",
+      "chip": "Names",
+      "kicker": "On the pedalboard",
+      "links": [
+        {
+          "label": "Renaming a footswitch",
+          "href": "#renaming-a-footswitch"
+        }
+      ]
+    },
+    {
+      "id": "fs",
+      "view": "pedalboard",
+      "select": ".gp-fs",
+      "title": "B — Footswitch {n}",
+      "text": "A disc in a colour of its own: **lit while the footswitch is on**, and mirrored on its CV output (0 V / 10 V). The one used last is outlined. It only shows: a tap on it does nothing, the control is the one you assigned.",
+      "chip": "Footswitch indicators",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "pot",
+      "view": "pedalboard",
+      "select": ".gp-pot",
+      "title": "D — Potentiometer {n}",
+      "text": "The position of the knob (0 to 100%) as a meter, and the CV range (**Minimum** to **Maximum**, in volts) its 0 to 10 V output is scaled into. The one used last is outlined. To change the range, open the settings.",
+      "chip": "Potentiometers",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "cv-foot",
+      "view": "pedalboard",
+      "select": ".mod-output[mod-port-symbol^=\"Cv_output_\"]",
+      "title": "{title}",
+      "text": "The CV output of a footswitch: **10 V** while it is on, **0 V** while it is off. Route it to any CV-addressable parameter of another plugin (**Manage CV ports** in MOD UI).",
+      "chip": "Footswitch outputs",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "cv-pot",
+      "view": "pedalboard",
+      "select": ".mod-output[mod-port-symbol^=\"Cv_pot_output_\"]",
+      "title": "{title}",
+      "text": "The CV output of a potentiometer: its position, scaled between **Minimum** and **Maximum** volts.",
+      "chip": "Pot outputs",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "ctl-button",
+      "view": "pedalboard",
+      "select": ".ix-ctl-button",
+      "title": "Footswitch {n} of your controller",
+      "text": "This box is **not part of Gossiper**: it stands for your MIDI foot controller (or any device control assigned to the plugin). Press a button as the real one would: the plugin turns the message into the display, the disc and the CV output.",
+      "chip": "Controller buttons",
+      "kicker": "Not part of the plugin"
+    },
+    {
+      "id": "ctl-knob",
+      "view": "pedalboard",
+      "select": ".ix-ctl-knob",
+      "title": "Knob P{n} of your controller",
+      "text": "Not part of Gossiper: a knob or expression pedal of your controller. Its position goes out as the CV of **Pot {n}**, between Minimum and Maximum volts.",
+      "chip": "Controller knobs",
+      "kicker": "Not part of the plugin"
+    },
+    {
+      "id": "s-close",
+      "view": "settings",
+      "select": ".gps-close",
+      "title": "Close",
+      "text": "Goes back to the pedalboard.",
+      "kicker": "Settings page"
+    },
+    {
+      "id": "s-nav",
+      "view": "settings",
+      "select": ".gps-nav",
+      "title": "Pages",
+      "text": "The page never scrolls up and down: what does not fit goes on another page to the right. The **arrows** and the **dots** change the page, and on a touch screen you can also **swipe**.",
+      "kicker": "Settings page"
+    },
+    {
+      "id": "s-now",
+      "view": "settings",
+      "select": ".gps-now",
+      "title": "Last control used",
+      "text": "The same as the display of the pedal: the control that was used last.",
+      "kicker": "Settings page"
+    },
+    {
+      "id": "s-label",
+      "view": "settings",
+      "select": ".gps-label",
+      "title": "Name of footswitch {n}",
+      "text": "The name the pop-up and the display show for this footswitch. Up to 15 letters, digits, spaces and `+ - : _ .`.",
+      "chip": "Names",
+      "kicker": "Settings page · Footswitches"
+    },
+    {
+      "id": "s-assign-foot",
+      "view": "settings",
+      "select": ".gps-switches-panel .gps-address",
+      "title": "Assign footswitch",
+      "text": "Tap **Assign** and choose which control drives this footswitch: a **MIDI** message from your foot controller, a footswitch of the device, a CV signal. The button shows a check mark once it is assigned.",
+      "chip": "Assign footswitch",
+      "kicker": "Settings page · Hardware assignment",
+      "links": [
+        {
+          "label": "Setting it up on the device",
+          "href": "#setting-it-up-on-the-device"
+        }
+      ]
+    },
+    {
+      "id": "s-assign-pot",
+      "view": "settings",
+      "select": ".gps-pots-panel .gps-address:not(.gps-address-small)",
+      "title": "Assign potentiometer",
+      "text": "Link a knob or an expression pedal to this row. Its position goes out as a CV signal between Min and Max, and the pop-up shows its percentage once you stop moving it.",
+      "chip": "Assign potentiometer",
+      "kicker": "Settings page · Hardware assignment"
+    },
+    {
+      "id": "s-volts",
+      "view": "settings",
+      "select": ".gps-volts",
+      "title": "Min / Max of pot (volts)",
+      "text": "The CV range of the potentiometer, from 0 to 10 V: its 0% goes out as **Min** and its 100% as **Max**. Set Min higher than Max to turn the knob into an inverted control.",
+      "chip": "Min / Max volts",
+      "kicker": "Settings page · Potentiometers"
+    },
+    {
+      "id": "s-assign-minmax",
+      "view": "settings",
+      "select": ".gps-address-small",
+      "title": "Assign min / max",
+      "text": "Assigns the minimum or the maximum to another control of the device, so the range itself can be played.",
+      "kicker": "Settings page · Potentiometers"
+    },
+    {
+      "id": "s-pot",
+      "view": "settings",
+      "select": ".gps-pot",
+      "title": "Potentiometer {n}",
+      "text": "A row per knob: the position as a meter and a percentage, the control assigned to it and its voltage range.",
+      "chip": "Pot rows",
+      "kicker": "Settings page · Potentiometers"
+    },
+    {
+      "id": "s-tile",
+      "view": "settings",
+      "select": ".gps-tile",
+      "title": "Pop-up slot ({title})",
+      "text": "Decides **where** a pop-up shows. MOD devices only show a pop-up for a plugin whose parameter is linked to a control that is **visible on the screen**: link each slot to a page (and a knob or footswitch of it) you play from. Up to four. The MOD Duo cannot show pop-ups, so there these tiles are disabled.",
+      "chip": "Pop-up slots",
+      "kicker": "Settings page · Screen pop-ups",
+      "links": [
+        {
+          "label": "How the pop-up decides when to appear",
+          "href": "#how-the-pop-up-decides-when-to-appear"
+        }
+      ]
+    },
+    {
+      "id": "s-presets",
+      "view": "settings",
+      "select": ".mod-presets",
+      "title": "Saved presets",
+      "text": "Your own presets of the plugin.",
+      "chip": "Saved presets",
+      "kicker": "Settings page"
+    },
+    {
+      "id": "s-row",
+      "view": "settings",
+      "select": ".gps-row",
+      "title": "Control {n}",
+      "text": "One row for each control that Gossiper receives.",
+      "kicker": "Settings page"
+    }
+  ],
+  "tours": [
+    {
+      "id": "gossip",
+      "title": "See what a controller does",
+      "summary": "Press and turn a controller: the display, the discs and the CV follow.",
+      "steps": [
+        {
+          "title": "What Gossiper is for",
+          "text": "A MIDI foot controller can send messages but often has **no LED** to say whether a patch is on and **no screen** for a knob. Gossiper turns what it receives into a display, a disc, a CV signal and, on a device with a screen, a pop-up. The box under the plugin is **your controller** (drawn by this manual).",
+          "view": "pedalboard",
+          "ring": ".ix-controller"
+        },
+        {
+          "title": "Press a footswitch",
+          "text": "Press footswitch **2** of the controller. The display says **Footswitch 2 — ON**, its disc lights up, and `CV Foot - Out 2` goes to 10 V.",
+          "ring": ".ix-ctl-button[data-n=\"2\"]",
+          "do": [
+            {
+              "tap": ".ix-ctl-button[data-n=\"2\"]"
+            }
+          ]
+        },
+        {
+          "title": "Press another",
+          "text": "Footswitch **5**: the display now talks about it, and the one used last is outlined. The two stay on until they are turned off.",
+          "ring": ".ix-ctl-button[data-n=\"5\"]",
+          "do": [
+            {
+              "tap": ".ix-ctl-button[data-n=\"5\"]"
+            }
+          ]
+        },
+        {
+          "title": "Turn a knob",
+          "text": "Turn knob **P3** to about two thirds. The display says **Pot 3 — 63%**, the meter fills and the CV output of the pot follows, scaled between Minimum and Maximum volts.",
+          "ring": ".ix-ctl-knob[data-n=\"3\"] input",
+          "do": [
+            {
+              "set": ".ix-ctl-knob[data-n=\"3\"] input",
+              "value": 63
+            }
+          ]
+        },
+        {
+          "title": "Turn it off",
+          "text": "Press footswitch **2** again: **Footswitch 2 — OFF**, the disc goes dark and its output goes back to 0 V.",
+          "ring": ".ix-ctl-button[data-n=\"2\"]",
+          "do": [
+            {
+              "tap": ".ix-ctl-button[data-n=\"2\"]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "names",
+      "title": "Name your footswitches",
+      "summary": "The name is what the pop-up and the display say.",
+      "steps": [
+        {
+          "title": "Tap a name",
+          "text": "Tap the name under a disc and type. This is the text the **pop-up** and the display show for that footswitch (up to 15 characters).",
+          "view": "pedalboard",
+          "ring": ".gp-label[data-n=\"1\"]",
+          "do": [
+            {
+              "type": ".gp-label[data-n=\"1\"]",
+              "text": "Verse"
+            }
+          ]
+        },
+        {
+          "title": "Another one",
+          "text": "Name the others the same way: letters, digits, spaces and `+ - : _ .`; anything else becomes `_`.",
+          "ring": ".gp-label[data-n=\"2\"]",
+          "do": [
+            {
+              "type": ".gp-label[data-n=\"2\"]",
+              "text": "Chorus"
+            }
+          ]
+        },
+        {
+          "title": "Use it",
+          "text": "Press footswitch **1** of the controller: the display, and the pop-up on a device with a screen, say **Verse — ON**. The names are saved with the pedalboard.",
+          "ring": ".ix-ctl-button[data-n=\"1\"]",
+          "do": [
+            {
+              "tap": ".ix-ctl-button[data-n=\"1\"]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "volts",
+      "title": "Scale a knob in volts",
+      "summary": "Choose the CV range of a potentiometer.",
+      "steps": [
+        {
+          "title": "Open the settings page",
+          "text": "Tap **Settings** (or the gear above the plugin).",
+          "view": "pedalboard",
+          "ring": ".gp-open",
+          "do": [
+            {
+              "tap": ".gp-open"
+            }
+          ]
+        },
+        {
+          "title": "The potentiometers",
+          "text": "One row for each knob, with its **Min** and **Max** in volts. If the page has more than one, the arrows of the top bar take you to this one.",
+          "view": "settings",
+          "ring": ".gps-pots-panel"
+        },
+        {
+          "title": "Minimum",
+          "text": "Pot 1 goes out as a CV signal between Min and Max. Set **Min** to 2 V: the knob at 0% sends 2 V.",
+          "ring": ".gps-volts[data-port=\"minimum_1\"]",
+          "do": [
+            {
+              "type": ".gps-volts[data-port=\"minimum_1\"]",
+              "text": "2"
+            }
+          ]
+        },
+        {
+          "title": "Maximum",
+          "text": "And **Max** to 8 V: the knob at 100% sends 8 V. Anything between scales in a straight line.",
+          "ring": ".gps-volts[data-port=\"maximum_1\"]",
+          "do": [
+            {
+              "type": ".gps-volts[data-port=\"maximum_1\"]",
+              "text": "8"
+            }
+          ]
+        },
+        {
+          "title": "On the pedalboard",
+          "text": "The range is shown under the meter of the pot: **2.00 - 8.00 V**.",
+          "view": "pedalboard",
+          "ring": ".gp-pot[data-n=\"1\"]"
+        }
+      ]
+    },
+    {
+      "id": "setup",
+      "title": "Connect your controller",
+      "summary": "Assign a footswitch and a pop-up slot, step by step.",
+      "steps": [
+        {
+          "title": "Open the settings page",
+          "text": "Tap **Settings**. Each panel starts with **Hardware assignment**: the step where you choose which control drives that parameter.",
+          "view": "pedalboard",
+          "ring": ".gp-open",
+          "do": [
+            {
+              "tap": ".gp-open"
+            }
+          ]
+        },
+        {
+          "title": "Assign the control",
+          "text": "In **Footswitches**, tap **Assign** next to *Footswitch 1*. MOD UI opens its own assignment dialog (drawn here in a simplified way): choose **MIDI**, send the message from your controller, and save.",
+          "view": "settings",
+          "ring": ".gps-switches-panel .gps-address",
+          "do": [
+            {
+              "tap": ".gps-switches-panel .gps-address"
+            }
+          ]
+        },
+        {
+          "title": "Save",
+          "text": "The button shows a check mark once it is assigned. Repeat for as many footswitches and knobs as you feed in.",
+          "ring": ".ix-ok",
+          "do": [
+            {
+              "wait": 500
+            },
+            {
+              "tap": ".ix-ok"
+            }
+          ]
+        },
+        {
+          "title": "Assign a pop-up slot",
+          "text": "Do the same for one of the four **Screen pop-ups** slots: it decides *where* the pop-up will show. Pick a page of the device, and a knob or footswitch of it (B or C on a Dwarf): while that page is on the screen, that is where the pop-up appears.",
+          "ring": ".gps-tile[mod-port-symbol=\"Assign_to_notify_1\"]",
+          "do": [
+            {
+              "tap": ".gps-tile[mod-port-symbol=\"Assign_to_notify_1\"]"
+            },
+            {
+              "wait": 500
+            },
+            {
+              "tap": ".ix-ok"
+            }
+          ]
+        },
+        {
+          "title": "Press the button",
+          "text": "Now press the button on your controller: its name pops up on the device screen, the disc lights up on the plugin and the CV output goes to 10 V. (Here, press it on the box.)",
+          "view": "pedalboard",
+          "ring": ".ix-ctl-button[data-n=\"1\"]",
+          "do": [
+            {
+              "tap": ".ix-ctl-button[data-n=\"1\"]"
+            }
+          ]
+        },
+        {
+          "title": "No pop-up?",
+          "text": "A pop-up only appears while the control you assigned to a slot is **visible on the device screen**. Without it, the display of the plugin and the CV outputs keep working: on a MOD Duo (no screen for pop-ups) the display is the feedback.",
+          "ring": ".gp-display"
+        }
+      ]
+    }
+  ]
+}

@@ -33,10 +33,29 @@ visible on the screen.
 | **B — Footswitch indicator** | A disc in a colour of its own for each footswitch. Lit while the footswitch is ON, and mirrored on `CV Output N` (0 V / 10 V). The one used last is outlined. | Only visualization status. Clicking on it does nothing. |
 | **C — Footswitch label** | Click and type a name (up to 15 characters): this is the text the pop-up and the display show for that footswitch. | Editable field |
 | **D — Potentiometer** | The position of the knob (0–100 %) as a meter, and the CV range (`Minimum`–`Maximum`, in volts) its 0–10 V output is scaled into. The one used last is outlined. | Only visualization status. To change the range, open the settings. |
-| **E — Settings** | Opens the settings page (section 3). The gear icon above the plugin opens it too. | Button |
+| **E — Settings** | Opens the settings page (section 4). The gear icon above the plugin opens it too. | Button |
 | **F — CV outputs** | `1`–`7` are the footswitches and `P1`–`P4` the potentiometers. | Jacks |
 
-## 2. What it's for
+## 2. Interactive manual
+
+Here the plugin is **the real one**: the same interface, the same script, running inside the manual. Press **Open the interactive manual**
+under the picture to open it **full screen** (Esc or **Close** brings you back). Nothing you do is saved or sent anywhere, and **Reset** puts it
+back the way it starts.
+
+* **Explore**: tap any part of the plugin to read what it is for, or pick it from the list under the picture. **Show areas** outlines
+  everything that can be tapped. Use the buttons at the top to switch between the plugin **on the pedalboard** and its **settings page**.
+* **Guided tours**: step-by-step walkthroughs of the common tasks. A finger shows where to tap.
+  Go forward and back with **Next** and **Back**: every step says what is happening and shows it in the plugin.
+
+> [!NOTE] The box under the plugin is your controller
+> Gossiper only shows what a control did **from outside**, so there is nothing to press on the plugin itself. The box drawn under it stands
+> for your MIDI foot controller: press its buttons and turn its knobs, and watch the display, the discs and the CV follow. It is
+> not part of the plugin.
+
+```interactive
+```
+
+## 3. What it's for
 
 A MIDI foot controller (say, a cheap "Chocolate"-style box) can send Program
 Change or CC messages, but usually has no LED to confirm whether a patch is
@@ -56,7 +75,7 @@ From then on, every time that MIDI controller sends a message, you see it
 confirmed on the device screen — without needing to look down at an
 unlit external box.
 
-## 3. Setting it up on the device
+## 4. Setting it up on the device
 
 > [!TIP] The shortest path
 > Open the settings page, tap **Assign** next to *Footswitch 1* and press the button of your controller; then tap
@@ -116,7 +135,7 @@ potentiometer, and keeps your own presets (**Saved presets**).
 > plugin itself (item A, section 1) is the feedback there. Open the pedalboard and look at it. On the MOD Duo the
 > *Screen pop-ups* slots of the settings page are disabled, with a note that says why.
 
-## 4. How the pop-up decides when to appear
+## 5. How the pop-up decides when to appear
 
 ![Flow: a control changes, Gossiper checks for an assigned notify slot, then pops up only there](images/notification-flow.svg)
 
@@ -211,7 +230,7 @@ The value is the position of the knob, from 0 to 100%, not the voltage on the CV
 
 ![The states of Potentiometers](images/gossiper-potentiometers-states.webp)
 
-## 5. Renaming a footswitch
+## 6. Renaming a footswitch
 
 Click a footswitch's label field and type a new name (up to 15 characters).
 Allowed characters are letters, digits, spaces and `+ - : _ .`; anything
@@ -220,7 +239,7 @@ footswitch, and it's saved with the pedalboard/preset.
 
 ![Renaming Footswitch 2 on the pedal](images/step-rename.webp)
 
-## 6. Why bother: one real example
+## 7. Why bother: one real example
 
 Gossiper can also replace stacks of "Control to CV" utility plugins: one Gossiper with several
 footswitches and potentiometers assigned does the job of many single-purpose CV converters, at a fraction of the CPU
@@ -229,7 +248,7 @@ cost.
 For instance, [a forum user reported that, after replacing those plugins with Gossiper, the Dwarf's CPU usage went down
 from 81% to 72%](https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happening-when-you-are-looking-it/9660/20?u=srmourasilva).
 
-## 7. Tips
+## 8. Tips
 
 ### Name the footswitches after what they do
 
@@ -258,7 +277,7 @@ resolution on the knob.
 The pop-up of a potentiometer waits for the value to settle, so it is for confirming a position, not for watching a
 value change continuously. Use the display on the plugin for that.
 
-## 8. Questions & answers
+## 9. Questions & answers
 
 ### The pop-up never appears.
 
@@ -291,7 +310,7 @@ the controller, or the parameter in the plugin's own addressing.
 
 Yes. The label of each footswitch is saved with the pedalboard and with the plugin presets.
 
-## 9. Port reference
+## 10. Port reference
 
 | Port | Type | Description |
 |---|---|---|
@@ -303,12 +322,12 @@ Yes. The label of each footswitch is saved with the pedalboard and with the plug
 | `CV Pot - Out 1`–`4` | CV output | `Potentiometer N` scaled into `[Minimum N, Maximum N]` volts. |
 | Footswitch label 1–7 | Plugin property (patch) | The custom name for each footswitch, edited from the GUI text field. |
 
-## 10. Specifications
+## 11. Specifications
 
 | Field | Value |
 |---|---|
 | Plugin name | Gossiper |
-| Version | 1.1.17 (the version of the plugin this manual is for) |
+| Version | 1.1.19 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/gossiper` |
 | Audio I/O | None |

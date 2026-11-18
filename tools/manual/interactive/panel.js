@@ -134,6 +134,7 @@
           host.handlers.view = function (name) { view = name; syncView(); };
           if (cfg.meters && host.setMeters) { host.setMeters(cfg.meters); }
           if (cfg.midi && host.setMidi) { host.setMidi(cfg.midi); }
+          if (cfg.controller && host.setController) { host.setController(cfg.controller); }
           host.showAreas(areasButton.getAttribute('aria-pressed') === 'true');
           host.view(view, true);
           syncView();
