@@ -235,12 +235,13 @@
   function fit() {
     if (!natural) { measure(); }
     var width = natural.right - natural.left, height = natural.bottom - natural.top;
-    var scale = Math.min(1, (innerWidth - 2 * pad()) / width, (innerHeight - 2 * pad()) / height);
+    var scale = Math.min(Host.maxScale || 1, (innerWidth - 2 * pad()) / width, (innerHeight - 2 * pad()) / height);
     Host.scale = scale;
     stage.css('transform', 'scale(' + scale + ') translate(' + (-(natural.left + width / 2)) + 'px,' + (-(natural.top + height / 2)) + 'px)');
     refresh();
   }
   window.addEventListener('resize', function () { fit(); });
+  Host.refit = function () { measure(); fit(); };
 
   // ------------------------------------------------------------------------------------------ what is on the screen
   var overlay = $('<div class="ix-overlay" aria-hidden="true">').appendTo(doc.body);
@@ -502,6 +503,12 @@
     $(this).closest('.mod-presets').find('.mod-preset-factory').toggleClass('mod-hidden', user).end().find('.mod-preset-user').toggleClass('mod-hidden', !user);
   });
   $('<style>.mod-hidden { display: none !important; }</style>').appendTo(doc.head);
+
+  // Escape closes the dialog of the host first, then asks the page around the frame to leave full screen
+  doc.addEventListener('keydown', function (event) {
+    if (event.key !== 'Escape') { return; }
+    if (!dialog.prop('hidden')) { dialog.prop('hidden', true); } else if (Host.handlers.escape) { Host.handlers.escape(); }
+  });
 
   Host.hasDialog = function () { return !dialog.prop('hidden'); };
 

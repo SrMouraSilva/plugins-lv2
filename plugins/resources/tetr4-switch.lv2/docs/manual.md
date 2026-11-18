@@ -141,8 +141,9 @@ USE
 
 ## 4. Interactive manual
 
-Here the plugin is **the real one**: the same interface, the same script, running inside the manual. Nothing you do is saved or sent
-anywhere, and **Reset** puts it back the way it starts.
+Here the plugin is **the real one**: the same interface, the same script, running inside the manual. Press **Open the interactive manual**
+under the picture to open it **full screen** (Esc or **Close** brings you back). Nothing you do is saved or sent anywhere, and **Reset** puts it
+back the way it starts.
 
 * **Explore**: tap any part of the plugin to read what it is for, or pick it from the list under the picture. **Show areas** outlines
   everything that can be tapped. Use the buttons at the top to switch between the plugin **on the pedalboard** and its **settings page**.

@@ -50,23 +50,29 @@
     var areasButton = button('ix-btn', T.showAreas, { 'aria-pressed': 'false' });
     var resetButton = button('ix-btn', T.reset);
 
+    var closeButton = button('ix-btn ix-close', '<span aria-hidden="true">&#10005;</span> ' + T.close);
     var top = el('div', 'ix-top');
+    top.appendChild(el('p', 'ix-title', esc(cfg.title)));
     top.appendChild(seg(T.mode, [modeButtons.explore, modeButtons.tour]));
     var tools = el('div', 'ix-tools');
     if (hasSettings) { tools.appendChild(seg(T.view, views.map(function (v) { return viewButtons[v.id]; }))); }
     tools.appendChild(areasButton);
     tools.appendChild(resetButton);
     top.appendChild(tools);
+    top.appendChild(closeButton);
 
     var stageBox = el('div', 'ix-stage');
     var frame = el('iframe', 'ix-frame is-loading');
     frame.title = cfg.frameTitle;
     frame.setAttribute('loading', 'lazy');
     var shield = el('div', 'ix-shield'); shield.hidden = true;
+    // The preview: what the section shows until the reader opens it. It is the plugin itself, with a button over it
+    var launch = button('ix-launch', '<span class="ix-launch-label"><span aria-hidden="true">&#9974;</span> ' + esc(T.open) + '</span>');
+    launch.setAttribute('aria-label', T.open);
     var loading = el('div', 'ix-loading', T.loading);
-    stageBox.appendChild(frame); stageBox.appendChild(shield); stageBox.appendChild(loading);
+    stageBox.appendChild(frame); stageBox.appendChild(shield); stageBox.appendChild(loading); stageBox.appendChild(launch);
 
-    var hint = el('p', 'ix-hint', esc(T.phoneHint)); hint.hidden = true;
+    var caption = el('p', 'ix-caption', T.launchHint);
     var explore = el('div', 'ix-explore');
     var card = el('div', 'ix-card is-empty'); card.setAttribute('aria-live', 'polite');
     var chipsTitle = el('p', 'ix-chips-title', T.parts);
@@ -95,7 +101,14 @@
 
     var printNote = el('p', 'ix-print', '<em>' + esc(T.print) + '</em>');
     root.textContent = '';
-    root.appendChild(top); root.appendChild(stageBox); root.appendChild(hint); root.appendChild(explore); root.appendChild(picker); root.appendChild(player); root.appendChild(printNote);
+    // The app is what opens in full screen; the root stays where it is in the page, so nothing around it moves
+    var app = el('div', 'ix-app');
+    var side = el('div', 'ix-side');
+    [explore, picker, player].forEach(function (n) { side.appendChild(n); });
+    var main = el('div', 'ix-main');
+    main.appendChild(stageBox); main.appendChild(side);
+    app.appendChild(top); app.appendChild(main);
+    root.appendChild(app); root.appendChild(caption); root.appendChild(printNote);
     root.removeAttribute('data-ix-loading');
 
     // ---------------------------------------------------------------- the frame
@@ -116,6 +129,8 @@
           loading.hidden = true;
           host.setAreas(areasOf(view));
           host.handlers.select = onSelect;
+          host.handlers.escape = function () { if (full) { closeFull(); } };
+          host.maxScale = full ? 1.6 : 1;
           host.handlers.view = function (name) { view = name; syncView(); };
           if (cfg.meters && host.setMeters) { host.setMeters(cfg.meters); }
           if (cfg.midi && host.setMidi) { host.setMidi(cfg.midi); }
@@ -145,7 +160,11 @@
       var gap = width < 500 ? 12 : 36;
       return Math.round(nat.height * Math.min(1, (width - gap) / nat.width) + gap);
     }
-    function resize() { frame.style.height = frameHeight() + 'px'; hint.hidden = !(hasSettings && view === 'pedalboard' && stageBox.clientWidth < 560); }
+    function resize() {
+      // In full screen the frame fills what the stage gets (the stylesheet); in the page it is as tall as its view needs
+      frame.style.height = full ? '' : frameHeight() + 'px';
+      if (host && host.refit) { host.maxScale = full ? 1.6 : 1; host.refit(); }
+    }
     if ('ResizeObserver' in window) { new ResizeObserver(resize).observe(stageBox); } else { window.addEventListener('resize', resize); }
 
     function areasOf(name) {
@@ -168,6 +187,50 @@
       syncView();
     }
     views.forEach(function (v) { viewButtons[v.id].addEventListener('click', function () { setView(v.id); showIntro(); }); });
+
+    // ---------------------------------------------------------------- full screen
+    var full = false;
+    var opener = null;
+    function openFull() {
+      if (full) { return; }
+      full = true;
+      opener = launch;
+      root.style.minHeight = root.offsetHeight + 'px';     // the page does not jump while the app leaves it
+      app.classList.add('is-full');
+      app.setAttribute('role', 'dialog'); app.setAttribute('aria-modal', 'true'); app.setAttribute('aria-label', cfg.frameTitle);
+      document.documentElement.classList.add('ix-lock');
+      if (!started) { load(); }
+      resize();
+      closeButton.focus();
+    }
+    function closeFull() {
+      if (!full) { return; }
+      setMode('explore');
+      if (host) { host.showAreas(false); host.ring(null); host.hideFinger(); }
+      areasButton.setAttribute('aria-pressed', 'false');
+      if (view !== views[0].id) { setView(views[0].id); }
+      showIntro();
+      full = false;
+      app.classList.remove('is-full');
+      app.removeAttribute('role'); app.removeAttribute('aria-modal'); app.removeAttribute('aria-label');
+      document.documentElement.classList.remove('ix-lock');
+      root.style.minHeight = '';
+      resize();
+      if (opener) { opener.focus({ preventScroll: true }); }
+    }
+    launch.addEventListener('click', openFull);
+    closeButton.addEventListener('click', closeFull);
+    document.addEventListener('keydown', function (event) {
+      if (full && event.key === 'Escape') { closeFull(); }
+      // Tab stays inside the app while it is open
+      if (full && event.key === 'Tab') {
+        var focusable = [].slice.call(app.querySelectorAll('button:not(:disabled), a[href], iframe')).filter(function (n) { return n.offsetParent !== null; });
+        if (!focusable.length) { return; }
+        var first = focusable[0], last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { last.focus(); event.preventDefault(); }
+        else if (!event.shiftKey && document.activeElement === last) { first.focus(); event.preventDefault(); }
+      }
+    });
 
     // ---------------------------------------------------------------- explore
     var selected = null;

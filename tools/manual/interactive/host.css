@@ -114,7 +114,7 @@ body { background: #14161d; font-family: system-ui, -apple-system, "Segoe UI", R
 .ix-midi .is-title { margin-top: 3px; color: #6e7599; }
 .ix-midi .is-new { color: #dfe3ff; }
 .ix-midi .is-title.is-new { color: #7cd6ff; }
-.ix-midi .is-none { font-style: italic; }
+.ix-midi .is-none { font-style: italic; white-space: normal; }
 
 /* The buttons of the saved presets: MOD UI draws their icons from its own stylesheet */
 .mod-presets .btn { background-repeat: no-repeat; background-position: center center; }

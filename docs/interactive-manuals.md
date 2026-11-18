@@ -39,6 +39,12 @@ The build (`tools/manual/build_manual_html.py`) puts three things in `modgui/man
 3. **The page around the frame** (`panel.js`, `panel.css`): the buttons, the description card, the tours and their player. It is
    added to the manual only when it has an interactive block.
 
+In the page, the section is only a **preview**: the plugin (live, on the pedalboard) with a button over it, *Open the interactive manual*. The button opens the
+whole thing **full screen** (an overlay over the window, `position: fixed`, not the browser's Fullscreen API, which iOS does not give to a page): the frame fills the
+left, and a column at the right holds what to read and do (what a tap says, the parts to tap, the tours); in a narrow or portrait window the column goes under the frame
+and the top bar becomes one row that scrolls sideways. *Close*, or Esc, goes back to the page (the frame is never moved or reloaded to open or close it, and the section keeps its
+height in the page, so nothing jumps). The pedalboard view can grow up to 1.6 times its size to use the room.
+
 At run time the frame is a **same-origin `srcdoc` iframe**, loaded when the section comes near the screen (a manual is long and most readers
 never reach it). The frame isolates the two stylesheets from each other (the stylesheet of a plugin is global) and gives the settings page the viewport
 it expects, so its layout by pages works exactly as on a device. The page and the frame talk directly (`frame.contentWindow.Host`).
@@ -198,6 +204,7 @@ look at `hostSelects`, and keep it generic by what the TTL has (the ports), not 
 Build, open `modgui/manual.html` in a browser (also from `file://`: it must work offline) and go to the section. Check, at **phone (390), tablet (820)
 and desktop (1440) widths**, light and dark:
 
+* the preview loads, the button opens the full screen, Esc and *Close* close it and the focus goes back to the button; with a long page behind it nothing jumps;
 * the frame loads, the two views show, *Show areas* outlines what the chips list, a tap on each part says the right thing;
 * every tour, with **Next** from step 1 to the end, then **Back** to the middle: the description always agrees with the frame;
 * with **prefers-reduced-motion** the finger does not glide and the ring does not pulse.
@@ -213,5 +220,5 @@ Raise `lv2:microVersion` of the plugin and the version of the manual when the ma
 
 * The frame is **at most as faithful as the host**: a plugin whose script needs more of MOD UI than `host.js` gives (pop-ups, the Performance view)
   shows what it can. Anything the script needs and the host lacks shows as an error in the console of the frame.
-* A phone shows the pedalboard view small (the plugin is 600 px wide): the page says so and suggests the settings page, which is made for touch.
+* On a phone the pedalboard view is still small even in full screen (the plugin is 600 px wide): the settings page, made for touch, is the better one there.
 * Sound is not part of it: nothing here makes a signal.

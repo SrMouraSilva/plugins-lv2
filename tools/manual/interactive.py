@@ -38,7 +38,9 @@ TEXT = {
     "failed": "The plugin could not be loaded here. Open this manual in a browser.",
     "intro": "<strong>Tap any part of the plugin</strong> to read what it is for. It is the real interface, so you can also use it: nothing here is saved or sent anywhere. "
              "<em>Reset</em> puts it back the way it starts.",
-    "phoneHint": "On a small screen the plugin is drawn small. The settings page is made for touch: try that view.",
+    "open": "Open the interactive manual",
+    "close": "Close",
+    "launchHint": "Tap a part of the plugin to read what it does, or follow a guided tour. It opens full screen.",
     "parts": "Parts you can tap",
     "chooseTour": "Pick a task",
     "allTours": "All tours",
@@ -210,7 +212,7 @@ def load_config(docs: Path, model: dict) -> dict:
         steps = [{**step, "title": inline(step.get("title", "")), "text": markdown.markdown(step["text"])} for step in tour["steps"]]
         tours.append({**tour, "steps": steps})
 
-    return {"views": views, "areas": areas, "tours": tours, "meters": raw.get("meters"), "midi": raw.get("midi"), "text": {**TEXT, **raw.get("text", {})},
+    return {"title": model["title"], "views": views, "areas": areas, "tours": tours, "meters": raw.get("meters"), "midi": raw.get("midi"), "text": {**TEXT, **raw.get("text", {})},
             "frameTitle": raw.get("frameTitle", f'{model["title"]}: the plugin, to try')}
 
 

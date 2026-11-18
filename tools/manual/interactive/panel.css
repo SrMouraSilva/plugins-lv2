@@ -63,8 +63,6 @@
 .ix-loading[hidden] { display: none; }
 
 
-.ix-hint { margin: 10px 2px 0; font-size: 13.5px; color: var(--muted); }
-.ix-hint[hidden] { display: none; }
 
 /* ---------------------------------------------------------------- explore: what a tap says */
 .ix-card {
@@ -173,6 +171,72 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ix-frame, .ix-bar i, .ix-tour { transition: none; }
+}
+
+/* ---------------------------------------------------------------- the preview in the page, and the full screen
+   In the page the section is only the plugin with a button over it. The button opens .ix-app over the whole window: the frame fills the
+   left, what to read and do (what a tap says, the tours) is in a column at the right, and a phone puts it under the frame. */
+.ix-title { margin: 0; font-size: 16px; font-weight: 800; letter-spacing: .02em; color: var(--head); }
+.ix-close { margin-left: auto; }
+.ix-app:not(.is-full) .ix-top, .ix-app:not(.is-full) .ix-side { display: none; }
+.ix-app:not(.is-full) .ix-close { display: none; }
+.ix-launch {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: end center;
+  padding: 0 0 18px;
+  border: 0;
+  background: linear-gradient(180deg, rgba(8, 10, 24, 0) 45%, rgba(8, 10, 24, .62));
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.ix-launch-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font: 800 16px/1 var(--font);
+  color: #fff;
+  background: var(--accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .45), inset 0 0 0 1px rgba(255, 255, 255, .22);
+  transition: transform .15s, filter .15s;
+}
+.ix-launch:hover .ix-launch-label { transform: translateY(-2px); filter: brightness(1.1); }
+.ix-launch:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+.ix-app.is-full .ix-launch { display: none; }
+.ix-caption { margin: 12px 2px 0; font-size: 14.5px; color: var(--muted); }
+html.ix-lock { overflow: hidden; }
+
+.ix-app.is-full {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+.ix-app.is-full .ix-top { flex: none; gap: 10px 14px; justify-content: flex-start; margin: 0; padding: 10px 16px; background: var(--sheet); box-shadow: 0 1px 0 var(--line); }
+.ix-app.is-full .ix-tools { align-items: center; }
+.ix-app.is-full .ix-main { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) clamp(340px, 30vw, 460px); }
+.ix-app.is-full .ix-stage { min-height: 0; border-radius: 0; box-shadow: none; }
+.ix-app.is-full .ix-frame { height: 100%; }
+.ix-app.is-full .ix-side { min-height: 0; overflow: auto; padding: 18px 18px 28px; background: var(--sheet); box-shadow: -1px 0 0 var(--line); }
+.ix-app.is-full .ix-explore > .ix-card:first-child, .ix-app.is-full .ix-picker > .ix-chips-title:first-child { margin-top: 0; }
+.ix-app.is-full .ix-tours { grid-template-columns: 1fr; }
+@media (max-width: 900px), (max-aspect-ratio: 1/1) {
+  .ix-app.is-full .ix-main { grid-template-columns: 1fr; grid-template-rows: minmax(240px, 52%) minmax(0, 1fr); }
+  .ix-app.is-full .ix-side { box-shadow: 0 -1px 0 var(--line); }
+  .ix-app.is-full .ix-title { display: none; }
+  /* One row that scrolls sideways, so the frame keeps the room; Close is the first thing in it */
+  .ix-app.is-full .ix-top { flex-wrap: nowrap; gap: 8px; padding: 8px 12px; overflow-x: auto; scrollbar-width: none; }
+  .ix-app.is-full .ix-top::-webkit-scrollbar { display: none; }
+  .ix-app.is-full .ix-top > *, .ix-app.is-full .ix-tools { flex: none; flex-wrap: nowrap; width: auto; }
+  .ix-app.is-full .ix-tools .ix-btn { flex: none; }
+  .ix-app.is-full .ix-close { order: -1; margin-left: 0; }
 }
 
 /* On paper there is nothing to touch */
