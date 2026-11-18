@@ -169,6 +169,9 @@ Actions:
 | `{"tap": "selector"}` | The finger glides to the first **visible** element that matches, presses, and the page gets the clicks and pointer events of a touch |
 | `{"tap": "selector", "has": "text"}` | The same, for the first one whose text holds `text` (a factory preset by its name: its position is not a good selector) |
 | `{"type": "selector", "text": "Lead"}` | Taps a text field and types into it, one letter at a time (the plugin gets real `input` events) |
+| `{"tap": "selector", "times": 10}` | The same button again and again (the finger stays on it): a tempo that goes up, an arrow that goes round. Taps, not a held press, so that **Back** can redo them at once |
+| `{"tap": "selector", "or": [actions]}` | What to do **instead** when the target is not there (the choice of a pattern is a grid on a big screen and arrows on a small one) |
+| `{"set": "selector", "value": 50}` | Drags a slider (`input type="range"`): the finger takes the knob and the value follows it |
 | `{"wait": 500}` | A pause, in ms |
 | `{"view": "settings"}` | Changes the view in the middle of a step |
 

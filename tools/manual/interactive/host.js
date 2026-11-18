@@ -285,6 +285,14 @@
           return true;
         }
       }
+      // A list that scrolls up and down (the factory presets): bring the item into it
+      if ((overflow === 'auto' || overflow === 'scroll' || getComputedStyle(node).overflowY === 'auto' || getComputedStyle(node).overflowY === 'scroll') && node.scrollHeight > node.clientHeight + 1) {
+        var rv = el.getBoundingClientRect(), nv = node.getBoundingClientRect();
+        if (rv.top < nv.top || rv.bottom > nv.bottom) {
+          node.scrollTo({ top: node.scrollTop + (rv.top - nv.top) - Math.max(0, (nv.height - rv.height) / 2), behavior: instant || reduced ? 'auto' : 'smooth' });
+          return true;
+        }
+      }
     }
     return false;
   }
@@ -420,14 +428,15 @@
   // Taps the first element that matches: the finger glides there, presses and lets go, and the page gets the clicks a touch would send
   Host.tap = async function (target, options) {
     var instant = !!(options && options.instant);
+    var quick = !!(options && options.quick);
     var el = resolve(target);
     if (!el) { Host.log.push(['tap: nothing at', String(target)]); return false; }
     if (reveal(el, instant)) { await sleep(instant ? 0 : 650 / Host.speed); }
     if (!instant) {
-      await glideTo(el);
+      if (quick) { fingerEl.addClass('is-on'); } else { await glideTo(el); }
       fingerEl.addClass('is-down');
       el.classList.add('ix-pressed');
-      await sleep(120 / Host.speed);
+      await sleep((quick ? 70 : 120) / Host.speed);
       var p = centre(el);
       var ripple = doc.createElement('div');
       ripple.className = 'ix-ripple';
@@ -446,8 +455,48 @@
     if (!instant) {
       el.classList.remove('ix-pressed');
       fingerEl.removeClass('is-down');
-      await sleep(160 / Host.speed);
+      await sleep((quick ? 90 : 160) / Host.speed);
     }
+    return true;
+  };
+
+  // Drags a slider (an input of type range) to a value: the finger takes the knob and the value follows it
+  Host.set = async function (target, value, options) {
+    var instant = !!(options && options.instant);
+    var el = resolve(target);
+    if (!el) { Host.log.push(['set: nothing at', String(target)]); return false; }
+    if (reveal(el, instant)) { await sleep(instant ? 0 : 650 / Host.speed); }
+    var min = Number(el.min || 0), max = Number(el.max || 100), from = Number(el.value);
+    var write = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+    var put = function (v) { write.call(el, String(v)); el.dispatchEvent(new Event('input', { bubbles: true })); };
+    var place = function (v) {
+      var r = el.getBoundingClientRect(), f = (v - min) / ((max - min) || 1);
+      return { x: r.left + 10 + f * (r.width - 20), y: r.top + r.height / 2 };
+    };
+    synthetic = true;
+    try {
+      if (instant) { put(value); el.dispatchEvent(new Event('change', { bubbles: true })); return true; }
+      var p = place(from);
+      fingerEl[0].style.setProperty('--glide', (reduced ? 0 : 0.7 / Host.speed) + 's');
+      if (!fingerAt) { fingerEl[0].style.setProperty('--glide', '0s'); fingerPos(p.x, p.y - 60); void fingerEl[0].offsetWidth; fingerEl[0].style.setProperty('--glide', (0.7 / Host.speed) + 's'); }
+      fingerEl.addClass('is-on'); fingerPos(p.x, p.y); fingerAt = p;
+      await sleep((reduced ? 120 : 760) / Host.speed);
+      fingerEl.addClass('is-down');
+      await sleep(140 / Host.speed);
+      var steps = reduced ? 1 : 14;
+      fingerEl[0].style.setProperty('--glide', '0.06s');
+      for (var i = 1; i <= steps; i++) {
+        var v = from + (value - from) * i / steps;
+        put(Math.round(v));
+        var q = place(v); fingerPos(q.x, q.y); fingerAt = q;
+        await sleep(45 / Host.speed);
+      }
+      put(value);
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      await sleep(200 / Host.speed);
+      fingerEl.removeClass('is-down');
+      await sleep(160 / Host.speed);
+    } finally { synthetic = false; }
     return true;
   };
 

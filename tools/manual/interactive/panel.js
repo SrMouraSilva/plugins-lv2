@@ -345,7 +345,25 @@
       if (step.ring === false) { return null; }
       if (step.ring) { return step.ring; }
       var first = step.do && step.do[0];
-      return first && (first.tap || first.type) ? (first.has ? { select: first.tap || first.type, has: first.has } : first.tap || first.type) : null;
+      var sel = first && (first.tap || first.type || first.set);
+      return sel ? (first.has ? { select: sel, has: first.has } : sel) : null;
+    }
+
+    // One action of a step. `or`: what to do instead when the target is not there (the choice of a pattern is a grid on a big
+    // screen and arrows on a small one)
+    async function doAction(action, instant) {
+      var sel = action.tap || action.type || action.set;
+      var target = action.has ? { select: sel, has: action.has } : sel;
+      var done = true;
+      if (action.tap) {
+        // times: the same button again and again (the finger stays on it)
+        for (var n = 0; n < (action.times || 1); n++) { done = await host.tap(target, { instant: instant, quick: n > 0 }); if (!done) { break; } }
+      }
+      else if (action.set) { done = await host.set(target, action.value, { instant: instant }); }
+      else if (action.type) { done = await host.type(target, action.text || '', { instant: instant }); }
+      else if (action.wait) { if (!instant) { await sleep(action.wait); } }
+      else if (action.view) { host.view(action.view, true); view = action.view; syncView(); }
+      if (!done && action.or) { for (var k = 0; k < action.or.length; k++) { await doAction(action.or[k], instant); } }
     }
 
     // What the steps do, in the frame: show the view, ring the part, and tap or type with the finger
@@ -358,12 +376,7 @@
       if (!instant && ringed) { await sleep(reduced ? 0 : 350); }
       for (var i = 0; i < (step.do || []).length; i++) {
         if (mine !== token) { return; }
-        var action = step.do[i];
-        var target = action.has ? { select: action.tap || action.type, has: action.has } : (action.tap || action.type);
-        if (action.tap) { await host.tap(target, { instant: instant }); }
-        else if (action.type) { await host.type(target, action.text || '', { instant: instant }); }
-        else if (action.wait && !instant) { await sleep(action.wait); }
-        else if (action.view) { host.view(action.view, true); view = action.view; syncView(); }
+        await doAction(step.do[i], instant);
       }
       if (instant) { host.ring(null); }
     }

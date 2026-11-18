@@ -71,7 +71,7 @@ plug:group_custom
     # Raise the micro version whenever the modgui changes (MOD UI caches it for a year, keyed by this version)
     lv2:majorVersion 1 ;
     lv2:minorVersion 0 ;
-    lv2:microVersion 23 ;
+    lv2:microVersion 25 ;
 
     rdfs:comment """
 Kill Switch is a rhythmic signal-cut effect, like the momentary kill switch some guitars have: while it is on, a looping step pattern lets the signal through or cuts it, in time with the tempo. The left and the right side have a row of steps each, so the sound can change with the side (a ping-pong, one ear chopped while the other is not); the first ten patterns are the same on both sides, for a single instrument. Besides the looping patterns (nineteen to choose from, and one you write yourself, with three levels per step) it has endings: effects for the end of a song, such as a bouncing ball or a helicopter that lands, that play once and finish in silence. Assign Kill to a footswitch: it is meant to be momentary, so the signal is chopped while you hold it.
