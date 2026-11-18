@@ -118,6 +118,7 @@
           host.handlers.select = onSelect;
           host.handlers.view = function (name) { view = name; syncView(); };
           if (cfg.meters && host.setMeters) { host.setMeters(cfg.meters); }
+          if (cfg.midi && host.setMidi) { host.setMidi(cfg.midi); }
           host.showAreas(areasButton.getAttribute('aria-pressed') === 'true');
           host.view(view, true);
           syncView();

@@ -111,7 +111,7 @@ printed: it says that the part is interactive.
 | `views` | Optional. By default `pedalboard`, and `settings` when the bundle has a `modgui:settingsTemplate`. The labels are the buttons of the page |
 | `areas` | What a tap says (section 5). The **order matters**: a tap is given to the first area that matches, so write the specific ones before the general ones |
 | `tours` | The guided tours (section 6) |
-| `meters` | Optional: a small box beside each jack with its voltage (see below) |
+| `meters`, `midi` | Optional: a box beside each CV jack with its voltage, and one beside a MIDI jack with its messages (see below) |
 | `text` | Optional: any of the words of the page (`TEXT` in `interactive.py`), to translate or rephrase |
 | `frameTitle` | Optional: the title of the frame for a screen reader |
 
@@ -119,6 +119,12 @@ printed: it says that the part is interactive.
 `{"select": ".mod-output[mod-role=\"output-cv-port\"]", "on": "Preset_{active}_output_{n}", "volts": 10}`: `select` picks the jacks, `{n}` is the place of the
 jack (1, 2...), `{active}` the preset the simulated host is playing, and the output is on (`volts`) when that port is 1, else 0 V. It follows the ports
 as the plugin changes them. Say in the area of the jacks that the box is the manual's (the plugin does not draw it).
+
+`midi` does the same for a **MIDI out**: a box beside the jack lists, in order, the messages the plugin would send. It does what the plugin's C code does, so it must be
+kept in step with it: `{"select": "<the MIDI jack>", "count": 4, "channel": "MIDI_channel", "changesOnly": "MIDI_changes_only", "cc": "MIDI_CC_{n}",
+"on": "Preset_{active}_output_{n}"}`. When the preset **changes**, for each output `n` (1 to `count`) it sends the control change `cc` on `channel` with 127 if the
+`on` port is 1 and 0 if not; with `changesOnly` it skips the outputs whose value equals the last one sent (all start at 0). Nothing is sent at load or when a
+switch moves. Say in the area of the jack that the box is the manual's, and give a tour step that looks at it (`"ring": ".ix-midi"`).
 
 `title`, `chip` and `kicker` are one line, and `text` is Markdown (it becomes HTML at build time). Inside any of them, `{name}` is replaced by the
 `data-name` of the part that was tapped (`{preset}` and `{output}` for `data-preset` and `data-output`), and `{title}` by its `title`

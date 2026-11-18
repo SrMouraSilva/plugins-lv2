@@ -4,6 +4,14 @@
     "on": "Preset_{active}_output_{n}",
     "volts": 10
   },
+  "midi": {
+    "select": ".mod-output[mod-role=\"output-midi-port\"]",
+    "count": 4,
+    "channel": "MIDI_channel",
+    "changesOnly": "MIDI_changes_only",
+    "cc": "MIDI_CC_{n}",
+    "on": "Preset_{active}_output_{n}"
+  },
   "areas": [
     {
       "id": "gear",
@@ -80,7 +88,7 @@
       "title": "MIDI out",
       "chip": "MIDI out",
       "kicker": "On the pedalboard",
-      "text": "The fifth jack. When the preset changes it sends a MIDI control change for every output (127 on, 0 off). Set the channel and the numbers on the settings page.",
+      "text": "The fifth jack. When the preset **changes** it sends one MIDI control change for each output, in order: **127** if the output is on in the new preset, **0** if it is off. The box beside it (added by this manual; the real plugin does not draw it) lists the messages as they would go out. Set the channel and the numbers on the settings page.",
       "links": [
         {
           "label": "MIDI out",
@@ -463,7 +471,33 @@
               "tap": ".t4s-pad[data-preset=\"2\"]"
             }
           ],
-          "text": "Now a change of preset sends **127** for each output that turns on and **0** for each one that turns off: here CC 30 = 0 and CC 21 = 127. Nothing is sent when the pedalboard loads or when you flip a switch of the active preset."
+          "text": "Tap **Preset 2**. The preset changed, so the plugin sends its messages. With **Changes only** on (the default) the first change sends just the outputs that are on, because every output counts as off (0) until something is sent."
+        },
+        {
+          "view": "pedalboard",
+          "title": "The messages that went out",
+          "ring": ".ix-midi",
+          "text": "The box beside the MIDI jack (drawn by this manual) lists them: one control change, on channel 3, number 21 (output 2), value **127**. Output 1 is off in both presets, so there was nothing new to say about it. Loading a pedalboard sends nothing, and neither does flipping a switch of the active preset."
+        },
+        {
+          "view": "settings",
+          "title": "Send everything",
+          "ring": ".t4s-switch",
+          "do": [
+            {
+              "tap": ".t4s-switch"
+            },
+            {
+              "tap": ".t4s-pad[data-preset=\"1\"]"
+            }
+          ],
+          "text": "Turn **Changes only** off and go back to **Preset 1**: now every output is sent on every change."
+        },
+        {
+          "view": "pedalboard",
+          "title": "All four, in order",
+          "ring": ".ix-midi",
+          "text": "Output 1 first, then 2, 3 and 4: **CC 30 = 127** (on in preset 1) and **0** for the others. Use *changes only* to send less, or turn it off when the receiving device needs to hear every output each time."
         }
       ]
     },

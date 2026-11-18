@@ -80,6 +80,7 @@
   function send(event) {
     if (event.symbol !== undefined) { portValues[event.symbol] = event.value; }
     updateMeters();
+    scheduleMidi();
     method(Object.assign({ data: data, icon: icon, settings: settings, api_version: 3 }, event), funcs);
   }
   Host.send = send;
@@ -123,9 +124,10 @@
   // spec (from interactive.json): { select: the jacks, on: "Preset_{active}_output_{n}", volts: 10 }. {n} is the place of the jack
   // among the ones selected (1, 2...), {active} the preset the simulated host plays; the output is on when that port is 1
   var metersSpec = null;
+  var lastActive = 1;
   function activePreset() {
-    for (var i = 1; 'Preset_selector_' + i in portValues; i++) { if (portValues['Preset_selector_' + i] == 1) { return i; } }
-    return 1;
+    for (var i = 1; 'Preset_selector_' + i in portValues; i++) { if (portValues['Preset_selector_' + i] == 1) { lastActive = i; break; } }
+    return lastActive;   // between the host turning the old selector off and the new one on, the last one
   }
   function updateMeters() {
     if (!metersSpec) { return; }
@@ -141,9 +143,63 @@
   }
   Host.setMeters = function (spec) { metersSpec = spec; updateMeters(); measure(); fit(); };
 
+  // ------------------------------------------------------------------------------------------ the MIDI out
+  // The manual lists, in a box beside the MIDI jack, the messages the plugin would send, in the order it sends them. It does what the
+  // plugin does (Controller_send_midi in plugins/src/model/controller.c): when the preset CHANGES, one control change for each
+  // output, 127 if the output is on in the new preset and 0 if it is off, or, with "changes only", just the ones that differ from the
+  // last one sent (all count as 0 until something is sent). Nothing is sent when the pedalboard loads or a DIP switch of the active preset moves.
+  // spec (interactive.json): { select: the MIDI jack, count: 4, channel: "MIDI_channel", changesOnly: "MIDI_changes_only",
+  //                            cc: "MIDI_CC_{n}", on: "Preset_{active}_output_{n}" }
+  var midiSpec = null;
+  var midi = { preset: 0, last: [], log: [], timer: 0 };
+  var MIDI_ROWS = 8;
+  var number = function (value, max) { var v = Number(value); return !(v > 0.5) ? 0 : v >= max ? max : Math.round(v); };
+
+  function scheduleMidi() { if (midiSpec && !midi.timer) { midi.timer = setTimeout(function () { midi.timer = 0; checkMidi(); }, 0); } }
+  function checkMidi() {
+    var now = activePreset();
+    if (now === midi.preset) { return; }
+    var previous = midi.preset;
+    midi.preset = now;
+    if (!previous) { return; }
+    var channel = number(portValues[midiSpec.channel], 16) || 1;
+    var changesOnly = portValues[midiSpec.changesOnly] != 0;
+    var sent = [];
+    for (var n = 1; n <= midiSpec.count; n++) {
+      var value = portValues[midiSpec.on.replace('{active}', now).replace('{n}', n)] == 1 ? 127 : 0;
+      if (changesOnly && value === (midi.last[n] || 0)) { continue; }
+      midi.last[n] = value;
+      sent.push({ cc: number(portValues[midiSpec.cc.replace('{n}', n)], 127), value: value });
+    }
+    midi.log.push({ preset: now, channel: channel, sent: sent });
+    drawMidi();
+  }
+
+  function drawMidi() {
+    var jack = doc.querySelector(midiSpec.select);
+    if (!jack) { return; }
+    var box = jack.querySelector('.ix-midi');
+    if (!box) { box = doc.createElement('div'); box.className = 'ix-midi'; box.setAttribute('role', 'log'); jack.appendChild(box); }
+    // The newest rows (a change takes one row for its title and one for each message), the last change in full colour
+    var rows = [];
+    midi.log.forEach(function (change, i) {
+      var latest = i === midi.log.length - 1;
+      rows.push({ cls: 'is-title' + (latest ? ' is-new' : ''), text: '\u2192 preset ' + change.preset });
+      if (!change.sent.length) { rows.push({ cls: 'is-none' + (latest ? ' is-new' : ''), text: 'nothing to send' }); }
+      change.sent.forEach(function (m) { rows.push({ cls: latest ? 'is-new' : '', text: 'CC ' + m.cc + ' = ' + m.value }); });
+    });
+    var channel = number(portValues[midiSpec.channel], 16) || 1;
+    var html = '<b>MIDI out \u00b7 ch ' + channel + '</b><div class="ix-midi-rows">';
+    html += rows.length ? rows.slice(-MIDI_ROWS).map(function (r) { return '<span class="' + r.cls + '">' + r.text + '</span>'; }).join('')
+                        : '<span class="is-none">waiting for a change of preset</span>';
+    box.innerHTML = html + '</div>';
+  }
+  Host.setMidi = function (spec) { midiSpec = spec; midi = { preset: activePreset(), last: [], log: [], timer: 0 }; drawMidi(); measure(); fit(); };
+
   // ------------------------------------------------------------------------------------------ views
   function setView(name, quiet) {
     if (name === 'settings' && !settings.children().length) { return; }
+    if (name !== view) { Host.hideFinger(); }   // the finger belongs to the view it was tapping in
     view = name;
     win.prop('hidden', name !== 'settings');
     if (name === 'settings') { try { window.dispatchEvent(new Event('resize')); } catch (e) { /* old browser */ } }
@@ -166,7 +222,7 @@
     var el = icon[0];
     var base = el.getBoundingClientRect();
     var box = { left: 0, top: 0, right: base.width, bottom: base.height };
-    icon.find('.mod-pedal-input, .mod-pedal-output, .mod-actions, .ix-volt').each(function () {
+    icon.find('.mod-pedal-input, .mod-pedal-output, .mod-actions, .ix-volt, .ix-midi').each(function () {
       var r = this.getBoundingClientRect();
       box.left = Math.min(box.left, r.left - base.left);
       box.top = Math.min(box.top, r.top - base.top);

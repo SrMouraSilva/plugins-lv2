@@ -90,6 +90,32 @@ body { background: #14161d; font-family: system-ui, -apple-system, "Segoe UI", R
 }
 .ix-volt.is-on { color: #06280f; background: #5ee38a; box-shadow: 0 0 12px rgba(94, 227, 138, .45); }
 
+/* The messages of the MIDI out, in the order the plugin sends them (written by the manual beside the MIDI jack, like the voltages) */
+.ix-midi {
+  position: absolute;
+  left: 78px;
+  top: 14px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 136px;
+  height: 176px;
+  padding: 7px 9px 8px;
+  border-radius: 8px;
+  font: 600 11.5px/15px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color: #7f86a6;
+  background: #1a1d2b;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14);
+  pointer-events: none;
+}
+.ix-midi-rows { display: flex; flex: 1; flex-direction: column; justify-content: flex-start; min-height: 0; overflow: hidden; }
+.ix-midi b { margin-bottom: 3px; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: #aab1d6; }
+.ix-midi span { white-space: nowrap; }
+.ix-midi .is-title { margin-top: 3px; color: #6e7599; }
+.ix-midi .is-new { color: #dfe3ff; }
+.ix-midi .is-title.is-new { color: #7cd6ff; }
+.ix-midi .is-none { font-style: italic; }
+
 /* The buttons of the saved presets: MOD UI draws their icons from its own stylesheet */
 .mod-presets .btn { background-repeat: no-repeat; background-position: center center; }
 .mod-presets .btn.preset-btn-save { background-image: url(@save); }
