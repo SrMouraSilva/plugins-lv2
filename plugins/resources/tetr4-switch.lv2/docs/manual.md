@@ -97,10 +97,10 @@ MIDI controllers.
 #### Preset 1 · Preset 2 · Preset 3 · Preset 4
 
 OFF
-: That preset is not active. An assigned footswitch LED is dark and its label reads "N - OFF".
+: That preset is not active. An assigned footswitch LED is dark and its label shows the name of the preset.
 
 ON
-: That preset is active. The LED lights in the preset's colour and the label reads "N - ON".
+: That preset is active. The LED lights in the preset's colour; the label shows the name of the preset (the first 7 characters; a name that was never changed, *Preset 3*, is written *Prst 3* there).
 
 DEFAULT
 : Preset 1 on, Presets 2–4 off.
@@ -111,14 +111,15 @@ USE
 #### Current preset
 
 VALUES
-: `Prst 1` · `Prst 2` · `Prst 3` · `Prst 4`
+: `1` · `2` · `3` · `4`
 
 DEFAULT
-: Prst 1
+: 1
 
 USE
 : A single list parameter. Assign it to one footswitch (e.g. B, C or B+C on the Dwarf) to step through the presets, or to a
-  knob or list control. The display shows the preset number.
+  knob or list control. On a single footswitch the label shows the name of the active preset (the first 6 characters, the rest
+  of the room is for the value, which is the number of the option). On the B+C pair the device writes the text itself.
 
 #### Assign to notify 1 – 4
 
@@ -184,7 +185,7 @@ web interface, plus a way to see what you selected when your controller has no L
 
     ![The Current preset tile of the settings page](images/step-assign-current-preset.webp)
 
-2. Each press moves to the next preset, and the display shows its number.
+2. Each press moves to the next preset. On a single footswitch the label shows the name of the preset and the LED its colour.
 
 ### Option C: an external MIDI controller with on-screen confirmation
 
@@ -449,7 +450,7 @@ Move it to the page you play from. On the MOD Duo there are no pop-ups at all: i
 | Field | Value |
 |---|---|
 | Plugin name | Tetr4 switch |
-| Version | 1.2.9 (the version of the plugin this manual is for) |
+| Version | 1.2.13 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/tetr4-switch` |
 | Audio I/O | None |

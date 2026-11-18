@@ -49,7 +49,7 @@ any drive plugin and any delay plugin in the chain.
 |---|---|
 | **Display, big number and name** | The active preset. **The name is editable**: click it and type (up to 15 characters). It is also the text the device screen pop-up shows (see section 5). |
 | **Display, eight squares** | The CV outputs that are on in the active preset. **They are buttons**: click one to turn that output on or off in the active preset, without opening the settings page (the other presets are edited on the settings page). |
-| **Seven buttons** | Select the preset. The button of the active preset lights up in its colour. There are seven because the device footswitch LEDs have seven colours (red, yellow, green, cyan, blue, magenta, white): each preset has its own, here and on the device. A button with its number **crossed out** is a preset left out of the cycle of `Current preset` (section 4); the button still selects it. |
+| **Seven buttons** | Select the preset. The button of the active preset lights up in its colour. There are seven because the device footswitch LEDs have seven colours (red, yellow, green, cyan, blue, magenta, white): each preset has its own, here and on the device. A button with its number **crossed out** is a preset left out of the cycle of the buttons `Current preset`, `Next preset` and `Previous preset` (section 4); the button still selects it. |
 | **Edit scenes** | Opens the settings page (section 3). The gear icon above the plugin opens it too. |
 | **Eight CV jacks** | `CV Output 1`–`8`, on the back plate at the right, in two columns (1–4 and 5–8). |
 | **MIDI out** (jack) | The ninth jack, under the second column. It sends a MIDI control change for each output when the preset changes (section 6). |
@@ -80,12 +80,11 @@ screen and is made for touch: big cells, nothing smaller than a fingertip.
   The row of the active preset is highlighted, and its lit cells are the CV
   signals actually leaving the plugin right now.
 * **Cycle**: the cell before the *Assign* button of each row, set apart from the CV outputs. On (↻,
-  turquoise), the preset is one of those `Current preset` goes through when it
-  is assigned to a footswitch, to the B+C pair or to a knob; off (✕), they skip
-  it. See section 4.
-* **Hardware**: tiles to assign a footswitch, a knob or a device screen page to
-  the plugin's controls (section 4), told apart by purpose: *Current preset*
-  (the tile also says which preset is playing) and the *screen pop-ups*. A tile
+  turquoise), the preset is one of those `Current preset`, `Next preset` and
+  `Previous preset` go through; off (✕), they skip it. See section 4.
+* **Hardware**: tiles to assign a footswitch or a device screen page to
+  the plugin's controls (section 4), told apart by purpose: *Current preset*, *Next preset* and *Previous preset*
+  (the tiles also say which preset is playing and where each button leads) and the *screen pop-ups*. A tile
   shows a check mark once it is assigned. The MOD Duo has no widgets on its
   screen, so there the pop-up tiles are disabled and say so.
 * **MIDI out**: the channel, whether to send only what changed, and the CC
@@ -111,42 +110,49 @@ page, or the usual assignment dialog) to the control you want to use:
 | Control | Use |
 |---|---|
 | `Preset 1`–`7` | One footswitch per preset. Turning one on turns the others off. |
-| `Current preset` | One control that goes through the presets: a footswitch (each press goes to the next preset), the B+C pair of footswitches (previous / next), or a knob. Also a CV or MIDI value. |
+| `Current preset` | One footswitch that **loops** through the presets: each time you let go of it, it goes to the next preset in the cycle, and after the last it goes back to the first. |
+| `Next preset` | A footswitch that goes to the **next** preset in the cycle. |
+| `Previous preset` | A footswitch that goes to the **previous** preset in the cycle. |
 
-On the settings page, tap the small button at the end of the row of the preset and choose the control in the dialog that opens:
+On the settings page, tap the small button at the end of the row of the preset (or the tile of the control) and choose the control in the dialog that opens:
 
 ![The small button at the end of the row of Preset 1 and Preset 2 opens the assignment](images/step-assign-preset-buttons.webp)
 
-### Choosing which presets `Current preset` goes through
+### Going through the presets with one or two footswitches
+
+`Current preset`, `Next preset` and `Previous preset` are three buttons, one footswitch each. Use `Current preset` to loop with one
+foot, or `Next preset` on one footswitch and `Previous preset` on the other (B and C on the Dwarf) to go both ways.
+
+![The tiles of Current preset, Next preset and Previous preset on the settings page](images/step-assign-navigation.webp)
+
+* **They act when you let go.** The three are *momentary, off while held*: the preset changes when the footswitch is
+  released, not when it is pressed. Keep that mode in the assignment dialog (it is the one they come with); in a
+  latching mode only every other press would count.
+* **They are for footswitches.** MOD UI does not offer them for the B+C pair, which takes only lists. A knob can be
+  assigned to them too, and then it works as a button (turning past the middle counts as a press); a footswitch is what they are made for.
+* **The device shows where you are, and where you will be.** On the Dwarf the footswitch of `Current preset` shows the
+  **name of the active preset** (the first 7 characters) and its LED lights in the preset's colour. `Next preset` and
+  `Previous preset` show the **name of the preset they lead to**, with that preset's colour on a dim LED. All of it follows
+  the preset, the names and the cycle. A name that was never changed (*Preset 3*) is written *Prst 3* there, to fit.
+  Without widgets on the screen (stock firmware, the MOD Duo) the plugin works the same, only without the names and colours.
+
+### Choosing which presets the buttons go through
 
 Seven presets may be more than a song needs. Turn off the **Cycle** cell of the
-presets you do not use (settings page, section 3) and `Current preset` skips
-them: with presets 1, 2 and 5 in the cycle, a footswitch assigned to it goes
-1 → 2 → 5 → 1 → ..., and the B+C pair goes forwards and backwards through the
+presets you do not use (settings page, section 3) and the three buttons skip
+them: with presets 1, 2 and 5 in the cycle, `Next preset` goes
+1 → 2 → 5 → 1 → ..., and `Previous preset` goes the other way through the
 same three.
 
-![Presets 3, 4, 6 and 7 are out of the cycle (✕): Current preset goes through 1, 2 and 5](images/step-cycle.webp)
+![Presets 3, 4, 6 and 7 are out of the cycle (✕): the buttons go through 1, 2 and 5](images/step-cycle.webp)
 
 * The cycle always starts from the **active preset**. If a `Preset N`
   footswitch or a button of the plugin has just selected preset 5, the next
-  press of `Current preset` goes to the preset after 5 in the cycle.
+  press of `Next preset` goes to the preset after 5 in the cycle.
 * Presets out of the cycle can still be selected: the plugin buttons and the
-  `Preset 1`–`7` footswitches select any preset. Only `Current preset` skips them.
-* With every preset in the cycle (the default), `Current preset` goes through
+  `Preset 1`–`7` footswitches select any preset. Only the three buttons skip them.
+* With every preset in the cycle (the default), they go through
   all seven, also counting from the active preset.
-
-> **How it works, and its limit.** The device keeps its own position for
-> `Current preset` and sends the option after (or before) it on each press;
-> nobody tells the device when the plugin changes the preset. The plugin
-> therefore takes a move of one option as "next" (or "previous") and counts
-> from the active preset, wherever the device's position is (a MIDI or CV
-> value that moves it by exactly one option is a step too). So the value of
-> `Current preset` (in the assignment and snapshot screens) may be the
-> device's position instead of the active preset; the display, the buttons,
-> the `Preset` footswitches and the name on the device screen always show the
-> active preset. On a B+C pair that stops at the first and last options
-> instead of going around, a press at an end does nothing until a press in the
-> other direction.
 
 ## 5. The pop-up on the device screen
 
@@ -162,8 +168,8 @@ to the plugin, so:
 
 2. Every change of preset now shows the name of the preset on that page.
 
-The footswitch LEDs and the preset knob follow the preset as well, with the
-colour of each preset.
+The LEDs and the names of the footswitches you assigned follow the preset as well, with the
+colour of each preset (section 4).
 
 > The pop-up needs a firmware with the HMI feature. Without it (older firmware, or
 > a MOD Duo) the plugin works the same, only without the pop-up and the LEDs: the
@@ -187,7 +193,7 @@ controls you assigned to the plugin, as always; the widget follows them.
 2. **Place** it on an area of the screen: a column above a knob, two or three columns, a footer, both footers or the whole screen on the Dwarf; a
    knob, two knobs, the four knobs, the encoder band, a footer, both footers or the whole screen on each display of the Duo X. The dialog only
    offers the areas that are big enough for it.
-3. The dialog offers to assign **Current preset** to a control of the device (which goes through the presets that are in the cycle); choose the control you want, or leave it out if the preset is already chosen by other controls.
+3. The dialog offers to assign **Current preset** to a footswitch of the device (a button that goes to the next preset in the cycle); choose the one you want, or leave it out if the preset is already chosen by other controls.
 4. **Save**. It can be placed on more than one area at once (a column and a footer, or one on each display of the Duo X).
 
 It draws what fits in the area it gets: a footer shows the bare essentials, the whole screen shows everything.
@@ -313,7 +319,7 @@ Layer 5: 11111000
 Layer 6: 11111100
 Layer 7: 11111110
 ---
-Each preset adds one more layer to the previous one, so you move through the song from sparse to full: a pad, a shimmer, a harmony, a doubler, or anything with an on/off switch that you want to bring in step by step. Assign `Current preset` to a footswitch and every press stacks one more layer; step backwards to strip the sound down again.
+Each preset adds one more layer to the previous one, so you move through the song from sparse to full: a pad, a shimmer, a harmony, a doubler, or anything with an on/off switch that you want to bring in step by step. Assign `Next preset` to one footswitch and `Previous preset` to another and you stack one more layer, or strip one, each time you let go of a footswitch.
 assign: **Assigning the Hept7 Switch:** Out 1 → base layer · Out 2 → second layer · ... · Out 7 → seventh layer
 ```
 
@@ -331,7 +337,7 @@ you actually switch.
 
 ### You do not have to use seven presets
 
-Turn off the **Cycle** cell of the presets you leave unused, and `Current preset` goes only through the others. Give the
+Turn off the **Cycle** cell of the presets you leave unused, and `Current preset`, `Next preset` and `Previous preset` go only through the others. Give the
 unused ones the pattern of a preset you play, or all outputs off, in case a finger lands on them.
 
 ### Keep a "nothing on" preset
@@ -384,14 +390,20 @@ number of outputs does not depend on the number of presets: each preset is any c
 ### What is the difference from Tetr4 Switch?
 
 Tetr4 Switch has 4 presets and 4 outputs and is smaller on the pedalboard. Hept7 has 7 presets, 8 outputs, a display that
-announces every change, a settings page with a matrix and the **Cycle** setting of `Current preset`. They are separate
+announces every change, a settings page with a matrix and the **Cycle** setting of the buttons that go through the presets. They are separate
 plugins and can share a pedalboard.
 
-### `Current preset` shows a different preset from the display.
+### Can I use the B+C pair of footswitches?
 
-The device keeps its own position for `Current preset` and nobody tells it when the plugin changes the preset from
-somewhere else (a button, a `Preset N` footswitch, MIDI). The display, the buttons and the pop-up always show the active
-preset; see the note in [section 4](#switching-presets-with-hardware).
+Not for `Current preset`, `Next preset` and `Previous preset`: MOD UI only offers the pair for lists, and these are buttons
+(they are buttons on purpose, so the plugin can show the name and the colour on the footswitch itself). Put `Previous preset` on
+B and `Next preset` on C instead: two assignments, one footswitch each.
+
+### Why does the preset change when I let go of the footswitch?
+
+`Current preset`, `Next preset` and `Previous preset` are *momentary, off while held*, so that the plugin has the last word on
+the LED and on the name after each change (the device redraws them when you press and again when you let go). If you change the
+assignment to another mode (toggle, or momentary on), keep in mind that only a release counts.
 
 ### I set up the pop-up, but nothing appears.
 
@@ -414,10 +426,12 @@ Yes, in addition to CV. The **MIDI out** sends a control change for each output 
 |---|---|---|
 | `CV Output 1`–`8` | CV output | 10 V while on in the active preset, 0 V otherwise. |
 | `Preset 1`–`7` | Control input (toggle) | Footswitch selectors. |
-| `Current preset` | Control input (enumeration) | Shows and selects the active preset; goes through the presets that are in the cycle (section 4). |
+| `Current preset` | Control input (toggle, momentary off) | A button: each time it is released, goes to the next preset in the cycle (section 4). |
+| `Next preset` | Control input (toggle, momentary off) | A button: goes to the next preset in the cycle when released. |
+| `Previous preset` | Control input (toggle, momentary off) | A button: goes to the previous preset in the cycle when released. |
 | `Assign to notify 1`–`4` | Control input | Assign to a device page so the pop-up shows there. No audio or CV effect. |
 | `Preset N - Output M` | Control input (toggle) | Dip switch: is CV output M on while preset N is active? |
-| `Preset N - In the cycle` | Control input (toggle) | Is preset N one of the presets `Current preset` goes through? On by default. |
+| `Preset N - In the cycle` | Control input (toggle) | Is preset N one of the presets the buttons `Current preset`, `Next preset` and `Previous preset` go through? On by default. |
 | `Active preset` | Control output | The active preset (0 is preset 1), whatever selected it. Used by the interface of the plugin. |
 | `CC for output 1`–`8` | Control input (integer) | The MIDI control change number sent for each CV output (0–127). Starts at 20–27. |
 | `MIDI channel` | Control input (integer) | The channel of the control changes (1–16). |
@@ -433,14 +447,14 @@ They are saved with the pedalboard and with the plugin presets.
 | Field | Value |
 |---|---|
 | Plugin name | Hept7 switch |
-| Version | 1.0.25 (the version of the plugin this manual is for) |
+| Version | 1.0.33 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/hept7-switch` |
 | Audio I/O | None |
 | CV outputs | 8 × CV, 0 V (off) / 10 V (on) |
 | MIDI | MIDI out: a control change (channel 1–16) per output when the preset changes |
 | Presets × outputs | 7 × 8 (56 toggle switches) |
-| Assignable parameters | Preset 1–7 (toggle) · Current preset (list) · Assign to notify 1–4 (toggle) · 56 dip switches · 7 Cycle switches · MIDI channel, CC 1–8 and changes only |
+| Assignable parameters | Preset 1–7 (toggle) · Current, Next and Previous preset (buttons) · Assign to notify 1–4 (toggle) · 56 dip switches · 7 Cycle switches · MIDI channel, CC 1–8 and changes only |
 | Device feedback | Footswitch LED colour + label, pop-up notifications (MOD HMI) · display on the plugin |
 | Platforms | MOD Dwarf · MOD Duo X · MOD Duo |
 | Developer | Paulo Mateus (SrMouraSilva) |
