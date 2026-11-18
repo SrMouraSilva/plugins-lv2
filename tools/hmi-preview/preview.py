@@ -178,16 +178,11 @@ def factory_state(plugin, preset_label):
 
 
 SCENES = {
+    # The scenes have the effect on (`kill`: it is off by default, which the widget shows as OFF)
     "kill-switch": [
-        ("pattern", "Pattern", "Morello solo chop, 100 BPM", {"pattern": 6, "bpm": 100}, None, 0.37),
-        ("pattern", "Pattern", "Custom (16 steps), 120 BPM, bypassed", {"pattern": 10, "bpm": 120, "lv2_enabled": 0,
-                                                                       "custom_length": 16, "custom_steps_per_beat": 4,
-                                                                       **{f"custom_step_{i + 1}": v for i, v in enumerate([2, 2, 0, 1, 2, 0, 0, 2, 2, 1, 0, 2, 0, 2, 2, 0])}}, None, 0.3),
-    ],
-    "half-mouco": [
-        ("stereo", "Stereo pattern", "Seesaw, 110 BPM", {"mode": 0, "pattern": 7, "bpm": 110}, None, 0.43),
-        ("stereo", "Stereo pattern", "Ending: bouncing ball, 8 beats at 120 BPM (a second in)", {"mode": 1, "ending": 0, "bpm": 120, "length": 8}, None, 1.0),
-        ("stereo", "Stereo pattern", "Ending: helicopter, 16 beats at 120 BPM (3 s in)", {"mode": 1, "ending": 1, "bpm": 120, "length": 16}, None, 3.0),
+        ("stereo", "Stereo pattern", "Seesaw, 110 BPM", {"mode": 0, "pattern": 17, "bpm": 110, "kill": 1}, None, 0.43),
+        ("stereo", "Stereo pattern", "Ending: bouncing ball, 8 beats at 120 BPM (a second in)", {"mode": 1, "ending": 0, "bpm": 120, "length": 8, "kill": 1}, None, 1.0),
+        ("stereo", "Stereo pattern", "Ending: helicopter, 16 beats at 120 BPM (3 s in)", {"mode": 1, "ending": 1, "bpm": 120, "length": 16, "kill": 1}, None, 3.0),
     ],
     "tetr4-switch": [
         ("preset", "Active preset", "Four-scene guitar rig, preset 3 on", None, ("Four-scene guitar rig", 2), 0.2),
@@ -406,22 +401,22 @@ def devices(animated=False):
 
     # --- Dwarf
     kill = frames_of("kill-switch", 0, DWARF_AREAS["col1-2"][2:], lambda s, record: record(4.0))
-    mouco = frames_of("half-mouco", 1, DWARF_AREAS["col3"][2:], lambda s, record: record(4.0))
+    ending = frames_of("kill-switch", 1, DWARF_AREAS["col3"][2:], lambda s, record: record(4.0))
     tetr4 = frames_of("tetr4-switch", 0, DWARF_AREAS["footB-C"][2:], tetr4_script, TETR4_FIRST)
-    count = min(len(kill), len(mouco), len(tetr4))
-    dwarf = [device_image("dwarf", [(0, "col1-2", kill[i]), (0, "col3", mouco[i]), (0, "footB-C", tetr4[i])], scale) for i in range(count)]
+    count = min(len(kill), len(ending), len(tetr4))
+    dwarf = [device_image("dwarf", [(0, "col1-2", kill[i]), (0, "col3", ending[i]), (0, "footB-C", tetr4[i])], scale) for i in range(count)]
 
-    # --- Duo X: the left display with Kill Switch and Tetr4, the right one with Half Mouco and Gossiper
+    # --- Duo X: the left display with Kill Switch and Tetr4, the right one with Kill Switch (an ending) and Gossiper
     kill_x = frames_of("kill-switch", 0, DUOX_AREAS["enc-knobs"][2:], lambda s, record: record(4.0))
     tetr4_x = frames_of("tetr4-switch", 0, DUOX_AREAS["foots"][2:], tetr4_script, TETR4_FIRST)
-    mouco_x = frames_of("half-mouco", 1, DUOX_AREAS["enc-knobs"][2:], lambda s, record: record(4.0))
+    ending_x = frames_of("kill-switch", 1, DUOX_AREAS["enc-knobs"][2:], lambda s, record: record(4.0))
     goss_x = frames_of("gossiper", 0, DUOX_AREAS["foots"][2:], gossiper_script)
-    count_x = min(len(kill_x), len(tetr4_x), len(mouco_x), len(goss_x))
-    duox = [device_image("duox", [(0, "enc-knobs", kill_x[i]), (0, "foots", tetr4_x[i]), (1, "enc-knobs", mouco_x[i]), (1, "foots", goss_x[i])], scale) for i in range(count_x)]
+    count_x = min(len(kill_x), len(tetr4_x), len(ending_x), len(goss_x))
+    duox = [device_image("duox", [(0, "enc-knobs", kill_x[i]), (0, "foots", tetr4_x[i]), (1, "enc-knobs", ending_x[i]), (1, "foots", goss_x[i])], scale) for i in range(count_x)]
 
     pictures = {
-        "dwarf": (with_caption(dwarf[0], "MOD Dwarf", "Kill Switch (two columns), Half Mouco (one column, an ending) and Tetr4 Switch (both footers)"), dwarf),
-        "duox": (with_caption(duox[0], "MOD Duo X", "Left display: Kill Switch (encoder band and knobs) and Tetr4 Switch (both footers). Right display: Half Mouco and Gossiper"), duox),
+        "dwarf": (with_caption(dwarf[0], "MOD Dwarf", "Kill Switch (two columns), Kill Switch again (one column, an ending) and Tetr4 Switch (both footers)"), dwarf),
+        "duox": (with_caption(duox[0], "MOD Duo X", "Left display: Kill Switch (encoder band and knobs) and Tetr4 Switch (both footers). Right display: Kill Switch (an ending) and Gossiper"), duox),
     }
 
     # The still picture is a frame where the interesting things happen: the middle of the animation. The two devices one
@@ -447,8 +442,8 @@ def still_title(name):
 
 def still_subtitle(name):
     if name == "dwarf":
-        return "Kill Switch (two columns), Half Mouco (one column, an ending) and Tetr4 Switch (both footers)"
-    return "Left display: Kill Switch (encoder band and knobs) and Tetr4 Switch (both footers). Right display: Half Mouco and Gossiper"
+        return "Kill Switch (two columns), Kill Switch again (one column, an ending) and Tetr4 Switch (both footers)"
+    return "Left display: Kill Switch (encoder band and knobs) and Tetr4 Switch (both footers). Right display: Kill Switch (an ending) and Gossiper"
 
 
 def animate(frames, target):
@@ -486,13 +481,6 @@ def frames_multi(plugin_name, spec_index, placements, script, override=None):
 
 
 def kill_script(s, record):
-    # On for a while, then bypassed: the widget goes grey and says OFF
-    record(3.5)
-    s.set("lv2_enabled", 0)
-    record(1.5)
-
-
-def mouco_script(s, record):
     # The patterns, then the ending (switching Mode starts it from the beginning)
     record(2.0)
     s.set("mode", 1)
@@ -528,10 +516,8 @@ def gossiper_both_script(s, record):
 
 # plugin: (scene, script, ports to start with, widgets, Dwarf areas, Duo X areas, captions)
 MANUAL = {
-    "kill-switch": dict(spec=0, script=kill_script, override={}, dwarf=[("col1-2", "pattern")], duox=[("enc-knobs", "pattern"), ("foots", "pattern")],
-                        dwarf_text="Two columns", duox_text="Encoder band and knobs, and both footers"),
-    "half-mouco": dict(spec=0, script=mouco_script, override={"length": 8, "ending": 0}, dwarf=[("col1-2", "stereo"), ("col3", "stereo")],
-                       duox=[("enc-knobs", "stereo")], dwarf_text="Two columns and one column", duox_text="Encoder band and knobs"),
+    "kill-switch": dict(spec=0, script=kill_script, override={"length": 8, "ending": 0}, dwarf=[("col1-2", "stereo"), ("col3", "stereo")],
+                        duox=[("enc-knobs", "stereo")], dwarf_text="Two columns and one column", duox_text="Encoder band and knobs"),
     "tetr4-switch": dict(spec=0, script=switch_script((2, 3, 4, 1)), override=TETR4_FIRST, dwarf=[("col1", "preset"), ("footB-C", "preset")],
                          duox=[("knobs1-2", "preset"), ("foots", "preset")], dwarf_text="One column and both footers", duox_text="Two knobs and both footers"),
     "hept7-switch": dict(spec=0, script=switch_script((2, 3, 5, 7, 1)), override={**TETR4_FIRST, "Preset_selector_5": 0.0, "Preset_selector_6": 0.0, "Preset_selector_7": 0.0},
@@ -622,25 +608,19 @@ ROWS = [
 
 # (plugin, widget): the scene (an index of SCENES) the areas are drawn with
 AREA_SCENE = {
-    ("kill-switch", "pattern"): 0, ("half-mouco", "stereo"): 0, ("tetr4-switch", "preset"): 0, ("hept7-switch", "preset"): 0,
+    ("kill-switch", "stereo"): 0, ("tetr4-switch", "preset"): 0, ("hept7-switch", "preset"): 0,
     ("gossiper", "footswitches"): 1, ("gossiper", "potentiometers"): 2,
 }
 
 # The states: (caption, scene, (width, height)); the scene is a tuple like those of SCENES
 STATES = {
-    ("kill-switch", "pattern"): [
-        ("Playing", ("pattern", "", "", {"pattern": 6, "bpm": 100}, None, 0.37), (82, 37)),
-        ("Your own pattern (16 steps)", ("pattern", "", "", {"pattern": 10, "bpm": 120, "custom_length": 16, "custom_steps_per_beat": 4,
-                                                           **{f"custom_step_{i + 1}": v for i, v in enumerate([2, 2, 0, 1, 2, 0, 0, 2, 2, 1, 0, 2, 0, 2, 2, 0])}}, None, 0.3), (82, 37)),
-        ("Too fast to follow: a dotted line", ("pattern", "", "", {"pattern": 3, "bpm": 160}, None, 0.3), (82, 37)),
-        ("Bypassed: grey, OFF", ("pattern", "", "", {"pattern": 6, "bpm": 100, "lv2_enabled": 0}, None, 0.3), (82, 37)),
-    ],
-    ("half-mouco", "stereo"): [
-        ("A pattern", ("stereo", "", "", {"mode": 0, "pattern": 7, "bpm": 110}, None, 0.43), (82, 37)),
-        ("Ending: bouncing ball, one second in", ("stereo", "", "", {"mode": 1, "ending": 0, "bpm": 120, "length": 8}, None, 1.0), (82, 37)),
-        ("Ending: helicopter, three seconds in", ("stereo", "", "", {"mode": 1, "ending": 1, "bpm": 120, "length": 16}, None, 3.0), (82, 37)),
-        ("The ending is over", ("stereo", "", "", {"mode": 1, "ending": 0, "bpm": 120, "length": 2}, None, 1.5), (82, 37)),
-        ("Bypassed: grey, OFF", ("stereo", "", "", {"mode": 0, "pattern": 7, "bpm": 110, "lv2_enabled": 0}, None, 0.3), (82, 37)),
+    ("kill-switch", "stereo"): [
+        ("A pattern with a row for each side", ("stereo", "", "", {"mode": 0, "pattern": 17, "bpm": 110, "kill": 1}, None, 0.43), (82, 37)),
+        ("The same row on both sides", ("stereo", "", "", {"mode": 0, "pattern": 6, "bpm": 100, "kill": 1}, None, 0.37), (82, 37)),
+        ("Ending: bouncing ball, one second in", ("stereo", "", "", {"mode": 1, "ending": 0, "bpm": 120, "length": 8, "kill": 1}, None, 1.0), (82, 37)),
+        ("Ending: helicopter, three seconds in", ("stereo", "", "", {"mode": 1, "ending": 1, "bpm": 120, "length": 16, "kill": 1}, None, 3.0), (82, 37)),
+        ("The ending is over", ("stereo", "", "", {"mode": 1, "ending": 0, "bpm": 120, "length": 2, "kill": 1}, None, 1.5), (82, 37)),
+        ("Off: grey, OFF", ("stereo", "", "", {"mode": 0, "pattern": 17, "bpm": 110, "kill": 0}, None, 0.3), (82, 37)),
     ],
     ("tetr4-switch", "preset"): [
         (f"Preset {n + 1} on", ("preset", "", "", None, ("Four-scene guitar rig", n), 0.2), (124, 37)) for n in range(4)

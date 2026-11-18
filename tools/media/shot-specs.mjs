@@ -34,8 +34,8 @@ const alone = (file, crop, extra = {}) => icon(file, crop, { transparent: true, 
 // What MOD UI reads (they stay PNG): modgui/screenshot.png (500 px wide) and modgui/thumbnail.png (150 px), the plugin with
 // its connectors (the sockets on both sides, as the other pedals' pictures have them) and nothing behind it: no plugs.
 // The margin keeps the 2 px ring that the body casts (box-shadow) and the shadow of the sockets, which a tight crop cuts
-const store = (crop, query) => ['screenshot', 'thumbnail'].map((name) => icon(`${name}.png`, crop, {
-  out: `modgui/${name}.png`, format: 'png', width: name === 'screenshot' ? 500 : 150, transparent: true, margin: 4, query: `${query}&plugs=0`,
+const store = (crop, query, setup) => ['screenshot', 'thumbnail'].map((name) => icon(`${name}.png`, crop, {
+  out: `modgui/${name}.png`, format: 'png', width: name === 'screenshot' ? 500 : 150, transparent: true, margin: 4, query: `${query}&plugs=0`, setup,
 }));
 const window_ = (file, width, height, extra = {}) => ({ file, view: 'settings', viewport: { width, height }, crop: 'window', scale: 1, ...extra });
 // A phone: MOD UI has no viewport tag, so the page is laid out 1024 px wide and shrunk to the screen (see frame.html):
@@ -44,10 +44,9 @@ const phone = (file, height, extra = {}) => window_(file, 1024, Math.round(heigh
 
 // The display shows the control that moved last: the footswitch on the pedal, the knob in the settings page
 const gossiper = (symbol, value) => `send({ type: 'change', symbol: '${symbol}', value: ${value} })`;
-// Half Mouco: the custom pattern on (Pattern = Custom)
-const HM_CUSTOM = `send({ type: 'change', symbol: 'pattern', value: 9 })`;
-// Kill Switch: the custom pattern on (Pattern = Custom), with its three levels in use
-const KS_CUSTOM = `send({ type: 'change', symbol: 'pattern', value: 10 })`;
+// Kill Switch: on, and the custom pattern on (Pattern = Custom), with its three levels in use
+const KS_ON = `send({ type: 'change', symbol: 'kill', value: 1 })`;
+const KS_CUSTOM = `send({ type: 'change', symbol: 'pattern', value: 19 })`;
 const GOSSIPER_PEDAL = [gossiper('Potentiometer_1', 0.2), gossiper('Potentiometer_3', 0.63), gossiper('Footswitch_2', 1)];
 const GOSSIPER_SETTINGS = [gossiper('Potentiometer_1', 0.2), gossiper('Footswitch_2', 1), gossiper('Potentiometer_3', 0.63)];
 
@@ -111,51 +110,46 @@ export const shots = {
   ],
 
   'kill-switch': [
-    ...store('.kill-switch', 'jacks=1'),
+    ...store('.kill-switch', 'jacks=1', [KS_ON]),
     // The cover of the manual (2x)
-    alone('panel.webp', '.kill-switch', { margin: 0, scale: 2, query: 'jacks=1' }),
-    // Quick start, step 3: the arrows and the steps of the pattern
+    alone('panel.webp', '.kill-switch', { margin: 0, scale: 2, query: 'jacks=1', setup: [KS_ON] }),
+    // Quick start, step 4: the arrows and the two rows
     icon('step-pattern.webp', '.kill-switch', {
-      setup: ['send({type:"change",symbol:"pattern",value:6})', 'send({type:"change",symbol:"bpm",value:89})'],
-      highlight: ['.ks-prev', '.ks-next', '.ks-steps'], finger: '.ks-next',
+      setup: [KS_ON, 'send({type:"change",symbol:"pattern",value:17})', 'send({type:"change",symbol:"bpm",value:90})'],
+      highlight: ['.ks-prev', '.ks-next', '.ks-lane'], finger: '.ks-next',
     }),
-    // The settings page: the editor of the custom pattern, the controls to assign and the saved presets
-    window_('settings.webp', 1366, 800, { setup: [KS_CUSTOM] }),
-    phone('settings-phone.webp', 844, { setup: [KS_CUSTOM] }),
-    // The custom pattern, Quick start of section 4: tapping a step goes to its next level
-    settings('step-custom-pattern.webp', '.kss-steps', {
-      setup: [KS_CUSTOM], highlight: ['.kss-cell:nth-child(3)'], finger: '.kss-cell:nth-child(3)', crop: { closest: 'section', of: '.kss-steps' },
+    // Step 6: the Endings tab, and the ending drawn along its time
+    icon('step-endings.webp', '.kill-switch', {
+      setup: [KS_ON, 'send({type:"change",symbol:"mode",value:1})', 'send({type:"change",symbol:"ending",value:0})'],
+      highlight: ['.ks-mode[data-mode="1"]', '.ks-lane'], finger: '.ks-mode[data-mode="1"]',
+    }),
+    // The helicopter, along its time (section 4)
+    icon('ending-helicopter.webp', '.ks-display', {
+      setup: [KS_ON, 'send({type:"change",symbol:"mode",value:1})', 'send({type:"change",symbol:"ending",value:1})'], margin: 6,
     }),
     // Step 5: Depth and Edge
     icon('step-feel.webp', '.kill-switch', {
-      setup: ['send({type:"change",symbol:"depth",value:60})', 'send({type:"change",symbol:"edge",value:6})'],
+      setup: [KS_ON, 'send({type:"change",symbol:"depth",value:60})', 'send({type:"change",symbol:"edge",value:6})'],
       highlight: ['.ks-depth', '.ks-edge'], finger: '.ks-edge-input', fingerAt: [0.8, 0.5],
     }),
-  ],
-
-  'half-mouco': [
-    ...store('.half-mouco', 'jacks=1'),
-    // The cover of the manual (2x)
-    alone('panel.webp', '.half-mouco', { margin: 0, scale: 2, query: 'jacks=1' }),
-    // Quick start, step 4: the arrows and the two rows
-    icon('step-pattern.webp', '.half-mouco', {
-      setup: ['send({type:"change",symbol:"pattern",value:7})', 'send({type:"change",symbol:"bpm",value:90})'],
-      highlight: ['.hm-prev', '.hm-next', '.hm-lane'], finger: '.hm-next',
-    }),
-    // Step 6: the Endings tab, and the ending drawn along its time
-    icon('step-endings.webp', '.half-mouco', {
-      setup: ['send({type:"change",symbol:"mode",value:1})', 'send({type:"change",symbol:"ending",value:0})'],
-      highlight: ['.hm-mode[data-mode="1"]', '.hm-lane'], finger: '.hm-mode[data-mode="1"]',
-    }),
-    // The helicopter, along its time (section 4)
-    icon('ending-helicopter.webp', '.hm-display', {
-      setup: ['send({type:"change",symbol:"mode",value:1})', 'send({type:"change",symbol:"ending",value:1})', `document.querySelector('.half-mouco').classList.remove('is-bypassed')`], margin: 6,
-    }),
-    // The settings page: the editor of the custom pattern, the controls to assign and the saved presets
-    window_('settings.webp', 1366, 800, { setup: [HM_CUSTOM] }),
-    phone('settings-phone.webp', 844, { setup: [HM_CUSTOM] }),
-    settings('step-custom-pattern.webp', '.hms-steps', {
-      setup: [HM_CUSTOM], highlight: ['.hms-steps[data-side="l"] .hms-cell:nth-child(3)', '.hms-steps[data-side="r"] .hms-cell:nth-child(3)'], finger: '.hms-steps[data-side="r"] .hms-cell:nth-child(3)', crop: { closest: 'section', of: '.hms-steps' },
+    // Step 7: Kill on a footswitch of the device (the button beside it in the top bar of the settings page)
+    {
+      file: 'step-assign-kill.webp', view: 'settings', viewport: { width: 860, height: 540 }, setup: [KS_ON],
+      highlight: [tile('kill')], finger: tile('kill'), crop: '.kss-onoff', margin: 10,
+    },
+    // The settings page: the choice, the LEDs and the tempo and feel
+    window_('settings.webp', 1366, 800, { setup: [KS_ON, KS_CUSTOM] }),
+    phone('settings-phone.webp', 844, { setup: [KS_ON, KS_CUSTOM] }),
+    // The LEDs of a built-in pattern: a tap on a step asks whether to make a Custom pattern from it (section 5)
+    {
+      file: 'step-make-custom.webp', view: 'settings', viewport: { width: 860, height: 540 },
+      setup: [KS_ON, 'send({type:"change",symbol:"pattern",value:17})', `document.querySelector('.kss-cell[data-side="r"][data-step="1"]').click()`],
+      scrollTo: '.kss-led-steps', crop: 'window',
+    },
+    // The custom pattern: tapping a step goes to its next level
+    settings('step-custom-pattern.webp', '.kss-led-steps', {
+      setup: [KS_ON, KS_CUSTOM], highlight: ['.kss-led-cells[data-side="l"] .kss-cell:nth-child(3)', '.kss-led-cells[data-side="r"] .kss-cell:nth-child(3)'],
+      finger: '.kss-led-cells[data-side="r"] .kss-cell:nth-child(3)', crop: '.kss-led-block', margin: 16, viewport: { width: 860, height: 700 },
     }),
   ],
 
