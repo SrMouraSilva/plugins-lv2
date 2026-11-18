@@ -1641,6 +1641,12 @@
   gap: 22px 28px;
 }
 .hms-knob { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+/* A thin rule above every control but the first, so the assign button of each one reads as belonging to it
+   (the first one that is shown: Length and Speed come and go with the mode, the rule goes with them) */
+.hms-knob + .hms-knob {
+  padding-top: 16px;
+  border-top: 1px solid var(--hm-line);
+}
 .hms-knob-head {
   display: flex;
   align-items: center;
@@ -1743,6 +1749,7 @@
 .hms[data-h="s"] .hms-view-steps { height: 26px; }
 .hms[data-h="s"] .hms-sound { gap: 12px 24px; }
 .hms[data-h="s"] .hms-knob { gap: 6px; }
+.hms[data-h="s"] .hms-knob + .hms-knob { padding-top: 12px; }
 .hms[data-h="s"] .hms-ends { display: none; }
 
 
