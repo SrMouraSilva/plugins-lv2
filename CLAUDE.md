@@ -12,8 +12,8 @@ plugins/Makefile             build-<plugin> targets; srmourasilva-plugins.mk is 
 tools/modgui-preview/        browser preview of any plugin's modgui (no device needed)
 tools/hmi-preview/           pictures of the display widgets on the Dwarf and the Duo X (real plugins in a tiny host); see "Display widgets"
 tools/media/                 animations (animated WebP + GIF) and alternative thumbnails (from the preview); see "Animations and alternative thumbnails"
-tools/manual/                builds modgui/manual.html from docs/manual.md; see "HTML manuals"
-docs/                        guides for other developers: custom-settings-pages, making-animations, alternative-thumbnails, html-manuals
+tools/manual/                builds modgui/manual.html from docs/manual.md; see "HTML manuals" (tools/manual/interactive/: the plugin inside the manual)
+docs/                        guides for other developers: custom-settings-pages, making-animations, alternative-thumbnails, html-manuals, interactive-manuals
 .github/workflows/release.yml  builds Duo, Duo X and Dwarf; PLUGINS lists what is packaged
 ```
 
@@ -307,6 +307,24 @@ conventions of the Markdown (steps, callouts, video cards, recipes, FAQ, pins on
   change the manual or rebuild it for a changed interface, in the same commit as the version bump; the builder warns when
   `manual.json` and the TTL differ.
 * Raise `lv2:microVersion` when the manual changes (the modgui cache).
+
+### The interactive manual
+
+A manual can have one section in which **the real plugin runs inside the page**: a ```` ```interactive ```` block in `manual.md` plus `docs/interactive.json`
+(the areas to tap and the guided tours). Full guide: [docs/interactive-manuals.md](docs/interactive-manuals.md); read it first. Done so far: Tetr4 Switch.
+
+* **It is never a copy of the interface.** `tools/manual/interactive.py` embeds the bundle's own icon and settings templates, stylesheet and script
+  (in a same-origin `srcdoc` iframe) and runs them against `tools/manual/interactive/host.js`, a stand-in for MOD UI (jQuery 1.9.1, the start event, `funcs`,
+  the simulated host of `Preset_selector_N`, the settings window, MOD UI's assignment dialog drawn in a simplified way). Rebuild the manual and it follows the
+  interface. Do not put plugin-specific code in `host.js`: add what the TTL gives (ports), as `tools/modgui-preview/frame.html` does.
+* **A change to the interface can break it**: the selectors of `interactive.json` (`select`, `tap`, `ring`) are the classes of the modgui. When you rename a
+  class or move a control, search `docs/interactive.json` and run every tour (Next to the end, Back to the middle, Play). Rebuild the manual in the same commit,
+  with the version bump of the manual.
+* **Tours must be replayable from the clean plugin**: Back and the step list reload the frame and redo what the steps before did, at once.
+  Write the first step for the defaults of the TTL, and do not show what the plugin does not do.
+* The area `text` and the tours say facts about the plugin: take them from the TTL, the factory presets and the code, like the rest of the manual.
+* Drive the page with `launch()` of `tools/media/cdp.mjs` and close it (`try/finally`): see "Chrome must be cleaned up". The way in is
+  `document.querySelector('.ix-frame').contentWindow.Host`.
 
 ## Documentation site
 

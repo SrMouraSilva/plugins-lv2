@@ -164,6 +164,11 @@ Raw HTML, with the position of each pin in percent of the picture. Describe the 
 </figure>
 ```
 
+### The plugin inside the manual
+
+A manual can also hold one section in which the plugin itself is loaded, to tap and to follow in guided tours: a fenced block
+` ```interactive ` (empty, at the left margin) plus `docs/interactive.json`. It is its own guide: [interactive-manuals.md](./interactive-manuals.md).
+
 ## 6. Pictures for the steps
 
 A step is much easier to follow with a picture of what to tap. `tools/media/shots.mjs` takes them from the modgui preview

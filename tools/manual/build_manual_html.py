@@ -25,6 +25,8 @@ from pathlib import Path
 import markdown
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+import interactive  # noqa: E402  (the plugin itself in a frame: see docs/interactive-manuals.md)
 RESOURCES = HERE.parent.parent / "plugins" / "resources"
 
 DEFAULTS = {
@@ -111,6 +113,9 @@ def preprocess(source: str, colors: list) -> str:
             code = [line[indent:] if line.startswith(" " * indent) else line.lstrip() for line in lines[i + 1:j]]
             if margin and info == "recipe":
                 out.append(recipe_block("\n".join(code), colors))
+            elif margin and info == "interactive":
+                # The plugin in a frame, with its areas and tours (docs/interactive.json); put in place by render()
+                out += ["", '<div class="ix-slot"></div>', ""]
             elif nested:
                 out += ["", f'<pre><code>{html.escape(chr(10).join(code), quote=False)}</code></pre>', ""]
             else:
@@ -235,8 +240,8 @@ def embed(page: str, base: Path) -> str:
             return match.group(0)
         return f'{match.group(1)}"{data_uri(path)}"'
 
-    parts = re.split(r"(<pre>.*?</pre>)", page, flags=re.S)
-    return "".join(part if part.startswith("<pre>") else re.sub(r'(\bsrc(?:set)?=)"([^"]+)"', one, part) for part in parts)
+    parts = re.split(r"(<pre>.*?</pre>|<script.*?</script>)", page, flags=re.S)
+    return "".join(part if part.startswith(("<pre>", "<script")) else re.sub(r'(\bsrc(?:set)?=)"([^"]+)"', one, part) for part in parts)
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -269,6 +274,10 @@ def render(source: str, docs: Path, config: dict, fallback_title: str = "Manual"
     body = markdown.markdown(source, extensions=["tables", "fenced_code", "attr_list", "def_list", "sane_lists", "md_in_html", "toc"],
                              extension_configs={"toc": {"slugify": lambda value, sep: github_slug(value)}})
     body = alerts(videos(figures(body, docs)))
+    # The interactive block (the plugin in a frame): its page and its data are built from the files of the bundle
+    has_interactive = '<div class="ix-slot"></div>' in body
+    if has_interactive:
+        body = body.replace('<div class="ix-slot"></div>', interactive.component(docs.parent, docs))
 
     # Sections: what comes before the first h2 is the introduction
     chunks = re.split(r"(?=<h2[ >])", body)
@@ -295,6 +304,9 @@ def render(source: str, docs: Path, config: dict, fallback_title: str = "Manual"
 
     css = (HERE / "manual.css").read_text()
     js = (HERE / "manual.js").read_text()
+    if has_interactive:
+        ix_css, ix_js = interactive.assets()
+        css, js = css + "\n" + ix_css, js + "\n" + ix_js
     hero = (docs / config["hero"]).resolve() if config.get("hero") else None
     hero_html = f'<img class="hero-art" src="{data_uri(hero)}" alt="{html.escape(title)}">' if hero and hero.is_file() else ""
     colors = config["colors"]
