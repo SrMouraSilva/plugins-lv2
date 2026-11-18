@@ -560,7 +560,7 @@
   box-sizing: border-box;
 }
 
-.gps h1,
+.gps-name,
 .gps h2,
 .gps p {
   margin: 0;
@@ -631,7 +631,7 @@
   background: var(--gp-accent);
 }
 
-.gps h1 {
+.gps-name {
   font-size: 24px;
   font-weight: 800;
   color: var(--gp-text);
@@ -868,7 +868,8 @@
   grid-template-columns: 48px minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
-  padding: 4px;
+  /* more room on the left than elsewhere: the tag sits in the curve of the row, and looked pushed into the corner */
+  padding: 4px 4px 4px 10px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.04);
   box-shadow: inset 0 0 0 2px transparent;
@@ -928,7 +929,7 @@
   grid-template-columns: 48px minmax(0, 1fr) auto;
   grid-template-areas: "chip main assign" "range range range";
   gap: 6px 8px;
-  padding: 6px;
+  padding: 6px 6px 6px 10px;
 }
 .gps-pot .gps-chip { grid-area: chip; }
 .gps-pot-main { grid-area: main; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 8px; align-items: center; }
@@ -1078,6 +1079,16 @@
   list-style: none;
 }
 .gps .mod-address.gps-tile { width: 100%; min-height: 56px; }
+.gps .mod-address.gps-tile:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.gps .mod-address.gps-tile:disabled:hover { background-color: rgba(255, 255, 255, 0.06); }
+
+/* A panel the device cannot use: its note takes the place of the description */
+.gps .gps-unsupported-note { color: var(--gp-accent); font-weight: 600; }
+.gps-panel.is-unsupported .gps-panel-head p:not(.gps-unsupported-note) { display: none; }
+
 .gps-tile-name {
   display: flex;
   flex-direction: column;
@@ -1247,7 +1258,7 @@
 /* Narrow: the logo, the last control and the close button, and under them the page controls across the width */
 .gps[data-w="s"] { font-size: 15px; }
 .gps[data-w="s"] .gps-bar { gap: 8px 10px; }
-.gps[data-w="s"] h1 { display: none; }
+.gps[data-w="s"] .gps-name { display: none; }
 .gps[data-w="s"] .gps-title { margin-right: 0; }
 .gps[data-w="s"] .gps-now { order: 2; flex: 1 1 0; }
 .gps[data-w="s"] .gps-close { order: 3; min-width: 88px; padding: 0 20px; }
@@ -1276,3 +1287,6 @@
   .gossiper *, .gps * { transition: none !important; }
   .gp-display.is-changed { animation-duration: 0.01s; }
 }
+
+/* In MOD UI's Performance view the page lives beside the plugin list: the window is not there to be closed */
+[data-performance] .gps-close { display: none; }

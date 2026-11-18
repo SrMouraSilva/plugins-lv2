@@ -6,10 +6,11 @@
   "badges": [
     "7 presets",
     "8 CV outputs",
+    "MIDI out",
     "Touch settings page"
   ],
   "edition": "User manual · November 2026 edition",
-  "version": "v1.0",
+  "version": "v1.0.33",
   "hero": "../modgui/screenshot.png",
   "brand": "#0c4550",
   "brand2": "#052a31",

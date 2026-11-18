@@ -36,7 +36,8 @@ const settings = (plugin, run, height = 540) => ({
 
 // Goes through every page with the arrow of the bar, tapping one assignment tile on the way (it is marked as assigned,
 // which is what MOD UI does when the dialog of the tile is confirmed), and comes back to the first page with its dot
-async function visitPages(ctx, { next, dot, tile, tileSymbol }) {
+// onPage(page): something to do on a page once it is shown (the MIDI page of Tetr4 Switch: its fields are touched)
+async function visitPages(ctx, { next, dot, tile, tileSymbol, onPage }) {
   const pages = await ctx.eval(`document.querySelectorAll('${dot}').length`);
   for (let page = 1; page < pages; page++) {
     await ctx.tap(next, 120);
@@ -46,6 +47,7 @@ async function visitPages(ctx, { next, dot, tile, tileSymbol }) {
       await ctx.eval(`document.querySelector('[mod-port-symbol="${tileSymbol(page)}"]').classList.add('addressed')`);
       await ctx.sleep(700);
     }
+    if (onPage) await onPage(page);
   }
   await ctx.sleep(500);
   await ctx.tap(`${dot}[data-page="0"]`, 120);
@@ -79,9 +81,24 @@ export const scenarios = {
       await ctx.sleep(500);
       await ctx.type('.t4s-label[data-preset="2"]', 'Lead');
       await ctx.tap('.t4s-dip[data-preset="2"][data-output="1"]');
-      await ctx.tap('.t4s-pad[data-preset="3"]');
-      await ctx.sleep(700);
-      await visitPages(ctx, { next: '.t4s-next', dot: '.t4s-dot', tile: true, tileSymbol: (page) => ['', 'Preset_selector_1', 'Preset_combobox', 'Assign_to_notify_1'][page] || '' });
+      // the button beside the round one assigns the preset to a control of the device (marked as MOD UI does once its dialog is confirmed)
+      await ctx.tap('[mod-port-symbol="Preset_selector_2"]', 120);
+      await ctx.eval(`document.querySelector('[mod-port-symbol="Preset_selector_2"]').classList.add('addressed')`);
+      await ctx.sleep(400);
+      // pages: scenes, Current preset, screen pop-ups, MIDI out, saved presets
+      await visitPages(ctx, {
+        next: '.t4s-next', dot: '.t4s-dot', tile: true,
+        tileSymbol: (page) => ['', 'Preset_combobox', 'Assign_to_notify_1'][page] || '',
+        onPage: async (page) => {
+          if (page !== 3) return;
+          await ctx.tap('.t4s-num[data-symbol="MIDI_channel"] [data-dir="1"]', 120);
+          await ctx.sleep(250);
+          await ctx.tap('.t4s-num[data-symbol="MIDI_CC_1"] [data-dir="1"]', 120);
+          await ctx.sleep(250);
+          await ctx.tap('.t4s-switch', 120);
+          await ctx.sleep(500);
+        },
+      });
     }, 360),
   },
 
@@ -108,8 +125,25 @@ export const scenarios = {
       await ctx.sleep(500);
       await ctx.type('.h7s-label[data-preset="3"]', 'Crunch');
       await ctx.tap('.h7s-cell-cycle[data-preset="2"]');
-      await ctx.sleep(700);
-      await visitPages(ctx, { next: '.h7s-next', dot: '.h7s-dot', tile: true, tileSymbol: (page) => ['', '', '', 'Preset_selector_1', 'Preset_combobox', 'Assign_to_notify_1'][page] || '' });
+      await ctx.sleep(500);
+      // the button beside the number of the row assigns the preset to a control of the device (marked as MOD UI does once its dialog is confirmed)
+      await ctx.tap('[mod-port-symbol="Preset_selector_3"]', 120);
+      await ctx.eval(`document.querySelector('[mod-port-symbol="Preset_selector_3"]').classList.add('addressed')`);
+      await ctx.sleep(400);
+      // pages: scenes, Current / Next / Previous preset, screen pop-ups, MIDI out, saved presets
+      await visitPages(ctx, {
+        next: '.h7s-next', dot: '.h7s-dot', tile: true,
+        tileSymbol: (page) => ['', 'Next_preset', 'Assign_to_notify_1'][page] || '',
+        onPage: async (page) => {
+          if (page !== 3) return;
+          await ctx.tap('.h7s-num[data-symbol="MIDI_channel"] [data-dir="1"]', 120);
+          await ctx.sleep(250);
+          await ctx.tap('.h7s-num[data-symbol="MIDI_CC_1"] [data-dir="1"]', 120);
+          await ctx.sleep(250);
+          await ctx.tap('.h7s-switch', 120);
+          await ctx.sleep(500);
+        },
+      });
     }),
   },
 
@@ -157,7 +191,20 @@ export const scenarios = {
       await ctx.tap('.kss-length-up', 100); await ctx.tap('.kss-length-up', 100);
       await ctx.tap('.kss-beat-up', 100);
       await ctx.sleep(700);
-      await visitPages(ctx, { next: '.kss-next', dot: '.kss-dot', tile: true, tileSymbol: () => 'pattern' });
+      // from the first page, going through every page with the arrows; the small button beside the tempo assigns it to the
+      // device (marked as MOD UI does once its dialog is confirmed) on the page that shows it
+      await ctx.tap('.kss-dot[data-page="0"]', 120);
+      await ctx.sleep(900);
+      let assigned = false;
+      const assignTempo = async () => {
+        if (assigned || !(await ctx.eval(`!!document.querySelector('[mod-port-symbol="bpm"]')?.offsetParent`))) return;
+        assigned = true;
+        await ctx.tap('[mod-port-symbol="bpm"]', 120);
+        await ctx.eval(`document.querySelector('[mod-port-symbol="bpm"]').classList.add('addressed')`);
+        await ctx.sleep(600);
+      };
+      await assignTempo();
+      await visitPages(ctx, { next: '.kss-next', dot: '.kss-dot', tile: false, onPage: assignTempo });
       // Back to the start, as a controller would put it (the first edit switched Pattern to Custom)
       for (const [symbol, value] of [['pattern', 0], ['custom_step_4', 2], ['custom_length', 8], ['custom_steps_per_beat', 2]]) {
         await ctx.eval(`send({ type: 'change', symbol: '${symbol}', value: ${value} })`);
@@ -220,7 +267,20 @@ export const scenarios = {
       await ctx.tap('.hms-length-up', 100); await ctx.tap('.hms-length-up', 100);
       await ctx.tap('.hms-beat-up', 100);
       await ctx.sleep(700);
-      await visitPages(ctx, { next: '.hms-next', dot: '.hms-dot', tile: true, tileSymbol: () => 'mode' });
+      // from the first page, going through every page with the arrows; the small button beside Patterns / Endings assigns
+      // the mode to the device (marked as MOD UI does once its dialog is confirmed) on the page that shows it
+      await ctx.tap('.hms-dot[data-page="0"]', 120);
+      await ctx.sleep(900);
+      let assigned = false;
+      const assignMode = async () => {
+        if (assigned || !(await ctx.eval(`!!document.querySelector('[mod-port-symbol="mode"]')?.offsetParent`))) return;
+        assigned = true;
+        await ctx.tap('[mod-port-symbol="mode"]', 120);
+        await ctx.eval(`document.querySelector('[mod-port-symbol="mode"]').classList.add('addressed')`);
+        await ctx.sleep(600);
+      };
+      await assignMode();
+      await visitPages(ctx, { next: '.hms-next', dot: '.hms-dot', tile: false, onPage: assignMode });
       // Back to the start, as a controller would put it
       for (const [symbol, value] of [['mode', 0], ['ending', 0], ['pattern', 0], ['custom_length', 8], ['custom_steps_per_beat', 2]]) {
         await send(symbol, value);

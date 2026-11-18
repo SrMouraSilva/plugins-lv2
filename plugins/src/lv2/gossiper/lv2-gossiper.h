@@ -54,6 +54,9 @@ typedef struct {
     /** Mod HMI */
     HMI hmi;
 
+    /** The display widgets (lv2-gossiper-widgets.c owns it; NULL when it could not be allocated): opaque here */
+    void* widgets;
+
     /**
      * Initialize the lv2 capabilities
      * 

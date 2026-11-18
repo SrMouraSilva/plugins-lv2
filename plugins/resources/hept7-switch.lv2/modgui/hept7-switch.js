@@ -13,6 +13,20 @@ function (event, funcs) {
   const SETTLE_MS = 800;
   const IN_FLIGHT_MS = 2000;
 
+  // The MIDI out: the channel (1-16), whether to send only what changed, and the CC number of each CV output.
+  // Same symbols, limits and defaults as the TTL
+  const MIDI_CHANNEL = 'MIDI_channel';
+  const MIDI_CHANGES_ONLY = 'MIDI_changes_only';
+  const midiCcSymbol = (output) => `MIDI_CC_${output}`;
+  const MIDI_LIMITS = {
+    [MIDI_CHANNEL]: { min: 1, max: 16, fallback: 1 },
+    ...Object.fromEntries(Array.from({ length: OUTPUTS }, (_, i) => [midiCcSymbol(i + 1), { min: 0, max: 127, fallback: 20 + i }])),
+  };
+
+  // The pop-ups are drawn by the widgets of the device screen, which the MOD Duo does not have. MOD UI tells the page
+  // which device it is on (the PLATFORM global: duo, duox, dwarf...). Only the Duo is known not to have them
+  const hasScreenWidgets = () => !(typeof PLATFORM === 'string' && PLATFORM === 'duo');
+
   const labelUri = (preset) => `${URI}#preset_label_${preset}`;
   const dipSymbol = (preset, output) => `Preset_${preset}_output_${output}`;
   const cycleSymbol = (preset) => `Preset_${preset}_in_cycle`;
@@ -27,7 +41,8 @@ function (event, funcs) {
   // State: { active: 1..7, dips: [preset][output] => bool, labels: [preset] => string,
   //          inCycle: [preset] => bool (one of the presets "Current preset" goes through),
   //          inFlight: [{preset, at}] the clicks the host has not answered yet, hostPreset: what the host last said,
-  //          selectorCopy: [preset] => MOD UI's copy of each Preset_selector port (see selectPreset) }
+  //          selectorCopy: [preset] => MOD UI's copy of each Preset_selector port (see selectPreset),
+  //          midi: { symbol => number | bool } the settings of the MIDI out }
 
   const newState = () => ({
     active: 1,
@@ -38,6 +53,7 @@ function (event, funcs) {
     inFlight: [],
     hostPreset: 1,
     selectorCopy: range(1, PRESETS).map((p) => p === 1 ? 1 : 0),
+    midi: { ...Object.fromEntries(Object.entries(MIDI_LIMITS).map(([symbol, limit]) => [symbol, limit.fallback])), [MIDI_CHANGES_ONLY]: true },
   });
 
   const labelOf = (state, preset) => state.labels[preset - 1] || `Preset ${preset}`;
@@ -53,22 +69,71 @@ function (event, funcs) {
 
     // Set apart from the CV outputs: whether "Current preset" goes through this preset
     const cycle = `<button type="button" role="switch" aria-checked="true" class="h7s-cell h7s-cell-cycle" data-preset="${preset}" ` +
-      `aria-label="Preset ${preset} is in the cycle of Current preset" title="Preset ${preset} - In the cycle of Current preset (footswitch, B+C, knob)"></button>`;
+      `aria-label="Preset ${preset} is in the cycle of Current preset, Next preset and Previous preset" title="Preset ${preset} - In the cycle of Current preset, Next preset and Previous preset"></button>`;
+
+    // The slot after the cycle cell is where the button that assigns the preset to a hardware control goes
+    const assign = `<span class="h7s-row-assign" data-preset="${preset}"></span>`;
 
     return `<div class="h7s-row p${preset}" data-preset="${preset}">` +
       `<button type="button" class="h7s-rowpad" data-preset="${preset}" aria-pressed="false" title="Make preset ${preset} the active preset"><b>${preset}</b></button>` +
       `<input type="text" class="h7s-label" data-preset="${preset}" maxlength="${LABEL_MAX_LENGTH}" autocomplete="off" autocapitalize="off" spellcheck="false" ` +
       `aria-label="Name of preset ${preset}" value="Preset ${preset}" />` +
-      `<div class="h7s-cells">${cells}${cycle}</div>` +
+      `<div class="h7s-cells">${cells}${cycle}${assign}</div>` +
       `</div>`;
   };
 
+  // A number the musician sets: a field they can type in, with a button on each side for a step down and up
+  const numberHtml = (symbol, name) =>
+    `<div class="h7s-num" data-symbol="${symbol}">` +
+    `<button type="button" class="h7s-num-step" data-dir="-1" aria-label="Lower ${name}" title="Lower">&minus;</button>` +
+    `<input type="text" class="h7s-num-value" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off" aria-label="${name}" value="" />` +
+    `<button type="button" class="h7s-num-step" data-dir="1" aria-label="Raise ${name}" title="Raise">+</button>` +
+    `</div>`;
+
+  const fieldHtml = (name, hint, symbol) =>
+    `<div class="h7s-field"><span class="h7s-field-name"><b>${name}</b><small>${hint}</small></span>${numberHtml(symbol, `${name} ${hint}`)}</div>`;
+
+  // Two groups: how the control changes are sent (the channel, and whether to leave out the ones that did not change)
+  // and the CC number of each CV output
+  const buildMidi = (settings) => {
+    const outputs = range(1, OUTPUTS).map((output) => fieldHtml(`CV ${output}`, 'on 127 \u00b7 off 0', midiCcSymbol(output)));
+
+    settings.find('[data-group="sending"] .h7s-midi-items').html(
+      fieldHtml('Channel', '1 to 16', MIDI_CHANNEL) +
+      `<button type="button" class="h7s-field h7s-switch" role="switch" aria-checked="true" data-symbol="${MIDI_CHANGES_ONLY}">` +
+      `<span class="h7s-field-name"><b>Changes only</b><small>skip unchanged CCs</small></span>` +
+      `<span class="h7s-switch-track" aria-hidden="true"></span></button>`
+    );
+    settings.find('[data-group="outputs"] .h7s-midi-items').html(outputs.join(''));
+  };
+
+  // A panel of the hardware assignments that this device cannot use: its tiles are disabled and a note says why
+  const disableNotifyPanel = (settings) => {
+    const panel = settings.find('[data-panel="hardware-notify"]');
+
+    panel.addClass('is-unsupported');
+    panel.find('.h7s-unsupported-note').prop('hidden', false);
+    panel.find('.h7s-address').prop('disabled', true).attr('aria-disabled', 'true');
+  };
+
   const buildSettings = (settings) => {
+    if (!hasScreenWidgets()) {
+      disableNotifyPanel(settings);
+    }
+
     const head = '<div class="h7s-row h7s-head" aria-hidden="true"><span class="h7s-corner">Preset</span><span class="h7s-spacer"></span>' +
       '<div class="h7s-cells">' + range(1, OUTPUTS).map((o) => `<span class="h7s-col">${o}</span>`).join('') +
-      '<span class="h7s-col h7s-col-cycle" title="In the cycle of Current preset">Cycle</span></div></div>';
+      '<span class="h7s-col h7s-col-cycle" title="In the cycle of Current preset, Next preset and Previous preset">Cycle</span>' +
+      '<span class="h7s-col h7s-col-assign" title="Assign the preset to a control of your device">Assign</span></div></div>';
 
     settings.find('.h7s-matrix').html(head + range(1, PRESETS).map(rowHtml).join(''));
+
+    // MOD UI has wired the assignment buttons of the template: each one moves to the end of the row of its preset, not copied
+    range(1, PRESETS).forEach((preset) => {
+      settings.find(`.h7s-row-assign[data-preset="${preset}"]`).append(settings.find(`.h7s-address[mod-port-symbol="Preset_selector_${preset}"]`));
+    });
+    settings.find('.h7s-parking').remove();
+    buildMidi(settings);
   };
 
   // ---------------------------------------------------------------------------
@@ -87,6 +152,14 @@ function (event, funcs) {
   const ROW_TWO_LINES_PX = 450;  // two lines (the name, then the outputs) from this width, otherwise three
   const TILE_MIN_PX = 150;       // the hardware assignment tiles
   const TILE_MAX_COLUMNS = 4;
+  const MIDI_TILE_MIN_PX = 236;  // a field of the MIDI panel: its name, and the number with a button on each side
+  // From this width the two groups of the MIDI panel sit side by side (one column of fields, then two), which is a lot
+  // less tall: what a tablet, or a screen that is wide and short, needs
+  const MIDI_SIDE_PX = MIDI_TILE_MIN_PX * 3 + 14 + 12;
+  // Narrower than two fields side by side, but from this width: a phone. The fields then stand up (the name over its
+  // number) and go in two columns, so that the eight CC numbers fit the height of the screen
+  const MIDI_COMPACT_MIN_PX = 260;
+  const MIDI_TIGHT_PX = 700;
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const px = (value) => parseFloat(value) || 0;
@@ -112,8 +185,11 @@ function (event, funcs) {
       pager: root.querySelector('.h7s-pager'),
       stock: root.querySelector('.h7s-stock'),
       scenes: part(root.querySelector('[data-panel="scenes"]'), '.h7s-matrix', '.h7s-row[data-preset]'),
-      // Hardware is told apart by purpose: the preset buttons, the Current preset control, the screen pop-ups
+      // Hardware is told apart by purpose: the preset buttons, the Current / Next / Previous preset buttons, the screen pop-ups
       hardware: Array.from(root.querySelectorAll('[data-panel^="hardware"]')).map((panel) => part(panel, '.h7s-assign', 'li')),
+      // The MIDI out: a panel that is never split, with two groups of fields, each with its own columns
+      midi: part(root.querySelector('[data-panel="midi"]')),
+      midiGroups: Array.from(root.querySelectorAll('[data-panel="midi"] .h7s-midi-items')),
       presets: part(root.querySelector('[data-panel="presets"]')),
       page: 0,
       key: '',
@@ -148,7 +224,7 @@ function (event, funcs) {
 
   // Everything back in the stock, in the order it was written, and the pages (with their copies) thrown away
   const gather = (view) => {
-    view.stock.append(view.scenes.panel, ...view.hardware.map((part) => part.panel), view.presets.panel);
+    view.stock.append(view.scenes.panel, ...view.hardware.map((part) => part.panel), view.midi.panel, view.presets.panel);
     view.scenes.body.append(view.scenes.head, ...view.scenes.items);
     view.hardware.forEach((part) => part.body.append(...part.items));
     view.pager.textContent = '';
@@ -185,22 +261,52 @@ function (event, funcs) {
     list.style.setProperty('--h7s-cols', part.columns);
   };
 
+  // The MIDI panel: its groups one under the other, each with the columns its width allows (never an orphan on the last
+  // line), or side by side when it is wide
+  const sizeMidi = (view) => {
+    const list = view.midi.panel.querySelector('.h7s-midi');
+    const side = list.clientWidth >= MIDI_SIDE_PX;
+
+    const compact = !side && list.clientWidth < MIDI_TILE_MIN_PX * 2 + 6 && list.clientWidth >= MIDI_COMPACT_MIN_PX;
+
+    list.classList.toggle('is-side', side);
+    list.classList.toggle('is-compact', compact);
+    // Less air between the fields when the screen is low (a small phone): what is on a page must not need scrolling
+    list.classList.toggle('is-tight', compact && view.root.clientHeight < MIDI_TIGHT_PX);
+
+    view.midiGroups.forEach((body, group) => {
+      const count = body.children.length;
+      const gap = px(getComputedStyle(body).columnGap);
+      let columns = side
+        ? (group === 0 ? 1 : 2)
+        : compact ? 2
+        : clamp(Math.floor((body.clientWidth + gap) / (MIDI_TILE_MIN_PX + gap)), 1, Math.min(TILE_MAX_COLUMNS, count));
+
+      while (count % columns) {
+        columns--;
+      }
+      body.style.setProperty('--h7s-cols', columns);
+    });
+  };
+
   const sizeAll = (view) => {
     sizeRows(view);
     view.hardware.forEach((part) => sizeTiles(view, part));
+    sizeMidi(view);
   };
 
   const fits = (page) => [page, ...page.querySelectorAll('.h7s-panel, .h7s-col')]
     .every((el) => el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1);
 
   // Wide screens, first choice: everything on one page, or the scenes and the saved presets side by side with the
-  // hardware (its three panels next to each other) on a page of its own. Returns the pages, or null when neither fits
+  // hardware and the MIDI out (their panels next to each other) on a page of its own. Returns the pages, or null when
+  // neither fits
   const layoutSideBySide = (view) => {
-    const { scenes, hardware, presets } = view;
+    const { scenes, hardware, midi, presets } = view;
     const panels = hardware.map((part) => part.panel);
     const attempts = [
-      () => { const col = element('h7s-col'); col.append(...panels, presets.panel); return [[scenes.panel, col]]; },
-      () => [[scenes.panel, presets.panel], panels],
+      () => { const col = element('h7s-col'); col.append(...panels, midi.panel, presets.panel); return [[scenes.panel, col]]; },
+      () => [[scenes.panel, presets.panel], [...panels, midi.panel]],
     ];
 
     for (const attempt of attempts) {
@@ -252,7 +358,7 @@ function (event, funcs) {
 
   // Last resort and the way of the small screens: each panel on its own page(s), as many as the height asks for
   const layoutOneByOne = (view) => {
-    const { scenes, hardware, presets } = view;
+    const { scenes, hardware, midi, presets } = view;
     gather(view);
 
     const scenePanels = paginate(scenes, linesOf(view, scenes), 1);
@@ -262,7 +368,9 @@ function (event, funcs) {
       return paginate(part, lines * part.columns, part.columns);
     });
 
-    return setPages(view, [...scenePanels, ...tilePanels, presets.panel].map((panel) => [panel]));
+    const pages = setPages(view, [...scenePanels, ...tilePanels, midi.panel, presets.panel].map((panel) => [panel]));
+    sizeMidi(view);   // on its page now, where it can be measured
+    return pages;
   };
 
   const goToPage = (view, index, smooth) => {
@@ -381,8 +489,15 @@ function (event, funcs) {
       cells: all(event.settings, '.h7s-cell[data-output]').map((el) => ({ el, preset: preset(el), output: output(el) })),
       cycleCells: all(event.settings, '.h7s-cell-cycle').map((el) => ({ el, preset: preset(el) })),
       labels: all(event.settings, '.h7s-label').map((el) => ({ el, preset: preset(el) })),
-      // The hardware tiles of the preset buttons are named after the presets
-      assignTitles: all(event.settings, '.h7s-assign-title').map((el) => ({ el, preset: preset(el) })),
+      // The tile of Current preset says which preset is playing, those of Next and Previous preset where they lead
+      playing: all(event.settings, '.h7s-playing-text'),
+      nextTargets: all(event.settings, '.h7s-target-next'),
+      previousTargets: all(event.settings, '.h7s-target-previous'),
+      // MIDI out: the number fields (value and the two buttons) and the switch, by port symbol
+      midiNumbers: all(event.settings, '.h7s-num').map((el) => ({
+        el, symbol: el.getAttribute('data-symbol'), value: el.querySelector('.h7s-num-value'), steps: Array.from(el.querySelectorAll('.h7s-num-step')),
+      })),
+      midiSwitch: all(event.settings, '.h7s-switch'),
     };
   };
 
@@ -404,6 +519,20 @@ function (event, funcs) {
     if (el !== document.activeElement && el.value !== value) {
       el.value = value;
     }
+  };
+
+  // Where Next preset (direction 1) and Previous preset (-1) lead from @p active: the next preset that is in the cycle
+  // (the active one itself when it is the only one), as the plugin counts
+  const cycleTarget = (state, active, direction) => {
+    for (let step = 1; step <= PRESETS; step++) {
+      const preset = ((active - 1 + direction * step + PRESETS * 2) % PRESETS) + 1;
+
+      if (state.inCycle[preset - 1]) {
+        return preset;
+      }
+    }
+
+    return active;
   };
 
   const draw = (event) => {
@@ -438,7 +567,21 @@ function (event, funcs) {
     el.cells.forEach((cell) => toggle(cell.el, 'is-on', !!state.dips[cell.preset - 1][cell.output - 1], 'aria-checked'));
     el.cycleCells.forEach((cell) => toggle(cell.el, 'is-on', state.inCycle[cell.preset - 1], 'aria-checked'));
     el.labels.forEach((label) => setInput(label.el, labelOf(state, label.preset)));
-    el.assignTitles.forEach((title) => setText(title.el, labelOf(state, title.preset)));
+    el.playing.forEach((text) => setText(text, `${active} \u00b7 ${activeLabel}`));
+    const targetText = (preset) => `${preset} \u00b7 ${labelOf(state, preset)}`;
+    el.nextTargets.forEach((text) => setText(text, targetText(cycleTarget(state, active, 1))));
+    el.previousTargets.forEach((text) => setText(text, targetText(cycleTarget(state, active, -1))));
+
+    el.midiNumbers.forEach((number) => {
+      const limit = MIDI_LIMITS[number.symbol];
+      const value = state.midi[number.symbol];
+
+      setInput(number.value, String(value));
+      number.steps.forEach((step) => {
+        step.disabled = Number(step.getAttribute('data-dir')) < 0 ? value <= limit.min : value >= limit.max;
+      });
+    });
+    el.midiSwitch.forEach((toggleEl) => toggle(toggleEl, 'is-on', !!state.midi[MIDI_CHANGES_ONLY], 'aria-checked'));
   };
 
   // ---------------------------------------------------------------------------
@@ -480,8 +623,8 @@ function (event, funcs) {
 
   // The user pressed a preset button: the display announces it at once, without waiting for the host. The host's
   // answer is handled by hostSays().
-  // The click goes to the selector of that preset (not to "Current preset": when some presets are out of its cycle,
-  // the plugin takes a move of one step of it for a footswitch going through the cycle). MOD UI sends nothing when its
+  // The click goes to the selector of that preset (not to "Current preset", which is a button that steps through the
+  // cycle: it can not name a preset). MOD UI sends nothing when its
   // copy of the port already holds the value, and its copy of a selector is only put back to 0 when the host's answer
   // arrives, so a quick click back to a previous preset was lost. This page follows that copy: when it is already on,
   // the selector is turned off and on again, which the plugin always takes as that preset being selected
@@ -569,6 +712,46 @@ function (event, funcs) {
     funcs.set_port_value(dipSymbol(preset, output), on ? 1 : 0);
   };
 
+  // The MIDI settings: shown at once, then sent. A value out of range is put back in it
+  const setMidi = (event, symbol, value) => {
+    const limit = MIDI_LIMITS[symbol];
+    const clamped = clamp(Math.round(value), limit.min, limit.max);
+
+    event.data.state.midi[symbol] = clamped;
+    draw(event);
+
+    funcs.set_port_value(symbol, clamped);
+  };
+
+  const stepMidi = (event, symbol, direction) => setMidi(event, symbol, event.data.state.midi[symbol] + direction);
+
+  const toggleMidiChangesOnly = (event) => {
+    const on = !event.data.state.midi[MIDI_CHANGES_ONLY];
+
+    event.data.state.midi[MIDI_CHANGES_ONLY] = on;
+    draw(event);
+
+    funcs.set_port_value(MIDI_CHANGES_ONLY, on ? 1 : 0);
+  };
+
+  // Typing a number: only digits, and what is typed is sent as soon as it is a number
+  const typeMidi = (event, input, symbol) => {
+    const digits = input.val().replace(/\D/g, '');
+
+    if (input.val() !== digits) {
+      input.val(digits);
+    }
+    if (digits !== '') {
+      const value = Number(digits);
+      const limit = MIDI_LIMITS[symbol];
+
+      if (value > limit.max) {
+        input.val(String(limit.max));
+      }
+      setMidi(event, symbol, value);
+    }
+  };
+
   const changeLabel = (event, input, preset) => {
     const sanitized = sanitizeLabel(input.val());
 
@@ -589,6 +772,41 @@ function (event, funcs) {
     event.icon.find('.mod-actions .mod-settings').first().trigger('click');
   };
 
+  // MOD UI's Performance view shows a second copy of the settings template (rendered with `isPerformanceView`), which no
+  // script ever sees: it would stay the bare HTML, never built. While that view shows this plugin, the live page
+  // (event.settings, the one this script builds and updates) takes the copy's place. MOD UI keeps the live page hidden in
+  // <body>, as its own window: it goes back there when the view closes or shows another plugin, or that window would not open.
+  // `data-performance` lets the stylesheet drop what makes no sense in the view (the Close button).
+  const adoptInPerformanceView = (event) => {
+    const host = document.querySelector('.js-performance-plugin-settings');
+    const view = document.getElementById('performance');
+    if (!host || !view || typeof MutationObserver !== 'function') return;
+    const live = event.settings[0];
+    const instance = live.getAttribute('mod-instance');
+    let home = null;
+
+    const release = () => {
+      if (!live.hasAttribute('data-performance')) return;
+      live.removeAttribute('data-performance');
+      live.style.display = 'none';
+      if (home) home.appendChild(live);
+    };
+    new MutationObserver(() => {
+      const copy = Array.from(host.children).find((el) => el !== live && el.getAttribute('mod-instance') === instance);
+      if (copy) {
+        if (!live.hasAttribute('data-performance')) home = live.parentNode;
+        copy.replaceWith(live);
+        live.style.display = 'block';
+        live.setAttribute('data-performance', '');
+      } else if (live.parentNode !== host) {
+        release();
+      }
+    }).observe(host, { childList: true });
+    new MutationObserver(() => {
+      if (getComputedStyle(view).display === 'none') release();
+    }).observe(view, { attributes: true, attributeFilter: ['class', 'style'] });
+  };
+
   const assignEvents = (event) => {
     const icon = event.icon;
     const settings = event.settings;
@@ -606,6 +824,24 @@ function (event, funcs) {
     });
     settings.on('click', '.h7s-cell-cycle', function () { toggleCycle(event, Number($(this).data('preset'))); });
     settings.on('input', '.h7s-label', function () { changeLabel(event, $(this), Number($(this).data('preset'))); });
+
+    const symbolOf = (el) => $(el).closest('[data-symbol]').attr('data-symbol');
+    settings.on('click', '.h7s-num-step', function () { stepMidi(event, symbolOf(this), Number($(this).data('dir'))); });
+    settings.on('click', '.h7s-switch', function () { toggleMidiChangesOnly(event); });
+    settings.on('input', '.h7s-num-value', function () { typeMidi(event, $(this), symbolOf(this)); });
+    settings.on('keydown', '.h7s-num-value', function (e) {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        stepMidi(event, symbolOf(this), e.key === 'ArrowUp' ? 1 : -1);
+        e.preventDefault();
+      }
+    });
+    // Leaving the field: show the stored value again (an empty field goes back to it)
+    settings.on('blur', '.h7s-num-value', function () {
+      draw(event);
+      if (event.data.view.pending) {
+        scheduleLayout(event);
+      }
+    });
 
     // Leaving the field: show the stored value again (e.g. an empty name goes back to the default)
     settings.on('blur', '.h7s-label', function () {
@@ -637,6 +873,8 @@ function (event, funcs) {
     } else {
       window.addEventListener('resize', () => scheduleLayout(event));
     }
+
+    adoptInPerformanceView(event);
   };
 
   // ---------------------------------------------------------------------------
@@ -688,6 +926,22 @@ function (event, funcs) {
         }
       }
 
+    } else if (symbol === MIDI_CHANGES_ONLY) {
+      const on = value == 1;
+      const changed = state.midi[symbol] !== on;
+      state.midi[symbol] = on;
+      return changed;
+
+    } else if (MIDI_LIMITS[symbol]) {
+      const limit = MIDI_LIMITS[symbol];
+      if (!Number.isFinite(Number(value))) {
+        return false;
+      }
+      const number = clamp(Math.round(Number(value)), limit.min, limit.max);
+      const changed = state.midi[symbol] !== number;
+      state.midi[symbol] = number;
+      return changed;
+
     } else if (symbol === 'Active_preset') {
       // The plugin's output: the host reports every change of preset through it, whoever made it. Only after 'start'
       // (at 'start' an output has its default value, not the plugin's)
@@ -697,10 +951,6 @@ function (event, funcs) {
         return hostPreset(preset);
       }
 
-    } else if (symbol === 'Preset_combobox' && !announceChange) {
-      // Only when the page starts, and only if no selector is on. Afterwards the selectors say which preset is on:
-      // with presets out of the cycle, "Current preset" may hold where the device's footswitch is in the cycle
-      state.comboboxPreset = Math.round(Number(value)) + 1;
     }
 
     return false;
@@ -736,8 +986,7 @@ function (event, funcs) {
       handlePort(event, port.symbol, port.value, false);
     }
     if (!event.data.state.active) {
-      const preset = event.data.state.comboboxPreset;
-      event.data.state.active = event.data.state.hostPreset = preset >= 1 && preset <= PRESETS ? preset : 1;
+      event.data.state.active = event.data.state.hostPreset = 1;
     }
 
     // Labels come from the plugin: ask for them (the reply arrives as a 'change' event with a uri)

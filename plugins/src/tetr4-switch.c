@@ -19,6 +19,7 @@
 
 #include "lv2/controller/lv2-controller.h"
 #include "lv2/controller/lv2-hmi-extension.h"
+#include "lv2/controller/lv2-widgets.h"
 
 static void Controller_apply_patch_messages(Controller* self);
 static void Controller_apply_patch_set(Controller* self, const LV2_Atom_Object* obj);
@@ -76,6 +77,8 @@ instantiate(const LV2_Descriptor*     descriptor,
         return NULL;
     }
 
+    LV2_Widgets_initialize(self, features, rate);
+
     return (LV2_Handle) self;
 }
 
@@ -105,6 +108,7 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
     } else if (port == PORT_EVENTS_OUT) {
         self->lv2->events_out = (LV2_Atom_Sequence*) data;
 
+#ifdef HEPT7_SWITCH
     } else if (port >= PORT_PRESET_IN_CYCLE_FIRST && port < PORT_PRESET_IN_CYCLE_FIRST + TOTAL_PRESETS) {
         // Hept7 Switch only: Tetr4 Switch has no such ports, so the host never connects them
         self->presets_in_cycle[port - PORT_PRESET_IN_CYCLE_FIRST] = (float*) data;
@@ -112,6 +116,25 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
     } else if (port == PORT_ACTIVE_PRESET) {
         // Hept7 Switch only, as above
         self->active_preset_output = (float*) data;
+
+    } else if (port == PORT_NEXT_PRESET) {
+        self->next_preset_button = (float*) data;
+
+    } else if (port == PORT_PREVIOUS_PRESET) {
+        self->previous_preset_button = (float*) data;
+#endif
+
+    } else if (port >= PORT_MIDI_CC_FIRST && port < PORT_MIDI_CHANNEL) {
+        self->midi_cc[port - PORT_MIDI_CC_FIRST] = (float*) data;
+
+    } else if (port == PORT_MIDI_CHANNEL) {
+        self->midi_channel = (float*) data;
+
+    } else if (port == PORT_MIDI_CHANGES_ONLY) {
+        self->midi_changes_only = (float*) data;
+
+    } else if (port == PORT_MIDI_OUT) {
+        self->lv2->midi_out = (LV2_Atom_Sequence*) data;
     }
 }
 
@@ -158,6 +181,8 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
 
     Controller_sync_selector_ports(self);
 
+    LV2_Widgets_run(self, n_samples);
+
     Controller_finish_atom_forge(self, &notify_frame);
 }
 
@@ -187,15 +212,14 @@ static void Controller_sync_selector_ports(Controller* self) {
         }
     }
 
-    // With a cycle (Hept7 Switch) the combobox is also the device's position (see Controller_follow_combobox). It never
-    // takes a value near that position: the next press of the device would send it (the host would see no change, and
-    // the press would be lost), or it would make a press ambiguous. It keeps its value instead, and the selectors say
-    // which preset is on
-    const bool keep_cycle_position = Controller_has_cycle(self) && !Controller_may_show_in_combobox(self, current);
+    // Hept7 Switch has buttons where Tetr4 Switch has the enumeration: nothing to keep in step there. The selectors say
+    // which preset is on, and the widgets show it
+    if (Controller_has_cycle(self)) {
+        return;
+    }
 
     // The raw value, so a value out of range is put right too
-    if (!keep_cycle_position
-        && *self->current_preset_index != (float) current
+    if (*self->current_preset_index != (float) current
         && control_input_port->request_change(control_input_port->handle, PORT_PRESET_SELECT, (float) current) == LV2_CONTROL_INPUT_PORT_CHANGE_SUCCESS) {
         self->combobox = current;
     }
@@ -207,6 +231,7 @@ static void deactivate(LV2_Handle instance) {}
 static void cleanup(LV2_Handle instance) {
     Controller* self = (Controller*) instance;
 
+    free(self->lv2->widgets);
     free(self->lv2);
     self->lv2 = NULL;
 
@@ -225,6 +250,10 @@ static const void* extension_data(const char* uri) {
 
     if (!strcmp(uri, LV2_WORKER__interface)) {
         return &worker;
+    }
+
+    if (!strcmp(uri, ALABS_HMI__WidgetNotification)) {
+        return LV2_Widgets_notification();
     }
 
     return NULL;

@@ -12,6 +12,20 @@ function (event, funcs) {
   const SETTLE_MS = 800;
   const IN_FLIGHT_MS = 2000;
 
+  // The MIDI out: the channel (1-16), whether to send only what changed, and the CC number of each CV output.
+  // Same symbols, limits and defaults as the TTL
+  const MIDI_CHANNEL = 'MIDI_channel';
+  const MIDI_CHANGES_ONLY = 'MIDI_changes_only';
+  const midiCcSymbol = (output) => `MIDI_CC_${output}`;
+  const MIDI_LIMITS = {
+    [MIDI_CHANNEL]: { min: 1, max: 16, fallback: 1 },
+    ...Object.fromEntries(Array.from({ length: OUTPUTS }, (_, i) => [midiCcSymbol(i + 1), { min: 0, max: 127, fallback: 20 + i }])),
+  };
+
+  // The pop-ups are drawn by the widgets of the device screen, which the MOD Duo does not have. MOD UI tells the page
+  // which device it is on (the PLATFORM global: duo, duox, dwarf...). Only the Duo is known not to have them
+  const hasScreenWidgets = () => !(typeof PLATFORM === 'string' && PLATFORM === 'duo');
+
   const labelUri = (preset) => `${URI}#preset_label_${preset}`;
   const dipSymbol = (preset, output) => `Preset_${preset}_output_${output}`;
   const range = (from, to) => Array.from({ length: to - from + 1 }, (_, i) => from + i);
@@ -22,7 +36,7 @@ function (event, funcs) {
     .replace(INVALID_LABEL_CHARS, '_');
 
   // ---------------------------------------------------------------------------
-  // State: { active: 1..4, dips: [preset][output] => bool, labels: [preset] => string,
+  // State: { active: 1..4, dips: [preset][output] => bool, labels: [preset] => string, midi: { symbol => number | bool },
   //          inFlight: [{preset, at}] the clicks the host has not answered yet, hostPreset: what the host last said }
 
   const newState = () => ({
@@ -30,6 +44,7 @@ function (event, funcs) {
     // Same defaults as the TTL: preset N turns on output N
     dips: range(1, PRESETS).map((p) => range(1, OUTPUTS).map((o) => p === o)),
     labels: range(1, PRESETS).map((p) => `Preset ${p}`),
+    midi: { ...Object.fromEntries(Object.entries(MIDI_LIMITS).map(([symbol, limit]) => [symbol, limit.fallback])), [MIDI_CHANGES_ONLY]: true },
     inFlight: [],
     hostPreset: 1,
   });
@@ -46,16 +61,64 @@ function (event, funcs) {
       `<span class="t4s-dip-track"></span><span class="t4s-dip-num">CV ${output}</span></button>`
     ).join('');
 
+    // The button that plays the preset, and beside it (the slot) the one that assigns the preset to a hardware control
     return `<div class="t4s-card p${preset}" data-preset="${preset}">` +
+      `<div class="t4s-card-head">` +
       `<button type="button" class="t4s-pad" data-preset="${preset}" aria-pressed="false" title="Make preset ${preset} the active preset"><b>${preset}</b></button>` +
+      `<span class="t4s-card-assign" data-preset="${preset}"></span>` +
+      `</div>` +
       `<input type="text" class="t4s-label" data-preset="${preset}" maxlength="${LABEL_MAX_LENGTH}" autocomplete="off" autocapitalize="off" spellcheck="false" ` +
       `aria-label="Name of preset ${preset}" value="Preset ${preset}" />` +
       `<div class="t4s-dips" role="group" aria-label="CV outputs on in preset ${preset}">${dips}</div>` +
       `</div>`;
   };
 
+  // A number the musician sets: a field they can type in, with a button on each side for a step down and up
+  const numberHtml = (symbol, name) =>
+    `<div class="t4s-num" data-symbol="${symbol}">` +
+    `<button type="button" class="t4s-num-step" data-dir="-1" aria-label="Lower ${name}" title="Lower">&minus;</button>` +
+    `<input type="text" class="t4s-num-value" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off" aria-label="${name}" value="" />` +
+    `<button type="button" class="t4s-num-step" data-dir="1" aria-label="Raise ${name}" title="Raise">+</button>` +
+    `</div>`;
+
+  const fieldHtml = (name, hint, symbol) =>
+    `<div class="t4s-field"><span class="t4s-field-name"><b>${name}</b><small>${hint}</small></span>${numberHtml(symbol, `${name} ${hint}`)}</div>`;
+
+  // Two groups: how the control changes are sent (the channel, and whether to leave out the ones that did not change)
+  // and the CC number of each CV output
+  const buildMidi = (settings) => {
+    const outputs = range(1, OUTPUTS).map((output) => fieldHtml(`CV ${output}`, 'on 127 \u00b7 off 0', midiCcSymbol(output)));
+
+    settings.find('[data-group="sending"] .t4s-midi-items').html(
+      fieldHtml('Channel', '1 to 16', MIDI_CHANNEL) +
+      `<button type="button" class="t4s-field t4s-switch" role="switch" aria-checked="true" data-symbol="${MIDI_CHANGES_ONLY}">` +
+      `<span class="t4s-field-name"><b>Changes only</b><small>skip unchanged CCs</small></span>` +
+      `<span class="t4s-switch-track" aria-hidden="true"></span></button>`
+    );
+    settings.find('[data-group="outputs"] .t4s-midi-items').html(outputs.join(''));
+  };
+
+  // A panel of the hardware assignments that this device cannot use: its tiles are disabled and a note says why
+  const disableNotifyPanel = (settings) => {
+    const panel = settings.find('[data-panel="hardware-notify"]');
+
+    panel.addClass('is-unsupported');
+    panel.find('.t4s-unsupported-note').prop('hidden', false);
+    panel.find('.t4s-address').prop('disabled', true).attr('aria-disabled', 'true');
+  };
+
   const buildSettings = (settings) => {
+    if (!hasScreenWidgets()) {
+      disableNotifyPanel(settings);
+    }
     settings.find('.t4s-grid').html(range(1, PRESETS).map(cardHtml).join(''));
+
+    // MOD UI has wired the assignment buttons of the template: each one moves to the card of its preset, not copied
+    range(1, PRESETS).forEach((preset) => {
+      settings.find(`.t4s-card-assign[data-preset="${preset}"]`).append(settings.find(`.t4s-address[mod-port-symbol="Preset_selector_${preset}"]`));
+    });
+    settings.find('.t4s-parking').remove();
+    buildMidi(settings);
   };
 
   // ---------------------------------------------------------------------------
@@ -70,10 +133,18 @@ function (event, funcs) {
   const WIDE_PX = 1100;          // from this width, panels can sit side by side
   const MEDIUM_PX = 700;
   const SHORT_PX = 600;          // below this height, the descriptions go and everything gets tighter
-  const CARD_MIN_PX = 196;       // the narrowest a preset card can be: its four switches still have room
+  const CARD_MIN_PX = 232;       // the narrowest a preset card can be: its play and assign buttons, a name and its four switches still have room
   const CARD_ROW_PX = 330;       // from this width, a card puts its name beside the switches instead of above them
   const TILE_MIN_PX = 150;       // the hardware assignment tiles
   const TILE_MAX_COLUMNS = 4;
+  const MIDI_TILE_MIN_PX = 236;  // a field of the MIDI panel: its name, and the number with a button on each side
+  // From this width the two groups of the MIDI panel sit side by side (one column of fields, then two), which is a lot
+  // less tall: what a tablet, or a screen that is wide and short, needs
+  const MIDI_SIDE_PX = MIDI_TILE_MIN_PX * 3 + 14 + 12;
+  // Narrower than two fields side by side, but from this width: a phone. The fields then stand up (the name over its
+  // number) and go in two columns, so that they fit the height of the screen
+  const MIDI_COMPACT_MIN_PX = 260;
+  const MIDI_TIGHT_PX = 700;
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const px = (value) => parseFloat(value) || 0;
@@ -103,6 +174,10 @@ function (event, funcs) {
       scenes: part(root.querySelector('[data-panel="scenes"]'), '.t4s-grid', '.t4s-card', { minTile: CARD_MIN_PX, evenly: true, cards: true }),
       // Hardware is told apart by purpose: the preset buttons, the Current preset control, the screen pop-ups
       hardware: Array.from(root.querySelectorAll('[data-panel^="hardware"]')).map((panel) => part(panel, '.t4s-assign', 'li', { minTile: TILE_MIN_PX })),
+      // The MIDI out: a panel that is never split, with two groups of fields, each with its own columns
+      midi: part(root.querySelector('[data-panel="midi"]')),
+      midiGroups: Array.from(root.querySelectorAll('[data-panel="midi"] .t4s-midi-items'))
+        .map((body) => part(body.parentElement, '.t4s-midi-items', '.t4s-field', { minTile: MIDI_TILE_MIN_PX, evenly: true })),
       presets: part(root.querySelector('[data-panel="presets"]')),
       page: 0,
       key: '',
@@ -137,7 +212,7 @@ function (event, funcs) {
 
   // Everything back in the stock, in the order it was written, and the pages (with their copies) thrown away
   const gather = (view) => {
-    view.stock.append(view.scenes.panel, ...view.hardware.map((part) => part.panel), view.presets.panel);
+    view.stock.append(view.scenes.panel, ...view.hardware.map((part) => part.panel), view.midi.panel, view.presets.panel);
     view.scenes.body.append(...view.scenes.items);
     view.hardware.forEach((part) => part.body.append(...part.items));
     view.pager.textContent = '';
@@ -173,9 +248,36 @@ function (event, funcs) {
     }
   };
 
+  // The MIDI panel: its groups one under the other, each with the columns its width allows, or side by side when it is wide
+  const sizeMidi = (view) => {
+    const list = view.midi.panel.querySelector('.t4s-midi');
+    const [sending, outputs] = view.midiGroups;
+    const side = list.clientWidth >= MIDI_SIDE_PX;
+    const compact = !side && list.clientWidth < MIDI_TILE_MIN_PX * 2 + 6 && list.clientWidth >= MIDI_COMPACT_MIN_PX;
+
+    list.classList.toggle('is-side', side);
+    list.classList.toggle('is-compact', compact);
+    // Less air between the fields when the screen is low (a small phone): what is on a page must not need scrolling
+    list.classList.toggle('is-tight', compact && view.root.clientHeight < MIDI_TIGHT_PX);
+
+    if (compact) {
+      sending.columns = outputs.columns = 2;
+      sending.body.style.setProperty('--t4s-cols', 2);
+      outputs.body.style.setProperty('--t4s-cols', 2);
+    } else if (side) {
+      sending.columns = 1;
+      outputs.columns = 2;
+      sending.body.style.setProperty('--t4s-cols', 1);
+      outputs.body.style.setProperty('--t4s-cols', 2);
+    } else {
+      view.midiGroups.forEach(sizeTiles);
+    }
+  };
+
   const sizeAll = (view) => {
     sizeTiles(view.scenes);
     view.hardware.forEach(sizeTiles);
+    sizeMidi(view);
   };
 
   const fits = (page) => [page, ...page.querySelectorAll('.t4s-panel, .t4s-stack, .t4s-row')]
@@ -185,12 +287,15 @@ function (event, funcs) {
   // scenes and the saved presets on one page and the hardware (its three panels next to each other) on another.
   // Returns the pages, or null when neither fits
   const layoutSideBySide = (view) => {
-    const { scenes, hardware, presets } = view;
+    const { scenes, hardware, midi, presets } = view;
     const panels = hardware.map((part) => part.panel);
     const stack = (...nodes) => { const el = element('t4s-stack'); el.append(...nodes); return el; };
+    const row = (...nodes) => { const el = element('t4s-row'); el.append(...nodes); return el; };
     const attempts = [
-      () => { const row = element('t4s-row'); row.append(...panels, presets.panel); return [[stack(scenes.panel, row)]]; },
-      () => [[stack(scenes.panel, presets.panel)], panels],
+      // The two hardware panels one above the other: a column as tall as the MIDI panel, instead of a row of short panels
+      () => [[stack(scenes.panel, row(stack(...panels), midi.panel, presets.panel))]],
+      () => [[stack(scenes.panel, row(midi.panel, presets.panel))], panels],
+      () => [[stack(scenes.panel, presets.panel)], [...panels, midi.panel]],
     ];
 
     for (const attempt of attempts) {
@@ -238,7 +343,7 @@ function (event, funcs) {
 
   // Last resort and the way of the small screens: each panel on its own page(s), as many as the height asks for
   const layoutOneByOne = (view) => {
-    const { scenes, hardware, presets } = view;
+    const { scenes, hardware, midi, presets } = view;
     gather(view);
 
     const scenePanels = paginate(scenes, linesOf(view, scenes) * scenes.columns, scenes.columns);
@@ -248,7 +353,9 @@ function (event, funcs) {
       return paginate(part, lines * part.columns, part.columns);
     });
 
-    return setPages(view, [...scenePanels, ...tilePanels, presets.panel].map((panel) => [panel]));
+    const pages = setPages(view, [...scenePanels, ...tilePanels, midi.panel, presets.panel].map((panel) => [panel]));
+    sizeMidi(view);   // on its page now, where it can be measured
+    return pages;
   };
 
   const goToPage = (view, index, smooth) => {
@@ -366,8 +473,13 @@ function (event, funcs) {
       pads: withPreset(event.settings, '.t4s-pad'),
       labels: withPreset(event.settings, '.t4s-label'),
       cells: withOutput(event.settings, '.t4s-dip'),
-      // The hardware tiles of the preset buttons are named after the presets
-      assignTitles: withPreset(event.settings, '.t4s-assign-title'),
+      // The tile of Current preset says which preset is playing
+      playing: all(event.settings, '.t4s-playing-text'),
+      // MIDI out: the number fields (value and the two buttons) and the switch, by port symbol
+      midiNumbers: all(event.settings, '.t4s-num').map((el) => ({
+        el, symbol: el.getAttribute('data-symbol'), value: el.querySelector('.t4s-num-value'), steps: Array.from(el.querySelectorAll('.t4s-num-step')),
+      })),
+      midiSwitch: all(event.settings, '.t4s-switch'),
     };
   };
 
@@ -411,7 +523,18 @@ function (event, funcs) {
     el.pads.forEach((pad) => toggle(pad.el, 'is-active', pad.preset === active, 'aria-pressed'));
     el.labels.forEach((label) => setInput(label.el, labelOf(state, label.preset)));
     el.cells.forEach((cell) => toggle(cell.el, 'is-on', !!state.dips[cell.preset - 1][cell.output - 1], 'aria-checked'));
-    el.assignTitles.forEach((title) => setText(title.el, labelOf(state, title.preset)));
+    el.playing.forEach((text) => setText(text, `${active} \u00b7 ${labelOf(state, active)}`));
+
+    el.midiNumbers.forEach((number) => {
+      const limit = MIDI_LIMITS[number.symbol];
+      const value = state.midi[number.symbol];
+
+      setInput(number.value, String(value));
+      number.steps.forEach((step) => {
+        step.disabled = Number(step.getAttribute('data-dir')) < 0 ? value <= limit.min : value >= limit.max;
+      });
+    });
+    el.midiSwitch.forEach((toggleEl) => toggle(toggleEl, 'is-on', !!state.midi[MIDI_CHANGES_ONLY], 'aria-checked'));
   };
 
   // ---------------------------------------------------------------------------
@@ -500,6 +623,46 @@ function (event, funcs) {
     funcs.set_port_value(dipSymbol(preset, output), on ? 1 : 0);
   };
 
+  // The MIDI settings: shown at once, then sent. A value out of range is put back in it
+  const setMidi = (event, symbol, value) => {
+    const limit = MIDI_LIMITS[symbol];
+    const clamped = clamp(Math.round(value), limit.min, limit.max);
+
+    event.data.state.midi[symbol] = clamped;
+    draw(event);
+
+    funcs.set_port_value(symbol, clamped);
+  };
+
+  const stepMidi = (event, symbol, direction) => setMidi(event, symbol, event.data.state.midi[symbol] + direction);
+
+  const toggleMidiChangesOnly = (event) => {
+    const on = !event.data.state.midi[MIDI_CHANGES_ONLY];
+
+    event.data.state.midi[MIDI_CHANGES_ONLY] = on;
+    draw(event);
+
+    funcs.set_port_value(MIDI_CHANGES_ONLY, on ? 1 : 0);
+  };
+
+  // Typing a number: only digits, and what is typed is sent as soon as it is a number
+  const typeMidi = (event, input, symbol) => {
+    const digits = input.val().replace(/\D/g, '');
+
+    if (input.val() !== digits) {
+      input.val(digits);
+    }
+    if (digits !== '') {
+      const value = Number(digits);
+      const limit = MIDI_LIMITS[symbol];
+
+      if (value > limit.max) {
+        input.val(String(limit.max));
+      }
+      setMidi(event, symbol, value);
+    }
+  };
+
   const changeLabel = (event, input, preset) => {
     const sanitized = sanitizeLabel(input.val());
 
@@ -520,6 +683,41 @@ function (event, funcs) {
     event.icon.find('.mod-actions .mod-settings').first().trigger('click');
   };
 
+  // MOD UI's Performance view shows a second copy of the settings template (rendered with `isPerformanceView`), which no
+  // script ever sees: it would stay the bare HTML, never built. While that view shows this plugin, the live page
+  // (event.settings, the one this script builds and updates) takes the copy's place. MOD UI keeps the live page hidden in
+  // <body>, as its own window: it goes back there when the view closes or shows another plugin, or that window would not open.
+  // `data-performance` lets the stylesheet drop what makes no sense in the view (the Close button).
+  const adoptInPerformanceView = (event) => {
+    const host = document.querySelector('.js-performance-plugin-settings');
+    const view = document.getElementById('performance');
+    if (!host || !view || typeof MutationObserver !== 'function') return;
+    const live = event.settings[0];
+    const instance = live.getAttribute('mod-instance');
+    let home = null;
+
+    const release = () => {
+      if (!live.hasAttribute('data-performance')) return;
+      live.removeAttribute('data-performance');
+      live.style.display = 'none';
+      if (home) home.appendChild(live);
+    };
+    new MutationObserver(() => {
+      const copy = Array.from(host.children).find((el) => el !== live && el.getAttribute('mod-instance') === instance);
+      if (copy) {
+        if (!live.hasAttribute('data-performance')) home = live.parentNode;
+        copy.replaceWith(live);
+        live.style.display = 'block';
+        live.setAttribute('data-performance', '');
+      } else if (live.parentNode !== host) {
+        release();
+      }
+    }).observe(host, { childList: true });
+    new MutationObserver(() => {
+      if (getComputedStyle(view).display === 'none') release();
+    }).observe(view, { attributes: true, attributeFilter: ['class', 'style'] });
+  };
+
   const assignEvents = (event) => {
     const icon = event.icon;
     const settings = event.settings;
@@ -535,6 +733,24 @@ function (event, funcs) {
     settings.on('click', '.t4s-pad', function () { selectPreset(event, number(this, 'preset')); });
     settings.on('click', '.t4s-dip', function () { toggleDip(event, number(this, 'preset'), number(this, 'output')); });
     settings.on('input', '.t4s-label', function () { changeLabel(event, $(this), number(this, 'preset')); });
+
+    const symbolOf = (el) => $(el).closest('[data-symbol]').attr('data-symbol');
+    settings.on('click', '.t4s-num-step', function () { stepMidi(event, symbolOf(this), number(this, 'dir')); });
+    settings.on('click', '.t4s-switch', function () { toggleMidiChangesOnly(event); });
+    settings.on('input', '.t4s-num-value', function () { typeMidi(event, $(this), symbolOf(this)); });
+    settings.on('keydown', '.t4s-num-value', function (e) {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        stepMidi(event, symbolOf(this), e.key === 'ArrowUp' ? 1 : -1);
+        e.preventDefault();
+      }
+    });
+    // Leaving the field: show the stored value again (an empty field goes back to it)
+    settings.on('blur', '.t4s-num-value', function () {
+      draw(event);
+      if (event.data.view.pending) {
+        scheduleLayout(event);
+      }
+    });
 
     settings.on('blur', '.t4s-label', function () {
       draw(event);
@@ -565,6 +781,8 @@ function (event, funcs) {
     } else {
       window.addEventListener('resize', () => scheduleLayout(event));
     }
+
+    adoptInPerformanceView(event);
   };
 
   // ---------------------------------------------------------------------------
@@ -597,6 +815,22 @@ function (event, funcs) {
         state.active = state.hostPreset = preset;
         return true;
       }
+
+    } else if (symbol === MIDI_CHANGES_ONLY) {
+      const on = value == 1;
+      const changed = state.midi[symbol] !== on;
+      state.midi[symbol] = on;
+      return changed;
+
+    } else if (MIDI_LIMITS[symbol]) {
+      const limit = MIDI_LIMITS[symbol];
+      if (!Number.isFinite(Number(value))) {
+        return false;
+      }
+      const number = clamp(Math.round(Number(value)), limit.min, limit.max);
+      const changed = state.midi[symbol] !== number;
+      state.midi[symbol] = number;
+      return changed;
 
     } else if (symbol === 'Preset_combobox' && !afterStart) {
       // Only when the page starts, and only if no selector is on

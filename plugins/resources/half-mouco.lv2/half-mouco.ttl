@@ -8,6 +8,7 @@
 @prefix units:  <http://lv2plug.in/ns/extensions/units#> .
 @prefix pg:     <http://lv2plug.in/ns/ext/port-groups#> .
 @prefix plug:   <http://srmourasilva.github.io/plugins/half-mouco#> .
+@prefix ahw:  <https://github.com/sejerpz/alabs-hmi-widgets#> .
 
 plug:group_mode
     a pg:Group ;
@@ -48,12 +49,29 @@ plug:group_custom
         foaf:homepage <https://github.com/SrMouraSilva/plugins-lv2> ;
     ] ;
 
-    lv2:optionalFeature lv2:hardRTCapable ;
+    lv2:optionalFeature lv2:hardRTCapable, ahw:WidgetDraw ;
+    lv2:extensionData ahw:WidgetNotification ;
+
+    # Widgets for the display of devices with the aLabs HMI widgets extension (MOD Dwarf and Duo X on the Starless images):
+    # optional, a host without it never shows them. Keep the symbols in step with WIDGET_SYMBOLS in the source.
+    ahw:widget
+    [
+        a ahw:Widget ;
+        lv2:symbol "stereo" ;
+        lv2:name "Stereo pattern" ;
+        rdfs:comment "The left and the right side: a row of steps for each, with the step that is playing, or the curve of the ending along its time. Placing it offers to assign Mode, Pattern and Tempo to controls of the device." ;
+        ahw:minWidth 40 ;
+        ahw:minHeight 14 ;
+        ahw:naturalWidth 82 ;
+        ahw:naturalHeight 37 ;
+        ahw:pixelFormat ahw:Mono1 ;
+        ahw:suggestedPorts ( "mode" "pattern" "bpm" ) ;
+    ] ;
 
     # Raise the micro version whenever the modgui changes (MOD UI caches it for a year, keyed by this version)
     lv2:majorVersion 1 ;
     lv2:minorVersion 0 ;
-    lv2:microVersion 3 ;
+    lv2:microVersion 11 ;
 
     rdfs:comment """
 Half Mouco is the stereo sibling of Kill Switch: a rhythmic signal-cut effect in which the left and the right side have a row of steps each, so the sound changes with the side (a ping-pong, one ear chopped while the other is not). Besides the looping patterns (nine to choose from, and one you write yourself, with three levels per step) it has endings: effects for the end of a song, such as a bouncing ball or a helicopter that lands, that play once and finish in silence.

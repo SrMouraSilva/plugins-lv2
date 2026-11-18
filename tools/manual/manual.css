@@ -133,6 +133,21 @@ td { padding: 12px 16px; vertical-align: top; border-top: 1px solid var(--line);
 tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--tint) 55%, transparent); }
 td:first-child { font-weight: 650; color: var(--head); }
 td code { white-space: normal; }
+td img { display: block; max-width: none; height: auto; margin: 0 0 6px; border-radius: 8px; box-shadow: 0 0 0 1px var(--line); cursor: zoom-in; }
+@media (max-width: 760px) {
+  /* A table with pictures in its cells (the areas of a widget): on a phone each row is a block, the picture of each device above its text */
+  .table-wrap:has(td img) { overflow: visible; box-shadow: none; }
+  table:has(td img), table:has(td img) tbody, table:has(td img) tr, table:has(td img) td { display: block; width: auto; }
+  table:has(td img) thead { display: none; }
+  table:has(td img) tr { padding: 14px 0; border-top: 2px solid var(--line); }
+  table:has(td img) td { border-top: 0; padding: 4px 2px; background: none !important; }
+  table:has(td img) td::before { display: block; margin-bottom: 6px; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; opacity: .6; }
+  table:has(td img) td:nth-child(1)::before { content: "MOD Dwarf"; }
+  table:has(td img) td:nth-child(2)::before { content: "MOD Duo X"; }
+  table:has(td img) td:nth-child(3)::before { content: "What you see"; }
+  td img { max-width: 100%; }
+}
+td small { display: block; font-size: 12.5px; font-weight: 600; opacity: .7; }
 .dot { display: inline-block; width: 12px; height: 12px; margin-right: 8px; border-radius: 4px; vertical-align: -1px; background: var(--c); box-shadow: 0 0 0 1px rgba(0, 0, 0, .15); }
 
 /* definition lists: parameter sheets */

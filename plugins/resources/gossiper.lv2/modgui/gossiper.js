@@ -20,7 +20,8 @@ function (event, funcs) {
 
   // ---------------------------------------------------------------------------
   // State: { on: [footswitch] => bool, labels: [footswitch] => string, pot: [pot] => 0..1,
-  //          min / max: [pot] => volts, last: the control used last: { kind: 'fs' | 'pot', n } or null }
+  //          min / max: [pot] => volts, last: the control used last: { kind: 'fs' | 'pot', n } or null,
+  //          inUse: [footswitch] => bool }
 
   const newState = () => ({
     on: range(1, FOOTSWITCHES).map(() => false),
@@ -29,6 +30,8 @@ function (event, funcs) {
     min: range(1, POTS).map(() => 0),
     max: range(1, POTS).map(() => MAX_VOLTS),
     last: null,
+    // [footswitch] => bool: what the plugin's `footswitch_in_use_N` port holds (see watchAssignments)
+    inUse: range(1, FOOTSWITCHES).map(() => false),
   });
 
   const labelOf = (state, n) => state.labels[n - 1] || `Footswitch ${n}`;
@@ -487,6 +490,81 @@ function (event, funcs) {
   // ---------------------------------------------------------------------------
   // Events
 
+  // MOD UI's Performance view shows a second copy of the settings template (rendered with `isPerformanceView`), which no
+  // script ever sees: it would stay the bare HTML, never built. While that view shows this plugin, the live page
+  // (event.settings, the one this script builds and updates) takes the copy's place. MOD UI keeps the live page hidden in
+  // <body>, as its own window: it goes back there when the view closes or shows another plugin, or that window would not open.
+  // `data-performance` lets the stylesheet drop what makes no sense in the view (the Close button).
+  const adoptInPerformanceView = (event) => {
+    const host = document.querySelector('.js-performance-plugin-settings');
+    const view = document.getElementById('performance');
+    if (!host || !view || typeof MutationObserver !== 'function') return;
+    const live = event.settings[0];
+    const instance = live.getAttribute('mod-instance');
+    let home = null;
+
+    const release = () => {
+      if (!live.hasAttribute('data-performance')) return;
+      live.removeAttribute('data-performance');
+      live.style.display = 'none';
+      if (home) home.appendChild(live);
+    };
+    new MutationObserver(() => {
+      const copy = Array.from(host.children).find((el) => el !== live && el.getAttribute('mod-instance') === instance);
+      if (copy) {
+        if (!live.hasAttribute('data-performance')) home = live.parentNode;
+        copy.replaceWith(live);
+        live.style.display = 'block';
+        live.setAttribute('data-performance', '');
+      } else if (live.parentNode !== host) {
+        release();
+      }
+    }).observe(host, { childList: true });
+    new MutationObserver(() => {
+      if (getComputedStyle(view).display === 'none') release();
+    }).observe(view, { attributes: true, attributeFilter: ['class', 'style'] });
+  };
+
+  // The display widgets of the device (the Starless images) show only the footswitches that are in use, but the device
+  // only tells a plugin about the controls of its own (footswitches, knobs): not a MIDI controller, CC or CV. MOD UI knows
+  // them all: it puts the `addressed` class on the assign button of this page whatever the control is. So the page
+  // copies it into the plugin's `footswitch_in_use_N` ports (which no page lists: nobody assigns them), where the plugin,
+  // an API or a saved pedalboard can read them whether or not there is a browser.
+  // Only a *change* of the class writes: while the pedalboard loads the buttons have not been marked yet, and a
+  // value saved with it must not be overwritten by that. The page works the same on a device without the widgets.
+  const syncInUse = (event, funcs, onlyMark) => {
+    const state = event.data.state;
+
+    range(1, FOOTSWITCHES).forEach((n) => {
+      const addressed = event.settings.find(`[mod-port-symbol="Footswitch_${n}"]`).hasClass('addressed');
+
+      if (addressed === state.inUse[n - 1] || (onlyMark && !addressed)) {
+        return;
+      }
+
+      state.inUse[n - 1] = addressed;
+
+      try {
+        funcs.set_port_value(`footswitch_in_use_${n}`, addressed ? 1 : 0);
+      } catch (error) {
+        console.log(`Gossiper: could not write footswitch_in_use_${n}`, error);
+      }
+    });
+  };
+
+  const watchAssignments = (event, funcs) => {
+    if (typeof MutationObserver !== 'function') {
+      return;
+    }
+
+    new MutationObserver(() => syncInUse(event, funcs))
+      .observe(event.settings[0], { subtree: true, attributes: true, attributeFilter: ['class'] });
+
+    // Buttons marked before this script started are no change the observer will ever see: mark them now (never clear:
+    // an unmarked button at this point may only be one MOD UI has not got to yet)
+    setTimeout(() => syncInUse(event, funcs, true), 1000);
+  };
+
   const assignEvents = (event) => {
     const icon = event.icon;
     const settings = event.settings;
@@ -529,6 +607,8 @@ function (event, funcs) {
     } else {
       window.addEventListener('resize', () => scheduleLayout(event));
     }
+
+    adoptInPerformanceView(event);
   };
 
   // Returns whether what is drawn may have changed. announceChange: false while the page starts (what a control
@@ -549,6 +629,15 @@ function (event, funcs) {
         }
         return changed;
       }
+
+    } else if ((match = /^footswitch_in_use_(\d+)$/.exec(symbol || ''))) {
+      const n = Number(match[1]);
+
+      if (n >= 1 && n <= FOOTSWITCHES) {
+        state.inUse[n - 1] = Number(value) >= 0.5;
+      }
+
+      return false;
 
     } else if ((match = /^Potentiometer_(\d+)$/.exec(symbol || ''))) {
       const n = Number(match[1]);
@@ -591,9 +680,26 @@ function (event, funcs) {
     return true;
   };
 
+  // The pop-ups are drawn by the widgets of the device screen, which the MOD Duo does not have. MOD UI tells the page
+  // which device it is on (the PLATFORM global: duo, duox, dwarf...). Only the Duo is known not to have them: there the
+  // slots are disabled and a note says why
+  const hasScreenWidgets = () => !(typeof PLATFORM === 'string' && PLATFORM === 'duo');
+
+  const disableNotifyPanel = (settings) => {
+    const panel = settings.find('[data-panel="notify"]');
+
+    panel.addClass('is-unsupported');
+    panel.find('.gps-unsupported-note').prop('hidden', false);
+    panel.find('.gps-tile').prop('disabled', true).attr('aria-disabled', 'true');
+  };
+
   if (event.type === 'start') {
     event.data.state = newState();
     event.data.view = findPanels(event.settings.find('.gps')[0]);
+
+    if (!hasScreenWidgets()) {
+      disableNotifyPanel(event.settings);
+    }
 
     cacheElements(event);
     assignEvents(event);
@@ -601,6 +707,8 @@ function (event, funcs) {
     for (const port of event.ports) {
       handlePort(event, port.symbol, port.value, false);
     }
+
+    watchAssignments(event, funcs);
 
     // Labels come from the plugin: ask for them (the reply arrives as a 'change' event with a uri)
     range(1, FOOTSWITCHES).forEach((n) => funcs.patch_get(labelUri(n)));

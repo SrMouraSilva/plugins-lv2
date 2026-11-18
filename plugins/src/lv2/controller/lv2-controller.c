@@ -83,6 +83,8 @@ static void map_uris(LV2_URID_Map* map, Controller_URIs* uris) {
     uris->patch_Get = map->map(map->handle, LV2_PATCH__Get);
     uris->patch_property = map->map(map->handle, LV2_PATCH__property);
     uris->patch_value = map->map(map->handle, LV2_PATCH__value);
+    uris->atom_Sequence = map->map(map->handle, LV2_ATOM__Sequence);
+    uris->midi_MidiEvent = map->map(map->handle, LV2_MIDI__MidiEvent);
 
     // <plugin uri>#preset_label_1 ... #preset_label_<TOTAL_PRESETS>
     for (unsigned int i = 0; i < TOTAL_PRESETS; i++) {

@@ -13,19 +13,22 @@
 
 .half-mouco,
 .hms {
-  /* Charcoal and red (modgui:color is #0f3d4a) */
-  --hm-ink: #0a1315;       /* the darkest: slots, the display */
-  --hm-ink-2: #11201f;     /* panels */
-  --hm-ink-3: #1b3030;     /* raised controls */
-  --hm-line: rgba(220, 248, 244, 0.14);
-  --hm-text: #eaf7f5;
-  --hm-muted: #93b6b3;
-  --hm-accent: #7fe3d3;    /* titles and marks on the settings page */
-  --hm-red: #4fe0c5;       /* a step that passes, the LED, the filled part of a slider */
-  --hm-red-deep: #1f8f7d;
-  --hm-cut: #1c2d2d;       /* a step that is cut */
-
-  --hm-half: #2a9a8a;      /* a step at the middle level */
+  /* Neutral charcoal surfaces, warm white for what is lit or chosen, and one red (modgui:color is #a30d2b) kept for what is
+     ON (the power, the LED, the footswitch ring) and for the knobs of the sliders, so it is not on everything. The two
+     sides keep their own colours (left blue, right amber): they are what tells one side from the other */
+  --hm-ink: #0d0e11;       /* the darkest: slots, the display */
+  --hm-ink-2: #16181d;     /* panels */
+  --hm-ink-3: #262930;     /* raised controls */
+  --hm-line: rgba(255, 255, 255, 0.13);
+  --hm-text: #f5f2ea;
+  --hm-muted: #a7a59e;
+  --hm-accent: #ece7d9;    /* titles and marks on the settings page */
+  --hm-lit: #f5f2ea;       /* a step that passes, the filled part of a slider, what is chosen */
+  --hm-lit-deep: #b9b5a9;
+  --hm-red: #e3213f;       /* ON, the LED, the knob of a slider */
+  --hm-red-deep: #9c1229;
+  --hm-cut: #2b2d34;       /* a step that is cut */
+  --hm-half: #8a877f;      /* a step at the middle level */
 
   font-family: "Avenir Next Rounded", "SF Pro Rounded", ui-rounded, "Nunito", "Varela Round", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
@@ -67,7 +70,7 @@
 .hms button:focus-visible,
 .hms input:focus-visible,
 .hms select:focus-visible {
-  outline: 3px solid #c8fff4;
+  outline: 3px solid #fff;
   outline-offset: 2px;
 }
 
@@ -101,13 +104,13 @@
   text-align: center;
 
   background:
-    radial-gradient(110% 70% at 6% 0%, rgba(90, 230, 210, 0.12), rgba(90, 230, 210, 0) 60%),
-    linear-gradient(170deg, #16282a 0%, #0c1618 100%);
+    radial-gradient(110% 70% at 6% 0%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(170deg, #2a2c33 0%, #14151a 100%);
   border-radius: 22px;
   box-shadow:
-    inset 0 2px 1px rgba(220, 248, 244, 0.18),
+    inset 0 2px 1px rgba(255, 255, 255, 0.18),
     inset 0 -4px 8px rgba(0, 0, 0, 0.5),
-    0 0 0 2px #1c3335;
+    0 0 0 2px #3a3d46;
 }
 
 .hm-main {
@@ -207,8 +210,8 @@
 }
 
 .hm-steps i.l2 {
-  background: var(--hm-red);
-  box-shadow: 0 0 10px -1px var(--hm-red);
+  background: var(--hm-lit);
+  box-shadow: 0 0 10px -2px var(--hm-lit);
 }
 
 /* The pattern repeats: only its first run is the pattern, the rest shows where it goes on */
@@ -219,7 +222,7 @@
 .hm-steps i.first { margin-left: 0; }
 
 .half-mouco.is-bypassed .hm-steps i.l2 {
-  background: #3d6a63;
+  background: #6f6d68;
   box-shadow: none;
 }
 
@@ -274,11 +277,11 @@
   line-height: 1;
   color: var(--hm-text);
   background: var(--hm-ink-3);
-  box-shadow: 0 2px 0 #050b0c, inset 0 1px 0 rgba(220, 248, 244, 0.1);
+  box-shadow: 0 2px 0 #07080a, inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: background-color 0.15s;
 }
-.hm-step-button:hover { background: #25403f; }
-.hm-step-button:active { transform: translateY(1px); box-shadow: 0 1px 0 #050b0c; background: var(--hm-red-deep); }
+.hm-step-button:hover { background: #343740; }
+.hm-step-button:active { transform: translateY(1px); box-shadow: 0 1px 0 #07080a; background: var(--hm-red-deep); }
 
 /* Tempo: - 120 BPM + */
 .hm-stepper {
@@ -328,8 +331,8 @@
 .hm-segment:hover { color: var(--hm-text); }
 .hm-segment[aria-checked="true"] {
   color: var(--hm-ink);
-  background: var(--hm-red);
-  box-shadow: 0 0 12px -2px var(--hm-red);
+  background: var(--hm-lit);
+  box-shadow: 0 0 12px -2px var(--hm-lit);
 }
 
 /* Depth and edge: sliders with a 44 px tall touch area and a thin track */
@@ -345,7 +348,7 @@
 .hm-slider::-webkit-slider-runnable-track {
   height: 8px;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--hm-red) 0 var(--hm-fill), var(--hm-ink) var(--hm-fill) 100%);
+  background: linear-gradient(90deg, var(--hm-lit) 0 var(--hm-fill), var(--hm-ink) var(--hm-fill) 100%);
   box-shadow: inset 0 0 0 1px var(--hm-line);
 }
 .hm-slider::-webkit-slider-thumb {
@@ -355,8 +358,8 @@
   margin-top: -9px;
   border: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff 0, #dcecea 40%, #9fb2af 100%);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  background: radial-gradient(circle at 35% 30%, #ff6a80 0, var(--hm-red) 45%, var(--hm-red-deep) 100%);
+  box-shadow: 0 0 0 3px var(--hm-lit), 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 .hm-slider::-moz-range-track {
   height: 8px;
@@ -367,15 +370,15 @@
 .hm-slider::-moz-range-progress {
   height: 8px;
   border-radius: 4px;
-  background: var(--hm-red);
+  background: var(--hm-lit);
 }
 .hm-slider::-moz-range-thumb {
   width: 26px;
   height: 26px;
   border: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff 0, #dcecea 40%, #9fb2af 100%);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  background: radial-gradient(circle at 35% 30%, #ff6a80 0, var(--hm-red) 45%, var(--hm-red-deep) 100%);
+  box-shadow: 0 0 0 3px var(--hm-lit), 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
 
@@ -410,12 +413,12 @@
   height: 88px;
   border-radius: 50%;
   cursor: pointer;
-  background: radial-gradient(circle at 50% 35%, #27403f, #0b1516);
+  background: radial-gradient(circle at 50% 35%, #34363e, #101114);
   box-shadow: 0 0 0 3px var(--hm-ink-3), inset 0 3px 8px rgba(0, 0, 0, 0.7), 0 6px 10px rgba(0, 0, 0, 0.5);
   transition: box-shadow 0.2s;
 }
 .half-mouco:not(.is-bypassed) .hm-foot {
-  box-shadow: 0 0 0 3px var(--hm-red), 0 0 18px 0 rgba(79, 224, 197, 0.55), inset 0 3px 8px rgba(0, 0, 0, 0.7), 0 6px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 0 3px var(--hm-red), 0 0 18px 0 rgba(227, 33, 63, 0.6), inset 0 3px 8px rgba(0, 0, 0, 0.7), 0 6px 10px rgba(0, 0, 0, 0.5);
 }
 
 .hm-cap {
@@ -425,13 +428,13 @@
   border-radius: 50%;
   background:
     radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 55%),
-    repeating-conic-gradient(from 0deg, #7d8b89 0 8deg, #a9b8b6 8deg 16deg);
-  box-shadow: 0 4px 0 #1d3636, 0 6px 8px rgba(0, 0, 0, 0.6);
+    repeating-conic-gradient(from 0deg, #8a8c92 0 8deg, #b4b6bb 8deg 16deg);
+  box-shadow: 0 4px 0 #2a2c32, 0 6px 8px rgba(0, 0, 0, 0.6);
   transition: transform 0.08s, box-shadow 0.08s;
 }
 .hm-foot:active .hm-cap {
   transform: translateY(3px);
-  box-shadow: 0 1px 0 #1d3636, 0 2px 4px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 1px 0 #2a2c32, 0 2px 4px rgba(0, 0, 0, 0.6);
 }
 
 .hm-foot-label {
@@ -478,7 +481,7 @@
   line-height: 1.3;
   background:
     radial-gradient(90% 60% at 12% 0%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 60%),
-    linear-gradient(165deg, #1c3335 0%, #10201f 45%, #0a1213 100%);
+    linear-gradient(165deg, #272a31 0%, #181a1f 45%, #0d0e11 100%);
 }
 
 
@@ -489,7 +492,7 @@
 }
 
 
-.hms h1,
+.hms-name,
 .hms h2,
 .hms p {
   margin: 0;
@@ -548,7 +551,7 @@
 }
 
 
-.hms h1 {
+.hms-name {
   font-size: 24px;
   font-weight: 800;
   color: var(--hm-text);
@@ -736,18 +739,6 @@
 
 
 
-/* Hardware assignments: every tile is the button that opens the assignment dialog */
-.hms-assign {
-  display: grid;
-  /* The script sets the number of columns from the width of the panel */
-  grid-template-columns: repeat(var(--hms-cols, 2), minmax(0, 1fr));
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-
 .hms .mod-address.hms-address {
   position: static;
   display: flex;
@@ -770,29 +761,38 @@
 
 .hms .mod-address.hms-address:hover { background-color: rgba(255, 255, 255, 0.1); }
 
+/* Only the icon, beside the control it assigns: 44px, with the disc that says whether it is addressed */
+.hms .mod-address.hms-address.hms-address-small {
+  flex: 0 0 auto;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 14px;
+}
 
-.hms-assign-name {
+/* A switch (or the choice of family) and the button that assigns it are one piece, so it is clear what the small button is for */
+.hms-pill {
   display: flex;
-  flex-direction: column;
-  min-width: 0;
-  font-size: 15px;
-  font-weight: 700;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 28px;
+  background: var(--hm-ink-2);
+  box-shadow: inset 0 0 0 1px var(--hm-line);
 }
-
-
-.hms-assign-title,
-.hms-assign-name small {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.hms-pill .hms-button { min-height: 44px; border-radius: 22px; }
+.hms .hms-pill .mod-address.hms-address.hms-address-small {
+  border-radius: 22px;
+  background-color: transparent;
+  box-shadow: none;
 }
-
-
-.hms-assign-name small {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--hm-muted);
-}
+.hms .hms-pill .mod-address.hms-address.hms-address-small:hover { background-color: rgba(255, 255, 255, 0.08); }
+.hms .hms-pill .mod-address.hms-address.hms-address-small.addressed { background-color: rgba(245, 242, 234, 0.12); }
+.hms-pill .hms-modes { background: transparent; box-shadow: none; padding: 0; }
+.hms-pill .hms-mode { min-height: 44px; border-radius: 22px; }
 
 
 /* The state of the assignment button: a dark disc that holds the icon (below), filled when the control is addressed */
@@ -823,7 +823,7 @@
 
 
 .hms .mod-address.hms-address.addressed {
-  background-color: rgba(127, 227, 211, 0.16);
+  background-color: rgba(245, 242, 234, 0.12);
   box-shadow: inset 0 0 0 2px var(--hm-accent);
 }
 
@@ -983,7 +983,7 @@
 .hms .mod-presets .btn.preset-btn-rename { width: 56px !important; font-size: 13px; }
 
 
-.hms .mod-presets .btn:hover { background-color: #2d4a49; }
+.hms .mod-presets .btn:hover { background-color: #3a3d46; }
 
 .hms .mod-presets .btn.disabled { opacity: 0.35; cursor: default; }
 
@@ -1033,24 +1033,25 @@
 .hms-row > .hms-presets-panel { flex: 3 1 0; align-self: stretch; }
 
 
-/* Narrow: the logo, the preset playing and the close button, and under them the page controls across the width */
+/* Narrow: the logo, what plays and the close button on the first line; under them Mono, the on/off (each with its assign
+   button) and the page controls, side by side while they fit */
 .hms[data-w="s"] { font-size: 15px; }
 
 .hms[data-w="s"] .hms-bar { gap: 8px 10px; }
 
-.hms[data-w="s"] h1 { display: none; }
+.hms[data-w="s"] .hms-name { display: none; }
 
-.hms[data-w="s"] .hms-title { margin-right: 0; }
+.hms[data-w="s"] .hms-title { order: 1; margin-right: 0; }
 
-.hms[data-w="s"] .hms-close { order: 2; min-width: 88px; padding: 0 20px; }
+.hms[data-w="s"] .hms-now { order: 2; flex: 1 1 120px; min-width: 120px; }
 
-.hms[data-w="s"] .hms-switches { order: 3; flex: 1 1 100%; }
+.hms[data-w="s"] .hms-now small { display: none; }
 
-.hms[data-w="s"] .hms-modes { flex: 1 1 auto; }
+.hms[data-w="s"] .hms-close { order: 3; min-width: 88px; padding: 0 20px; }
 
-.hms[data-w="s"] .hms-mode { flex: 1 1 0; }
+.hms[data-w="s"] .hms-switches { order: 4; flex: 0 0 auto; }
 
-.hms[data-w="s"] .hms-nav { order: 5; flex: 1 1 100%; justify-content: space-between; }
+.hms[data-w="s"] .hms-nav { order: 5; flex: 1 1 150px; justify-content: space-between; }
 
 .hms[data-w="s"] .hms-dots { flex: 1 1 auto; justify-content: center; }
 
@@ -1071,7 +1072,6 @@
 .hms[data-h="s"] .hms-step,
 .hms[data-h="s"] .hms-close { min-height: 44px; height: 44px; }
 
-.hms[data-h="s"] .hms-assign { gap: 4px; }
 
 .hms[data-h="s"] .hms-presets-panel .mod-presets > div.mod-enumerated-list { min-height: 64px; }
 
@@ -1087,8 +1087,10 @@
   width: 36px;
   height: 32px;
   border-radius: 10px;
+  overflow: hidden;
+  /* the two sides, left (blue) and right (amber), each cut by its own slash (an inline SVG: nothing to load) */
   background:
-    linear-gradient(90deg, var(--hm-red) 0 25%, var(--hm-cut) 0 50%, var(--hm-red) 0 75%, var(--hm-cut) 0) center / 24px 12px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 36 32%22%3E%3Cdefs%3E%3CclipPath id=%22c0a%22%3E%3Cpolygon points=%22-73.0%2C58.0 109.0%2C-40.0 203.8%2C136.1 21.8%2C234.1%22/%3E%3C/clipPath%3E%3CclipPath id=%22c0b%22%3E%3Cpolygon points=%22-73.0%2C58.0 109.0%2C-40.0 14.2%2C-216.1 -167.8%2C-118.1%22/%3E%3C/clipPath%3E%3CclipPath id=%22c1a%22%3E%3Cpolygon points=%22-73.0%2C-26.0 109.0%2C72.0 14.2%2C248.1 -167.8%2C150.1%22/%3E%3C/clipPath%3E%3CclipPath id=%22c1b%22%3E%3Cpolygon points=%22-73.0%2C-26.0 109.0%2C72.0 203.8%2C-104.1 21.8%2C-202.1%22/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path=%22url(%23c0a)%22 transform=%22translate(0.57 1.06)%22%3E%3Cg fill=%22%233ec9ff%22%3E%3Crect x=%227%22 y=%224%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3Crect x=%2212.8%22 y=%224%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3Crect x=%2218.6%22 y=%224%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3Crect x=%2224.4%22 y=%224%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3C/g%3E%3C/g%3E%3Cg clip-path=%22url(%23c0b)%22 transform=%22translate(-0.57 -1.06)%22%3E%3Cg fill=%22%233ec9ff%22%3E%3Crect x=%227%22 y=%224%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3Crect x=%2212.8%22 y=%224%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3Crect x=%2218.6%22 y=%224%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3Crect x=%2224.4%22 y=%224%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3C/g%3E%3C/g%3E%3Cline x1=%225%22 y1=%2216%22 x2=%2231%22 y2=%222%22 stroke=%22%234fe0c5%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3Cg clip-path=%22url(%23c1a)%22 transform=%22translate(-0.57 1.06)%22%3E%3Cg fill=%22%23ffb347%22%3E%3Crect x=%227%22 y=%2218%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3Crect x=%2212.8%22 y=%2218%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3Crect x=%2218.6%22 y=%2218%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3Crect x=%2224.4%22 y=%2218%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3C/g%3E%3C/g%3E%3Cg clip-path=%22url(%23c1b)%22 transform=%22translate(0.57 -1.06)%22%3E%3Cg fill=%22%23ffb347%22%3E%3Crect x=%227%22 y=%2218%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3Crect x=%2212.8%22 y=%2218%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3Crect x=%2218.6%22 y=%2218%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3Crect x=%2224.4%22 y=%2218%22 width=%224.2%22 height=%2210%22 rx=%221.1%22/%3E%3C/g%3E%3C/g%3E%3Cline x1=%225%22 y1=%2216%22 x2=%2231%22 y2=%2230%22 stroke=%22%234fe0c5%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3C/svg%3E") center / 100% 100% no-repeat,
     var(--hm-ink);
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 1px var(--hm-line);
 }
@@ -1168,12 +1170,12 @@
   bottom: 22px;
   height: 0;
   border-radius: 7px;
-  background: var(--hm-red);
+  background: var(--hm-lit);
   transition: height 0.15s, background-color 0.15s;
 }
 .hms-cell[data-level="0"] .hms-cell-bar { height: 4px; background: var(--hm-cut); }
 .hms-cell[data-level="1"] .hms-cell-bar { height: calc((100% - 52px) / 2); background: var(--hm-half); }
-.hms-cell[data-level="2"] .hms-cell-bar { height: calc(100% - 52px); box-shadow: 0 0 12px -2px var(--hm-red); }
+.hms-cell[data-level="2"] .hms-cell-bar { height: calc(100% - 52px); box-shadow: 0 0 12px -2px var(--hm-lit); }
 
 .hms-cell-n {
   position: relative;
@@ -1248,10 +1250,10 @@
   transition: background-color 0.15s;
 }
 .hms-button:hover,
-.hms-select:hover { background: #25403f; }
+.hms-select:hover { background: #343740; }
 .hms-button:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--hm-ink), inset 0 0 0 1px var(--hm-line); }
 .hms-select { appearance: auto; -webkit-appearance: menulist; padding: 0 10px; }
-.hms-select option { color: #0a1315; background: #fff; }
+.hms-select option { color: #0d0e11; background: #fff; }
 
 /* What plays and Mono, in the top bar as on the pedal */
 .hms-switches {
@@ -1279,32 +1281,29 @@
   transition: background-color 0.15s, color 0.15s;
 }
 .hms-mode:hover { color: var(--hm-text); }
-.hms-mode[aria-checked="true"] { color: var(--hm-ink); background: var(--hm-red); box-shadow: 0 0 12px -2px var(--hm-red); }
+.hms-mode[aria-checked="true"] { color: var(--hm-ink); background: var(--hm-lit); box-shadow: 0 0 12px -2px var(--hm-lit); }
 
 /* Mono: lit while the left input feeds both sides */
 .hms-mono[aria-pressed="true"] {
   color: var(--hm-ink);
-  background: var(--hm-red);
-  box-shadow: 0 3px 0 var(--hm-red-deep);
+  background: var(--hm-lit);
+  box-shadow: 0 3px 0 var(--hm-lit-deep);
 }
-.hms-mono[aria-pressed="true"]:hover { background: #7aefd9; }
+.hms-mono[aria-pressed="true"]:hover { background: #fff; }
 
 /* "Play this pattern": pressed while Pattern is on Custom */
 .hms-use {
   margin-left: auto;
   color: var(--hm-ink);
-  background: var(--hm-red);
-  box-shadow: 0 3px 0 var(--hm-red-deep);
+  background: var(--hm-lit);
+  box-shadow: 0 3px 0 var(--hm-lit-deep);
 }
-.hms-use:hover { background: #7aefd9; }
+.hms-use:hover { background: #fff; }
 .hms-use[aria-pressed="true"] {
   color: var(--hm-text);
   background: var(--hm-ink-3);
   box-shadow: inset 0 0 0 2px var(--hm-red), 0 3px 0 var(--hm-ink);
 }
-
-/* The hardware tiles of this plugin: no extra colour of their own */
-.hms-hardware .hms-assign-name small { white-space: normal; }
 
 /* A pattern is written on the pedal too: the button that opens this page */
 .hm-open {
@@ -1318,17 +1317,17 @@
   text-transform: uppercase;
   color: var(--hm-text);
   background: var(--hm-ink-3);
-  box-shadow: 0 2px 0 #050b0c;
+  box-shadow: 0 2px 0 #07080a;
   transition: background-color 0.15s;
 }
-.hm-open:hover { background: #25403f; }
-.hm-open:active { transform: translateY(1px); box-shadow: 0 1px 0 #050b0c; }
+.hm-open:hover { background: #343740; }
+.hm-open:active { transform: translateY(1px); box-shadow: 0 1px 0 #07080a; }
 
 /* The steps of the pattern on the pedal: the middle level */
 .hm-steps i.l1 {
   background: var(--hm-half);
 }
-.half-mouco.is-bypassed .hm-steps i.l1 { background: #2b5c55; }
+.half-mouco.is-bypassed .hm-steps i.l1 { background: #4a4945; }
 
 .hms[data-h="s"] .hms-cell { --hms-cell: 64px; }
 .hms[data-h="s"] .hms-cell-bar { bottom: 20px; }
@@ -1351,9 +1350,6 @@
 .hms[data-w="s"] .hms-use { margin-left: 0; }
 .hms[data-h="s"] .hms-pattern-panel .hms-panel-head p { display: none; }
 
-/* The bypass panel is the narrow one of the two hardware panels */
-.hms-row > .hms-hw-bypass { flex: 2 1 0; }
-.hms-row > .hms-hardware { flex: 3 1 0; }
 .hms-stack > .hms-row { flex: 0 0 auto; align-items: stretch; }
 
 
@@ -1412,12 +1408,12 @@
   text-transform: uppercase;
   color: var(--hm-text);
   background: var(--hm-ink-3);
-  box-shadow: 0 2px 0 #050b0c;
+  box-shadow: 0 2px 0 #07080a;
   transition: background-color 0.15s;
 }
-.hm-chip:hover { background: #25403f; }
-.hm-chip:active { transform: translateY(1px); box-shadow: 0 1px 0 #050b0c; }
-.hm-mono[aria-pressed="true"] { color: var(--hm-ink); background: var(--hm-red); box-shadow: 0 2px 0 var(--hm-red-deep); }
+.hm-chip:hover { background: #343740; }
+.hm-chip:active { transform: translateY(1px); box-shadow: 0 1px 0 #07080a; }
+.hm-mono[aria-pressed="true"] { color: var(--hm-ink); background: var(--hm-lit); box-shadow: 0 2px 0 var(--hm-lit-deep); }
 
 /* Patterns have a speed, endings a length */
 .half-mouco[data-mode="0"] .hm-length,
@@ -1447,7 +1443,7 @@
   transition: background-color 0.15s, color 0.15s;
 }
 .hm-mode:hover { color: var(--hm-text); }
-.hm-mode[aria-checked="true"] { color: var(--hm-ink); background: var(--hm-red); box-shadow: 0 0 12px -2px var(--hm-red); }
+.hm-mode[aria-checked="true"] { color: var(--hm-ink); background: var(--hm-lit); box-shadow: 0 0 12px -2px var(--hm-lit); }
 .hm-foot { width: 80px; height: 80px; }
 .hm-cap { width: 56px; height: 56px; }
 
@@ -1497,7 +1493,7 @@
 .hms[data-w="s"] .hms-cell-level,
 .hms[data-h="s"] .hms-cell-level { font-size: 12px; }
 .hms[data-w="s"] .hms-cell[data-level="2"] .hms-cell-level,
-.hms[data-h="s"] .hms-cell[data-level="2"] .hms-cell-level { color: #04161c; }
+.hms[data-h="s"] .hms-cell[data-level="2"] .hms-cell-level { color: #0d0e11; }
 .hms[data-w="s"] .hms-steps,
 .hms[data-h="s"] .hms-steps { gap: 4px; }
 .hms[data-w="s"] .hms-editor,
@@ -1525,7 +1521,12 @@
   gap: 10px 16px;
   margin-bottom: 6px;
 }
-.hms-play-head .hms-modes { min-width: 260px; }
+.hms-play-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+/* Pattern for the patterns, Ending for the endings: the one that does not apply is not shown */
+.hms[data-mode="0"] .hms-assign-ending,
+.hms[data-mode="1"] .hms-assign-pattern { display: none; }
+.hms-play-head { align-items: center; }
+.hms-play-head .hms-modes { min-width: 220px; }
 .hms-play-head .hms-mode { flex: 1 1 0; }
 .hms .hms-play-name {
   font-size: 22px;
@@ -1558,12 +1559,26 @@
   box-shadow: 0 3px 0 var(--hm-ink), inset 0 0 0 1px var(--hm-line);
   transition: background-color 0.15s;
 }
-.hms-choice:hover { background: #25403f; }
+.hms-choice:hover { background: #343740; }
 .hms-choice:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--hm-ink), inset 0 0 0 1px var(--hm-line); }
 .hms-choice[aria-checked="true"] {
+  position: relative;
   color: var(--hm-ink);
+  background: var(--hm-lit);
+  box-shadow: 0 3px 0 var(--hm-lit-deep), 0 0 14px -3px var(--hm-lit);
+}
+/* a red disc on the white of the chosen pattern */
+.hms-choice[aria-checked="true"]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  border-radius: 50%;
   background: var(--hm-red);
-  box-shadow: 0 3px 0 var(--hm-red-deep), 0 0 14px -3px var(--hm-red);
+  box-shadow: 0 0 8px -1px var(--hm-red);
 }
 
 /* What each side does: the steps of the pattern (or the ending along its time), as on the pedal but bigger */
@@ -1626,9 +1641,15 @@
   gap: 22px 28px;
 }
 .hms-knob { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+/* A thin rule above every control but the first, so the assign button of each one reads as belonging to it
+   (the first one that is shown: Length and Speed come and go with the mode, the rule goes with them) */
+.hms-knob + .hms-knob {
+  padding-top: 16px;
+  border-top: 1px solid var(--hm-line);
+}
 .hms-knob-head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
   font-size: 12px;
@@ -1637,8 +1658,14 @@
   text-transform: uppercase;
   color: var(--hm-muted);
 }
+/* The name takes what is left, the value and the button keep their size */
+.hms-knob-head > :first-child { margin-right: auto; }
+.hms-knob-head > .hms-address { margin-left: 4px; }
 .hms-knob-head small { font-size: 12px; font-weight: 600; letter-spacing: 0; text-transform: none; }
-.hms-knob-head output { font-size: 20px; letter-spacing: 0; text-transform: none; color: var(--hm-text); }
+.hms-knob-head output { font-size: 20px; letter-spacing: 0; text-transform: none; white-space: nowrap; color: var(--hm-text); }
+.hms-depth .hms-knob-head output,
+.hms-edge .hms-knob-head output { font-size: 18px; }
+.hms-sound.is-narrow { grid-template-columns: minmax(0, 1fr); }
 .hms-ends { display: flex; justify-content: space-between; gap: 8px; margin-top: -6px; }
 .hms-ends small { font-size: 12px; color: var(--hm-muted); }
 
@@ -1675,7 +1702,7 @@
   transition: background-color 0.15s, color 0.15s;
 }
 .hms-segment:hover { color: var(--hm-text); }
-.hms-segment[aria-checked="true"] { color: var(--hm-ink); background: var(--hm-red); box-shadow: 0 0 12px -2px var(--hm-red); }
+.hms-segment[aria-checked="true"] { color: var(--hm-ink); background: var(--hm-lit); box-shadow: 0 0 12px -2px var(--hm-lit); }
 
 .hms-slider {
   display: block;
@@ -1688,7 +1715,7 @@
 .hms-slider::-webkit-slider-runnable-track {
   height: 10px;
   border-radius: 5px;
-  background: linear-gradient(90deg, var(--hm-red) 0 var(--hm-fill), var(--hm-ink) var(--hm-fill) 100%);
+  background: linear-gradient(90deg, var(--hm-lit) 0 var(--hm-fill), var(--hm-ink) var(--hm-fill) 100%);
   box-shadow: inset 0 0 0 1px var(--hm-line);
 }
 .hms-slider::-webkit-slider-thumb {
@@ -1698,29 +1725,31 @@
   margin-top: -10px;
   border: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff 0, #dcecea 40%, #9fb2af 100%);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  background: radial-gradient(circle at 35% 30%, #ff6a80 0, var(--hm-red) 45%, var(--hm-red-deep) 100%);
+  box-shadow: 0 0 0 3px var(--hm-lit), 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 .hms-slider::-moz-range-track { height: 10px; border-radius: 5px; background: var(--hm-ink); box-shadow: inset 0 0 0 1px var(--hm-line); }
-.hms-slider::-moz-range-progress { height: 10px; border-radius: 5px; background: var(--hm-red); }
-.hms-slider::-moz-range-thumb { width: 30px; height: 30px; border: 0; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff 0, #dcecea 40%, #9fb2af 100%); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
+.hms-slider::-moz-range-progress { height: 10px; border-radius: 5px; background: var(--hm-lit); }
+.hms-slider::-moz-range-thumb { width: 30px; height: 30px; border: 0; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ff6a80 0, var(--hm-red) 45%, var(--hm-red-deep) 100%); box-shadow: 0 0 0 3px var(--hm-lit), 0 2px 6px rgba(0, 0, 0, 0.6); }
 
 /* On/off, in the top bar: lit while the effect is on */
-.hms-power[aria-pressed="true"] { color: var(--hm-ink); background: var(--hm-red); box-shadow: 0 3px 0 var(--hm-red-deep); }
-.hms-power[aria-pressed="true"]:hover { background: #7aefd9; }
+.hms-power[aria-pressed="true"] { color: #fff; background: var(--hm-red); box-shadow: 0 3px 0 var(--hm-red-deep); }
+.hms-power[aria-pressed="true"]:hover { background: #ff3b58; }
 .hms-switches { flex-wrap: wrap; }
 
 /* Narrow and short screens: one column, tighter */
 .hms[data-w="s"] .hms-sound { grid-template-columns: minmax(0, 1fr); gap: 16px; }
 .hms[data-w="s"] .hms-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .hms[data-w="s"] .hms-play-hint { display: none; }
-.hms[data-w="s"] .hms-play-head .hms-modes { min-width: 0; width: 100%; }
+.hms[data-w="s"] .hms-play-head .hms-modepill { width: 100%; }
+.hms[data-w="s"] .hms-play-head .hms-modes { min-width: 0; flex: 1 1 auto; }
 .hms[data-w="s"] .hms-view-steps { height: 28px; gap: 3px; }
 .hms[data-w="s"] .hms-stepper-big output b { font-size: 34px; }
 .hms[data-h="s"] .hms-play-hint { display: none; }
 .hms[data-h="s"] .hms-view-steps { height: 26px; }
 .hms[data-h="s"] .hms-sound { gap: 12px 24px; }
 .hms[data-h="s"] .hms-knob { gap: 6px; }
+.hms[data-h="s"] .hms-knob + .hms-knob { padding-top: 12px; }
 .hms[data-h="s"] .hms-ends { display: none; }
 
 
@@ -1744,3 +1773,6 @@
 /* The way to the editor, only while Custom plays and the editor is on a page of its own */
 .hms-edit-pattern { display: none; margin-top: 12px; width: 100%; }
 .hms[data-together="0"][data-custom="1"] .hms-edit-pattern { display: block; }
+
+/* In MOD UI's Performance view the page lives beside the plugin list: the window is not there to be closed */
+[data-performance] .hms-close { display: none; }

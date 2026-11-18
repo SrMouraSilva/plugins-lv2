@@ -12,6 +12,7 @@
 #include "lv2/log/logger.h"
 #include "lv2/atom/atom.h"
 #include "lv2/atom/forge.h"
+#include "lv2/midi/midi.h"
 #include "lv2/urid/urid.h"
 #include "lv2/worker/worker.h"
 
@@ -27,6 +28,19 @@ typedef struct {
     LV2_HMI_Addressing select;
 
     LV2_HMI_Addressing notifiers[TOTAL_CONTROLLER_NOTIFIERS];
+
+    /**
+     * What each addressing above can show (LV2_HMI_AddressingCapabilities, as the host reported it): a call the
+     * addressing does not support is not made. Only meaningful while the addressing is not NULL
+     */
+    unsigned int preset_caps[TOTAL_PRESETS];
+    unsigned int select_caps;
+
+    /** Hept7 Switch: the buttons that go to the next and to the previous preset (NULL when not addressed), and their caps */
+    LV2_HMI_Addressing next;
+    LV2_HMI_Addressing previous;
+    unsigned int next_caps;
+    unsigned int previous_caps;
 } HMI;
 
 typedef struct {
@@ -37,6 +51,8 @@ typedef struct {
     LV2_URID patch_Get;
     LV2_URID patch_property;
     LV2_URID patch_value;
+    LV2_URID atom_Sequence;
+    LV2_URID midi_MidiEvent;
     LV2_URID preset_label[TOTAL_PRESETS];
 } Controller_URIs;
 
@@ -45,6 +61,9 @@ typedef struct {
 
     const LV2_Atom_Sequence* events_in;
     LV2_Atom_Sequence* events_out;
+
+    /** The control changes (NULL when the plugin has no such port). Written on every cycle, even when empty */
+    LV2_Atom_Sequence* midi_out;
 
     /** Used to write patch:Set replies to events_out */
     LV2_Atom_Forge forge;
@@ -74,6 +93,8 @@ typedef struct {
      */
     LV2_Worker_Schedule* worker;
 
+    /** The display widgets (lv2-widgets.c owns it; NULL when it could not be allocated): opaque here */
+    void* widgets;
 
     /**
      * Initialize the lv2 capabilities

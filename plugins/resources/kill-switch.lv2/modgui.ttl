@@ -18,5 +18,5 @@
         modgui:label "Kill Switch" ;
         modgui:model "boxy-small" ;
         modgui:panel "1-footswitch" ;
-        modgui:color "#7d1d12" ;
+        modgui:color "#a30d2b" ;
     ] .

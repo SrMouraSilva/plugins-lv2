@@ -122,7 +122,7 @@ Things that work well:
   sockets and not the plugs that MOD UI draws on the outputs). **`view=settings`** shows the settings page at the size of the window: use a tablet-sized window
   (860 px wide) so that the page has several pages and the arrows are part of the story.
 * **Pages of a settings page**: tap the arrow of the top bar, wait for the scroll to end (about 900 ms), then tap
-  something on the new page. `visitPages()` in `scenarios.mjs` does this for any plugin and comes back to the first page.
+  something on the new page. `visitPages()` in `scenarios.mjs` does this for any plugin and comes back to the first page; its `onPage(page)` hook runs something on a page once it is shown (Tetr4 Switch touches the fields of its MIDI page).
 * **A plugin that only shows what happened** (a meter, a status display) cannot be tapped: drive it from outside with
   `ctx.eval("send({type:'change', symbol, value})")`, as a MIDI controller or the host would.
 * **Latency**: `latency=150` in the query makes the simulated host answer 150 ms after a click, like the real one. Keep

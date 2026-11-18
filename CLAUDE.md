@@ -10,6 +10,7 @@ plugins/src/                 C sources (shared code in lv2/, model/, utils/; kil
 plugins/resources/<name>.lv2 the bundle: <name>.ttl, manifest.ttl, modgui.ttl, presets.ttl, modgui/, docs/
 plugins/Makefile             build-<plugin> targets; srmourasilva-plugins.mk is the mod-plugin-builder package
 tools/modgui-preview/        browser preview of any plugin's modgui (no device needed)
+tools/hmi-preview/           pictures of the display widgets on the Dwarf and the Duo X (real plugins in a tiny host); see "Display widgets"
 tools/media/                 animations (animated WebP + GIF) and alternative thumbnails (from the preview); see "Animations and alternative thumbnails"
 tools/manual/                builds modgui/manual.html from docs/manual.md; see "HTML manuals"
 docs/                        guides for other developers: custom-settings-pages, making-animations, alternative-thumbnails, html-manuals
@@ -36,6 +37,11 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
 * Check the TTL with `lv2info <uri>` (`LV2_PATH=plugins/resources`) and, better, with MOD UI's own reader:
   `from modtools.utils import init, get_plugin_info` (needs a mod-ui checkout with `libmod_utils.so`). `lv2_validate`
   complains about `lv2:majorVersion` and the HMI URIs; that noise is expected.
+* **Testing on a Dwarf** (SSH as root; the plugins are in `/root/.lv2`): build the bundles with the Docker image
+  (`mpb`, see the Readme), take them out with `docker cp`, pack them with `COPYFILE_DISABLE=1 tar` (otherwise macOS adds `._*`
+  files that make lilv print errors), copy with `scp -O` and swap each bundle directory with `mv` (never overwrite a loaded
+  `.so`). Restart `mod-ui`, and `jack2` first when ports changed (see above). The firmware's `addressed` calls show in
+  `journalctl -b | grep mod-jackd`. Say that it was tested there, or that it was not.
 * Look at the interface with `python3 tools/modgui-preview/serve.py` (see its README). It does not replace a test
   on a real pedalboard or device: say so when you could not test there.
 
@@ -53,12 +59,12 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
 
 ## C code and LV2
 
-* **Kill Switch is one standalone file** (`src/kill-switch.c`, only LV2's core header): its bypass is the `lv2:enabled`
+* **Kill Switch is one standalone file** (`src/kill-switch.c`, only LV2's core header; its display widget is apart, in `src/hmi/kill-switch-widgets.c`, which only needs the headers of `src/hmi/` that every plugin shares): its bypass is the `lv2:enabled`
   port (1 = on), kept last, and `PATTERNS` is repeated in its modgui script and in the scale points of `pattern`. A step has
   three levels ('0' cut, '1' half, '2' pass); the built-in patterns use 0 and 2, and the custom one is the ports
   `custom_length`, `custom_steps_per_beat` and `custom_step_1..16` (the value 10 of `pattern`). A new port goes before
   `lv2_enabled` only while the plugin is unreleased (the TTL indices, `PortIndex` and the harness must agree).
-* **Half Mouco is Kill Switch in stereo** (`src/half-mouco.c`, also standalone): a row of steps for each side, plus *endings*,
+* **Half Mouco is Kill Switch in stereo** (`src/half-mouco.c`, also standalone; its widget is `src/hmi/half-mouco-widgets.c`, which draws the endings with the plugin's own `ending_gate`, handed to it): a row of steps for each side, plus *endings*,
   one-shot effects that are functions of the time since the plugin was switched on (`ending_gate` in C, `ENDINGS[].gate` in the
   modgui script: keep them in step, the script draws the ending along its time). Its `PATTERNS`, the scale points of `pattern` and
   `ending` and the modgui script must agree too. The ports are `mode`, `pattern`, `ending`, ..., `custom_left_step_1..16`,
@@ -80,13 +86,29 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   for every LED, label and pop-up. The switches send only what a change of preset touches, only when the preset really
   changes (a momentary footswitch being released is not a change), and from the LV2 worker (`work:schedule`, optional:
   without it, from `run()`). `addressed()` shows the state on that one widget and never pops up.
-* **Hept7's `Current preset` is a cycle** (`Preset_N_in_cycle`). The device keeps its own position for an enumeration on
-  a footswitch, the B+C pair or a knob, and nobody updates it when the plugin changes the preset (`set_value` only
-  changes the text). So a move of one option is a step counted from the active preset, and the plugin only ever writes
-  the device's last value or the option opposite to it into the port (`Controller_may_show_in_combobox`): then a step
-  is never ambiguous and never lost, even after MOD UI gives the device the port's value again. The selectors and the
-  `Active_preset` output (`modgui:monitoredOutputs`) say which preset is on, not the combobox. Run the cycle test
-  (a host whose "device" keeps its own index) after touching this.
+* **Hept7 has three buttons where Tetr4 has one enumeration**: `Current preset` (the port `Preset_combobox`, index 15, which
+  loops forward), `Next preset` and `Previous preset`. All three are `lv2:toggled` with `mod:preferMomentaryOffByDefault` and
+  default 1, and they act when released (the port goes 0 to 1: `Controller.button_mask`, `pressed`). A step is taken in the
+  cycle (`Preset_N_in_cycle`) from the **active preset**, so nothing depends on where the device is. Why not an enumeration: the
+  firmware keeps its own step, draws the text of the value from the `scalePoint` of that step, refuses `set_value` on a
+  footswitch (`cb_change_assigment_value`), and only MOD UI's web side (`paramhmi_set`) tells it a new value, never a write
+  by the plugin; the B+C pair is one control per footswitch, each with its own label, of which mod-host hands the plugin only one
+  addressing. The B&C actuator accepts only `enumeration` and `colouredlist` (`/etc/mod-hardware-descriptor.json`), so the
+  buttons cannot be assigned to it, and nothing in MOD UI keeps a toggled port off a knob (it then works as a button).
+  Tetr4 keeps the enumeration (its scale points are "1" to "4": a one-character value leaves the label 6 characters).
+  The selectors and the `Active_preset` output (`modgui:monitoredOutputs`) say which preset is on.
+* **What the Dwarf draws is the firmware's** (`mod-audio/mod-dwarf-controller`, `app/src/screen.c`, `mode_control.c`,
+  `protocol.c`), so check it there before promising a look. A footer of a toggled or momentary control draws the name (at most 7
+  characters in that source) and inverts when the value is on; an enumeration shares 7 characters between name and value. The
+  firmware rewrites the LED of a **momentary** control on every press and release, over the plugin's colour and brightness
+  (`lock_led_actions` guards only enumerations): the plugin's LED and label go out after the release, which is why the three
+  buttons are momentary-off and why the plugin sends them again after each release (`labels_changed`). A name that was never
+  changed ("Preset 3") is written "Prst 3" (`format_display_name`).
+* **mod-host lives inside jackd** (the log says "Internal client mod-host"): restarting `mod-ui` does not reload the TTL it
+  reads. After a change of ports (or of the defaults of a port) restart `jack2` and then `mod-ui` on the device, or the host
+  never calls `addressed` for the new ports.
+* **Display widgets** (`src/hmi/`, section below) are drawn through the optional aLabs `ahw:WidgetDraw` feature. Never make a plugin
+  depend on it (stock firmware and the Duo do not have it): `widgets_init` leaves `draw` NULL and everything else does nothing.
 * **Pop-ups (`popup_message`) only show on a device page that has an `Assign to notify` control addressed.** Keep
   the four notify ports and say so in the manual.
 * Labels are plugin *properties* (`lv2:Parameter`, `atom:String`, `patch:writable`) read/written with
@@ -122,13 +144,22 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   MOD UI sends **nothing** when a port already holds the value (`setPortValue`: `port.value == value`), so a click can
   go unanswered. Never let a late answer to an old click undo a newer one, and never ignore a press because the page
   thinks it is already in that state. MOD UI's copy of a selector stays at 1 until the host answers, so a quick click
-  back to it was dropped: Tetr4's buttons set `Preset_combobox`; Hept7's (whose combobox is a cycle) follow MOD UI's
-  copy of each selector and send 0 then 1 when it is already 1, and take the answer from `Active_preset`. The preview simulates this (host latency, dropped clicks): run
+  back to it was dropped: Tetr4's buttons set `Preset_combobox`; Hept7's follow MOD UI's
+  copy of each selector and send 0 then 1 when it is already 1, and take the answer from `Active_preset` (its `Preset_combobox` is a button the page never writes). The preview simulates this (host latency, dropped clicks): run
   `tools/modgui-preview/scenarios.html` after touching click handling. `event.icon` and `event.settings` are the two DOM roots.
 * **MOD UI covers the whole icon with `.mod-drag-handle` (absolute, `z-index: 20`)** so the plugin can be dragged.
   Every clickable element of the icon (buttons, inputs) needs `position: relative; z-index: 30`, or it cannot be
   clicked on a real pedalboard. A script's `.click()` does not notice this; the preview shows a red bar for it.
   The settings window is opened by MOD UI with `z-index: 1000`, above the pedals.
+* **MOD UI's Performance view (aLabs) shows the settings page too**, in `.js-performance-plugin-settings`, and breaks it twice.
+  First, its stylesheet has `#performance header {position: fixed; height: 45px; ...}` and `#performance h1 {...}`: an ID beats any
+  class, so **never use `<header>` or `<h1>` in a settings template** (a `div` with a class, `role="heading"` for the title).
+  Second, it renders the template a *second* time (`isPerformanceView`), which no script ever receives (`event.settings` is the first
+  copy): it stays the bare HTML. Each script has `adoptInPerformanceView`, which swaps the live page in while the view shows the
+  plugin and gives it back to `<body>` (where MOD UI keeps its window, hidden) when the view closes or shows another plugin;
+  `[data-performance]` hides the Close button. Test it by loading the device's MOD UI in a Chrome whose requests for
+  `/effect/file/{iconTemplate,settingsTemplate,stylesheet,javascript}` are answered with the local files (CDP `Fetch`, as
+  `text/plain`: the device serves them like that, and `application/javascript` makes jQuery run them).
   An overlay drawn over those controls (an announcement, a tooltip) then needs a higher one still, with `pointer-events: none`.
 * The icon must not rely on MOD UI's film/knob widgets; draw it yourself. Outputs are laid out by MOD UI
   (`.mod-pedal-output`, 56 px per jack): with many outputs use a CSS grid with several columns.
@@ -160,6 +191,28 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   and the editor of the custom pattern, which appears under the choice only while Custom is chosen (`data-together` /
   `data-custom` of `.hms` / `.kss`; the layout reserves the room for it, so the page does not jump). When the editor does not fit
   with the rest, it has a page of its own and a button on the first page takes to it. On and off (and Mono) are in the top bar.
+
+## Display widgets
+
+Plugins can draw on the display of a MOD Dwarf or Duo X where the device implements the aLabs HMI widgets extension
+(https://github.com/sejerpz/alabs-hmi-widgets, header copied in `src/hmi/`; ISC, listed in `NOTICE`). Details and the preview tool: `tools/hmi-preview/README.md`.
+
+* **The widget code stays out of the plugin's main file**: the plugin fills a view (what to show) and calls `*_widgets_run`; drawing, the list of what is on a display and the signature are in the widget file (`src/hmi/<plugin>-widgets.c`, `src/lv2/*/lv2-*-widgets.c`). Add the file to the plugin's `build-<name>` target.
+* A widget is declared in the TTL (`ahw:widget`, with `ahw:minWidth/minHeight`, a natural size and `ahw:suggestedPorts`) and has a
+  symbol that is kept in a pedalboard: **never rename it after a release**. The order of `WIDGET_SYMBOLS` is the plugin's own enum.
+* A widget **never assumes a size**: it learns the area in `widget_shown`, and draws the whole area every time. Dwarf areas run from
+  40 x 37 to 128 x 64 and footers of 10 px, the Duo X's from 63 x 8 to 128 x 64; a widget declares the smallest area it reads well in
+  (at most 51 x 8 for a footer, 40 x 30 for a column) and adapts by size, not by device.
+* The display is **1 bit**: no grey. Use the checker (`canvas_checker`) as a grey, the 5 x 7 font (6 px a character) where it fits
+  and the 3 x 5 one where it does not; a text is cut, never wrapped. Read-only widgets show state: do not draw buttons.
+* Drawing happens in `run()` through `widgets_run` (a *signature* of the state, redrawn when it changes, at most 20 Hz; the host
+  merges and queues, it never blocks). `widget_shown` and `widget_hidden` come from another thread: use the seqlock slots of
+  `hmi/widget-host.h`, do not keep the handle anywhere else.
+* **A widget cannot learn from the host what MIDI, CC or CV assignments there are**: mod-host calls `addressed` for the device's own controls only. Gossiper's
+  settings page watches the `addressed` class that MOD UI puts on its assign buttons and writes it into the `footswitch_in_use_N` ports (not on any page, not
+  `notOnGUI`: that would take them out of the script's `set_port_value`). The widget shows the union of both.
+* **Compare before and after** like any change to `run()` (`host.c` has `hash` for the audio and CV outputs), check with
+  ASan/UBSan on every area size, and look at `tools/hmi-preview/preview.py gallery`. There is no device test here: say so.
 
 ## Documentation
 
@@ -242,6 +295,11 @@ conventions of the Markdown (steps, callouts, video cards, recipes, FAQ, pins on
   manuals for what you changed. Pictures of MOD UI's own dialogs are not ours to redo.
 * Facts in a manual come from the plugin (the TTL, the factory presets, the code), not from memory: check a recipe or a
   port against `presets.ttl` / the TTL.
+* **The manual carries the version of the plugin it was written or updated for**: the `lv2:majorVersion.minorVersion.microVersion`
+  of its TTL at that moment (`1.2.5`). Put it in `manual.json` (`"version": "v1.2.5"`, the cover) and in `manual.md` (the `Version` row of
+  the Specifications table, or a last line *This manual is for version 1.2.5 of ...* when there is no table). Update both whenever you
+  change the manual or rebuild it for a changed interface, in the same commit as the version bump; the builder warns when
+  `manual.json` and the TTL differ.
 * Raise `lv2:microVersion` when the manual changes (the modgui cache).
 
 ## Documentation site

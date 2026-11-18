@@ -72,6 +72,16 @@ typedef enum {
 
     EVENTS_IN = 34,
     EVENTS_OUT = 35,
+
+    // Which footswitches the display widget shows (set by the settings page, or by anyone else who knows which are in use).
+    // Added after the first release: they stay at the end
+    FOOTSWITCH_IN_USE_1 = 36,
+    FOOTSWITCH_IN_USE_2 = 37,
+    FOOTSWITCH_IN_USE_3 = 38,
+    FOOTSWITCH_IN_USE_4 = 39,
+    FOOTSWITCH_IN_USE_5 = 40,
+    FOOTSWITCH_IN_USE_6 = 41,
+    FOOTSWITCH_IN_USE_7 = 42,
 } PortIndex;
 
 // -----------------------------------------------
@@ -111,6 +121,9 @@ typedef struct {
 
     /** LV2 output */
     float* output;
+
+    /** LV2 input: 1 when the footswitch is in use (the display widget shows it). NULL until the host connects it */
+    float* in_use;
 } Switch;
 
 

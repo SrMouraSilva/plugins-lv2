@@ -1,10 +1,10 @@
 <div class="h7s" mod-role="hept7-settings">
   <div class="h7s-shell">
     <div class="h7s-screen">
-      <header class="h7s-bar">
+      <div class="h7s-bar">
         <div class="h7s-title">
           <span class="h7s-logo" aria-hidden="true"></span>
-          <h1>Hept7 switch</h1>
+          <div class="h7s-name" role="heading" aria-level="1">Hept7 switch</div>
         </div>
 
         <div class="h7s-now" aria-live="polite">
@@ -25,7 +25,7 @@
         </nav>
 
         <button type="button" class="js-close h7s-close">Close</button>
-      </header>
+      </div>
 
       <!-- Never scrolls vertically. The script (layoutSettings) spreads the panels below over as many pages as the
            screen needs, and puts them back here whenever the size changes -->
@@ -35,73 +35,60 @@
         <section class="h7s-panel h7s-scenes" data-panel="scenes">
           <div class="h7s-panel-head">
             <h2>Scenes<span class="h7s-range"></span></h2>
-            <p>Each row is a preset. Tap a cell to turn that CV output on or off while the preset is active.</p>
+            <p>Each row is a preset. Tap a cell to turn that CV output on or off while the preset is active; tap the number to play the preset, and the button at the end of the row to assign the preset to a control of your device, such as a footswitch.</p>
           </div>
           <div class="h7s-matrix" role="group" aria-label="Which CV outputs are on in each preset"></div>
         </section>
 
-        <section class="h7s-panel h7s-assign-panel h7s-hw-presets" data-panel="hardware-presets">
-          <div class="h7s-panel-head">
-            <span class="h7s-eyebrow">Hardware assignment</span>
-            <h2>Preset buttons<span class="h7s-range"></span></h2>
-            <p>Jump straight to a preset. Link one control of your device, such as a footswitch, to each preset: pressing it plays that preset.</p>
-          </div>
-          <ul class="h7s-assign">
-            <li>
-              <button type="button" class="mod-address h7s-address" mod-role="input-control-address" mod-port-symbol="Preset_selector_1" title="Assign Preset 1 to a hardware control">
-                <span class="h7s-assign-name"><span class="h7s-assign-title" data-preset="1">Preset 1</span><small>#1 &middot; footswitch</small></span>
-                <span class="h7s-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address h7s-address" mod-role="input-control-address" mod-port-symbol="Preset_selector_2" title="Assign Preset 2 to a hardware control">
-                <span class="h7s-assign-name"><span class="h7s-assign-title" data-preset="2">Preset 2</span><small>#2 &middot; footswitch</small></span>
-                <span class="h7s-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address h7s-address" mod-role="input-control-address" mod-port-symbol="Preset_selector_3" title="Assign Preset 3 to a hardware control">
-                <span class="h7s-assign-name"><span class="h7s-assign-title" data-preset="3">Preset 3</span><small>#3 &middot; footswitch</small></span>
-                <span class="h7s-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address h7s-address" mod-role="input-control-address" mod-port-symbol="Preset_selector_4" title="Assign Preset 4 to a hardware control">
-                <span class="h7s-assign-name"><span class="h7s-assign-title" data-preset="4">Preset 4</span><small>#4 &middot; footswitch</small></span>
-                <span class="h7s-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address h7s-address" mod-role="input-control-address" mod-port-symbol="Preset_selector_5" title="Assign Preset 5 to a hardware control">
-                <span class="h7s-assign-name"><span class="h7s-assign-title" data-preset="5">Preset 5</span><small>#5 &middot; footswitch</small></span>
-                <span class="h7s-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address h7s-address" mod-role="input-control-address" mod-port-symbol="Preset_selector_6" title="Assign Preset 6 to a hardware control">
-                <span class="h7s-assign-name"><span class="h7s-assign-title" data-preset="6">Preset 6</span><small>#6 &middot; footswitch</small></span>
-                <span class="h7s-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address h7s-address" mod-role="input-control-address" mod-port-symbol="Preset_selector_7" title="Assign Preset 7 to a hardware control">
-                <span class="h7s-assign-name"><span class="h7s-assign-title" data-preset="7">Preset 7</span><small>#7 &middot; footswitch</small></span>
-                <span class="h7s-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-          </ul>
-        </section>
+        <!-- The buttons that assign each preset to a hardware control (a footswitch of the device). The script moves each one
+             into the row of its preset, beside the button that plays it: MOD UI wires the buttons it finds here, and a
+             moved button keeps that -->
+        <div class="h7s-parking">
+          <button type="button" class="mod-address h7s-address h7s-address-small" mod-role="input-control-address" mod-port-symbol="Preset_selector_1" title="Assign preset 1 to a hardware control" aria-label="Assign preset 1 to a hardware control">
+            <span class="h7s-assign-state" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="mod-address h7s-address h7s-address-small" mod-role="input-control-address" mod-port-symbol="Preset_selector_2" title="Assign preset 2 to a hardware control" aria-label="Assign preset 2 to a hardware control">
+            <span class="h7s-assign-state" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="mod-address h7s-address h7s-address-small" mod-role="input-control-address" mod-port-symbol="Preset_selector_3" title="Assign preset 3 to a hardware control" aria-label="Assign preset 3 to a hardware control">
+            <span class="h7s-assign-state" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="mod-address h7s-address h7s-address-small" mod-role="input-control-address" mod-port-symbol="Preset_selector_4" title="Assign preset 4 to a hardware control" aria-label="Assign preset 4 to a hardware control">
+            <span class="h7s-assign-state" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="mod-address h7s-address h7s-address-small" mod-role="input-control-address" mod-port-symbol="Preset_selector_5" title="Assign preset 5 to a hardware control" aria-label="Assign preset 5 to a hardware control">
+            <span class="h7s-assign-state" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="mod-address h7s-address h7s-address-small" mod-role="input-control-address" mod-port-symbol="Preset_selector_6" title="Assign preset 6 to a hardware control" aria-label="Assign preset 6 to a hardware control">
+            <span class="h7s-assign-state" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="mod-address h7s-address h7s-address-small" mod-role="input-control-address" mod-port-symbol="Preset_selector_7" title="Assign preset 7 to a hardware control" aria-label="Assign preset 7 to a hardware control">
+            <span class="h7s-assign-state" aria-hidden="true"></span>
+          </button>
+        </div>
 
         <section class="h7s-panel h7s-assign-panel h7s-hw-current" data-panel="hardware-current">
           <div class="h7s-panel-head">
             <span class="h7s-eyebrow">Hardware assignment</span>
-            <h2>Current preset<span class="h7s-range"></span></h2>
-            <p>Step through the presets with a single control: a knob, or the B+C pair of footswitches. Presets switched off in Cycle are skipped.</p>
+            <h2>Go through the presets<span class="h7s-range"></span></h2>
+            <p>Three buttons, one footswitch each. Current preset loops forward with one foot; Next and Previous take one foot each. Presets switched off in Cycle are skipped. On the device screen they show the preset they lead to (Current preset: the one that is playing).</p>
           </div>
           <ul class="h7s-assign">
             <li>
-              <button type="button" class="mod-address h7s-address" mod-role="input-control-address" mod-port-symbol="Preset_combobox" title="Assign Current preset to a hardware control">
-                <span class="h7s-assign-name">Current preset<small>knob</small></span>
+              <button type="button" class="mod-address h7s-address" mod-role="input-control-address" mod-port-symbol="Preset_combobox" title="Assign Current preset to a footswitch">
+                <span class="h7s-assign-name">Current preset<small class="h7s-playing"><span class="h7s-playing-dot" aria-hidden="true"></span><span class="h7s-playing-text">Preset 1</span></small></span>
+                <span class="h7s-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address h7s-address" mod-role="input-control-address" mod-port-symbol="Previous_preset" title="Assign Previous preset to a footswitch">
+                <span class="h7s-assign-name">Previous preset<small class="h7s-target"><span class="h7s-target-text h7s-target-previous">Preset 7</span></small></span>
+                <span class="h7s-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address h7s-address" mod-role="input-control-address" mod-port-symbol="Next_preset" title="Assign Next preset to a footswitch">
+                <span class="h7s-assign-name">Next preset<small class="h7s-target"><span class="h7s-target-text h7s-target-next">Preset 2</span></small></span>
                 <span class="h7s-assign-state" aria-hidden="true"></span>
               </button>
             </li>
@@ -113,6 +100,8 @@
             <span class="h7s-eyebrow">Hardware assignment</span>
             <h2>Screen pop-ups<span class="h7s-range"></span></h2>
             <p>Show an alert with the preset name on the device screen whenever it changes. Link each one to a page of the device: it only appears on pages that have one.</p>
+            <!-- Shown by the script on a device without widgets on its screen (the MOD Duo): the tiles below are then disabled -->
+            <p class="h7s-unsupported-note" hidden>The MOD Duo has no widgets on its screen, so these pop-ups are not available on it. Its display on the plugin shows the preset instead.</p>
           </div>
           <ul class="h7s-assign">
             <li>
@@ -140,6 +129,25 @@
               </button>
             </li>
           </ul>
+        </section>
+
+        <section class="h7s-panel h7s-midi-panel" data-panel="midi">
+          <div class="h7s-panel-head">
+            <span class="h7s-eyebrow">MIDI out</span>
+            <h2>Control changes</h2>
+            <p>When the preset changes, send one MIDI control change for each CV output: 127 if the output is on in that preset, 0 if it is off. Connect the MIDI out jack of the plugin to your MIDI gear.</p>
+          </div>
+          <div class="h7s-midi">
+            <!-- The fields are built by the script. How it sends, then the CC number of each CV output -->
+            <section class="h7s-midi-group" data-group="sending" aria-labelledby="h7s-midi-sending">
+              <h3 class="h7s-midi-title" id="h7s-midi-sending">Sending</h3>
+              <div class="h7s-midi-items"></div>
+            </section>
+            <section class="h7s-midi-group" data-group="outputs" aria-labelledby="h7s-midi-outputs">
+              <h3 class="h7s-midi-title" id="h7s-midi-outputs">CC number of each output</h3>
+              <div class="h7s-midi-items"></div>
+            </section>
+          </div>
         </section>
 
         <section class="h7s-panel h7s-presets-panel" data-panel="presets">

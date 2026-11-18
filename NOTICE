@@ -10,3 +10,11 @@ original license:
   * plugins/src/lv2/extension/control-input-port-change-request.h
     Copyright 2020-2021 Filipe Coelho <falktx@falktx.com>
     ISC License (see the notice at the top of each file).
+
+  * plugins/src/hmi/alabs-hmi-widgets.h
+    Copyright 2026 Andrea Del Signore (https://github.com/sejerpz/alabs-hmi-widgets)
+    ISC License (see the notice at the top of the file).
+
+  * plugins/src/hmi/widget-font.h (FONT_BIG)
+    The classic 5 x 7 column font that many LCD libraries carry. TODO before a release: confirm which
+    source it should be credited to; the 3 x 5 font in the same file was drawn for this project.

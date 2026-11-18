@@ -12,7 +12,7 @@ HALF_MOUCO = half-mouco
 
 # Tetr4 Switch and Hept7 Switch are the same code base, sized by -DHEPT7_SWITCH (see src/config.h)
 SWITCH_SOURCES = src/utils/utils.c \
-		  src/lv2/controller/lv2-controller.c src/lv2/controller/lv2-hmi-extension.c \
+		  src/lv2/controller/lv2-controller.c src/lv2/controller/lv2-hmi-extension.c src/lv2/controller/lv2-widgets.c \
 		  src/model/controller.c \
 		  src/tetr4-switch.c
 
@@ -47,19 +47,19 @@ build-hept7-switch:
 
 build-gossiper:
 	$(CC) src/utils/utils.c \
-		  src/lv2/gossiper/lv2-gossiper.c src/lv2/gossiper/lv2-hmi-gossiper.c \
+		  src/lv2/gossiper/lv2-gossiper.c src/lv2/gossiper/lv2-hmi-gossiper.c src/lv2/gossiper/lv2-gossiper-widgets.c \
 		  src/model/gossiper.c \
 		  src/gossiper.c \
 		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(GOSSIPER).lv2/$(GOSSIPER).so
 
-# Kill Switch shares no code with the others: one file, and only LV2's core header
+# Kill Switch shares no code with the others (only the display widgets' headers, src/hmi/): its own file, its widgets, and LV2's core header
 build-kill-switch:
-	$(CC) src/kill-switch.c \
+	$(CC) src/kill-switch.c src/hmi/kill-switch-widgets.c \
 		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(KILL_SWITCH).lv2/$(KILL_SWITCH).so
 
-# Half Mouco, the stereo sibling of Kill Switch, is one file too
+# Half Mouco, the stereo sibling of Kill Switch: its own file and its widgets
 build-half-mouco:
-	$(CC) src/half-mouco.c \
+	$(CC) src/half-mouco.c src/hmi/half-mouco-widgets.c \
 		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(HALF_MOUCO).lv2/$(HALF_MOUCO).so
 
 # --------------------------------------------------------------

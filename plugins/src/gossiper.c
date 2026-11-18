@@ -17,6 +17,7 @@
 #include "model/gossiper.h"
 #include "lv2/gossiper/lv2-gossiper.h"
 #include "lv2/gossiper/lv2-hmi-gossiper.h"
+#include "lv2/gossiper/lv2-gossiper-widgets.h"
 
 static void Gossiper_apply_patch_messages(Gossiper* self);
 static void Gossiper_apply_patch_set(Gossiper* self, const LV2_Atom_Object* obj);
@@ -68,6 +69,8 @@ instantiate(const LV2_Descriptor*     descriptor,
     }
 
     // Atom_instantiate(self);
+
+    LV2_Gossiper_Widgets_initialize(self, features, rate);
 
     return (LV2_Handle) self;
 }
@@ -148,6 +151,21 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
         case ASSIGN_TO_NOTIFY_4:
             break;
 
+        case FOOTSWITCH_IN_USE_1:
+            self->switches[0].in_use = (float*) data; break;
+        case FOOTSWITCH_IN_USE_2:
+            self->switches[1].in_use = (float*) data; break;
+        case FOOTSWITCH_IN_USE_3:
+            self->switches[2].in_use = (float*) data; break;
+        case FOOTSWITCH_IN_USE_4:
+            self->switches[3].in_use = (float*) data; break;
+        case FOOTSWITCH_IN_USE_5:
+            self->switches[4].in_use = (float*) data; break;
+        case FOOTSWITCH_IN_USE_6:
+            self->switches[5].in_use = (float*) data; break;
+        case FOOTSWITCH_IN_USE_7:
+            self->switches[6].in_use = (float*) data; break;
+
         case EVENTS_IN:
             self->lv2->events_in = (const LV2_Atom_Sequence*) data; break;
         case EVENTS_OUT:
@@ -191,6 +209,7 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
 
     LV2_HMI_Gossiper_run(self);
     //Atom_run(self);
+    LV2_Gossiper_Widgets_run(self, n_samples);
 
     Gossiper_finish_atom_forge(self, &notify_frame);
 }
@@ -201,6 +220,7 @@ static void deactivate(LV2_Handle instance) {}
 static void cleanup(LV2_Handle instance) {
     Gossiper* self = (Gossiper*) instance;
 
+    LV2_Gossiper_Widgets_cleanup(self);
     free(self->lv2);
     self->lv2 = NULL;
 
@@ -216,7 +236,11 @@ static const void* extension_data(const char* uri) {
     if (!strcmp(uri, LV2_STATE__interface)) {
         return &state;
     }
-    
+
+    if (!strcmp(uri, ALABS_HMI__WidgetNotification)) {
+        return LV2_Gossiper_Widgets_notification();
+    }
+
     return NULL;
 }
 

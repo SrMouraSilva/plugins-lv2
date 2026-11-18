@@ -1,10 +1,10 @@
 <div class="gps" mod-role="gossiper-settings">
   <div class="gps-shell">
     <div class="gps-screen">
-      <header class="gps-bar">
+      <div class="gps-bar">
         <div class="gps-title">
           <span class="gps-logo" aria-hidden="true"></span>
-          <h1>Gossiper</h1>
+          <div class="gps-name" role="heading" aria-level="1">Gossiper</div>
         </div>
 
         <!-- The last control used, as on the pedal -->
@@ -26,7 +26,7 @@
         </nav>
 
         <button type="button" class="js-close gps-close">Close</button>
-      </header>
+      </div>
 
       <!-- Never scrolls vertically. The script (layoutSettings) spreads the panels below over as many pages as the
            screen needs, and puts them back here whenever the size changes -->
@@ -242,6 +242,8 @@
             <span class="gps-eyebrow">Hardware assignment</span>
             <h2>Screen pop-ups<span class="gps-range-label"></span></h2>
             <p>A pop-up only appears on a device page that has one of these linked to it. Link each slot to a page where you want to see the alerts (up to four pages). With none linked, Gossiper stays silent.</p>
+            <!-- Shown by the script on a device without widgets on its screen (the MOD Duo): the slots below are then disabled -->
+            <p class="gps-unsupported-note" hidden>The MOD Duo has no widgets on its screen, so these pop-ups are not available on it. The display on the plugin shows what was used last.</p>
           </div>
           <ul class="gps-tiles">
               <li>

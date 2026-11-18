@@ -1,10 +1,10 @@
 <div class="kss" mod-role="kill-switch-settings">
   <div class="kss-shell">
     <div class="kss-screen">
-      <header class="kss-bar">
+      <div class="kss-bar">
         <div class="kss-title">
           <span class="kss-logo" aria-hidden="true"></span>
-          <h1>Kill Switch</h1>
+          <div class="kss-name" role="heading" aria-level="1">Kill Switch</div>
         </div>
 
         <div class="kss-now" aria-live="polite">
@@ -13,8 +13,12 @@
         </div>
 
         <!-- What the pedal has in its face and must be at hand on every page: on/off -->
-        <div class="kss-switches">
+        <div class="kss-switches kss-onoff" role="group" aria-label="On / off">
           <button type="button" class="kss-button kss-power" aria-pressed="false" title="Turn the effect on or off (the footswitch of the pedal)">Bypassed</button>
+          <!-- Joined to the switch it assigns (a footswitch): choose Momentary in its dialog to chop only while it is held -->
+          <button type="button" class="mod-address kss-address kss-address-small" mod-role="bypass-address" title="Assign On/Off to a hardware control (a footswitch)" aria-label="Assign On/Off to a hardware control (a footswitch)">
+              <span class="kss-assign-state" aria-hidden="true"></span>
+            </button>
         </div>
 
         <!-- The page being shown: always visible, whatever the input device (a swipe also changes it) -->
@@ -30,7 +34,7 @@
         </nav>
 
         <button type="button" class="js-close kss-close">Close</button>
-      </header>
+      </div>
 
       <!-- Never scrolls vertically. The script (layoutSettings) spreads the panels below over as many pages as the
            screen needs, and puts them back here whenever the size changes -->
@@ -40,8 +44,13 @@
         <!-- What is playing: the choice of pattern and what it does -->
         <section class="kss-panel kss-play-panel" data-panel="play">
           <div class="kss-panel-head kss-play-head">
-            <span class="kss-eyebrow">Pattern</span>
-            <h2 class="kss-play-name">Chop 8ths</h2>
+            <div class="kss-play-title">
+              <span class="kss-eyebrow">Pattern</span>
+              <h2 class="kss-play-name">Chop 8ths</h2>
+            </div>
+            <button type="button" class="mod-address kss-address kss-address-small" mod-role="input-control-address" mod-port-symbol="pattern" title="Assign Pattern to a hardware control (a knob or a footswitch)" aria-label="Assign Pattern to a hardware control (a knob or a footswitch)">
+              <span class="kss-assign-state" aria-hidden="true"></span>
+            </button>
           </div>
           <p class="kss-play-hint"></p>
           <div class="kss-choices" role="radiogroup" aria-label="Patterns"></div>
@@ -61,7 +70,10 @@
           </div>
           <div class="kss-sound">
             <div class="kss-knob kss-tempo">
-              <div class="kss-knob-head"><span>Tempo</span></div>
+              <div class="kss-knob-head"><span>Tempo</span>
+                <button type="button" class="mod-address kss-address kss-address-small" mod-role="input-control-address" mod-port-symbol="bpm" title="Assign Tempo to a hardware control (a knob or an expression pedal)" aria-label="Assign Tempo to a hardware control (a knob or an expression pedal)">
+              <span class="kss-assign-state" aria-hidden="true"></span>
+            </button></div>
               <div class="kss-stepper kss-stepper-big">
                 <button type="button" class="kss-button kss-bpm-down" aria-label="Slower" title="Slower">&minus;</button>
                 <output class="kss-bpm" aria-label="Tempo in beats per minute"><b>120</b><small>BPM</small></output>
@@ -71,7 +83,10 @@
             </div>
 
             <div class="kss-knob kss-speed">
-              <div class="kss-knob-head"><span>Speed</span><small>how fast the pattern runs</small></div>
+              <div class="kss-knob-head"><span>Speed</span><small>how fast the pattern runs</small>
+                <button type="button" class="mod-address kss-address kss-address-small" mod-role="input-control-address" mod-port-symbol="speed" title="Assign Speed to a hardware control (a footswitch)" aria-label="Assign Speed to a hardware control (a footswitch)">
+              <span class="kss-assign-state" aria-hidden="true"></span>
+            </button></div>
               <div class="kss-segments" role="radiogroup" aria-label="Speed of the pattern">
                 <button type="button" class="kss-segment" role="radio" aria-checked="false" data-speed="0">&frac12;x</button>
                 <button type="button" class="kss-segment" role="radio" aria-checked="true" data-speed="1">1x</button>
@@ -81,12 +96,18 @@
             </div>
 
             <div class="kss-knob kss-depth">
-              <div class="kss-knob-head"><span>Depth</span><output class="kss-depth-value">100%</output></div>
+              <div class="kss-knob-head"><span>Depth</span><output class="kss-depth-value">100%</output>
+                <button type="button" class="mod-address kss-address kss-address-small" mod-role="input-control-address" mod-port-symbol="depth" title="Assign Depth to a hardware control (a knob or an expression pedal)" aria-label="Assign Depth to a hardware control (a knob or an expression pedal)">
+              <span class="kss-assign-state" aria-hidden="true"></span>
+            </button></div>
               <input type="range" class="kss-slider kss-depth-input" min="0" max="100" step="1" value="100" aria-label="Depth: how much of the signal a cut removes" />
               <div class="kss-ends"><small>a cut barely dips</small><small>a cut is silence</small></div>
             </div>
             <div class="kss-knob kss-edge">
-              <div class="kss-knob-head"><span>Edge</span><output class="kss-edge-value">1.5 ms</output></div>
+              <div class="kss-knob-head"><span>Edge</span><output class="kss-edge-value">1.5 ms</output>
+                <button type="button" class="mod-address kss-address kss-address-small" mod-role="input-control-address" mod-port-symbol="edge" title="Assign Edge to a hardware control (a knob)" aria-label="Assign Edge to a hardware control (a knob)">
+              <span class="kss-assign-state" aria-hidden="true"></span>
+            </button></div>
               <input type="range" class="kss-slider kss-edge-input" min="0" max="1000" step="1" value="511" aria-label="Edge: how long a cut takes to open and close" />
               <div class="kss-ends"><small>hard, percussive chop</small><small>soft swell</small></div>
             </div>
@@ -125,62 +146,6 @@
               <button type="button" class="kss-button kss-use" aria-pressed="false">Play this pattern</button>
             </div>
           </div>
-        </section>
-
-        <section class="kss-panel kss-assign-panel kss-hw-bypass" data-panel="hardware-bypass">
-          <div class="kss-panel-head">
-            <span class="kss-eyebrow">Hardware assignment</span>
-            <h2>On / off<span class="kss-range"></span></h2>
-            <p>Turn the effect on and off with a footswitch. Choose <b>Momentary</b> in the dialog to chop only while you hold it, as with the switch on a guitar.</p>
-          </div>
-          <ul class="kss-assign">
-            <li>
-              <button type="button" class="mod-address kss-address" mod-role="bypass-address" title="Assign Bypass to a hardware control">
-                <span class="kss-assign-name"><span class="kss-assign-title">Bypass</span><small>footswitch</small></span>
-                <span class="kss-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-          </ul>
-        </section>
-
-        <section class="kss-panel kss-assign-panel kss-hardware" data-panel="hardware-controls">
-          <div class="kss-panel-head">
-            <span class="kss-eyebrow">Hardware assignment</span>
-            <h2>Controls<span class="kss-range"></span></h2>
-            <p>Play it from your device. Link the pattern, the tempo, the speed, the depth and the edge to knobs, an expression pedal or footswitches.</p>
-          </div>
-          <ul class="kss-assign">
-            <li>
-              <button type="button" class="mod-address kss-address" mod-role="input-control-address" mod-port-symbol="pattern" title="Assign Pattern to a hardware control">
-                <span class="kss-assign-name"><span class="kss-assign-title">Pattern</span><small>knob or footswitch</small></span>
-                <span class="kss-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address kss-address" mod-role="input-control-address" mod-port-symbol="bpm" title="Assign Tempo to a hardware control">
-                <span class="kss-assign-name"><span class="kss-assign-title">Tempo</span><small>knob or expression pedal</small></span>
-                <span class="kss-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address kss-address" mod-role="input-control-address" mod-port-symbol="speed" title="Assign Speed to a hardware control">
-                <span class="kss-assign-name"><span class="kss-assign-title">Speed</span><small>footswitch</small></span>
-                <span class="kss-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address kss-address" mod-role="input-control-address" mod-port-symbol="depth" title="Assign Depth to a hardware control">
-                <span class="kss-assign-name"><span class="kss-assign-title">Depth</span><small>knob or expression pedal</small></span>
-                <span class="kss-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mod-address kss-address" mod-role="input-control-address" mod-port-symbol="edge" title="Assign Edge to a hardware control">
-                <span class="kss-assign-name"><span class="kss-assign-title">Edge</span><small>knob</small></span>
-                <span class="kss-assign-state" aria-hidden="true"></span>
-              </button>
-            </li>
-          </ul>
         </section>
 
         <section class="kss-panel kss-presets-panel" data-panel="presets">

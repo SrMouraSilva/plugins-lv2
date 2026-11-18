@@ -113,7 +113,8 @@ potentiometer, and keeps your own presets (**Saved presets**).
 ![Min and Max: the CV range of a potentiometer, in volts](images/step-min-max.webp)
 
 > **No screen for pop-ups?** The MOD Duo (and any device without the HMI) cannot show pop-ups: the display on the
-> plugin itself (item A, section 1) is the feedback there. Open the pedalboard and look at it.
+> plugin itself (item A, section 1) is the feedback there. Open the pedalboard and look at it. On the MOD Duo the
+> *Screen pop-ups* slots of the settings page are disabled, with a note that says why.
 
 ## 4. How the pop-up decides when to appear
 
@@ -135,6 +136,80 @@ potentiometer, and keeps your own presets (**Saved presets**).
 > **Note from the author:** the pop-up is meant for occasional confirmation,
 > not as a live debugging readout — don't expect to use it for something
 > that changes every few milliseconds.
+
+### On the screen of the device
+
+With the **aLabs Starless** image (Starless 19 or later) the MOD Dwarf and the MOD Duo X can show *widgets* of a plugin on their screens, drawn by
+the plugin itself. The stock MOD firmware does not have this: the plugin works the same there and simply shows nothing. On the MOD Duo there is no
+screen to draw on.
+
+![Gossiper's widgets on the MOD Dwarf (left) and on the MOD Duo X (right)](images/gossiper-display.webp)
+
+A widget **is for looking, not for touching**: nothing on the screen reacts to a finger or to a button of the device. What changes it are the
+controls you assigned to the plugin, as always; the widget follows them.
+
+#### Placing a widget
+
+1. Open the **Display** dialog (the Device menu of MOD UI) and choose one of the two widgets (**Footswitches** or **Potentiometers**) in the list of widgets of the pedalboard.
+2. **Place** it on an area of the screen: a column above a knob, two or three columns, a footer, both footers or the whole screen on the Dwarf; a
+   knob, two knobs, the four knobs, the encoder band, a footer, both footers or the whole screen on each display of the Duo X. The dialog only
+   offers the areas that are big enough for it.
+3. The dialog offers to assign the seven footswitches (for **Footswitches**) or the four potentiometers (for **Potentiometers**) to controls of the device; you can change any of them or leave it out.
+4. **Save**. Each can be placed on more than one area at once (a column and a footer, or one on each display of the Duo X).
+
+Each draws what fits in the area it gets: a footer shows the bare essentials, the whole screen shows everything.
+
+Unlike the pop-up, a widget needs no `Assign to notify` control and does not go away: it stays on the screen where you placed it.
+
+#### Footswitches
+
+Shows **which of the seven footswitches are on**, as numbered boxes (filled: on), under the name *Gossiper* where there is room for it. When a footswitch
+changes, its **name and its new state (ON or OFF) appear over the widget for a moment**, like a pop-up, and then the boxes come back. It is offered in every area,
+from a footer up.
+
+| MOD Dwarf | MOD Duo X | What you see |
+|---|---|---|
+| ![Footswitches on the MOD Dwarf: one footer](images/gossiper-footswitches-dwarf-footC.webp)<small>One footer · 51 × 10</small> | ![Footswitches on the MOD Duo X: one footer](images/gossiper-footswitches-duox-foot1.webp)<small>One footer · 64 × 8</small> | A row of numbered boxes (filled: on). **Only the footswitches assigned to a control of the device** (all seven when none is). |
+| ![Footswitches on the MOD Dwarf: both footers](images/gossiper-footswitches-dwarf-footB-C.webp)<small>Both footers · 104 × 10</small> | ![Footswitches on the MOD Duo X: both footers](images/gossiper-footswitches-duox-foots.webp)<small>Both footers · 128 × 8</small> | The boxes in a row: **the assigned ones** (seven when none is). |
+| ![Footswitches on the MOD Dwarf: one column](images/gossiper-footswitches-dwarf-col1.webp)<small>One column · 40 × 37</small> | ![Footswitches on the MOD Duo X: two knobs, one above the other](images/gossiper-footswitches-duox-knobs1-2.webp)<small>Two knobs, one above the other · 64 × 30</small> | *Gossiper* and the boxes under it, in rows. **Only the assigned ones** (all seven when none is). |
+| ![Footswitches on the MOD Dwarf: two columns](images/gossiper-footswitches-dwarf-col1-2.webp)<small>Two columns · 82 × 37</small> | ![Footswitches on the MOD Duo X: the four knobs](images/gossiper-footswitches-duox-knobs.webp)<small>The four knobs · 128 × 30</small> | *Gossiper* and the boxes in one row: **the assigned ones** (seven when none is). |
+| ![Footswitches on the MOD Dwarf: three columns](images/gossiper-footswitches-dwarf-col1-3.webp)<small>Three columns · 124 × 37</small> | ![Footswitches on the MOD Duo X: encoder band and knobs](images/gossiper-footswitches-duox-enc-knobs.webp)<small>Encoder band and knobs · 128 × 47</small> | The same, with taller boxes. |
+| ![Footswitches on the MOD Dwarf: whole screen](images/gossiper-footswitches-dwarf-full.webp)<small>Whole screen · 128 × 64</small> | ![Footswitches on the MOD Duo X: whole screen](images/gossiper-footswitches-duox-full.webp)<small>Whole screen · 128 × 64</small> | A list of **all seven**, each with its name and ON or OFF. A footswitch that is not assigned has a dotted box and says `UNASSIGNED` where the state would be (when none is assigned, all look alike). |
+| *No area of this kind* | ![Footswitches on the MOD Duo X: one knob](images/gossiper-footswitches-duox-knob1.webp)<small>One knob · 64 × 16</small> | A row of numbered boxes. **Only the assigned footswitches** (all seven when none is). |
+| *No area of this kind* | ![Footswitches on the MOD Duo X: two knobs side by side](images/gossiper-footswitches-duox-knobs1-3.webp)<small>Two knobs side by side · 128 × 16</small> | The boxes in a row: **the assigned ones** (seven when none is). |
+
+The pop-up fills the area (a footer shows it as one light bar: name on the left, state on the right). Changes in the first second after the plugin loads are not
+shown, so a pedalboard that comes up with footswitches on does not flash them all.
+
+An area (apart from the whole screen) is not spent on footswitches you do not use: the widget shows only the footswitches that are assigned to a control, in every area. (Until you
+assign one, it shows all seven.) The names are the ones you gave them (see *Renaming a footswitch*).
+
+How Gossiper knows which ones are assigned: the device only tells a plugin about its own controls (a footswitch or a knob of the device), not about a MIDI
+controller, a CC or a CV, so the settings page does it. Every time you assign or unassign a `Footswitch N` it writes the result into the plugin's hidden
+`Footswitch N in use` parameter (`footswitch_in_use_1` to `footswitch_in_use_7`, 1 = in use). They are saved with the pedalboard and are not on the settings page
+(nobody assigns them). So the widget works the same without a browser open, and you can set them yourself when you control the plugin from an API: with
+all seven at 0 the widget shows all seven. A footswitch assigned to a control of the device itself counts as in use even with its parameter at 0.
+
+![The states of Footswitches](images/gossiper-footswitches-states.webp)
+
+#### Potentiometers
+
+Shows **the four potentiometers** (the controls you assigned to *Potentiometer 1 – 4*) as bars, with the value as a percentage where there is room.
+
+| MOD Dwarf | MOD Duo X | What you see |
+|---|---|---|
+| ![Potentiometers on the MOD Dwarf: one footer](images/gossiper-potentiometers-dwarf-footC.webp)<small>One footer · 51 × 10</small> | ![Potentiometers on the MOD Duo X: one footer](images/gossiper-potentiometers-duox-foot1.webp)<small>One footer · 64 × 8</small> | Four small bars side by side. |
+| ![Potentiometers on the MOD Dwarf: both footers](images/gossiper-potentiometers-dwarf-footB-C.webp)<small>Both footers · 104 × 10</small> | ![Potentiometers on the MOD Duo X: both footers](images/gossiper-potentiometers-duox-foots.webp)<small>Both footers · 128 × 8</small> | The same, wider. |
+| ![Potentiometers on the MOD Dwarf: one column](images/gossiper-potentiometers-dwarf-col1.webp)<small>One column · 40 × 37</small> | ![Potentiometers on the MOD Duo X: two knobs, one above the other](images/gossiper-potentiometers-duox-knobs1-2.webp)<small>Two knobs, one above the other · 64 × 30</small> | Four upright bars, with their numbers under them. |
+| ![Potentiometers on the MOD Dwarf: two columns](images/gossiper-potentiometers-dwarf-col1-2.webp)<small>Two columns · 82 × 37</small> | ![Potentiometers on the MOD Duo X: the four knobs](images/gossiper-potentiometers-duox-knobs.webp)<small>The four knobs · 128 × 30</small> | **Dwarf:** one row for each, **P1 – P4**, with a bar and the value in percent. **Duo X:** four upright bars with their numbers. |
+| ![Potentiometers on the MOD Dwarf: three columns](images/gossiper-potentiometers-dwarf-col1-3.webp)<small>Three columns · 124 × 37</small> | ![Potentiometers on the MOD Duo X: encoder band and knobs](images/gossiper-potentiometers-duox-enc-knobs.webp)<small>Encoder band and knobs · 128 × 47</small> | One row for each, **P1 – P4**: a bar and the value in percent. |
+| ![Potentiometers on the MOD Dwarf: whole screen](images/gossiper-potentiometers-dwarf-full.webp)<small>Whole screen · 128 × 64</small> | ![Potentiometers on the MOD Duo X: whole screen](images/gossiper-potentiometers-duox-full.webp)<small>Whole screen · 128 × 64</small> | The same, taller. |
+| *No area of this kind* | ![Potentiometers on the MOD Duo X: one knob](images/gossiper-potentiometers-duox-knob1.webp)<small>One knob · 64 × 16</small> | Four upright bars, with their numbers under them. |
+| *No area of this kind* | ![Potentiometers on the MOD Duo X: two knobs side by side](images/gossiper-potentiometers-duox-knobs1-3.webp)<small>Two knobs side by side · 128 × 16</small> | The same, wider. |
+
+The value is the position of the knob, from 0 to 100%, not the voltage on the CV output (which also depends on the Minimum and the Maximum).
+
+![The states of Potentiometers](images/gossiper-potentiometers-states.webp)
 
 ## 5. Renaming a footswitch
 
@@ -195,7 +270,8 @@ display on the plugin work without any of these.
 ### Does it work on the MOD Duo and the MOD Duo X?
 
 The plugin loads and the CV outputs work on both. The MOD Duo has no screen for plugin pop-ups, so the **display on the
-plugin** (open the pedalboard in the browser) is where you see the last control used. Pop-ups need the HMI of the Dwarf.
+plugin** (open the pedalboard in the browser) is where you see the last control used, and the *Screen pop-ups* slots of
+the settings page are disabled there. Pop-ups need the HMI of the Dwarf.
 
 ### Is it stereo? Does it add latency?
 
@@ -232,6 +308,7 @@ Yes. The label of each footswitch is saved with the pedalboard and with the plug
 | Field | Value |
 |---|---|
 | Plugin name | Gossiper |
+| Version | 1.1.17 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/gossiper` |
 | Audio I/O | None |

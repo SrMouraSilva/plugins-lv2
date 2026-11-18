@@ -68,6 +68,11 @@ export const shots = {
       setup: [`send({type:'change',symbol:'Preset_1_output_1',value:0})`, `send({type:'change',symbol:'Preset_2_output_1',value:1})`, 'hostSelects(2)'],
       highlight: ['.t4-foot[data-preset="1"]', '.t4-foot[data-preset="2"]'], finger: '.t4-foot[data-preset="2"]',
     }),
+    // The MIDI out panel: the channel is the first thing to set
+    {
+      file: 'step-midi.webp', view: 'settings', viewport: { width: 860, height: 540 }, scrollTo: '.t4s-midi-panel', crop: '.t4s-midi-panel',
+      highlight: ['.t4s-midi-group[data-group="sending"] .t4s-field'], finger: '.t4s-num[data-symbol="MIDI_channel"] [data-dir="1"]',
+    },
     // Step 6 and Option A: assign the presets to device footswitches
     settings('step-assign-preset-buttons.webp', tile('Preset_selector_1'), { highlight: [tile('Preset_selector_1'), tile('Preset_selector_2')] }),
     // Option B: one footswitch that cycles through the presets
@@ -85,6 +90,11 @@ export const shots = {
     window_('hept7-settings.webp', 1366, 800, { query: 'preset=1' }),
     phone('hept7-settings-phone.webp', 844, { query: 'device=390x844&preset=1' }),
     settings('step-assign-preset-buttons.webp', tile('Preset_selector_1'), { highlight: [tile('Preset_selector_1'), tile('Preset_selector_2')] }),
+    // The MIDI out panel: the channel is the first thing to set
+    {
+      file: 'step-midi.webp', view: 'settings', viewport: { width: 860, height: 540 }, scrollTo: '.h7s-midi-panel', crop: '.h7s-midi-panel',
+      highlight: ['.h7s-midi-group[data-group="sending"] .h7s-field'], finger: '.h7s-num[data-symbol="MIDI_channel"] [data-dir="1"]',
+    },
     // Section 3: leave the presets you do not use out of the cycle of Current preset
     {
       file: 'step-cycle.webp', view: 'settings', viewport: { width: 1200, height: 760 },
@@ -92,6 +102,10 @@ export const shots = {
       highlight: ['.h7s-cell-cycle[data-preset="3"]', '.h7s-cell-cycle[data-preset="4"]', '.h7s-cell-cycle[data-preset="6"]', '.h7s-cell-cycle[data-preset="7"]'],
       finger: '.h7s-cell-cycle[data-preset="4"]', crop: { closest: '.h7s-panel', of: '.h7s-cell-cycle[data-preset="4"]' },
     },
+    // Section 3: the buttons that go through the presets, one footswitch each
+    settings('step-assign-navigation.webp', tile('Next_preset'), {
+      highlight: [tile('Previous_preset'), tile('Next_preset')], crop: { closest: 'section', of: tile('Next_preset') },
+    }),
     // Section 4: the pop-up
     settings('step-assign-notify.webp', tile('Assign_to_notify_1')),
   ],

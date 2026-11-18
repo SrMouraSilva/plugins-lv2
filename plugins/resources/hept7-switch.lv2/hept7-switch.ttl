@@ -15,6 +15,7 @@
 @prefix pg:   <http://lv2plug.in/ns/ext/port-groups#> .
 @prefix work: <http://lv2plug.in/ns/ext/worker#> .
 @prefix plug: <http://srmourasilva.github.io/plugins/hept7-switch#> .
+@prefix ahw:  <https://github.com/sejerpz/alabs-hmi-widgets#> .
 
 # Port layout (keep in sync with plugins/src/model/ports.h):
 #   0-7    CV outputs
@@ -25,6 +26,11 @@
 #   76-77  Events in / out
 #   78-84  In the cycle of "Current preset", preset by preset (added after the events: ports are never renumbered)
 #   85     Active preset (output, for the interface)
+#   86-93  MIDI: the CC number of each CV output (added last, like the ports above: ports are never renumbered)
+#   94     MIDI channel (1-16)
+#   95     MIDI: send only the control changes that changed
+#   96     MIDI out (atom output, a control change per CV output when the preset changes)
+#   97-98  Next preset, Previous preset (buttons; "Current preset", 15, is a button too: it loops forward)
 
 plug:preset_label_1
     a lv2:Parameter ;
@@ -83,6 +89,11 @@ plug:group_notifications
     lv2:symbol "notifications" ;
     lv2:name "Notifications" .
 
+plug:group_midi
+    a pg:Group ;
+    lv2:symbol "midi" ;
+    lv2:name "MIDI" .
+
 plug:group_preset_1
     a pg:Group ;
     lv2:symbol "preset_1" ;
@@ -136,12 +147,28 @@ doap:maintainer [
     ];
 
     lv2:requiredFeature urid:map, <http://kx.studio/ns/lv2ext/control-input-port-change-request>;
-    lv2:optionalFeature lv2:hardRTCapable, state:loadDefaultState, <http://moddevices.com/ns/hmi#WidgetControl>, work:schedule;
-    lv2:extensionData <http://moddevices.com/ns/hmi#PluginNotification>, state:interface, work:interface;
+    lv2:optionalFeature lv2:hardRTCapable, state:loadDefaultState, <http://moddevices.com/ns/hmi#WidgetControl>, work:schedule, ahw:WidgetDraw;
+    lv2:extensionData <http://moddevices.com/ns/hmi#PluginNotification>, state:interface, work:interface, ahw:WidgetNotification;
+
+    # Widgets for the display of devices with the aLabs HMI widgets extension (MOD Dwarf and Duo X on the Starless images):
+    # optional, a host without it never shows them. Keep the symbols in step with WIDGET_SYMBOLS in the source.
+    ahw:widget
+    [
+        a ahw:Widget ;
+        lv2:symbol "preset" ;
+        lv2:name "Active preset" ;
+        rdfs:comment "The preset that is on: its number and name, and which of the CV outputs it turns on. With room, every preset. Placing it offers to assign Current preset to a control, which goes through the presets in the cycle." ;
+        ahw:minWidth 40 ;
+        ahw:minHeight 8 ;
+        ahw:naturalWidth 82 ;
+        ahw:naturalHeight 37 ;
+        ahw:pixelFormat ahw:Mono1 ;
+        ahw:suggestedPorts ( "Preset_combobox" ) ;
+    ] ;
 
     lv2:majorVersion 1 ;
     lv2:minorVersion 0 ;
-    lv2:microVersion 19 ;
+    lv2:microVersion 33 ;
 
 rdfs:comment """
 Hept7 switch is a loop switcher for CV, the big sibling of Tetr4 switch. Store which of its eight CV outputs are on in each of seven presets, and change between them with a footswitch. It comes with a full-screen, touch-friendly settings page and a small display that shows the preset on every device, even the ones without a screen for plugins.
@@ -299,23 +326,16 @@ lv2:port
 # Based on
 # https://github.com/moddevices/mod-utilities/blob/b8a9d4558efc136c4ce90657a5958064640074f1/SwitchBox_2-1/switchbox_2-1.lv2/switchbox_2-1.ttl
 [
-    a lv2:ControlPort, lv2:InputPort;
+    a lv2:InputPort, lv2:ControlPort;
     lv2:index 15;
     lv2:symbol "Preset_combobox";
     pg:group plug:group_preset_selection ;
     lv2:name "Current preset";
-    lv2:portProperty lv2:integer, lv2:enumeration ;
-        lv2:scalePoint [rdfs:label "Prst 1"; rdf:value 0];
-        lv2:scalePoint [rdfs:label "Prst 2"; rdf:value 1];
-        lv2:scalePoint [rdfs:label "Prst 3"; rdf:value 2];
-        lv2:scalePoint [rdfs:label "Prst 4"; rdf:value 3];
-        lv2:scalePoint [rdfs:label "Prst 5"; rdf:value 4];
-        lv2:scalePoint [rdfs:label "Prst 6"; rdf:value 5];
-        lv2:scalePoint [rdfs:label "Prst 7"; rdf:value 6];
-    lv2:default 0;
+    lv2:default 1 ;
     lv2:minimum 0;
-    lv2:maximum 6;
-    rdfs:comment "Shows and selects which preset (1 to 7) is currently active. It is kept in sync with the Preset selector footswitches. Assigned to a footswitch, to the B+C pair or to a knob, it goes through the presets that are In the cycle and skips the others." ;
+    lv2:maximum 1;
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOffByDefault;
+    rdfs:comment "A button that goes through the presets that are In the cycle: each time you let go of it, it goes to the next one, and after the last it goes back to the first. Assign a footswitch to it to loop through the presets with one foot (it is momentary, acting when released: keep that mode). On the display of a MOD Dwarf it shows the name and the colour of the active preset. Use Next preset and Previous preset for one footswitch each." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort;
@@ -1066,7 +1086,7 @@ lv2:port
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:integer, lv2:toggled ;
-    rdfs:comment "On: preset 1 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+    rdfs:comment "On: preset 1 is one of the presets that the buttons Current preset, Next preset and Previous preset go through. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
@@ -1078,7 +1098,7 @@ lv2:port
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:integer, lv2:toggled ;
-    rdfs:comment "On: preset 2 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+    rdfs:comment "On: preset 2 is one of the presets that the buttons Current preset, Next preset and Previous preset go through. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
@@ -1090,7 +1110,7 @@ lv2:port
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:integer, lv2:toggled ;
-    rdfs:comment "On: preset 3 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+    rdfs:comment "On: preset 3 is one of the presets that the buttons Current preset, Next preset and Previous preset go through. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
@@ -1102,7 +1122,7 @@ lv2:port
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:integer, lv2:toggled ;
-    rdfs:comment "On: preset 4 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+    rdfs:comment "On: preset 4 is one of the presets that the buttons Current preset, Next preset and Previous preset go through. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
@@ -1114,7 +1134,7 @@ lv2:port
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:integer, lv2:toggled ;
-    rdfs:comment "On: preset 5 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+    rdfs:comment "On: preset 5 is one of the presets that the buttons Current preset, Next preset and Previous preset go through. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
@@ -1126,7 +1146,7 @@ lv2:port
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:integer, lv2:toggled ;
-    rdfs:comment "On: preset 6 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+    rdfs:comment "On: preset 6 is one of the presets that the buttons Current preset, Next preset and Previous preset go through. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
@@ -1138,7 +1158,7 @@ lv2:port
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:integer, lv2:toggled ;
-    rdfs:comment "On: preset 7 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+    rdfs:comment "On: preset 7 is one of the presets that the buttons Current preset, Next preset and Previous preset go through. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
 ],
 [
     a lv2:OutputPort, lv2:ControlPort ;
@@ -1151,6 +1171,159 @@ lv2:port
     lv2:maximum 6 ;
     lv2:portProperty lv2:integer ;
     rdfs:comment "Output: the active preset (0 is preset 1), whatever selected it. Used by the interface of the plugin." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 86 ;
+    lv2:symbol "MIDI_CC_1" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 1" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 20 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 1 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 87 ;
+    lv2:symbol "MIDI_CC_2" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 2" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 21 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 2 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 88 ;
+    lv2:symbol "MIDI_CC_3" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 3" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 22 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 3 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 89 ;
+    lv2:symbol "MIDI_CC_4" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 4" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 23 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 4 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 90 ;
+    lv2:symbol "MIDI_CC_5" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 5" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 24 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 5 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 91 ;
+    lv2:symbol "MIDI_CC_6" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 6" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 25 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 6 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 92 ;
+    lv2:symbol "MIDI_CC_7" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 7" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 26 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 7 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 93 ;
+    lv2:symbol "MIDI_CC_8" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 8" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 27 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 8 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 94 ;
+    lv2:symbol "MIDI_channel" ;
+    pg:group plug:group_midi ;
+    lv2:name "MIDI channel" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 1 ;
+    lv2:minimum 1 ;
+    lv2:maximum 16 ;
+    rdfs:comment "MIDI channel (1 to 16) of the control changes." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 95 ;
+    lv2:symbol "MIDI_changes_only" ;
+    pg:group plug:group_midi ;
+    lv2:name "MIDI changes only" ;
+    lv2:portProperty lv2:integer, lv2:toggled ;
+    lv2:default 1 ;
+    lv2:minimum 0 ;
+    lv2:maximum 1 ;
+    rdfs:comment "On: when the preset changes, send only the control changes whose value differs from the last one sent. Off: send one for every output." ;
+],
+[
+    a lv2:OutputPort, atom:AtomPort ;
+    lv2:index 96 ;
+    lv2:symbol "MIDI_out" ;
+    lv2:name "MIDI out" ;
+    atom:bufferType atom:Sequence ;
+    atom:supports midi:MidiEvent ;
+    rdfs:comment "Sends a MIDI control change for each CV output when the preset changes, so the outputs can also drive MIDI gear." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 97 ;
+    lv2:symbol "Next_preset" ;
+    pg:group plug:group_preset_selection ;
+    lv2:name "Next preset" ;
+    lv2:default 1 ;
+    lv2:minimum 0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOffByDefault ;
+    rdfs:comment "A button that goes to the next preset in the cycle (the presets that are In the cycle; after the last it goes back to the first) when you let go of it. Assign a footswitch to it (it is momentary, acting when released: keep that mode). On the display of a MOD Dwarf it shows the name of the preset it leads to, in that preset's colour, dimmed." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 98 ;
+    lv2:symbol "Previous_preset" ;
+    pg:group plug:group_preset_selection ;
+    lv2:name "Previous preset" ;
+    lv2:default 1 ;
+    lv2:minimum 0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOffByDefault ;
+    rdfs:comment "A button that goes to the previous preset in the cycle (the presets that are In the cycle; before the first it goes to the last) when you let go of it. Assign a footswitch to it (it is momentary, acting when released: keep that mode). On the display of a MOD Dwarf it shows the name of the preset it leads to, in that preset's colour, dimmed." ;
 ] ;
 
 patch:writable plug:preset_label_1 ,

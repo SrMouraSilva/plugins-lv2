@@ -4,7 +4,7 @@
 # Assembled from store/ of https://github.com/SrMouraSilva/plugins-lv2 -- keep the four in step (see tools/store/pin.py).
 
 # The commit of the repository that is built: it must exist on GitHub. Update it with `python3 tools/store/pin.py`.
-GOSSIPER_VERSION = bc156ddeef7b8e38d569aa72d4d70633fae3b38a
+GOSSIPER_VERSION = daf95f29a882614ad19e0f9e3d27afddbf14dce2
 GOSSIPER_SITE = https://github.com/SrMouraSilva/plugins-lv2.git
 GOSSIPER_SITE_METHOD = git
 GOSSIPER_BUNDLES = gossiper.lv2

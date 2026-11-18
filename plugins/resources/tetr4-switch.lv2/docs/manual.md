@@ -14,6 +14,9 @@ The outputs are **control voltage (CV)** signals. CV is the MOD way of letting o
 carries a value instead of sound. An output that is "on" sends 10 V and one that is "off" sends 0 V. Pair an output to
 the on/off (bypass) switch of one or more plugins, and that output becomes a loop on your switcher.
 
+Tetr4 Switch also has a **MIDI out**: each time the preset changes it sends a MIDI control change for every output, so the
+same scenes can switch MIDI gear too (see [MIDI out](#midi-out)).
+
 > [!NOTE] Good to know
 > Tetr4 Switch has no audio inputs or outputs, so it doesn't sit in your signal chain. Place it anywhere on the pedalboard
 > and map its CV outputs to the plugins you want it to switch.
@@ -46,10 +49,10 @@ any drive plugin and any delay plugin in the chain.
     ![Step 5: the footswitches of the panel; the bank of the active preset lights up](images/step-footswitches.webp)
 
 6. **Put it under your feet.** Address the **Preset 1** and **Preset 2** parameters to two device footswitches. Their LEDs
-   light up in the preset colour while that preset is active. On the settings page ([section 4](#the-settings-page)) the tiles of
-   the **Hardware assignment** do this in one tap.
+   light up in the preset colour while that preset is active. On the settings page ([section 4](#the-settings-page)) the small
+   button beside the round button of each scene does this in one tap.
 
-    ![Step 6: the tiles Preset 1 and Preset 2 of the settings page open the assignment](images/step-assign-preset-buttons.webp)
+    ![Step 6: the small button beside the round button of Preset 1 and Preset 2 opens the assignment](images/step-assign-preset-buttons.webp)
 
 > [!TIP] The one trick to learn
 > **Plan your outputs before your presets.** Each output is one "loop": a group of plugins that always switch on and off
@@ -66,10 +69,10 @@ any drive plugin and any delay plugin in the chain.
 <figure class="annotated">
 <div class="stage">
 <img src="images/panel.webp" alt="The Tetr4 Switch panel">
-<span class="pin" style="--x:24.8%;--y:16.4%">1</span>
-<span class="pin" style="--x:24%;--y:38%">2</span>
-<span class="pin" style="--x:19.7%;--y:61%">3</span>
-<span class="pin" style="--x:25.3%;--y:90%">4</span>
+<span class="pin" style="--x:24.8%;--y:15.3%">1</span>
+<span class="pin" style="--x:24%;--y:34.1%">2</span>
+<span class="pin" style="--x:19.7%;--y:63.5%">3</span>
+<span class="pin" style="--x:25.3%;--y:90.9%">4</span>
 </div>
 <figcaption>Factory settings: Preset 1 is active and each Config bank turns on a single output (Config 1 → output 1, Config 2 → output 2, and so on).</figcaption>
 </figure>
@@ -84,6 +87,7 @@ any drive plugin and any delay plugin in the chain.
 | <span class="num">4</span>**Preset labels** | Show the name of each preset. You can edit the Preset Label text to whatever helps you better understand the function of each preset. |
 | **Edit scenes** | Opens the settings page (section 4). The gear icon above the plugin opens it too. |
 | **CV Output 1–4** (jacks) | The four outputs. On the pedalboard, they appear as CV jacks on the plugin's output side. Each one sends 0 V or 10 V, and one output can be paired with as many plugin inputs as you like. |
+| **MIDI out** (jack) | The fifth jack, under the CV ones. It sends a MIDI control change for each output when the preset changes (see [MIDI out](#midi-out)). |
 
 ### Assignable parameters
 
@@ -93,10 +97,10 @@ MIDI controllers.
 #### Preset 1 · Preset 2 · Preset 3 · Preset 4
 
 OFF
-: That preset is not active. An assigned footswitch LED is dark and its label reads "N - OFF".
+: That preset is not active. An assigned footswitch LED is dark and its label shows the name of the preset.
 
 ON
-: That preset is active. The LED lights in the preset's colour and the label reads "N - ON".
+: That preset is active. The LED lights in the preset's colour; the label shows the name of the preset (the first 7 characters; a name that was never changed, *Preset 3*, is written *Prst 3* there).
 
 DEFAULT
 : Preset 1 on, Presets 2–4 off.
@@ -107,14 +111,15 @@ USE
 #### Current preset
 
 VALUES
-: `Prst 1` · `Prst 2` · `Prst 3` · `Prst 4`
+: `1` · `2` · `3` · `4`
 
 DEFAULT
-: Prst 1
+: 1
 
 USE
 : A single list parameter. Assign it to one footswitch (e.g. B, C or B+C on the Dwarf) to step through the presets, or to a
-  knob or list control. The display shows the preset number.
+  knob or list control. On a single footswitch the label shows the name of the active preset (the first 6 characters, the rest
+  of the room is for the value, which is the number of the option). On the B+C pair the device writes the text itself.
 
 #### Assign to notify 1 – 4
 
@@ -141,12 +146,15 @@ touch: big switches, nothing smaller than a fingertip.
 
 ![The settings page of Tetr4 Switch](images/settings.webp)
 
-* **Scenes**: one card per preset. The round button plays that preset; the field next to it is its name; the four
-  switches are its DIP switches (**up = on**). The card of the active preset is highlighted, and its lit switches are the
-  CV signals actually leaving the plugin right now.
-* **Hardware assignment**: tiles to assign a footswitch, a knob or a device screen page to the plugin's controls, told
-  apart by purpose: the *preset buttons* (1 to 4), *Current preset* and the *screen pop-ups*. A tile shows a check mark
-  once it is assigned.
+* **Scenes**: one card per preset. The round button plays that preset and the small button beside it assigns the preset to a
+  footswitch, a knob or another control of your device (it fills in once it is assigned); the field under them is the
+  name, and the four switches are its DIP switches (**up = on**). The card of the active preset is highlighted, and its
+  lit switches are the CV signals actually leaving the plugin right now.
+* **Hardware assignment**: tiles to assign a control of the device to the *Current preset* (the tile also says which
+  preset is playing) and to the *screen pop-ups*. A tile shows a check mark once it is assigned. The MOD Duo has no widgets
+  on its screen, so there the pop-up tiles are disabled and say so.
+* **MIDI out**: the channel, whether to send only what changed, and the CC number of each output
+  (see [MIDI out](#midi-out)).
 * **Saved presets**: the factory presets (see [Recipes](#recipes)) and your own presets.
 
 The page never scrolls up and down. What does not fit the screen goes on another **page**, to the right: the arrows in the
@@ -164,7 +172,8 @@ web interface, plus a way to see what you selected when your controller has no L
 
 ### Option A: one footswitch per preset (recommended)
 
-1. Open the plugin's addressing and assign **Preset 1** to a device footswitch.
+1. Open the plugin's addressing (on the settings page, the small button beside the round button of the scene) and assign
+   **Preset 1** to a device footswitch.
 2. Repeat for **Preset 2, 3 and 4**. On a Dwarf with only two assignable footswitches, you can use a footswitch page or a
    combination such as B+C to scroll through the list of 4 presets.
 3. **Step on a footswitch.** Its LED lights up in the preset colour and the LEDs of the other presets go dark, just like the
@@ -176,7 +185,7 @@ web interface, plus a way to see what you selected when your controller has no L
 
     ![The Current preset tile of the settings page](images/step-assign-current-preset.webp)
 
-2. Each press moves to the next preset, and the display shows its number.
+2. Each press moves to the next preset. On a single footswitch the label shows the name of the preset and the LED its colour.
 
 ### Option C: an external MIDI controller with on-screen confirmation
 
@@ -193,11 +202,108 @@ notifier parameters to get feedback:
 
 > [!WARNING] Heads-up
 > The pop-up only appears while the parameter you assigned to a notifier is **visible on the device screen**. If you switch
-> to another page, the notifications stop. Keep that control on the page you play from.
+> to another page, the notifications stop. Keep that control on the page you play from. The MOD Duo has no widgets on its
+> screen, so the pop-ups are not available on it.
 
 [![Watch: notifications with an external controller — Preset changes from an M-VAVE Chocolate are shown as pop-ups on the MOD device.](images/video-notifications.jpg)](https://youtu.be/OigC8Hy5dpI)
 
-## 6. Recipes
+### On the screen of the device
+
+With the **aLabs Starless** image (Starless 19 or later) the MOD Dwarf and the MOD Duo X can show *widgets* of a plugin on their screens, drawn by
+the plugin itself. The stock MOD firmware does not have this: the plugin works the same there and simply shows nothing. On the MOD Duo there is no
+screen to draw on.
+
+![Tetr4 Switch's widget on the MOD Dwarf (left) and on the MOD Duo X (right)](images/tetr4-switch-display.webp)
+
+A widget **is for looking, not for touching**: nothing on the screen reacts to a finger or to a button of the device. What changes it are the
+controls you assigned to the plugin, as always; the widget follows them.
+
+#### Placing the widget
+
+1. Open the **Display** dialog (the Device menu of MOD UI) and choose **Active preset** in the list of widgets of the pedalboard.
+2. **Place** it on an area of the screen: a column above a knob, two or three columns, a footer, both footers or the whole screen on the Dwarf; a
+   knob, two knobs, the four knobs, the encoder band, a footer, both footers or the whole screen on each display of the Duo X. The dialog only
+   offers the areas that are big enough for it.
+3. The dialog offers to assign **Current preset** to a control of the device; choose the control you want, or leave it out if the preset is already chosen by other controls.
+4. **Save**. It can be placed on more than one area at once (a column and a footer, or one on each display of the Duo X).
+
+It draws what fits in the area it gets: a footer shows the bare essentials, the whole screen shows everything.
+
+#### Active preset
+
+Shows **which preset is on** and what it switches, wherever the pedalboard is being played from: a footswitch, the settings page, a MIDI controller
+or a snapshot. It follows the preset, so it is also the way to see it when the LEDs are out of sight. It is offered in every area, from a footer up.
+
+| MOD Dwarf | MOD Duo X | What you see |
+|---|---|---|
+| ![Active preset on the MOD Dwarf: one footer](images/tetr4-switch-preset-dwarf-footC.webp)<small>One footer · 51 × 10</small> | ![Active preset on the MOD Duo X: one footer](images/tetr4-switch-preset-duox-foot1.webp)<small>One footer · 64 × 8</small> | The **number** of the preset in an inverted box and its **name**. |
+| ![Active preset on the MOD Dwarf: both footers](images/tetr4-switch-preset-dwarf-footB-C.webp)<small>Both footers · 104 × 10</small> | ![Active preset on the MOD Duo X: both footers](images/tetr4-switch-preset-duox-foots.webp)<small>Both footers · 128 × 8</small> | The same, and the **4 outputs** at the right (filled: on in this preset). |
+| ![Active preset on the MOD Dwarf: one column](images/tetr4-switch-preset-dwarf-col1.webp)<small>One column · 40 × 37</small> | ![Active preset on the MOD Duo X: two knobs, one above the other](images/tetr4-switch-preset-duox-knobs1-2.webp)<small>Two knobs, one above the other · 64 × 30</small> | **Dwarf:** the number, big; the outputs in two rows; the name; and one box for each of the 4 presets (the active one filled). **Duo X:** a cell with the number of each preset (the active one filled), the **name** big and the outputs. |
+| ![Active preset on the MOD Dwarf: two columns](images/tetr4-switch-preset-dwarf-col1-2.webp)<small>Two columns · 82 × 37</small> | ![Active preset on the MOD Duo X: the four knobs](images/tetr4-switch-preset-duox-knobs.webp)<small>The four knobs · 128 × 30</small> | A cell with the number of each preset (the active one filled), the **name** big and the outputs. |
+| ![Active preset on the MOD Dwarf: three columns](images/tetr4-switch-preset-dwarf-col1-3.webp)<small>Three columns · 124 × 37</small> | ![Active preset on the MOD Duo X: encoder band and knobs](images/tetr4-switch-preset-duox-enc-knobs.webp)<small>Encoder band and knobs · 128 × 47</small> | **All 4 presets** in a list, each with its name and its outputs; the active one inverted. |
+| ![Active preset on the MOD Dwarf: whole screen](images/tetr4-switch-preset-dwarf-full.webp)<small>Whole screen · 128 × 64</small> | ![Active preset on the MOD Duo X: whole screen](images/tetr4-switch-preset-duox-full.webp)<small>Whole screen · 128 × 64</small> | **All 4 presets** in a list, each with its name and its outputs; the active one inverted. In the list an output that is on is a small square and one that is off a dot. |
+| *No area of this kind* | ![Active preset on the MOD Duo X: one knob](images/tetr4-switch-preset-duox-knob1.webp)<small>One knob · 64 × 16</small> | The **number** of the preset in an inverted box and its **name**. |
+| *No area of this kind* | ![Active preset on the MOD Duo X: two knobs side by side](images/tetr4-switch-preset-duox-knobs1-3.webp)<small>Two knobs side by side · 128 × 16</small> | The same, and the **4 outputs** at the right. |
+
+The squares are the **CV outputs** of the active preset: a filled one is on (its DIP switch in the preset is up). In the lists a small square is an
+output that is on and a dot one that is off. The names are the ones you gave the presets, and the widget changes when you rename one.
+
+![The states of Active preset](images/tetr4-switch-preset-states.webp)
+
+The widget needs no `Assign to notify` control: it is drawn where you place it, and stays there, unlike the pop-up, which goes away after a moment.
+
+## 6. MIDI out
+
+Besides its four CV outputs, Tetr4 Switch has a **MIDI out** jack (the fifth, under the CV ones). Each time the active
+preset changes, it sends one MIDI **control change** (CC) for every output: **127** when that output is on in the new
+preset and **0** when it is off. Use it to switch a MIDI-controlled pedal or a looper with the same scenes you set for the
+CV outputs.
+
+1. **Connect the MIDI out jack** to a MIDI input: the MIDI output of your device, a MIDI loopback port or a plugin that
+   takes MIDI.
+2. Open the settings page and go to the **MIDI out** panel.
+
+    ![The MIDI out panel: channel, changes only and the CC number of each output](images/step-midi.webp)
+
+3. Choose the **channel** (1 to 16) and the **CC number of each output**. They start at 20 to 23, numbers that have no
+   standard meaning in MIDI. Tap the field to type a number, or use the buttons on its sides.
+4. **Change presets** as usual. The receiving device gets, for example, CC 20 = 127 and CC 21 = 0 when Preset 1 turns
+   output 1 on and output 2 off.
+
+#### MIDI channel
+
+VALUES
+: 1 to 16
+
+DEFAULT
+: 1
+
+#### CC for output 1 – 4
+
+VALUES
+: 0 to 127. One number for each CV output
+
+DEFAULT
+: 20, 21, 22 and 23
+
+#### MIDI changes only
+
+VALUES
+: Off / On
+
+DEFAULT
+: On
+
+USE
+: On: when the preset changes, only the outputs whose value differs from the last one sent are sent. Off: every output
+  is sent on every change of preset. The plugin counts every output as "off" (0) until it sends something, so with this on
+  the first change after the plugin is loaded sends only the outputs that are on.
+
+> [!NOTE] When MIDI is sent
+> Only when the preset changes. Loading a pedalboard sends nothing, and flipping a DIP switch of the active preset
+> changes the CV outputs right away but sends no MIDI until the next change of preset.
+
+## 7. Recipes
 
 Each recipe shows the four Config banks as a grid. Rows are presets and columns are CV outputs 1–4. A coloured square
 means the switch is up (10 V, on) and a grey square means down (0 V, off). Each one is also a factory preset of the plugin.
@@ -254,7 +360,7 @@ assign: **Assigning the Tetr4 Switch:** Out 1 → Drive · Out 2 → Boost · Ou
 
 [![Watch: Four-scene rig in action — The first recipe being switched on a live pedalboard.](images/video-pedalboard.jpg)](https://youtu.be/sHKzSBM5Z8U)
 
-## 7. Tips
+## 8. Tips
 
 ### One output, many plugins
 
@@ -301,7 +407,7 @@ also recalls which Tetr4 preset is active, so each song can start on the right s
 If a scene doesn't behave as expected, temporarily connect a CV meter or display plugin to the outputs to check which ones
 are high.
 
-## 8. Questions & answers
+## 9. Questions & answers
 
 ### I switch presets but nothing happens to my plugins.
 
@@ -331,27 +437,27 @@ alternative to snapshots: less powerful, but your sound edits never go out of sy
 
 ### Can it send MIDI instead of CV?
 
-No. As a workaround, route a CV output into a plugin that turns CV into MIDI messages and send those to the MIDI loopback.
-A community member has prototyped a MIDI-CC output, which may be included in a later version.
+Yes, in addition to CV. The **MIDI out** sends a control change for each output whenever the preset changes
+(see [MIDI out](#midi-out)). The MIDI output was first prototyped by a community member, stiv bennett.
 
 ### I set up notifications, but no pop-up appears.
 
 The pop-up only appears while the control you assigned to an **Assign to notify** parameter is visible on the device screen.
-Move it to the page you play from.
+Move it to the page you play from. On the MOD Duo there are no pop-ups at all: its screen has no widgets for them.
 
-## 9. Specifications
+## 10. Specifications
 
 | Field | Value |
 |---|---|
 | Plugin name | Tetr4 switch |
-| Version | 1.0.0 |
+| Version | 1.2.13 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/tetr4-switch` |
 | Audio I/O | None |
 | CV outputs | 4 × CV, 0 V (off) / 10 V (on) |
-| MIDI | None |
+| MIDI | MIDI out: a control change (channel 1–16) per output when the preset changes |
 | Presets × outputs | 4 × 4 (16 toggle switches) |
-| Assignable parameters | Preset 1–4 (toggle) · Current preset (list) · Assign to notify 1–4 (toggle) · 16 Config switches |
+| Assignable parameters | Preset 1–4 (toggle) · Current preset (list) · Assign to notify 1–4 (toggle) · 16 Config switches · MIDI channel, CC 1–4 and changes only |
 | Device feedback | Footswitch LED colour + label, preset number on display, pop-up notifications (MOD HMI) |
 | Platforms | MOD Dwarf · MOD Duo X · MOD Duo |
 | Developer | Paulo Mateus (SrMouraSilva) |

@@ -177,15 +177,17 @@ A step has **three levels**, and a tap on it goes to the next one, round and rou
 
 Your pattern is made of controls of the plugin, so it is saved with the **pedalboard**, with your own **saved presets** and with
 **snapshots**. The factory presets do not touch it. The settings have more than one page: use the arrows of the top bar (or swipe
-sideways) to go to the assignments (**On / off** and **Controls**) and to the **Saved presets**.
+sideways) to go to the **Saved presets**. The settings page has everything the pedal has, and next to each control, a small button (the faders icon) that assigns it to a device control.
 
 ![Going through the settings page: the two rows of steps, the length, the steps per beat and every page](images/half-mouco-settings.webp)
 
 ## 6. Playing it live
 
 Every control of the plugin can be assigned to a device control (a footswitch, a knob, an expression pedal), the way you assign any
-parameter: open the settings of the plugin (the gear icon, or **Edit**) and click the tile of the control to assign. The bypass has a
-panel of its own, **On / off**, and the rest is in **Controls**.
+parameter: open the settings of the plugin (the gear icon, or **Edit**) and click the small button (the faders icon) next to the control to
+assign: **Mono** and **On / off** in the top bar, **Pattern** or **Ending** (the one that matches what plays) beside the name, **Mode** beside
+*Patterns* and *Endings*, and **Tempo**, **Speed**, **Length**, **Depth** and **Edge** beside their names. The button fills in once the
+control is assigned.
 
 | Control | Good to assign it to |
 |---|---|
@@ -198,7 +200,52 @@ panel of its own, **On / off**, and the rest is in **Controls**.
 | `Depth` | A knob or an expression pedal: from a gentle tremolo to a full cut. |
 | `Edge` | A knob: from a hard chop to a soft swell. |
 
-The plugin shows nothing on the device screen, so there is no pop-up to set up.
+### On the screen of the device
+
+With the **aLabs Starless** image (Starless 19 or later) the MOD Dwarf and the MOD Duo X can show *widgets* of a plugin on their screens, drawn by
+the plugin itself. The stock MOD firmware does not have this: the plugin works the same there and simply shows nothing. On the MOD Duo there is no
+screen to draw on.
+
+![Half Mouco's widget on the MOD Dwarf (left) and on the MOD Duo X (right)](images/half-mouco-display.webp)
+
+A widget **is for looking, not for touching**: nothing on the screen reacts to a finger or to a button of the device. What changes it are the
+controls you assigned to the plugin, as always; the widget follows them.
+
+#### Placing the widget
+
+1. Open the **Display** dialog (the Device menu of MOD UI) and choose **Stereo pattern** in the list of widgets of the pedalboard.
+2. **Place** it on an area of the screen: a column above a knob, two or three columns, a footer, both footers or the whole screen on the Dwarf; a
+   knob, two knobs, the four knobs, the encoder band, a footer, both footers or the whole screen on each display of the Duo X. The dialog only
+   offers the areas that are big enough for it.
+3. The dialog offers to assign **Mode**, **Pattern** and **Tempo** to controls of the device (you can change them or leave them out), so you can change them from the same page.
+4. **Save**. It can be placed on more than one area at once (a column and a footer, or one on each display of the Duo X).
+
+It draws what fits in the area it gets: a footer shows the bare essentials, the whole screen shows everything.
+
+#### Stereo pattern
+
+Shows **the two sides, left (L) and right (R)**, one above the other, so you see what each ear is getting. It needs an area at least 14 pixels high: a
+footer of the Dwarf (10) or of the Duo X (8) is too small for two rows, and the dialog does not offer it there.
+
+| MOD Dwarf | MOD Duo X | What you see |
+|---|---|---|
+| ![Stereo pattern on the MOD Dwarf: one column](images/half-mouco-stereo-dwarf-col1.webp)<small>One column · 40 × 37</small> | ![Stereo pattern on the MOD Duo X: two knobs, one above the other](images/half-mouco-stereo-duox-knobs1-2.webp)<small>Two knobs, one above the other · 64 × 30</small> | The **name** of the pattern (or of the ending), the two rows **L** and **R** with the mark under the step that plays, and at the bottom the tempo and the Speed (or the length in beats and the word ENDING). What does not fit is left out. |
+| ![Stereo pattern on the MOD Dwarf: two columns](images/half-mouco-stereo-dwarf-col1-2.webp)<small>Two columns · 82 × 37</small> | ![Stereo pattern on the MOD Duo X: the four knobs](images/half-mouco-stereo-duox-knobs.webp)<small>The four knobs · 128 × 30</small> | The same, with more room. |
+| ![Stereo pattern on the MOD Dwarf: three columns](images/half-mouco-stereo-dwarf-col1-3.webp)<small>Three columns · 124 × 37</small> | ![Stereo pattern on the MOD Duo X: encoder band and knobs](images/half-mouco-stereo-duox-enc-knobs.webp)<small>Encoder band and knobs · 128 × 47</small> | The same, with taller rows. |
+| ![Stereo pattern on the MOD Dwarf: whole screen](images/half-mouco-stereo-dwarf-full.webp)<small>Whole screen · 128 × 64</small> | ![Stereo pattern on the MOD Duo X: whole screen](images/half-mouco-stereo-duox-full.webp)<small>Whole screen · 128 × 64</small> | The same, as big as the screen allows. |
+| *No area of this kind* | ![Stereo pattern on the MOD Duo X: one knob](images/half-mouco-stereo-duox-knob1.webp)<small>One knob · 64 × 16</small> | Only the two rows, **L** and **R**, with the mark. |
+| *No area of this kind* | ![Stereo pattern on the MOD Duo X: two knobs side by side](images/half-mouco-stereo-duox-knobs1-3.webp)<small>Two knobs side by side · 128 × 16</small> | Only the two rows, wider. |
+
+In the **Patterns** mode each row is the steps of that side (tall bar: the signal passes; half-height bar: middle level; line: a cut) and the mark moves
+with the tempo. In the **Endings** mode each row is the **curve of the ending along its time**, from the moment the plugin is switched on to its end, and a
+dotted line moves across it: you see how much is left.
+
+![The states of Stereo pattern](images/half-mouco-stereo-states.webp)
+
+* **A pattern:** the rows are different on each side; that is the point of the plugin.
+* **An ending:** a bouncing ball, a helicopter, a stutter... each draws its own curve; the dotted line is where the ending is now.
+* **The ending is over:** the line reaches the end and the widget says **END** (on a tall area); after that everything is cut until you switch the plugin off and on.
+* **Bypassed:** the rows go grey and the widget says **OFF** (where there is room for the word).
 
 ## 7. Factory presets
 
@@ -284,3 +331,5 @@ Yes, with the pedalboard, your saved presets and the snapshots. It is not in the
 
 Kill Switch is mono, with one row of steps. Half Mouco is stereo, with a row for each side, and it has the endings. They are separate plugins and can
 share a pedalboard.
+
+*This manual is for version 1.0.7 of Half Mouco.*

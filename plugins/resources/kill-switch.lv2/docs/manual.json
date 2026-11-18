@@ -9,17 +9,17 @@
     "3 levels per step"
   ],
   "edition": "User manual · November 2026 edition",
-  "version": "v1.0",
+  "version": "v1.0.15",
   "hero": "../modgui/screenshot.png",
-  "brand": "#2a1d19",
-  "brand2": "#120d0b",
-  "accent": "#b8261c",
-  "accentDark": "#ff8a80",
+  "brand": "#272a31",
+  "brand2": "#0d0e11",
+  "accent": "#b30f2f",
+  "accentDark": "#ff7a8c",
   "colors": [
-    "#ff4a3d",
-    "#ff9f43",
-    "#ffd23d",
-    "#f6ede9"
+    "#e3213f",
+    "#f5f2ea",
+    "#8a877f",
+    "#2b2d34"
   ],
   "links": [
     {

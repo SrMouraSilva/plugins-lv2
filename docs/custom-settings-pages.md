@@ -245,6 +245,17 @@ assignments as a topic of their own:
   | Current preset | Step through the presets with a single control: a knob, or the B+C pair of footswitches. Presets switched off in Cycle are skipped. |
   | Screen pop-ups | Show an alert with the preset name on the device screen whenever it changes. Link each one to a page of the device: it only appears on pages that have one. |
 
+* **Put the assignment next to the control it assigns, when there is one control per tile.** Tetr4 Switch has the small
+  button (the icon alone, 48 px) beside the round button of each preset's card, as Gossiper has it beside each pot: the
+  user finds it where they are already looking, and there is no panel of tiles that repeat the names of the presets. A
+  group of assignments that has no control of its own on the page (Current preset, the pop-ups) stays a panel. Write the
+  buttons in the template (MOD UI finds `[mod-role="input-control-address"]` there) and have the script **move** each one into
+  its card, never create or clone it: a copy is not wired to the assignment dialog.
+* **A device that cannot use a group.** The page can read MOD UI's own `PLATFORM` global (`duo`, `duox`, `dwarf`...), which the
+  template cannot: Mustache gets no data about the device. Disable what the device cannot do and say why where the
+  description was (Tetr4 Switch on the MOD Duo, which has no widgets on its screen: the pop-up tiles are `disabled` and a
+  note replaces the text). Do it only for a device you know lacks the feature. The preview's **Device** selector
+  sets `PLATFORM`.
 * **Say the catch where it bites.** Pop-ups only show on a device page that has the control addressed; the text above says
   so, instead of leaving the user to wonder why nothing appears.
 * **Use the icon of the device for "assign", not your own.** MOD UI and the MOD Dwarf draw the assignment button
@@ -323,6 +334,7 @@ Use the preview tool (`tools/modgui-preview`, see its README):
 python3 tools/modgui-preview/serve.py        # http://localhost:8000/?plugin=<name>
 ```
 
+* Use the **Device** selector (MOD Dwarf, Duo X, Duo) for whatever the page does differently by device.
 * Open the **Settings page** view and try every **Screen** size, then the **As MOD UI shows it** buttons (phone, phone on
   its side, tablet). Those reproduce the 1024 px page shrunk to the screen, which a plain narrow frame cannot, and
   are the ones that matter for section 4.

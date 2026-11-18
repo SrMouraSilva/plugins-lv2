@@ -17,19 +17,26 @@ every request, so edit `plugins/resources/<plugin>.lv2/modgui/*` and reload. Onl
   (`<plugin>.ttl`, `presets.ttl`, `modgui.ttl`), so a new plugin needs no change here
 * **View**: the plugin on the pedalboard, or its settings page, if it has its own (`modgui:settingsTemplate`).
   Plugins without one use the generic settings window of MOD UI, which is not previewed
+* **Manual**: the plugin's HTML manual (`modgui:documentation`, `modgui/manual.html`), in the same frame, so you can see it at
+  the widths of the Screen and As MOD UI shows it buttons. The arrow beside it opens it in a tab of its own, which is how
+  MOD UI shows it. The button is disabled for a plugin without a manual (`?view=manual` also picks it). Rebuild it with
+  `tools/manual/build_manual_html.py` and reload
 * **Screen**: the page is rendered inside a frame of that width, so a responsive layout can be checked
 * **As MOD UI shows it**: a phone, a phone on its side or a tablet the way MOD UI really appears on it. MOD UI's page has
   no `<meta name="viewport">` and its body is at least 1024px wide, so a touch device lays it out ~1024px wide and
   shrinks it to the screen; `@media` queries on the viewport then never match. The frame is drawn 1024px wide, scaled
   to the screen, and told it is a touch screen of that size (`screen.width`, `pointer: coarse`): what the Screen buttons
   (a plain narrow frame) cannot show. Hept7's settings page measures itself instead of using media queries
+* **Device**: MOD Dwarf, Duo X or Duo (also `?platform=dwarf|duox|duo` in the address of the page). It sets the `PLATFORM` global that MOD UI defines from the hardware descriptor of the
+  device (`dwarf` by default). A modgui script can tell the devices apart by it: Tetr4 Switch disables
+  its screen pop-up tiles on `duo`
 * **Preset**: starts the interface with the values of a factory preset
 * **Ports**: change a control port as the host would (a footswitch, a knob, MIDI...), to see how the interface
   reacts, for instance the display of Hept7 Switch announcing a change of preset (filter `selector`, tick one)
 
 * **Host answers after**: for plugins with `Preset_selector_N` ports the frame also simulates MOD UI and the plugin: it
   sends nothing when a port already has that value (as `setPortValue` does), and answers after the chosen delay by
-  turning the previous selector off, the new one on and moving `Preset_combobox`, leaving out, as mod-host does, the
+  turning the previous selector off, the new one on and (Tetr4 Switch, where it is an enumeration) moving `Preset_combobox`, leaving out, as mod-host does, the
   port the change came through (the host already holds that value). It reproduces races that a script's instant
   `.click()` never shows. `scenarios.html` runs eight of them (quick clicks, a dropped click, a change from
   outside...) at several delays and says which pass; `scenarios.html?run=1&latency=400` runs them at once and puts
