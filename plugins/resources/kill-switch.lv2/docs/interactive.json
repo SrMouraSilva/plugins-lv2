@@ -1,0 +1,809 @@
+{
+  "areas": [
+    {
+      "id": "gear",
+      "view": "pedalboard",
+      "select": ".mod-actions .mod-settings",
+      "title": "The gear (MOD UI)",
+      "text": "MOD UI puts this gear above every plugin. It opens the **settings page**, the same one that **Edit** opens.",
+      "chip": "Gear",
+      "kicker": "On the pedalboard",
+      "links": [
+        {
+          "label": "Your own pattern",
+          "href": "#your-own-pattern"
+        }
+      ]
+    },
+    {
+      "id": "mono",
+      "view": "pedalboard",
+      "select": ".ks-mono",
+      "title": "Mono",
+      "text": "**On:** the left input feeds both sides, which is what you want from a single guitar (the plain kill switch). **Off:** each side has its own input, for a stereo source.",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "edit",
+      "view": "pedalboard",
+      "select": ".ks-open",
+      "title": "Edit",
+      "text": "Opens the settings page: everything on the plugin with more room, the steps of your own pattern and the controls to assign.",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "state",
+      "view": "pedalboard",
+      "select": ".ks-state",
+      "title": "On / Off",
+      "text": "Says whether the effect is on. It follows **Kill**.",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "arrows",
+      "view": "pedalboard",
+      "select": ".ks-prev, .ks-next",
+      "title": "Previous / next",
+      "text": "Choose the pattern (or, in Endings, the ending). The arrows go round. In Patterns the last one is **Custom**, the one you write.",
+      "chip": "Arrows",
+      "kicker": "On the pedalboard",
+      "links": [
+        {
+          "label": "The patterns",
+          "href": "#the-patterns"
+        }
+      ]
+    },
+    {
+      "id": "name",
+      "view": "pedalboard",
+      "select": ".ks-pattern-name",
+      "title": "The name",
+      "text": "The pattern or the ending that plays.",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "lane",
+      "view": "pedalboard",
+      "select": ".ks-lane",
+      "title": "The {side} side",
+      "text": "**Left (white) and right (red)** each have their own row. In **Patterns**, a bright square lets the signal through, a dark one cuts it, a darker colour is the middle level; a pattern shorter than sixteen steps is repeated, dimmer. In **Endings**, the whole ending along its time. The rows go dim while Kill is off.",
+      "chip": "L and R rows",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "tempo",
+      "view": "pedalboard",
+      "select": ".ks-bpm-down, .ks-bpm-up, .ks-bpm",
+      "title": "Tempo",
+      "text": "From 40 to 240 BPM. **Hold** a button to keep going. Endings use it too: their length is counted in beats.",
+      "chip": "Tempo",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "speed",
+      "view": "pedalboard",
+      "select": ".ks-segment",
+      "title": "Speed",
+      "text": "½x, 1x, 2x or 4x: multiplies the speed of the pattern without changing the tempo (Patterns only).",
+      "chip": "Speed",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "length",
+      "view": "pedalboard",
+      "select": ".ks-length-down, .ks-length-up, .ks-length-value",
+      "title": "Length of the ending",
+      "text": "How long the ending lasts, in beats, from 2 to 32. At 120 BPM, 8 beats are 4 seconds (Endings only).",
+      "chip": "Length",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "depth",
+      "view": "pedalboard",
+      "select": ".ks-depth-input, .ks-depth-value",
+      "title": "Depth",
+      "text": "From 0% to 100%: how much of the signal a cut removes. **100% is silence**; lower values only dip the level.",
+      "chip": "Depth",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "edge",
+      "view": "pedalboard",
+      "select": ".ks-edge-input, .ks-edge-value",
+      "title": "Edge",
+      "text": "From 0.1 ms to 20 ms, on a logarithmic scale: how long a cut takes to close and to open again. Short is a hard chop, long a soft swell.",
+      "chip": "Edge",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "mode",
+      "view": "pedalboard",
+      "select": ".ks-mode",
+      "title": "Patterns / Endings",
+      "text": "The family that plays. **Patterns** loop for as long as the effect is on; **Endings** play once when you switch it on and finish in silence.",
+      "chip": "Patterns / Endings",
+      "kicker": "On the pedalboard",
+      "links": [
+        {
+          "label": "The endings",
+          "href": "#the-endings"
+        }
+      ]
+    },
+    {
+      "id": "foot",
+      "view": "pedalboard",
+      "select": ".ks-foot, .ks-led, .ks-foot-label",
+      "title": "Kill (the footswitch)",
+      "text": "Turns the effect on. A pattern **starts again from its first step**, and an ending **from its beginning**, every time Kill goes from off to on. The ring and the light are red while it is on. A device footswitch assigned to Kill is **momentary** by default: it chops only while you hold it.",
+      "chip": "Kill",
+      "kicker": "On the pedalboard",
+      "links": [
+        {
+          "label": "Playing it live",
+          "href": "#playing-it-live"
+        }
+      ]
+    },
+    {
+      "id": "in",
+      "view": "pedalboard",
+      "select": ".mod-input[mod-role=\"input-audio-port\"]",
+      "title": "{title}",
+      "text": "An audio input. One pair for the two sides: with **Mono** on, the left one feeds both.",
+      "chip": "Audio inputs",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "out",
+      "view": "pedalboard",
+      "select": ".mod-output[mod-role=\"output-audio-port\"]",
+      "title": "{title}",
+      "text": "An audio output, one for each side.",
+      "chip": "Audio outputs",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "s-close",
+      "view": "settings",
+      "select": ".kss-close",
+      "title": "Close",
+      "text": "Goes back to the pedalboard.",
+      "kicker": "Settings page"
+    },
+    {
+      "id": "s-mono",
+      "view": "settings",
+      "select": ".kss-monopill",
+      "title": "Mono",
+      "text": "The same **Mono** as on the pedal, with the small button that assigns it to a footswitch of the device.",
+      "kicker": "Settings page"
+    },
+    {
+      "id": "s-power",
+      "view": "settings",
+      "select": ".kss-onoff",
+      "title": "Kill",
+      "text": "Turns the effect on or off, like the footswitch of the pedal. The small button beside it assigns **Kill** to a footswitch of the device: it comes as **Momentary**, so the effect is on only while you hold it. Choose **Toggle** in the dialog to turn it on and off with each press.",
+      "chip": "Kill",
+      "kicker": "Settings page",
+      "links": [
+        {
+          "label": "Playing it live",
+          "href": "#playing-it-live"
+        }
+      ]
+    },
+    {
+      "id": "s-nav",
+      "view": "settings",
+      "select": ".kss-nav",
+      "title": "Pages",
+      "text": "The page never scrolls up and down: what does not fit goes on another page to the right. The **arrows** and the **dots** change the page, and on a touch screen you can also **swipe**.",
+      "kicker": "Settings page"
+    },
+    {
+      "id": "s-glance",
+      "view": "settings",
+      "select": ".kss-glance",
+      "title": "What plays",
+      "text": "A small strip, on every page, with the name of what plays and its two rows. It is only to look at.",
+      "kicker": "Settings page"
+    },
+    {
+      "id": "s-modes",
+      "view": "settings",
+      "select": ".kss-modepill",
+      "title": "Patterns / Endings",
+      "text": "Chooses the family. The small button assigns **Mode** to a footswitch: patterns for the song, endings for its last bar.",
+      "kicker": "Settings page · What plays"
+    },
+    {
+      "id": "s-choice",
+      "view": "settings",
+      "select": ".kss-choice, .kss-pick",
+      "title": "Pick what plays",
+      "text": "Every pattern (or ending) at hand, to pick with one tap. On a small screen they come one at a time, with the arrows on each side of the name.",
+      "chip": "Choice",
+      "kicker": "Settings page · What plays",
+      "links": [
+        {
+          "label": "The patterns",
+          "href": "#the-patterns"
+        }
+      ]
+    },
+    {
+      "id": "s-assign-pick",
+      "view": "settings",
+      "select": ".kss-assign-pattern, .kss-assign-ending",
+      "title": "Assign Pattern / Ending",
+      "text": "Assigns the one that matches what plays to a knob, or to a footswitch that goes through them.",
+      "kicker": "Settings page · What plays"
+    },
+    {
+      "id": "s-cell",
+      "view": "settings",
+      "select": ".kss-cell",
+      "title": "A step ({side})",
+      "text": "Each LED is a step of one side: **dark** cuts, **half lit** is the middle level, **fully lit** lets the signal through. On **Custom**, a tap goes to the next level, round and round. On a built-in pattern it asks first whether to make your own pattern from it. The number is brighter where a beat begins; outlines are the pattern coming round again.",
+      "chip": "Steps (LEDs)",
+      "kicker": "Settings page · What plays",
+      "links": [
+        {
+          "label": "Your own pattern",
+          "href": "#your-own-pattern"
+        }
+      ]
+    },
+    {
+      "id": "s-custom",
+      "view": "settings",
+      "select": ".kss-length-down, .kss-length-up, .kss-length, .kss-beat-down, .kss-beat-up, .kss-beat",
+      "title": "Length and steps per beat",
+      "text": "Only while **Custom** plays. **Length** is how many steps it has, from 1 to 16, the same for both sides. **Steps per beat**, from 1 to 8: with 2 a step is an eighth note, 4 a sixteenth, 3 a triplet.",
+      "chip": "Length / steps per beat",
+      "kicker": "Settings page · What plays"
+    },
+    {
+      "id": "s-tempo",
+      "view": "settings",
+      "select": ".kss-tempo",
+      "title": "Tempo",
+      "text": "With its buttons and a slider, from 40 to 240 BPM. The small button assigns it to a knob or an expression pedal.",
+      "chip": "Tempo",
+      "kicker": "Settings page · Tempo and feel"
+    },
+    {
+      "id": "s-speed",
+      "view": "settings",
+      "select": ".kss-speed",
+      "title": "Speed",
+      "text": "½x, 1x, 2x or 4x (Patterns). Assign it to a footswitch: hold it for double speed, let go for normal.",
+      "chip": "Speed",
+      "kicker": "Settings page · Tempo and feel"
+    },
+    {
+      "id": "s-length",
+      "view": "settings",
+      "select": ".kss-length-knob",
+      "title": "Length of the ending",
+      "text": "From 2 to 32 beats (Endings).",
+      "chip": "Length",
+      "kicker": "Settings page · Tempo and feel"
+    },
+    {
+      "id": "s-depth",
+      "view": "settings",
+      "select": ".kss-depth",
+      "title": "Depth",
+      "text": "How much of the signal a cut removes: **100% is silence**, lower values only dip the level. Assign it to a knob or an expression pedal: from a gentle tremolo to a full cut.",
+      "chip": "Depth",
+      "kicker": "Settings page · Tempo and feel"
+    },
+    {
+      "id": "s-edge",
+      "view": "settings",
+      "select": ".kss-edge",
+      "title": "Edge",
+      "text": "How long a cut takes to close and to open: a hard, percussive chop at one end, a soft swell at the other.",
+      "chip": "Edge",
+      "kicker": "Settings page · Tempo and feel"
+    },
+    {
+      "id": "s-presets",
+      "view": "settings",
+      "select": ".mod-presets",
+      "title": "Saved presets",
+      "text": "The **factory** presets and your own. Each sets the mode, the pattern, the ending, the tempo, the speed, the length, the depth and the edge. Kill, Mono and your custom pattern are not part of a preset.",
+      "chip": "Saved presets",
+      "kicker": "Settings page",
+      "links": [
+        {
+          "label": "Factory presets",
+          "href": "#factory-presets"
+        }
+      ]
+    },
+    {
+      "id": "s-modal",
+      "view": "settings",
+      "select": ".kss-modal",
+      "title": "Make your own pattern?",
+      "text": "A built-in pattern cannot be changed, so a tap on one of its steps asks. **Define custom pattern** makes it **Custom**, starting as a copy of the pattern you were on; **Not now** leaves everything as it was.",
+      "kicker": "Settings page"
+    }
+  ],
+  "tours": [
+    {
+      "id": "chop",
+      "title": "Chop your signal",
+      "summary": "Turn it on, pick a pattern, set the speed, the tempo and the feel.",
+      "steps": [
+        {
+          "title": "What plays",
+          "text": "The name of the pattern and, under it, a row for the **L**eft side (white) and one for the **R**ight (red). A bright square lets the signal through, a dark one cuts it. This one is *Chop 8ths*: the same row on both sides.",
+          "view": "pedalboard",
+          "ring": ".ks-display"
+        },
+        {
+          "title": "Turn it on",
+          "text": "Tap the footswitch and the light over it turns red. The pattern starts from its **first step** and loops for as long as Kill is on: play a note and it is chopped at once.",
+          "ring": ".ks-foot",
+          "do": [
+            {
+              "tap": ".ks-foot"
+            }
+          ]
+        },
+        {
+          "title": "Choose a pattern",
+          "text": "The arrows on each side of the name go round the patterns. Here, *Chop 16ths*: the same chop at twice the note value.",
+          "ring": ".ks-next",
+          "do": [
+            {
+              "tap": ".ks-next"
+            }
+          ]
+        },
+        {
+          "title": "Speed",
+          "text": "½x, 1x, 2x or 4x multiplies the speed of the pattern **without changing the tempo**.",
+          "ring": ".ks-segment[data-speed=\"2\"]",
+          "do": [
+            {
+              "tap": ".ks-segment[data-speed=\"2\"]"
+            }
+          ]
+        },
+        {
+          "title": "Tempo",
+          "text": "**−** and **+** change the tempo, from 40 to 240 BPM. Hold one to keep going.",
+          "ring": ".ks-bpm-up",
+          "do": [
+            {
+              "tap": ".ks-bpm-up",
+              "times": 10
+            }
+          ]
+        },
+        {
+          "title": "Depth",
+          "text": "How much of the signal a cut removes. At **100%** a cut is silence; here, 50%, it only dips the level: from a full chop to a gentle tremolo.",
+          "ring": ".ks-depth-input",
+          "do": [
+            {
+              "set": ".ks-depth-input",
+              "value": 50
+            }
+          ]
+        },
+        {
+          "title": "Edge",
+          "text": "How long a cut takes to close and to open. Short is a hard, percussive chop; turned up, a soft swell.",
+          "ring": ".ks-edge-input",
+          "do": [
+            {
+              "set": ".ks-edge-input",
+              "value": 850
+            }
+          ]
+        },
+        {
+          "title": "Back to clean",
+          "text": "Tap the footswitch again: the signal passes clean. On a device, a footswitch assigned to Kill is **momentary**, so it chops only while you hold it.",
+          "ring": ".ks-foot",
+          "do": [
+            {
+              "tap": ".ks-foot"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stereo",
+      "title": "A different row for each side",
+      "summary": "Ping-pong from ear to ear, and one ear chopped while the other stays.",
+      "steps": [
+        {
+          "title": "Two rows",
+          "text": "The left and the right side each have a row of steps of their own. The first ten patterns have the same row on both sides: the plain kill switch.",
+          "view": "pedalboard",
+          "ring": ".ks-display"
+        },
+        {
+          "title": "Turn it on",
+          "text": "Tap the footswitch.",
+          "ring": ".ks-foot",
+          "do": [
+            {
+              "tap": ".ks-foot"
+            }
+          ]
+        },
+        {
+          "title": "A pattern with a row for each side",
+          "text": "Patterns 11 to 19 have a **different row for each side**. Here *Ping-pong 8ths*: the left side lets the signal through on one step and the right side on the next, like a ping-pong from ear to ear.",
+          "ring": ".ks-next",
+          "do": [
+            {
+              "tap": ".ks-next",
+              "times": 10
+            }
+          ]
+        },
+        {
+          "title": "Half deaf",
+          "text": "Three more arrows: *Half deaf: left* chops the left side while the right one stays open: one ear chopped, the other not.",
+          "ring": ".ks-next",
+          "do": [
+            {
+              "tap": ".ks-next",
+              "times": 3
+            }
+          ]
+        },
+        {
+          "title": "Mono or stereo",
+          "text": "With **Mono** on, the left input feeds both sides: what you want from a single guitar. For a ping-pong you want a **stereo** source (a stereo pedal before it, an amp with a stereo send), so leave Mono off.",
+          "ring": ".ks-mono",
+          "do": [
+            {
+              "tap": ".ks-mono"
+            }
+          ]
+        },
+        {
+          "title": "Back to clean",
+          "text": "Turn it off again.",
+          "ring": ".ks-foot",
+          "do": [
+            {
+              "tap": ".ks-foot"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "endings",
+      "title": "An ending for the last chord",
+      "summary": "A bouncing ball, a helicopter that lands, a stutter that dies away.",
+      "steps": [
+        {
+          "title": "Endings",
+          "text": "Besides the patterns that loop, there are **endings** for the end of a song: they play **once** when you switch the effect on and finish in silence. Tap **Endings**.",
+          "view": "pedalboard",
+          "ring": ".ks-mode[data-mode=\"1\"]",
+          "do": [
+            {
+              "tap": ".ks-mode[data-mode=\"1\"]"
+            }
+          ]
+        },
+        {
+          "title": "Choose one",
+          "text": "The arrows now go through the five endings. Here, *Helicopter*: the blades go to one side, then the other, with the gap growing while the sound fades, like a helicopter landing. The rows draw the whole ending along its time.",
+          "ring": ".ks-next",
+          "do": [
+            {
+              "tap": ".ks-next"
+            }
+          ]
+        },
+        {
+          "title": "How long it lasts",
+          "text": "**Length** is counted in beats: with the tempo, it is how long the ending lasts. At 120 BPM, 8 beats are 4 seconds.",
+          "ring": ".ks-length-up",
+          "do": [
+            {
+              "tap": ".ks-length-up",
+              "times": 4
+            }
+          ]
+        },
+        {
+          "title": "Play it",
+          "text": "Tap the footswitch as the last chord rings: the ending plays once, from its start, and then **everything is cut**.",
+          "ring": ".ks-foot",
+          "do": [
+            {
+              "tap": ".ks-foot"
+            }
+          ]
+        },
+        {
+          "title": "Play it again",
+          "text": "To hear it again, switch the effect off and on. Changing the ending while it is on starts the new one from its beginning.",
+          "ring": ".ks-foot",
+          "do": [
+            {
+              "tap": ".ks-foot"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "custom",
+      "title": "Write your own pattern",
+      "summary": "Start from a built-in pattern and change its steps.",
+      "steps": [
+        {
+          "title": "Open the settings page",
+          "text": "Tap **Edit**. The settings page has everything the plugin has, with more room.",
+          "view": "pedalboard",
+          "ring": ".ks-open",
+          "do": [
+            {
+              "tap": ".ks-open"
+            }
+          ]
+        },
+        {
+          "title": "Pick a pattern to start from",
+          "text": "Choose *Triplet pong*, a pattern with a row for each side.",
+          "view": "settings",
+          "ring": ".kss-choices",
+          "do": [
+            {
+              "tap": ".kss-choice[data-index=\"12\"]",
+              "or": [
+                {
+                  "tap": ".kss-pick-next",
+                  "times": 12
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Tap one of its steps",
+          "text": "A built-in pattern cannot be changed, so the plugin asks first.",
+          "ring": ".kss-cell[data-side=\"r\"][data-step=\"1\"]",
+          "do": [
+            {
+              "tap": ".kss-cell[data-side=\"r\"][data-step=\"1\"]"
+            }
+          ]
+        },
+        {
+          "title": "Define custom pattern",
+          "text": "**Define custom pattern** makes it **Custom**: a copy of what you were on, with its length and steps per beat. (**Not now** leaves everything as it was.)",
+          "ring": ".kss-modal-ok",
+          "do": [
+            {
+              "wait": 500
+            },
+            {
+              "tap": ".kss-modal-ok"
+            }
+          ]
+        },
+        {
+          "title": "Tap the steps",
+          "text": "A tap goes to the next level, round and round: **cut**, **half**, **pass**. Tap a step of the left row, then one of the right row.",
+          "ring": ".kss-cell[data-side=\"l\"][data-step=\"0\"]",
+          "do": [
+            {
+              "tap": ".kss-cell[data-side=\"l\"][data-step=\"0\"]",
+              "times": 2
+            },
+            {
+              "tap": ".kss-cell[data-side=\"r\"][data-step=\"3\"]"
+            }
+          ]
+        },
+        {
+          "title": "Length and steps per beat",
+          "text": "**Length**, from 1 to 16 steps, and **steps per beat**: with 2 a step is an eighth note, 4 a sixteenth, 3 a triplet.",
+          "ring": ".kss-length-up",
+          "do": [
+            {
+              "tap": ".kss-length-up",
+              "times": 2
+            },
+            {
+              "tap": ".kss-beat-up"
+            }
+          ]
+        },
+        {
+          "title": "Listen to it",
+          "text": "Your pattern plays as soon as you define it, and it plays while **Custom** is chosen. It is saved with the pedalboard, your presets and snapshots.",
+          "ring": ".kss-power",
+          "do": [
+            {
+              "tap": ".kss-power"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "feel",
+      "title": "Tempo and feel",
+      "summary": "The tempo, the speed, the depth of a cut and its edge.",
+      "steps": [
+        {
+          "title": "Open the settings page",
+          "text": "Tap **Edit**.",
+          "view": "pedalboard",
+          "ring": ".ks-open",
+          "do": [
+            {
+              "tap": ".ks-open"
+            }
+          ]
+        },
+        {
+          "title": "Tempo and feel",
+          "text": "The page with the tempo, the speed (or the length of an ending), the depth and the edge. If it is on another page, the arrows of the top bar take you there.",
+          "view": "settings",
+          "ring": ".kss-sound-panel"
+        },
+        {
+          "title": "Tempo",
+          "text": "Drag the slider (or use the buttons): from 40 to 240 BPM. The small button beside the name assigns it to a knob or an expression pedal.",
+          "ring": ".kss-bpm-input",
+          "do": [
+            {
+              "set": ".kss-bpm-input",
+              "value": 90
+            }
+          ]
+        },
+        {
+          "title": "Depth",
+          "text": "How much of the signal a cut removes. **100% is silence**; 50% only dips the level. Assign it to a knob or an expression pedal for anything from a gentle tremolo to a full cut.",
+          "ring": ".kss-depth-input",
+          "do": [
+            {
+              "set": ".kss-depth-input",
+              "value": 50
+            }
+          ]
+        },
+        {
+          "title": "Edge",
+          "text": "How long a cut takes to close and to open: a hard, percussive chop at one end, a soft swell at the other.",
+          "ring": ".kss-edge-input",
+          "do": [
+            {
+              "set": ".kss-edge-input",
+              "value": 880
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "foot",
+      "title": "Put it under your foot",
+      "summary": "Assign Kill, the pattern and the tempo to controls of the device.",
+      "steps": [
+        {
+          "title": "Open the settings page",
+          "text": "Tap **Edit**.",
+          "view": "pedalboard",
+          "ring": ".ks-open",
+          "do": [
+            {
+              "tap": ".ks-open"
+            }
+          ]
+        },
+        {
+          "title": "Assign Kill",
+          "text": "The small button beside **Kill** in the top bar assigns it to a **footswitch** of the device. MOD UI opens its own assignment dialog (drawn here in a simplified way).",
+          "view": "settings",
+          "ring": "[mod-port-symbol=\"kill\"]",
+          "do": [
+            {
+              "tap": "[mod-port-symbol=\"kill\"]"
+            }
+          ]
+        },
+        {
+          "title": "Momentary",
+          "text": "Confirm. The dialog comes with **Momentary** already chosen: the effect is on only while you hold the footswitch, like the kill switch of a guitar. Choose **Toggle** to turn it on and off with each press.",
+          "ring": ".ix-ok",
+          "do": [
+            {
+              "wait": 500
+            },
+            {
+              "tap": ".ix-ok"
+            }
+          ]
+        },
+        {
+          "title": "Assign the pattern",
+          "text": "The button beside the name assigns **Pattern** (or **Ending**, whichever plays) to a knob, or to a footswitch that goes through them.",
+          "ring": ".kss-assign-pattern",
+          "do": [
+            {
+              "tap": ".kss-assign-pattern"
+            },
+            {
+              "wait": 400
+            },
+            {
+              "tap": ".ix-ok"
+            }
+          ]
+        },
+        {
+          "title": "Everything can be assigned",
+          "text": "Next to each control there is a small button: **Mono**, **Mode**, **Tempo**, **Speed**, **Length**, **Depth** and **Edge** too.",
+          "ring": "[mod-port-symbol=\"bpm\"]",
+          "do": [
+            {
+              "tap": "[mod-port-symbol=\"bpm\"]"
+            },
+            {
+              "wait": 400
+            },
+            {
+              "tap": ".ix-ok"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "preset",
+      "title": "Load a factory preset",
+      "summary": "Pick a ready-made sound and see everything change.",
+      "steps": [
+        {
+          "title": "Saved presets",
+          "text": "The settings page lists the **factory presets**. Each sets the mode, the pattern or the ending, the tempo, the speed, the length, the depth and the edge.",
+          "view": "settings",
+          "ring": ".mod-presets"
+        },
+        {
+          "title": "Pick one",
+          "text": "Choose **Killing in the Name - solo chop**: a pattern in the style of that song's guitar part, at about its tempo.",
+          "ring": {
+            "select": ".mod-preset-factory [mod-role=\"enumeration-option\"]",
+            "has": "Killing in the Name"
+          },
+          "do": [
+            {
+              "tap": ".mod-preset-factory [mod-role=\"enumeration-option\"]",
+              "has": "Killing in the Name"
+            }
+          ]
+        },
+        {
+          "title": "Everything changed",
+          "text": "The pattern, the tempo (89 BPM) and the rest were set at once; the strip under the top bar shows what plays. Kill, Mono and your own pattern are not touched by a preset.",
+          "ring": ".kss-glance"
+        }
+      ]
+    }
+  ]
+}

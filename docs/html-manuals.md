@@ -164,6 +164,18 @@ Raw HTML, with the position of each pin in percent of the picture. Describe the 
 </figure>
 ```
 
+### A picture of a pedalboard
+
+A card made of a picture and a link (not a video) sits on the **dark, dotted board** of the interactive section, so give it a picture with a **transparent
+background**. The MOD pedalboards site serves one: `https://api.mod.audio/v2/pedalboards/<id>/screenshot` is a PNG with transparency (the `/preview` of the same
+address is a JPEG with a white background: do not use it). Scale it down and convert it to WebP, which keeps the transparency:
+`python3 tools/media/to_webp.py --width 1600 example-pedalboard.png`.
+
+### The plugin inside the manual
+
+A manual can also hold one section in which the plugin itself is loaded, to tap and to follow in guided tours: a fenced block
+` ```interactive ` (empty, at the left margin) plus `docs/interactive.json`. It is its own guide: [interactive-manuals.md](./interactive-manuals.md).
+
 ## 6. Pictures for the steps
 
 A step is much easier to follow with a picture of what to tap. `tools/media/shots.mjs` takes them from the modgui preview

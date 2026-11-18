@@ -7,6 +7,7 @@ Converts PNG pictures to WebP (several times lighter, and the transparency is ke
 
     python3 tools/media/to_webp.py FILE.png ...              # lossy, quality 90: screenshots and photos
     python3 tools/media/to_webp.py --lossless FILE.png ...   # exact pixels: drawings with flat colours and sharp text
+    python3 tools/media/to_webp.py --width 1600 FILE.png     # also scale a bigger picture down to this width (a 2x picture of a card is enough)
     python3 tools/media/to_webp.py --docs                    # every PNG of plugins/resources/*.lv2/docs
 
 The PNG is removed once the WebP is written (use --keep to leave it), and the Markdown that mentions it is rewritten
@@ -21,9 +22,11 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parent.parent.parent
 
 
-def convert(path: Path, lossless: bool, keep: bool) -> None:
+def convert(path: Path, lossless: bool, keep: bool, width: int = 0) -> None:
     out = path.with_suffix(".webp")
     image = Image.open(path)
+    if width and image.width > width:
+        image = image.resize((width, round(image.height * width / image.width)), Image.LANCZOS)
     image.save(out, "WEBP", lossless=lossless, quality=100 if lossless else 90, method=6)
     print(f"{path.relative_to(ROOT)}: {path.stat().st_size // 1024} KB -> {out.stat().st_size // 1024} KB")
 
@@ -44,13 +47,14 @@ def main() -> None:
     parser.add_argument("--lossless", action="store_true")
     parser.add_argument("--keep", action="store_true")
     parser.add_argument("--docs", action="store_true")
+    parser.add_argument("--width", type=int, default=0, help="scale a wider picture down to this width")
     args = parser.parse_args()
 
     files = [f.resolve() for f in args.files]
     if args.docs:
         files += sorted((ROOT / "plugins" / "resources").glob("*.lv2/docs/**/*.png"))
     for path in files:
-        convert(path, args.lossless, args.keep)
+        convert(path, args.lossless, args.keep, args.width)
 
 
 if __name__ == "__main__":

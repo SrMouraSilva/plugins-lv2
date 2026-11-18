@@ -1,0 +1,538 @@
+{
+  "meters": {
+    "select": ".mod-output[mod-role=\"output-cv-port\"]",
+    "on": "Preset_{active}_output_{n}",
+    "volts": 10
+  },
+  "midi": {
+    "select": ".mod-output[mod-role=\"output-midi-port\"]",
+    "count": 4,
+    "channel": "MIDI_channel",
+    "changesOnly": "MIDI_changes_only",
+    "cc": "MIDI_CC_{n}",
+    "on": "Preset_{active}_output_{n}"
+  },
+  "areas": [
+    {
+      "id": "gear",
+      "view": "pedalboard",
+      "select": ".mod-actions .mod-settings",
+      "title": "The gear (MOD UI)",
+      "chip": "Gear",
+      "kicker": "On the pedalboard",
+      "text": "MOD UI puts this gear above every plugin. It opens the **settings page** of Tetr4 Switch, the same page that **Edit scenes** opens.",
+      "links": [
+        {
+          "label": "The settings page",
+          "href": "#the-settings-page"
+        }
+      ]
+    },
+    {
+      "id": "edit",
+      "view": "pedalboard",
+      "select": ".t4-open",
+      "title": "Edit scenes",
+      "kicker": "On the pedalboard",
+      "text": "Opens the settings page: big switches made for touch, the hardware assignments, the MIDI out and the saved presets."
+    },
+    {
+      "id": "dip",
+      "view": "pedalboard",
+      "select": ".t4-dip",
+      "title": "DIP switch {output} of Config {preset}",
+      "chip": "DIP switches",
+      "kicker": "On the pedalboard",
+      "text": "One switch is one **CV output**. **Up** = CV output {output} sends 10 V (on) while preset {preset} is active; **down** = 0 V (off).\n\nIf you change a switch of the active preset, the output follows right away."
+    },
+    {
+      "id": "bank",
+      "view": "pedalboard",
+      "select": ".t4-bank",
+      "title": "Config bank",
+      "chip": "Config banks",
+      "kicker": "On the pedalboard",
+      "text": "One bank of four switches per preset: Config 1 belongs to Preset 1, Config 2 to Preset 2, and so on. The bank of the **active** preset glows in the colour of the preset; the others are dimmed but stay editable."
+    },
+    {
+      "id": "foot",
+      "view": "pedalboard",
+      "select": ".t4-foot",
+      "title": "Footswitch of preset {preset}",
+      "chip": "Footswitches",
+      "kicker": "On the pedalboard",
+      "text": "Selects preset {preset}: all four outputs jump to the pattern of its Config bank. The footswitches work like **radio buttons**, so only one preset is active. The ring is the LED of the preset and only the cap goes down when pressed. Tapping the active preset does nothing."
+    },
+    {
+      "id": "name",
+      "view": "pedalboard",
+      "select": ".t4-name",
+      "title": "Name of preset {preset}",
+      "chip": "Preset names",
+      "kicker": "On the pedalboard",
+      "text": "Tap and type a name that says what the scene does (\"Clean\", \"Lead\"). Up to 15 characters. The name is saved with the pedalboard and is also shown on the device (a footswitch label, the pop-up and the display widget)."
+    },
+    {
+      "id": "cv",
+      "view": "pedalboard",
+      "select": ".mod-output[mod-role=\"output-cv-port\"]",
+      "title": "{title}",
+      "chip": "CV outputs",
+      "kicker": "On the pedalboard",
+      "text": "A **control-voltage** output: **10 V** when its DIP switch is up in the active preset, **0 V** when it is down. The small box beside each jack (added by this manual; the real plugin does not draw it) shows which one it is right now. In MOD UI, use **Manage CV ports** and pair the output with the on/off (bypass) of any plugin; one output can feed as many plugins as you like."
+    },
+    {
+      "id": "midi",
+      "view": "pedalboard",
+      "select": ".mod-output[mod-role=\"output-midi-port\"]",
+      "title": "MIDI out",
+      "chip": "MIDI out",
+      "kicker": "On the pedalboard",
+      "text": "The fifth jack. When the preset **changes** it sends one MIDI control change for each output, in order: **127** if the output is on in the new preset, **0** if it is off. The box beside it (added by this manual; the real plugin does not draw it) lists the messages as they would go out. Set the channel and the numbers on the settings page.",
+      "links": [
+        {
+          "label": "MIDI out",
+          "href": "#midi-out"
+        }
+      ]
+    },
+    {
+      "id": "s-close",
+      "view": "settings",
+      "select": ".t4s-close",
+      "title": "Close",
+      "kicker": "Settings page",
+      "text": "Goes back to the pedalboard. On the real device the window of the settings is a layer over the pedalboard."
+    },
+    {
+      "id": "s-nav",
+      "view": "settings",
+      "select": ".t4s-nav",
+      "title": "Pages",
+      "kicker": "Settings page",
+      "text": "The page never scrolls up and down: what does not fit goes on another page to the right. The **arrows** and the **dots** change the page, and on a touch screen you can also **swipe**. A large screen shows everything at once."
+    },
+    {
+      "id": "s-now",
+      "view": "settings",
+      "select": ".t4s-now",
+      "title": "Preset playing",
+      "kicker": "Settings page",
+      "text": "Which preset is active right now, with its name, wherever it was chosen from: this page, a footswitch, a MIDI controller or a snapshot."
+    },
+    {
+      "id": "s-pad",
+      "view": "settings",
+      "select": ".t4s-pad",
+      "title": "Play preset {preset}",
+      "chip": "Round buttons",
+      "kicker": "Settings page · Scenes",
+      "text": "Plays the preset, like its footswitch on the pedal."
+    },
+    {
+      "id": "s-assign",
+      "view": "settings",
+      "select": ".t4s-card-assign .t4s-address",
+      "title": "Assign preset to a control",
+      "chip": "Assign buttons",
+      "kicker": "Settings page · Scenes",
+      "text": "Assigns the preset to a **footswitch**, a knob or another control of your device. In MOD UI it opens the assignment dialog; once assigned, the button shows a check mark.",
+      "links": [
+        {
+          "label": "Hands-free control",
+          "href": "#hands-free-control"
+        }
+      ]
+    },
+    {
+      "id": "s-label",
+      "view": "settings",
+      "select": ".t4s-label",
+      "title": "Name of preset {preset}",
+      "chip": "Names",
+      "kicker": "Settings page · Scenes",
+      "text": "The name of the scene. It is the same one the pedal shows."
+    },
+    {
+      "id": "s-dip",
+      "view": "settings",
+      "select": ".t4s-dip",
+      "title": "Switch {output} of preset {preset}",
+      "chip": "Switches",
+      "kicker": "Settings page · Scenes",
+      "text": "**Up = on.** The same DIP switch as on the pedal, bigger. The switches of the **active** preset are lit: they are the CV signals that are really leaving the plugin right now."
+    },
+    {
+      "id": "s-current",
+      "view": "settings",
+      "select": ".t4s-hw-current .t4s-address",
+      "title": "Current preset",
+      "chip": "Current preset",
+      "kicker": "Settings page · Hardware assignment",
+      "text": "A single control that steps through the four presets: a knob, or a footswitch that cycles (B, C or B+C on the Dwarf). The tile says which preset is playing.",
+      "links": [
+        {
+          "label": "Option B",
+          "href": "#hands-free-control"
+        }
+      ]
+    },
+    {
+      "id": "s-notify",
+      "view": "settings",
+      "select": ".t4s-hw-notify .t4s-address",
+      "title": "Screen pop-up ({title})",
+      "chip": "Screen pop-ups",
+      "kicker": "Settings page · Hardware assignment",
+      "text": "Shows an alert with the name of the preset on the device screen whenever it changes. It only appears on a page of the device that has one of these controls. The MOD Duo has no widgets on its screen, so there these tiles are disabled."
+    },
+    {
+      "id": "s-channel",
+      "view": "settings",
+      "select": ".t4s-num[data-symbol=\"MIDI_channel\"]",
+      "title": "MIDI channel",
+      "kicker": "Settings page · MIDI out",
+      "text": "The channel (1 to 16) of the control changes. Tap the number to type, or use the buttons at its sides."
+    },
+    {
+      "id": "s-changes",
+      "view": "settings",
+      "select": ".t4s-switch",
+      "title": "Changes only",
+      "kicker": "Settings page · MIDI out",
+      "text": "**On:** when the preset changes, only the outputs whose value changed are sent. **Off:** every output is sent at every change of preset."
+    },
+    {
+      "id": "s-cc",
+      "view": "settings",
+      "select": ".t4s-num",
+      "title": "CC number of an output",
+      "chip": "CC numbers",
+      "kicker": "Settings page · MIDI out",
+      "text": "The control-change number for this CV output (0 to 127). They start at 20 to 23, numbers with no standard meaning in MIDI. It sends **127** when the output is on in the new preset and **0** when it is off."
+    },
+    {
+      "id": "s-presets",
+      "view": "settings",
+      "select": ".mod-presets",
+      "title": "Saved presets",
+      "kicker": "Settings page",
+      "text": "The **factory** presets (the recipes of the manual) and your own. Choosing one sets every switch and every name at once. Try one here.",
+      "links": [
+        {
+          "label": "Recipes",
+          "href": "#recipes"
+        }
+      ]
+    },
+    {
+      "id": "s-card",
+      "view": "settings",
+      "select": ".t4s-card",
+      "title": "Scene {preset}",
+      "chip": "Scene cards",
+      "kicker": "Settings page · Scenes",
+      "text": "One card per preset: the round button plays it, the small button assigns it, the field is its name and the four switches are its DIP switches. The card of the active preset is highlighted."
+    }
+  ],
+  "tours": [
+    {
+      "id": "two-scenes",
+      "title": "Two scenes: clean and lead",
+      "summary": "Set the DIP switches of two presets and switch between them.",
+      "steps": [
+        {
+          "view": "pedalboard",
+          "title": "Four banks, four outputs",
+          "ring": ".t4-units",
+          "text": "Each **Config bank** is a preset and each **DIP switch** in it is a CV output. At the factory, preset *N* turns on output *N*. We will make a **clean** scene and a **lead** scene (drive + delay)."
+        },
+        {
+          "title": "Config 1: everything off",
+          "ring": ".t4-unit.p1 .t4-bank",
+          "do": [
+            {
+              "tap": ".t4-dip[data-preset=\"1\"][data-output=\"1\"]"
+            }
+          ],
+          "text": "Put switch **1** of Config 1 **down**. In preset 1 every output is now 0 V: your clean scene."
+        },
+        {
+          "title": "Config 2: drive and delay",
+          "ring": ".t4-unit.p2 .t4-bank",
+          "do": [
+            {
+              "tap": ".t4-dip[data-preset=\"2\"][data-output=\"1\"]"
+            }
+          ],
+          "text": "In Config 2 switch **2** is already up. Raise switch **1** too: in preset 2 outputs 1 and 2 are on (10 V), the drive and the delay once you pair them with these outputs."
+        },
+        {
+          "title": "Play the lead scene",
+          "do": [
+            {
+              "tap": ".t4-foot[data-preset=\"2\"]"
+            }
+          ],
+          "text": "Tap the footswitch of **Preset 2**. The bank lights up in the colour of the preset and the outputs jump to its pattern."
+        },
+        {
+          "title": "Back to clean",
+          "do": [
+            {
+              "tap": ".t4-foot[data-preset=\"1\"]"
+            }
+          ],
+          "text": "Tap **Preset 1** and the outputs go back to 0 V. One stomp swaps the whole rig. Next, learn how to [put it under your feet](#hands-free-control)."
+        }
+      ]
+    },
+    {
+      "id": "names",
+      "title": "Name your scenes",
+      "summary": "Rename presets so you pick a scene by its sound.",
+      "steps": [
+        {
+          "view": "pedalboard",
+          "title": "Tap a name",
+          "ring": ".t4-name[data-preset=\"2\"]",
+          "do": [
+            {
+              "type": ".t4-name[data-preset=\"2\"]",
+              "text": "Lead"
+            }
+          ],
+          "text": "Tap the name under a footswitch and type. Up to 15 letters, digits and a few symbols."
+        },
+        {
+          "title": "One more",
+          "do": [
+            {
+              "type": ".t4-name[data-preset=\"1\"]",
+              "text": "Clean"
+            }
+          ],
+          "text": "Name the other scenes too. On stage you choose by sound instead of remembering numbers."
+        },
+        {
+          "title": "The name follows the preset",
+          "do": [
+            {
+              "tap": ".t4-foot[data-preset=\"2\"]"
+            }
+          ],
+          "text": "Select the preset: its name is also what the device shows on the footswitch label, in the pop-up and in the display widget. Names are saved with the pedalboard."
+        },
+        {
+          "title": "Back to the first scene",
+          "do": [
+            {
+              "tap": ".t4-foot[data-preset=\"1\"]"
+            }
+          ],
+          "text": "Done."
+        }
+      ]
+    },
+    {
+      "id": "footswitches",
+      "title": "Put a scene under your feet",
+      "summary": "Assign presets to footswitches from the settings page.",
+      "steps": [
+        {
+          "view": "pedalboard",
+          "title": "Open the settings page",
+          "ring": ".t4-open",
+          "do": [
+            {
+              "tap": ".t4-open"
+            }
+          ],
+          "text": "Tap **Edit scenes** (or the gear above the plugin). The page takes the whole screen and is made for touch."
+        },
+        {
+          "view": "settings",
+          "title": "One card per scene",
+          "ring": ".t4s-card[data-preset=\"1\"]",
+          "text": "Each card has the **round button** that plays the preset, the **small button** beside it that assigns the preset to a control of your device, the name and the four switches."
+        },
+        {
+          "title": "Assign Preset 1",
+          "ring": ".t4s-card[data-preset=\"1\"] .t4s-address",
+          "do": [
+            {
+              "tap": ".t4s-card[data-preset=\"1\"] .t4s-address"
+            }
+          ],
+          "text": "Tap the small button. MOD UI opens its own **assignment dialog** (drawn here in a simplified way)."
+        },
+        {
+          "title": "Choose the footswitch",
+          "ring": ".ix-ok",
+          "do": [
+            {
+              "wait": 500
+            },
+            {
+              "tap": ".ix-ok"
+            }
+          ],
+          "text": "Pick a footswitch of the device and confirm. The button now shows a check mark, and the footswitch LED lights up in the colour of the preset while it is active."
+        },
+        {
+          "title": "Repeat for the others",
+          "do": [
+            {
+              "tap": ".t4s-card[data-preset=\"2\"] .t4s-address"
+            },
+            {
+              "wait": 400
+            },
+            {
+              "tap": ".ix-ok"
+            }
+          ],
+          "text": "Do the same for **Preset 2, 3 and 4**. This is the most hardware-switcher-like setup: one footswitch per scene."
+        },
+        {
+          "title": "Or one footswitch for all",
+          "ring": ".t4s-hw-current .t4s-address",
+          "do": [
+            {
+              "tap": ".t4s-hw-current .t4s-address"
+            },
+            {
+              "wait": 400
+            },
+            {
+              "tap": ".ix-ok"
+            }
+          ],
+          "text": "With few footswitches, assign **Current preset** instead: every press moves to the next preset. The tile also says which preset is playing.",
+          "links": []
+        }
+      ]
+    },
+    {
+      "id": "midi",
+      "title": "Send MIDI when the scene changes",
+      "summary": "Set the channel and the CC numbers of the MIDI out.",
+      "steps": [
+        {
+          "view": "pedalboard",
+          "title": "The MIDI out jack",
+          "ring": ".mod-output[mod-role=\"output-midi-port\"]",
+          "text": "Besides the four CV outputs, the plugin has a **MIDI out** (the fifth jack). Connect it to a MIDI input: the output of your device, a loopback port or a plugin that takes MIDI."
+        },
+        {
+          "title": "Open the settings page",
+          "do": [
+            {
+              "tap": ".mod-actions .mod-settings"
+            }
+          ],
+          "text": "The gear above the plugin opens the settings page. The MIDI out has a panel there."
+        },
+        {
+          "view": "settings",
+          "title": "The MIDI out panel",
+          "ring": ".t4s-midi-panel",
+          "text": "If it is on another page, the arrows of the top bar (or a swipe) take you there. Each time the preset changes, one control change goes out for every CV output."
+        },
+        {
+          "title": "Choose the channel",
+          "ring": ".t4s-num[data-symbol=\"MIDI_channel\"]",
+          "do": [
+            {
+              "tap": ".t4s-num[data-symbol=\"MIDI_channel\"] .t4s-num-step[data-dir=\"1\"]"
+            },
+            {
+              "tap": ".t4s-num[data-symbol=\"MIDI_channel\"] .t4s-num-step[data-dir=\"1\"]"
+            }
+          ],
+          "text": "Use the buttons at the sides of the number (or tap it and type) to pick the channel, from 1 to 16."
+        },
+        {
+          "title": "Choose a CC number",
+          "ring": ".t4s-num[data-symbol=\"MIDI_CC_1\"]",
+          "do": [
+            {
+              "type": ".t4s-num[data-symbol=\"MIDI_CC_1\"] .t4s-num-value",
+              "text": "30"
+            }
+          ],
+          "text": "Each CV output has its own control-change number. They start at 20 to 23, which have no standard meaning in MIDI."
+        },
+        {
+          "title": "Change the preset",
+          "ring": ".t4s-pad[data-preset=\"2\"]",
+          "do": [
+            {
+              "tap": ".t4s-pad[data-preset=\"2\"]"
+            }
+          ],
+          "text": "Tap **Preset 2**. The preset changed, so the plugin sends its messages. With **Changes only** on (the default) the first change sends just the outputs that are on, because every output counts as off (0) until something is sent."
+        },
+        {
+          "view": "pedalboard",
+          "title": "The messages that went out",
+          "ring": ".ix-midi",
+          "text": "The box beside the MIDI jack (drawn by this manual) lists them: one control change, on channel 3, number 21 (output 2), value **127**. Output 1 is off in both presets, so there was nothing new to say about it. Loading a pedalboard sends nothing, and neither does flipping a switch of the active preset."
+        },
+        {
+          "view": "settings",
+          "title": "Send everything",
+          "ring": ".t4s-switch",
+          "do": [
+            {
+              "tap": ".t4s-switch"
+            },
+            {
+              "tap": ".t4s-pad[data-preset=\"1\"]"
+            }
+          ],
+          "text": "Turn **Changes only** off and go back to **Preset 1**: now every output is sent on every change."
+        },
+        {
+          "view": "pedalboard",
+          "title": "All four, in order",
+          "ring": ".ix-midi",
+          "text": "Output 1 first, then 2, 3 and 4: **CC 30 = 127** (on in preset 1) and **0** for the others. Use *changes only* to send less, or turn it off when the receiving device needs to hear every output each time."
+        }
+      ]
+    },
+    {
+      "id": "recipe",
+      "title": "Load a ready-made recipe",
+      "summary": "Use a factory preset and see every switch and name change.",
+      "steps": [
+        {
+          "view": "settings",
+          "title": "Saved presets",
+          "ring": ".mod-presets",
+          "text": "The settings page lists the **factory presets**: the recipes of the manual. Each sets all sixteen switches and the four names at once."
+        },
+        {
+          "title": "Pick a recipe",
+          "ring": {
+            "select": ".mod-preset-factory [mod-role=\"enumeration-option\"]",
+            "has": "Four-scene guitar rig"
+          },
+          "do": [
+            {
+              "tap": ".mod-preset-factory [mod-role=\"enumeration-option\"]",
+              "has": "Four-scene guitar rig"
+            }
+          ],
+          "text": "Choose **Four-scene guitar rig**."
+        },
+        {
+          "title": "Everything changed",
+          "ring": ".t4s-grid",
+          "text": "The scenes are now **Clean, Modulation, Distortion and Solo**, with their own switches. Pair the outputs with your plugins as the recipe says and you have a rig.",
+          "links": []
+        }
+      ]
+    }
+  ]
+}

@@ -46,7 +46,7 @@ You need a pedalboard with an audio input and an output, and a guitar (or any so
     ![Step 6: the Endings tab, and the ending drawn along its time](images/step-endings.webp)
 
 7. **Put it under your foot.** Open the settings (**Edit**) and press the small button beside **Kill** in the top bar to assign it to a device
-   footswitch. The dialog comes with **Momentary** already chosen: the effect is on only while you hold the footswitch ([section 6](#playing-it-live)).
+   footswitch. The dialog comes with **Momentary** already chosen: the effect is on only while you hold the footswitch ([section 7](#playing-it-live)).
 
     ![Step 7: the button beside Kill assigns it to a footswitch of the device](images/step-assign-kill.webp)
 
@@ -59,7 +59,7 @@ You need a pedalboard with an audio input and an output, and a guitar (or any so
 | Item | What it does |
 |---|---|
 | **Patterns / Endings** | The family that plays. The tabs are in the column of the footswitch. |
-| **The arrows and the name** | Choose the pattern (section 3) or, in Endings, the ending (section 4). The arrows go round. In Patterns the last one is **Custom**, the one you write. |
+| **The arrows and the name** | Choose the pattern (section 4) or, in Endings, the ending (section 5). The arrows go round. In Patterns the last one is **Custom**, the one you write. |
 | **The two rows, L and R** | What each side does. In Patterns, a bright square lets the signal through, a dark one cuts it, a darker colour is the middle level; a pattern shorter than sixteen steps is repeated, the first run bright and the repetitions dimmer. In Endings, the whole ending along its time: the brighter the column, the more open the side. They go dim while Kill is off. |
 | **Tempo: − and +** | From 40 to 240 BPM. Hold a button to keep going. Endings use it too: their length is counted in beats. |
 | **Speed** (Patterns) | ½x, 1x, 2x or 4x: multiplies the speed of the pattern without changing the tempo. |
@@ -67,11 +67,25 @@ You need a pedalboard with an audio input and an output, and a guitar (or any so
 | **Depth** | From 0% to 100%: how much of the signal a cut removes. 100% is silence; lower values only dip the level. |
 | **Edge** | From 0.1 ms to 20 ms, on a logarithmic scale: how long a cut takes to close and to open again. |
 | **Mono** | On: the left input feeds both sides. Off: each side has its own input. |
-| **Edit** | Opens the settings page: everything on the plugin with more room, the steps of your own pattern and the controls to assign (section 5). |
+| **Edit** | Opens the settings page: everything on the plugin with more room, the steps of your own pattern and the controls to assign (section 6). |
 | **The footswitch and its light** | **Kill**. The ring and the light above it are red while the effect is on, and the label at the top says *On* or *Off*. A tap on it on the screen toggles it; a device footswitch assigned to it is momentary by default. |
 | **Audio jacks** | `In L` and `In R` on the left, `Out L` and `Out R` on the right. |
 
-## 3. The patterns
+## 3. Interactive manual
+
+Here the plugin is **the real one**: the same interface, the same script, running inside the manual. Press **Open the interactive manual**
+under the picture to open it **full screen** (Esc or **Close** brings you back). Nothing you do is saved or sent anywhere, and **Reset** puts it
+back the way it starts.
+
+* **Explore**: tap any part of the plugin to read what it is for, or pick it from the list under the picture. **Show areas** outlines
+  everything that can be tapped. Use the buttons at the top to switch between the plugin **on the pedalboard** and its **settings page**.
+* **Guided tours**: step-by-step walkthroughs of the common tasks. A finger shows where to tap.
+  Go forward and back with **Next** and **Back**: every step says what is happening and shows it in the plugin.
+
+```interactive
+```
+
+## 4. The patterns
 
 Each pattern is a loop of steps, and **each side has its own row**. In every step a side is either **let through** or **cut**
 (or, in the middle level, half); the plugin goes from one step to the next in time with the tempo, and from the last step back to
@@ -160,7 +174,7 @@ The length of a step is `60 / (tempo × steps per beat × speed)` seconds. At 12
 > Kill Switch does not follow the tempo of the pedalboard or of a MIDI clock: set the tempo here, or assign it to a knob or to an
 > expression pedal.
 
-## 4. The endings
+## 5. The endings
 
 An ending is a one-time effect for the end of a song. It plays **once**, from the moment you switch the effect on (Kill), lasts **Length**
 beats at the **Tempo**, and then everything is cut: the sound **ends**, and stays silent until you switch the effect off and on again. The five
@@ -179,7 +193,7 @@ the cut only goes down to that level.)
 
 Changing the ending or the family while the effect is on starts the new one from its beginning, so you can try them without switching off.
 
-## 5. Your own pattern
+## 6. Your own pattern
 
 The last pattern, **Custom**, is yours. Click **Edit** on the plugin (or open its settings with the gear icon). The settings page has
 everything the plugin has, with more room. At the top, on every page, there are **Mono**, **Kill** (the footswitch of the effect) and the
@@ -234,7 +248,7 @@ Next to each control, a small button (the faders icon) assigns it to a device co
 
 ![Going through the settings page: the choice of pattern, the steps that become your own, every page](images/kill-switch-settings.webp)
 
-## 6. Playing it live
+## 7. Playing it live
 
 Every control of the plugin can be assigned to a device control (a footswitch, a knob, an expression pedal), the way you assign any
 parameter: open the settings of the plugin (the gear icon, or **Edit**) and click the small button (the faders icon) next to the control to
@@ -304,7 +318,7 @@ dotted line moves across it: you see how much is left.
 * **The ending is over:** the line reaches the end and the widget says **END** (on a tall area); after that everything is cut until you switch the plugin off and on.
 * **Off:** the rows go grey and the widget says **OFF** (where there is room for the word).
 
-## 7. Factory presets
+## 8. Factory presets
 
 Open **Saved presets** in the settings of the plugin (or use the presets of the pedalboard) to pick one. Each one sets the mode, the pattern, the ending, the tempo, the
 speed, the length, the depth and the edge; Kill, the mono input and your custom pattern are not part of a preset.
@@ -337,7 +351,7 @@ speed, the length, the depth and the edge; Kill, the mono input and your custom 
 All of them have the speed at 1x. The first four are named after a song and use a pattern in the style of its guitar part, at about its tempo; they are a
 starting point, not a copy.
 
-## 8. Tips
+## 9. Tips
 
 ### Set the tempo to the song, then leave it
 
@@ -377,7 +391,7 @@ Before a delay, the cut chops what goes into the delay and the repeats go on rin
 Pick the built-in pattern that is closest, tap one of its steps and define the Custom pattern: you get a copy to change a step or two. Use the middle level for a ghost
 note: a step that is there, but soft.
 
-## 9. Questions & answers
+## 10. Questions & answers
 
 ### Nothing is cut, I hear my guitar as it is.
 
@@ -394,7 +408,7 @@ That is the end: an ending finishes in silence. Switch the effect off and on aga
 
 ### The chops are not on the beat of my song.
 
-The tempo is the plugin's own (section 3): set it by ear, or assign it to a knob. And switch the effect on on the beat: the pattern starts again from the beginning each time.
+The tempo is the plugin's own (section 4): set it by ear, or assign it to a knob. And switch the effect on on the beat: the pattern starts again from the beginning each time.
 
 ### Does it add latency? Is it stereo?
 
@@ -431,4 +445,21 @@ control.
 They are inspired by guitarists known for the kill switch, as a way to find the rhythm: the steps are our approximation of the style, not a transcription, and the plugin has no connection with
 the players or with their songs.
 
-*This manual is for version 1.0.23 of Kill Switch.*
+## 11. Specifications
+
+| Field | Value |
+|---|---|
+| Plugin name | Kill Switch |
+| Version | 1.0.26 (the version of the plugin this manual is for) |
+| Category | Dynamics · Gate |
+| Format | LV2 · URI `http://srmourasilva.github.io/plugins/kill-switch` |
+| Audio I/O | Stereo: 2 inputs, 2 outputs (no latency) |
+| Effects | 19 built-in patterns and Custom (your own) · 5 endings |
+| Device feedback | Display widget "Stereo pattern" (MOD Dwarf and Duo X with the aLabs HMI widgets) · the pedal itself |
+| Platforms | MOD Dwarf · MOD Duo X · MOD Duo |
+| Developer | Paulo Mateus (SrMouraSilva) |
+| License | Apache-2.0 |
+| Source code | [github.com/SrMouraSilva/plugins-lv2](https://github.com/SrMouraSilva/plugins-lv2) |
+| Store page | [Kill Switch](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9raWxsLXN3aXRjaA==) |
+
+Kill Switch is a community plugin. Feedback, bug reports and pull requests are welcome on GitHub.

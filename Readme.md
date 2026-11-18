@@ -213,7 +213,7 @@ python3 tools/modgui-preview/serve.py        # http://localhost:8000/?plugin=hep
 [tools/modgui-preview](./tools/modgui-preview/README.md) shows the interface of any plugin in a browser: the pedalboard icon, the settings page at several screen sizes (including a phone or a tablet *as MOD UI shows itself on it*), factory presets, and a simulated host that answers late, as the real one does. It does not replace a test on a device.
 
 * [docs/custom-settings-pages.md](./docs/custom-settings-pages.md): how to build a custom settings page (what MOD UI expects, fitting any screen with pages instead of scrolling, touch and accessibility, the cache)
-* [docs/making-animations.md](./docs/making-animations.md), [docs/alternative-thumbnails.md](./docs/alternative-thumbnails.md), [docs/html-manuals.md](./docs/html-manuals.md): animations (animated WebP with a GIF fallback), alternative thumbnails and HTML manuals for your own plugin
+* [docs/making-animations.md](./docs/making-animations.md), [docs/alternative-thumbnails.md](./docs/alternative-thumbnails.md), [docs/html-manuals.md](./docs/html-manuals.md), [docs/interactive-manuals.md](./docs/interactive-manuals.md): animations (animated WebP with a GIF fallback), alternative thumbnails, HTML manuals and the interactive section of a manual for your own plugin
 * [CLAUDE.md](./CLAUDE.md): the practices of this repository (C and LV2, TTL, modgui, documentation, git)
 
 ### Display widgets (MOD Dwarf and Duo X)
@@ -243,6 +243,8 @@ python3 tools/manual/build_manual_html.py all     # plugins/resources/<plugin>.l
 ```
 
 Each manual is written once in Markdown and built into one self-contained page (cover, navigation, steps, callouts, video cards, dark theme, print style) that MOD UI can serve as `modgui:documentation`. See [docs/html-manuals.md](./docs/html-manuals.md). Needs `pip install markdown pillow`.
+
+A manual can also hold an **interactive section** (every plugin has one): the real plugin loaded in a frame of the page, with its pedalboard and settings views, parts to tap to read what they do, and guided tours (played, or one step at a time) in which a finger shows where to tap. It is drawn by JavaScript from the real files of the plugin, so it follows the interface when the manual is rebuilt. See [docs/interactive-manuals.md](./docs/interactive-manuals.md).
 
 ## Build
 

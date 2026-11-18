@@ -49,7 +49,7 @@ any drive plugin and any delay plugin in the chain.
     ![Step 5: the footswitches of the panel; the bank of the active preset lights up](images/step-footswitches.webp)
 
 6. **Put it under your feet.** Address the **Preset 1** and **Preset 2** parameters to two device footswitches. Their LEDs
-   light up in the preset colour while that preset is active. On the settings page ([section 4](#the-settings-page)) the small
+   light up in the preset colour while that preset is active. On the settings page ([section 5](#the-settings-page)) the small
    button beside the round button of each scene does this in one tap.
 
     ![Step 6: the small button beside the round button of Preset 1 and Preset 2 opens the assignment](images/step-assign-preset-buttons.webp)
@@ -62,7 +62,7 @@ any drive plugin and any delay plugin in the chain.
 
 [![Watch: switching presets on a pedalboard — The CV outputs are shown at the bottom so you can see each preset change them (silent video).](images/video-pedalboard.jpg)](https://youtu.be/sHKzSBM5Z8U)
 
-[![Example pedalboard — A simple pedalboard from the developer that shows a typical setup. Load it and explore.](images/example-pedalboard.jpg)](https://pedalboards.moddevices.com/pedalboards/66f8238d5e57562fcb26b0f3)
+[![Example pedalboard — A simple pedalboard from the developer that shows a typical setup. Load it and explore.](images/example-pedalboard.webp)](https://pedalboards.moddevices.com/pedalboards/66f8238d5e57562fcb26b0f3)
 
 ## 3. The controls
 
@@ -85,7 +85,7 @@ any drive plugin and any delay plugin in the chain.
 | <span class="num">2</span>**DIP switch 1–4** | Each switch is one output for that preset. **Up** = the output sends 10 V (on) while this preset is active. **Down** = 0 V (off). If you edit the active preset's bank, the outputs change right away. |
 | <span class="num">3</span>**Preset 1–4 footswitches** | Select which preset drives the outputs. They work like radio buttons: selecting one deselects the others. The ring is the LED of the preset; only the cap in the middle goes down when you press it. Clicking the preset that is already active does nothing. |
 | <span class="num">4</span>**Preset labels** | Show the name of each preset. You can edit the Preset Label text to whatever helps you better understand the function of each preset. |
-| **Edit scenes** | Opens the settings page (section 4). The gear icon above the plugin opens it too. |
+| **Edit scenes** | Opens the settings page (section 5). The gear icon above the plugin opens it too. |
 | **CV Output 1–4** (jacks) | The four outputs. On the pedalboard, they appear as CV jacks on the plugin's output side. Each one sends 0 V or 10 V, and one output can be paired with as many plugin inputs as you like. |
 | **MIDI out** (jack) | The fifth jack, under the CV ones. It sends a MIDI control change for each output when the preset changes (see [MIDI out](#midi-out)). |
 
@@ -139,7 +139,21 @@ USE
 | Preset 3 | <span class="dot" style="--c:#66ffff"></span> Cyan | Cyan |
 | Preset 4 | <span class="dot" style="--c:#bb7cd2"></span> Purple | Magenta |
 
-## 4. The settings page
+## 4. Interactive manual
+
+Here the plugin is **the real one**: the same interface, the same script, running inside the manual. Press **Open the interactive manual**
+under the picture to open it **full screen** (Esc or **Close** brings you back). Nothing you do is saved or sent anywhere, and **Reset** puts it
+back the way it starts.
+
+* **Explore**: tap any part of the plugin to read what it is for, or pick it from the list under the picture. **Show areas** outlines
+  everything that can be tapped. Use the buttons at the top to switch between the plugin **on the pedalboard** and its **settings page**.
+* **Guided tours**: step-by-step walkthroughs of the common tasks. A finger shows where to tap.
+  Go forward and back with **Next** and **Back**: every step says what is happening and shows it in the plugin.
+
+```interactive
+```
+
+## 5. The settings page
 
 Click **Edit scenes** (or the gear icon above the plugin) to open a page that takes the whole screen and is made for
 touch: big switches, nothing smaller than a fingertip.
@@ -165,7 +179,7 @@ sideways too. A large screen shows everything at once; a phone shows each purpos
 
 ![Going through the settings page: the switches, the names, and every page with the arrows of the top bar](images/tetr4-switch-settings.webp)
 
-## 5. Hands-free control
+## 6. Hands-free control
 
 A loop switcher only makes sense under your feet. Tetr4 Switch gives you three ways to change presets without touching the
 web interface, plus a way to see what you selected when your controller has no LEDs or screen.
@@ -252,7 +266,7 @@ output that is on and a dot one that is off. The names are the ones you gave the
 
 The widget needs no `Assign to notify` control: it is drawn where you place it, and stays there, unlike the pop-up, which goes away after a moment.
 
-## 6. MIDI out
+## 7. MIDI out
 
 Besides its four CV outputs, Tetr4 Switch has a **MIDI out** jack (the fifth, under the CV ones). Each time the active
 preset changes, it sends one MIDI **control change** (CC) for every output: **127** when that output is on in the new
@@ -303,7 +317,7 @@ USE
 > Only when the preset changes. Loading a pedalboard sends nothing, and flipping a DIP switch of the active preset
 > changes the CV outputs right away but sends no MIDI until the next change of preset.
 
-## 7. Recipes
+## 8. Recipes
 
 Each recipe shows the four Config banks as a grid. Rows are presets and columns are CV outputs 1–4. A coloured square
 means the switch is up (10 V, on) and a grey square means down (0 V, off). Each one is also a factory preset of the plugin.
@@ -356,11 +370,11 @@ A balanced live setup. **Rhythm** uses a light drive. **Lead** adds a boost and 
 assign: **Assigning the Tetr4 Switch:** Out 1 → Drive · Out 2 → Boost · Out 3 → Delay · Out 4 → Reverb
 ```
 
-[![Try it: example pedalboard — The developer's demo pedalboard. Load it and rewire it to match any recipe above.](images/example-pedalboard.jpg)](https://pedalboards.moddevices.com/pedalboards/66f8238d5e57562fcb26b0f3)
+[![Try it: example pedalboard — The developer's demo pedalboard. Load it and rewire it to match any recipe above.](images/example-pedalboard.webp)](https://pedalboards.moddevices.com/pedalboards/66f8238d5e57562fcb26b0f3)
 
 [![Watch: Four-scene rig in action — The first recipe being switched on a live pedalboard.](images/video-pedalboard.jpg)](https://youtu.be/sHKzSBM5Z8U)
 
-## 8. Tips
+## 9. Tips
 
 ### One output, many plugins
 
@@ -407,7 +421,7 @@ also recalls which Tetr4 preset is active, so each song can start on the right s
 If a scene doesn't behave as expected, temporarily connect a CV meter or display plugin to the outputs to check which ones
 are high.
 
-## 9. Questions & answers
+## 10. Questions & answers
 
 ### I switch presets but nothing happens to my plugins.
 
@@ -445,12 +459,12 @@ Yes, in addition to CV. The **MIDI out** sends a control change for each output 
 The pop-up only appears while the control you assigned to an **Assign to notify** parameter is visible on the device screen.
 Move it to the page you play from. On the MOD Duo there are no pop-ups at all: its screen has no widgets for them.
 
-## 10. Specifications
+## 11. Specifications
 
 | Field | Value |
 |---|---|
 | Plugin name | Tetr4 switch |
-| Version | 1.2.13 (the version of the plugin this manual is for) |
+| Version | 1.2.16 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/tetr4-switch` |
 | Audio I/O | None |
@@ -462,7 +476,7 @@ Move it to the page you play from. On the MOD Duo there are no pop-ups at all: i
 | Platforms | MOD Dwarf · MOD Duo X · MOD Duo |
 | Developer | Paulo Mateus (SrMouraSilva) |
 | License | Apache-2.0 |
-| Source code | [github.com/SrMouraSilva/tetr4-switch-lv2](https://github.com/SrMouraSilva/tetr4-switch-lv2) |
+| Source code | [github.com/SrMouraSilva/plugins-lv2](https://github.com/SrMouraSilva/plugins-lv2) |
 | Store page | [Tetr4 switch](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy90ZXRyNC1zd2l0Y2g=) |
 | Forum thread | [forum.mod.audio – Tetr4 Switch plugin in Beta Store](https://forum.mod.audio/t/tetr4-switch-plugin-in-beta-store/8998) |
 | Example pedalboard | [MOD Pedalboards Feed](https://pedalboards.moddevices.com/pedalboards/66f8238d5e57562fcb26b0f3) |

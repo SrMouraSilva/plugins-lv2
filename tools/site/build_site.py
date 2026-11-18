@@ -47,6 +47,8 @@ GUIDES = [
      "Record a clean, reproducible animation of your plugin being used, as light animated WebP with a GIF fallback, and keep it up to date with one command."),
     ("docs/alternative-thumbnails.md", "alternative-thumbnails",
      "Draw the simple, abstract picture of a plugin that stores show first, as light WebP with transparency."),
+    ("docs/interactive-manuals.md", "interactive-manuals",
+     "Put the real plugin inside its own manual: tap a part to read what it does, and follow guided tours with a finger that shows what to tap."),
     ("docs/html-manuals.md", "html-manuals",
      "Write a manual once in Markdown and build a self-contained HTML page for the device: cover, steps, callouts, videos, dark theme."),
 ]
@@ -59,6 +61,7 @@ GUIDE_TAGLINES = {
     "modgui-preview": "The interface of your plugin, in a browser.",
     "making-animations": "An animation of your plugin, from a script.",
     "alternative-thumbnails": "A picture that says what the plugin is.",
+    "interactive-manuals": "The real plugin, inside its own manual.",
     "html-manuals": "One Markdown file, one beautiful manual.",
 }
 
