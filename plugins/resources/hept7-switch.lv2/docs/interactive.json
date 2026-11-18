@@ -1,0 +1,646 @@
+{
+  "midi": {
+    "select": ".mod-output[mod-role=\"output-midi-port\"]",
+    "count": 8,
+    "rows": 12,
+    "channel": "MIDI_channel",
+    "changesOnly": "MIDI_changes_only",
+    "cc": "MIDI_CC_{n}",
+    "on": "Preset_{active}_output_{n}"
+  },
+  "areas": [
+    {
+      "id": "gear",
+      "view": "pedalboard",
+      "select": ".mod-actions .mod-settings",
+      "title": "The gear (MOD UI)",
+      "text": "MOD UI puts this gear above every plugin. It opens the **settings page** of Hept7 Switch, the same page that **Edit scenes** opens.",
+      "chip": "Gear",
+      "kicker": "On the pedalboard",
+      "links": [
+        {
+          "label": "The settings page",
+          "href": "#the-settings-page"
+        }
+      ]
+    },
+    {
+      "id": "edit",
+      "view": "pedalboard",
+      "select": ".h7-open",
+      "title": "Edit scenes",
+      "text": "Opens the settings page: the matrix of the seven presets, the hardware assignments, the MIDI out and the saved presets.",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "out",
+      "view": "pedalboard",
+      "select": ".h7-out",
+      "title": "CV output {output}",
+      "text": "One of the **eight squares** of the display: a lit square means CV output {output} is **on (10 V)** in the **active** preset; dark means 0 V. **It is a button**: tap it to turn the output on or off in the active preset without opening the settings page.",
+      "chip": "Output squares",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "label",
+      "view": "pedalboard",
+      "select": ".h7-label",
+      "title": "Name of the active preset",
+      "text": "Tap and type to rename the preset that is active (up to 15 characters). The name is saved with the pedalboard and is also what the device shows in its pop-up and on a footswitch label.",
+      "chip": "Name",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "pad",
+      "view": "pedalboard",
+      "select": ".h7-pad",
+      "title": "Button {preset}",
+      "text": "Selects preset {preset}. The button of the active preset lights up in **its own colour** (seven colours, the ones of the device footswitch LEDs). A button with its number **crossed out** is left out of the cycle of *Current preset*, *Next preset* and *Previous preset*; it still selects its preset.",
+      "chip": "Preset buttons",
+      "kicker": "On the pedalboard",
+      "links": [
+        {
+          "label": "Choosing which presets the buttons go through",
+          "href": "#choosing-which-presets-the-buttons-go-through"
+        }
+      ]
+    },
+    {
+      "id": "display",
+      "view": "pedalboard",
+      "select": ".h7-display",
+      "title": "The display",
+      "text": "Shows the **active preset**: its number, its name and which outputs are on. Whenever the preset changes, from a footswitch, a knob, the buttons or a MIDI controller, the whole display takes the colour of the new preset for a moment and announces it. It is how you see the change on a **MOD Duo**, which has no screen for plugin pop-ups.",
+      "kicker": "On the pedalboard",
+      "links": [
+        {
+          "label": "The display announces every change of preset",
+          "href": "#the-display-announces-every-change-of-preset"
+        }
+      ]
+    },
+    {
+      "id": "cv",
+      "view": "pedalboard",
+      "select": ".mod-output[mod-role=\"output-cv-port\"]",
+      "title": "{title}",
+      "text": "A **control-voltage** output: 10 V when it is on in the active preset (a lit square in the display), 0 V when it is off. Outputs 1 to 4 are on the back plate and 5 to 8 at the edge. In MOD UI use **Manage CV ports** and pair an output with the on/off (bypass) of any plugin; one output can feed as many plugins as you like.",
+      "chip": "CV outputs",
+      "kicker": "On the pedalboard"
+    },
+    {
+      "id": "midi",
+      "view": "pedalboard",
+      "select": ".mod-output[mod-role=\"output-midi-port\"]",
+      "title": "MIDI out",
+      "text": "The ninth jack. When the preset **changes** it sends one MIDI control change for each output, in order: **127** if the output is on in the new preset, **0** if it is off. The box beside it (added by this manual; the real plugin does not draw it) lists the messages as they would go out.",
+      "kicker": "On the pedalboard",
+      "links": [
+        {
+          "label": "MIDI out",
+          "href": "#midi-out"
+        }
+      ]
+    },
+    {
+      "id": "s-close",
+      "view": "settings",
+      "select": ".h7s-close",
+      "title": "Close",
+      "text": "Goes back to the pedalboard.",
+      "kicker": "Settings page"
+    },
+    {
+      "id": "s-nav",
+      "view": "settings",
+      "select": ".h7s-nav",
+      "title": "Pages",
+      "text": "The page never scrolls up and down: what does not fit goes on another page to the right. The **arrows** and the **dots** change the page, and on a touch screen you can also **swipe**. A phone shows fewer presets per page; a large screen shows more.",
+      "kicker": "Settings page"
+    },
+    {
+      "id": "s-now",
+      "view": "settings",
+      "select": ".h7s-now",
+      "title": "Preset playing",
+      "text": "Which preset is active right now, with its name, wherever it was chosen from.",
+      "kicker": "Settings page"
+    },
+    {
+      "id": "s-pad",
+      "view": "settings",
+      "select": ".h7s-rowpad",
+      "title": "Play preset {preset}",
+      "text": "The numbered button at the start of a row makes that preset the active one.",
+      "chip": "Numbered buttons",
+      "kicker": "Settings page · Scenes"
+    },
+    {
+      "id": "s-assign",
+      "view": "settings",
+      "select": ".h7s-row-assign .h7s-address",
+      "title": "Assign preset to a control",
+      "text": "The small button at the end of a row assigns the preset to a **footswitch**, a knob or another control of your device. In MOD UI it opens the assignment dialog; once assigned it shows a check mark.",
+      "chip": "Assign buttons",
+      "kicker": "Settings page · Scenes",
+      "links": [
+        {
+          "label": "Switching presets with hardware",
+          "href": "#switching-presets-with-hardware"
+        }
+      ]
+    },
+    {
+      "id": "s-label",
+      "view": "settings",
+      "select": ".h7s-label",
+      "title": "Name of preset {preset}",
+      "text": "The name of the scene. It is the same one the pedal shows.",
+      "chip": "Names",
+      "kicker": "Settings page · Scenes"
+    },
+    {
+      "id": "s-cycle",
+      "view": "settings",
+      "select": ".h7s-cell-cycle",
+      "title": "Cycle (preset {preset})",
+      "text": "**On (↻):** preset {preset} is one of those that *Current preset*, *Next preset* and *Previous preset* go through. **Off (✕):** they skip it; the button of the preset still selects it. Use it when you only need four of the seven.",
+      "chip": "Cycle",
+      "kicker": "Settings page · Scenes",
+      "links": [
+        {
+          "label": "Choosing which presets the buttons go through",
+          "href": "#choosing-which-presets-the-buttons-go-through"
+        }
+      ]
+    },
+    {
+      "id": "s-cell",
+      "view": "settings",
+      "select": ".h7s-cell",
+      "title": "Preset {preset}, output {output}",
+      "text": "A lit cell means CV output {output} is **on** while preset {preset} is active. The cells of the **active** row are the CV signals actually leaving the plugin right now.",
+      "chip": "Matrix cells",
+      "kicker": "Settings page · Scenes"
+    },
+    {
+      "id": "s-current",
+      "view": "settings",
+      "select": ".h7s-address[mod-port-symbol=\"Preset_combobox\"]",
+      "title": "Current preset",
+      "text": "A button that **loops** through the presets of the cycle: each time you let go of it, it goes to the next one. The tile says which preset is playing and where it leads.",
+      "chip": "Current preset",
+      "kicker": "Settings page · Hardware assignment",
+      "links": [
+        {
+          "label": "Going through the presets",
+          "href": "#going-through-the-presets-with-one-or-two-footswitches"
+        }
+      ]
+    },
+    {
+      "id": "s-next",
+      "view": "settings",
+      "select": ".h7s-address[mod-port-symbol=\"Next_preset\"]",
+      "title": "Next preset",
+      "text": "A footswitch that goes to the **next** preset of the cycle (it acts when released).",
+      "chip": "Next preset",
+      "kicker": "Settings page · Hardware assignment"
+    },
+    {
+      "id": "s-prev",
+      "view": "settings",
+      "select": ".h7s-address[mod-port-symbol=\"Previous_preset\"]",
+      "title": "Previous preset",
+      "text": "A footswitch that goes to the **previous** preset of the cycle (it acts when released). Put it on B and *Next preset* on C to go both ways.",
+      "chip": "Previous preset",
+      "kicker": "Settings page · Hardware assignment"
+    },
+    {
+      "id": "s-notify",
+      "view": "settings",
+      "select": ".h7s-hw-notify .h7s-address",
+      "title": "Screen pop-up ({title})",
+      "text": "Shows an alert with the name of the preset on the device screen whenever it changes. It only appears on a page of the device that has one of these controls. The MOD Duo has no screen for them, so there these tiles are disabled.",
+      "chip": "Screen pop-ups",
+      "kicker": "Settings page · Hardware assignment"
+    },
+    {
+      "id": "s-channel",
+      "view": "settings",
+      "select": ".h7s-num[data-symbol=\"MIDI_channel\"]",
+      "title": "MIDI channel",
+      "text": "The channel (1 to 16) of the control changes. Tap the number to type, or use the buttons at its sides.",
+      "kicker": "Settings page · MIDI out"
+    },
+    {
+      "id": "s-changes",
+      "view": "settings",
+      "select": ".h7s-switch",
+      "title": "Changes only",
+      "text": "**On:** when the preset changes, only the outputs whose value changed are sent. **Off:** every output is sent at every change of preset.",
+      "kicker": "Settings page · MIDI out"
+    },
+    {
+      "id": "s-cc",
+      "view": "settings",
+      "select": ".h7s-num",
+      "title": "CC number of an output",
+      "text": "The control-change number of this CV output (0 to 127). They start at 20 to 27. It sends **127** when the output is on in the new preset and **0** when it is off.",
+      "chip": "CC numbers",
+      "kicker": "Settings page · MIDI out"
+    },
+    {
+      "id": "s-presets",
+      "view": "settings",
+      "select": ".mod-presets",
+      "title": "Saved presets",
+      "text": "The **factory** presets (the recipes of the manual) and your own. Choosing one sets every cell and every name at once.",
+      "chip": "Saved presets",
+      "kicker": "Settings page",
+      "links": [
+        {
+          "label": "Recipes",
+          "href": "#recipes"
+        }
+      ]
+    },
+    {
+      "id": "s-row",
+      "view": "settings",
+      "select": ".h7s-row",
+      "title": "Scene {preset}",
+      "text": "One row per preset: the numbered button plays it, the field is its name, the cells are its eight outputs, then the cycle switch and the assign button. The row of the active preset is highlighted.",
+      "chip": "Scene rows",
+      "kicker": "Settings page · Scenes"
+    }
+  ],
+  "tours": [
+    {
+      "id": "two-scenes",
+      "title": "Two scenes: clean and lead",
+      "summary": "Turn outputs on and off for two presets and switch between them.",
+      "steps": [
+        {
+          "title": "The display",
+          "text": "The **display** shows the active preset and, in the eight squares, which CV outputs are on. At the factory, preset *N* turns on output *N* only. We will make a **clean** scene and a **lead** scene (drive + delay).",
+          "view": "pedalboard",
+          "ring": ".h7-display"
+        },
+        {
+          "title": "Preset 1: everything off",
+          "text": "The squares are buttons. Tap square **1**: in preset 1 every output is now 0 V, your clean scene.",
+          "ring": ".h7-out[data-output=\"1\"]",
+          "do": [
+            {
+              "tap": ".h7-out[data-output=\"1\"]"
+            }
+          ]
+        },
+        {
+          "title": "Play preset 2",
+          "text": "Tap button **2**. The whole display takes the colour of the preset and announces it, then settles on the squares of preset 2.",
+          "ring": ".h7-pad[data-preset=\"2\"]",
+          "do": [
+            {
+              "tap": ".h7-pad[data-preset=\"2\"]"
+            }
+          ]
+        },
+        {
+          "title": "Preset 2: drive and delay",
+          "text": "Square **2** is already lit. Turn on square **1** too: in preset 2 outputs 1 and 2 are on (10 V), the drive and the delay once you pair them with these outputs.",
+          "ring": ".h7-out[data-output=\"1\"]",
+          "do": [
+            {
+              "tap": ".h7-out[data-output=\"1\"]"
+            }
+          ]
+        },
+        {
+          "title": "Back to clean",
+          "text": "Tap button **1** and the outputs go back to 0 V. One press swaps the whole rig. Next, learn how to [put it under your feet](#switching-presets-with-hardware).",
+          "ring": ".h7-pad[data-preset=\"1\"]",
+          "do": [
+            {
+              "tap": ".h7-pad[data-preset=\"1\"]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "names",
+      "title": "Name your scenes",
+      "summary": "Rename presets so you pick a scene by its sound.",
+      "steps": [
+        {
+          "title": "Tap the name",
+          "text": "The name in the display is the name of the **active** preset. Tap it and type; up to 15 letters, digits and a few symbols.",
+          "view": "pedalboard",
+          "ring": ".h7-label",
+          "do": [
+            {
+              "type": ".h7-label",
+              "text": "Clean"
+            }
+          ]
+        },
+        {
+          "title": "Play preset 2",
+          "text": "Select another preset to name it.",
+          "ring": ".h7-pad[data-preset=\"2\"]",
+          "do": [
+            {
+              "tap": ".h7-pad[data-preset=\"2\"]"
+            }
+          ]
+        },
+        {
+          "title": "Name it too",
+          "text": "Type its name. On stage you pick a scene by its sound instead of remembering numbers.",
+          "ring": ".h7-label",
+          "do": [
+            {
+              "type": ".h7-label",
+              "text": "Lead"
+            }
+          ]
+        },
+        {
+          "title": "The name follows the preset",
+          "text": "Go back to preset 1: its name is shown again. The names are saved with the pedalboard and are also what the device shows in its pop-up and on a footswitch label.",
+          "ring": ".h7-pad[data-preset=\"1\"]",
+          "do": [
+            {
+              "tap": ".h7-pad[data-preset=\"1\"]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "matrix",
+      "title": "Edit every scene on the settings page",
+      "summary": "The matrix of seven presets, and leaving one out of the cycle.",
+      "steps": [
+        {
+          "title": "Open the settings page",
+          "text": "Tap **Edit scenes** (or the gear above the plugin). The page takes the whole screen and is made for touch.",
+          "view": "pedalboard",
+          "ring": ".h7-open",
+          "do": [
+            {
+              "tap": ".h7-open"
+            }
+          ]
+        },
+        {
+          "title": "One row per preset",
+          "text": "The **numbered button** plays the preset, then come its name and one cell per CV output. A lit cell means that output is **on** while the preset is active.",
+          "view": "settings",
+          "ring": ".h7s-row[data-preset=\"3\"]"
+        },
+        {
+          "title": "Edit another preset",
+          "text": "Turn on output **1** in preset 3. You can edit any preset without playing it: this row is not the active one.",
+          "ring": ".h7s-cell[data-preset=\"3\"][data-output=\"1\"]",
+          "do": [
+            {
+              "tap": ".h7s-cell[data-preset=\"3\"][data-output=\"1\"]"
+            }
+          ]
+        },
+        {
+          "title": "Play it",
+          "text": "Tap the numbered button of preset 3. Its row is now the highlighted one and its lit cells are the CV signals really leaving the plugin.",
+          "ring": ".h7s-rowpad[data-preset=\"3\"]",
+          "do": [
+            {
+              "tap": ".h7s-rowpad[data-preset=\"3\"]"
+            }
+          ]
+        },
+        {
+          "title": "Take a preset out of the cycle",
+          "text": "The cell after the outputs, set apart, is **Cycle**. Turn it off for preset 7: the buttons *Current preset*, *Next preset* and *Previous preset* will skip it.",
+          "ring": ".h7s-cell-cycle[data-preset=\"7\"]",
+          "do": [
+            {
+              "tap": ".h7s-cell-cycle[data-preset=\"7\"]"
+            }
+          ]
+        },
+        {
+          "title": "On the pedalboard",
+          "text": "Its number is crossed out on the pedal. The button still selects the preset; it only leaves the cycle.",
+          "view": "pedalboard",
+          "ring": ".h7-pad[data-preset=\"7\"]"
+        }
+      ]
+    },
+    {
+      "id": "footswitches",
+      "title": "Put presets under your feet",
+      "summary": "Assign presets, and the loop, next and previous buttons.",
+      "steps": [
+        {
+          "title": "Open the settings page",
+          "text": "Tap **Edit scenes**.",
+          "view": "pedalboard",
+          "ring": ".h7-open",
+          "do": [
+            {
+              "tap": ".h7-open"
+            }
+          ]
+        },
+        {
+          "title": "Assign Preset 1",
+          "text": "Tap the small button at the end of the row of preset 1. MOD UI opens its own **assignment dialog** (drawn here in a simplified way).",
+          "view": "settings",
+          "ring": ".h7s-row[data-preset=\"1\"] .h7s-address",
+          "do": [
+            {
+              "tap": ".h7s-row[data-preset=\"1\"] .h7s-address"
+            }
+          ]
+        },
+        {
+          "title": "Choose the footswitch",
+          "text": "Pick a footswitch of the device and confirm. The button shows a check mark, and the footswitch LED lights up in the colour of the preset while it is active.",
+          "ring": ".ix-ok",
+          "do": [
+            {
+              "wait": 500
+            },
+            {
+              "tap": ".ix-ok"
+            }
+          ]
+        },
+        {
+          "title": "One footswitch that loops",
+          "text": "With few footswitches, assign **Current preset**: each time you let go of it, it goes to the next preset of the cycle.",
+          "ring": ".h7s-address[mod-port-symbol=\"Preset_combobox\"]",
+          "do": [
+            {
+              "tap": ".h7s-address[mod-port-symbol=\"Preset_combobox\"]"
+            },
+            {
+              "wait": 400
+            },
+            {
+              "tap": ".ix-ok"
+            }
+          ]
+        },
+        {
+          "title": "Or one to go forward and one to go back",
+          "text": "**Next preset** and **Previous preset** are one footswitch each (B and C on the Dwarf). They act when you let go, so keep the assignment mode they come with.",
+          "ring": ".h7s-address[mod-port-symbol=\"Next_preset\"]",
+          "do": [
+            {
+              "tap": ".h7s-address[mod-port-symbol=\"Next_preset\"]"
+            },
+            {
+              "wait": 400
+            },
+            {
+              "tap": ".ix-ok"
+            },
+            {
+              "tap": ".h7s-address[mod-port-symbol=\"Previous_preset\"]"
+            },
+            {
+              "wait": 400
+            },
+            {
+              "tap": ".ix-ok"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "midi",
+      "title": "Send MIDI when the scene changes",
+      "summary": "Set the channel and the CC numbers of the MIDI out.",
+      "steps": [
+        {
+          "title": "The MIDI out jack",
+          "text": "Besides the eight CV outputs, the plugin has a **MIDI out** (the ninth jack). Connect it to a MIDI input: the output of your device, a loopback port or a plugin that takes MIDI.",
+          "view": "pedalboard",
+          "ring": ".mod-output[mod-role=\"output-midi-port\"]"
+        },
+        {
+          "title": "Open the settings page",
+          "text": "The gear above the plugin opens the settings page. The MIDI out has a panel there.",
+          "do": [
+            {
+              "tap": ".mod-actions .mod-settings"
+            }
+          ]
+        },
+        {
+          "title": "The MIDI out panel",
+          "text": "If it is on another page, the arrows of the top bar (or a swipe) take you there. Each time the preset changes, one control change goes out for every CV output.",
+          "view": "settings",
+          "ring": ".h7s-midi-panel"
+        },
+        {
+          "title": "Choose the channel",
+          "text": "Use the buttons at the sides of the number (or tap it and type) to pick the channel, from 1 to 16.",
+          "ring": ".h7s-num[data-symbol=\"MIDI_channel\"]",
+          "do": [
+            {
+              "tap": ".h7s-num[data-symbol=\"MIDI_channel\"] .h7s-num-step[data-dir=\"1\"]"
+            },
+            {
+              "tap": ".h7s-num[data-symbol=\"MIDI_channel\"] .h7s-num-step[data-dir=\"1\"]"
+            }
+          ]
+        },
+        {
+          "title": "Choose a CC number",
+          "text": "Each CV output has its own control-change number. They start at 20 to 27, which have no standard meaning in MIDI.",
+          "ring": ".h7s-num[data-symbol=\"MIDI_CC_1\"]",
+          "do": [
+            {
+              "type": ".h7s-num[data-symbol=\"MIDI_CC_1\"] .h7s-num-value",
+              "text": "30"
+            }
+          ]
+        },
+        {
+          "title": "Change the preset",
+          "text": "Tap preset **2**. The preset changed, so the plugin sends its messages. With **Changes only** on (the default) the first change sends just the outputs that are on, because every output counts as off (0) until something is sent.",
+          "ring": ".h7s-rowpad[data-preset=\"2\"]",
+          "do": [
+            {
+              "tap": ".h7s-rowpad[data-preset=\"2\"]"
+            }
+          ]
+        },
+        {
+          "title": "The messages that went out",
+          "text": "The box beside the MIDI jack (drawn by this manual) lists them: one control change, on channel 3, number 21 (output 2), value **127**. Output 1 is off in both presets, so there was nothing new to say about it. Loading a pedalboard sends nothing, and neither does flipping a cell of the active preset.",
+          "view": "pedalboard",
+          "ring": ".ix-midi"
+        },
+        {
+          "title": "Send everything",
+          "text": "Turn **Changes only** off and go back to preset 1: now every output is sent on every change.",
+          "view": "settings",
+          "ring": ".h7s-switch",
+          "do": [
+            {
+              "tap": ".h7s-switch"
+            },
+            {
+              "tap": ".h7s-rowpad[data-preset=\"1\"]"
+            }
+          ]
+        },
+        {
+          "title": "All eight, in order",
+          "text": "Output 1 first, then 2 to 8: **CC 30 = 127** (on in preset 1) and **0** for the others. Use *changes only* to send less, or turn it off when the receiving device needs to hear every output each time.",
+          "view": "pedalboard",
+          "ring": ".ix-midi"
+        }
+      ]
+    },
+    {
+      "id": "recipe",
+      "title": "Load a ready-made recipe",
+      "summary": "Use a factory preset and see every cell and name change.",
+      "steps": [
+        {
+          "title": "Saved presets",
+          "text": "The settings page lists the **factory presets**: the recipes of the manual. Each sets the whole matrix and the names at once.",
+          "view": "settings",
+          "ring": ".mod-presets"
+        },
+        {
+          "title": "Pick a recipe",
+          "text": "Choose **Seven-scene guitar rig**.",
+          "ring": {
+            "select": ".mod-preset-factory [mod-role=\"enumeration-option\"]",
+            "has": "Seven-scene guitar rig"
+          },
+          "do": [
+            {
+              "tap": ".mod-preset-factory [mod-role=\"enumeration-option\"]",
+              "has": "Seven-scene guitar rig"
+            }
+          ]
+        },
+        {
+          "title": "Everything changed",
+          "text": "The scenes are now **Clean, Chorus, Crunch, Lead, Solo, Ambient and Kill**, with their own cells. Pair the outputs with your plugins as the recipe says and you have a rig.",
+          "ring": ".h7s-scenes"
+        }
+      ]
+    }
+  ]
+}

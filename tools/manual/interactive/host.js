@@ -152,7 +152,7 @@
   //                            cc: "MIDI_CC_{n}", on: "Preset_{active}_output_{n}" }
   var midiSpec = null;
   var midi = { preset: 0, last: [], log: [], timer: 0 };
-  var MIDI_ROWS = 8;
+  var MIDI_ROWS = 8;   // spec.rows: how many lines the box holds
   var number = function (value, max) { var v = Number(value); return !(v > 0.5) ? 0 : v >= max ? max : Math.round(v); };
 
   function scheduleMidi() { if (midiSpec && !midi.timer) { midi.timer = setTimeout(function () { midi.timer = 0; checkMidi(); }, 0); } }
@@ -181,6 +181,8 @@
     var box = jack.querySelector('.ix-midi');
     if (!box) { box = doc.createElement('div'); box.className = 'ix-midi'; box.setAttribute('role', 'log'); jack.appendChild(box); }
     // The newest rows (a change takes one row for its title and one for each message), the last change in full colour
+    var limit = midiSpec.rows || MIDI_ROWS;
+    box.style.height = (56 + limit * 15) + 'px';
     var rows = [];
     midi.log.forEach(function (change, i) {
       var latest = i === midi.log.length - 1;
@@ -190,7 +192,7 @@
     });
     var channel = number(portValues[midiSpec.channel], 16) || 1;
     var html = '<b>MIDI out \u00b7 ch ' + channel + '</b><div class="ix-midi-rows">';
-    html += rows.length ? rows.slice(-MIDI_ROWS).map(function (r) { return '<span class="' + r.cls + '">' + r.text + '</span>'; }).join('')
+    html += rows.length ? rows.slice(-limit).map(function (r) { return '<span class="' + r.cls + '">' + r.text + '</span>'; }).join('')
                         : '<span class="is-none">waiting for a change of preset</span>';
     box.innerHTML = html + '</div>';
   }

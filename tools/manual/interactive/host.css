@@ -99,7 +99,6 @@ body { background: #14161d; font-family: system-ui, -apple-system, "Segoe UI", R
   display: flex;
   flex-direction: column;
   width: 136px;
-  height: 176px;
   padding: 7px 9px 8px;
   border-radius: 8px;
   font: 600 11.5px/15px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
