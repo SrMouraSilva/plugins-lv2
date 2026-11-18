@@ -16,7 +16,7 @@
  *   audio_in <port> | audio_out <port>   an audio port; the input carries a 220 Hz sine, an output is discarded
  *   atom_in <port> | atom_out <port>     an atom port, empty on every cycle
  *   set <port> <value>          change the value of a connected control port
- *   label <n> <text>            a patch:Set of the label of preset n (1-based), as MOD UI sends it
+ *   label <n> <text>            a patch:Set of the label of preset n, or of footswitch n for Gossiper (1-based), as MOD UI sends it
  *   addressed <port> | unaddressed <port>   the host tells the plugin a port is (no longer) addressed to a control of the device
  *   activate
  *   show <id> <symbol> <w> <h>  widget_shown: the widget `symbol` on a fresh area of w x h pixels, called `id`
@@ -218,7 +218,8 @@ static void send_label(unsigned int n, const char* text) {
         lv2_atom_forge_object(&forge, &object_frame, 0, map_uri(NULL, LV2_PATCH__Set));
         lv2_atom_forge_key(&forge, map_uri(NULL, LV2_PATCH__property));
 
-        snprintf(property_uri, sizeof(property_uri), "%s#preset_label_%u", descriptor->URI, n);
+        // The switches name their presets, Gossiper its footswitches
+        snprintf(property_uri, sizeof(property_uri), "%s#%s_label_%u", descriptor->URI, strstr(descriptor->URI, "gossiper") != NULL ? "footswitch" : "preset", n);
         lv2_atom_forge_urid(&forge, map_uri(NULL, property_uri));
         lv2_atom_forge_key(&forge, map_uri(NULL, LV2_PATCH__value));
         lv2_atom_forge_string(&forge, text, (uint32_t) strlen(text));

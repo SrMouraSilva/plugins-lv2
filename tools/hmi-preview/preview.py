@@ -196,9 +196,10 @@ SCENES = {
         ("preset", "Active preset", "factory preset, preset 3 on", None, ("__first__", 2), 0.2),
     ],
     "gossiper": [
-        ("footswitches", "Footswitches", "switches 1, 4 and 6 on; 6 pressed last", {"__switches__": [1, 4, 6]}, None, 0.2),
+        ("footswitches", "Footswitches", "switches 1, 4 and 6 on", {"__switches__": [1, 4, 6]}, None, 0.2),
         ("footswitches", "Footswitches", "switches 1, 4 and 6 on; only 4 and 6 are assigned to controls of the device (every area shows only those)", {"__switches__": [1, 4, 6], "__addressed__": [4, 6]}, None, 0.2),
         ("potentiometers", "Potentiometers", "four knobs", {"__pots__": [0.82, 0.35, 0.0, 1.0]}, None, 0.2),
+        ("footswitches", "Footswitches", "4 and 6 assigned, 4 on; 6 has just been turned on: its pop-up", {"__switches__": [4], "__addressed__": [4, 6], "__press__": (6, 1.0)}, None, 0.3),
     ],
 }
 
@@ -221,6 +222,7 @@ def load_scene(plugin, spec):
 
     switches = values.pop("__switches__", None)
     addressed = values.pop("__addressed__", None)
+    press = values.pop("__press__", None)
     pots = values.pop("__pots__", None)
     if switches is not None:
         for n in range(1, 8):
@@ -232,7 +234,24 @@ def load_scene(plugin, spec):
     values = dict(values)
     if addressed:
         values["__addressed__"] = addressed
+    if press:
+        values["__press__"] = press
     return symbol, name, subtitle, values, labels, seconds
+
+
+SCENE_ONLY = ("__addressed__", "__press__")
+
+
+def run_scene(session, values, seconds):
+    """Run the scene; a footswitch pressed (`__press__`: (number, value)) is pressed after the plugin has settled (it ignores the
+    changes of its first second: the pedalboard loading), so the picture is taken while its pop-up is up."""
+    press = values.get("__press__")
+
+    if press:
+        session.run(1.2)
+        session.set(f"Footswitch_{press[0]}", press[1])
+
+    session.run(seconds)
 
 
 def widget_pictures(plugin, spec, cases):
@@ -243,7 +262,7 @@ def widget_pictures(plugin, spec, cases):
 
     for device, area, caption in cases:
         x, y, w, h = AREAS[device][area]
-        session = Session(plugin, {k: v for k, v in values.items() if k != "__addressed__"})
+        session = Session(plugin, {k: v for k, v in values.items() if k not in SCENE_ONLY})
 
         for n, text in labels.items():
             session.label(n, text)
@@ -252,7 +271,7 @@ def widget_pictures(plugin, spec, cases):
             session.address(f"Footswitch_{number}")
 
         session.show("a", symbol, w, h)
-        session.run(seconds)
+        run_scene(session, values, seconds)
         session.snap("a")
         snaps.append(session.finish()[0][0])
 
@@ -632,9 +651,13 @@ STATES = {
     ],
     ("gossiper", "footswitches"): [
         ("None on", ("footswitches", "", "", {"__switches__": []}, None, 0.2), (82, 37)),
-        ("1, 4 and 6 on; 6 changed last", ("footswitches", "", "", {"__switches__": [1, 4, 6]}, None, 0.2), (82, 37)),
+        ("1, 4 and 6 on", ("footswitches", "", "", {"__switches__": [1, 4, 6]}, None, 0.2), (82, 37)),
         ("A column, none assigned: all seven", ("footswitches", "", "", {"__switches__": [1, 4, 6]}, None, 0.2), (40, 37)),
         ("A column, only 4 and 6 assigned", ("footswitches", "", "", {"__switches__": [1, 4, 6], "__addressed__": [4, 6]}, None, 0.2), (40, 37)),
+        ("Footswitch 6 turned on: its pop-up", ("footswitches", "", "", {"__switches__": [1, 4], "__press__": (6, 1.0)}, None, 0.3), (82, 37)),
+        ("...and turned off", ("footswitches", "", "", {"__switches__": [1, 4, 6], "__press__": (6, 0.0)}, None, 0.3), (82, 37)),
+        ("The pop-up in a footer", ("footswitches", "", "", {"__switches__": [1, 4], "__addressed__": [4, 6], "__press__": (6, 1.0)}, None, 0.3), (51, 10)),
+        ("The whole screen: the unassigned ones have a dotted box", ("footswitches", "", "", {"__switches__": [1, 4, 6], "__addressed__": [4, 6]}, None, 0.2), (128, 64)),
     ],
     ("gossiper", "potentiometers"): [
         ("Four knobs at rest", ("potentiometers", "", "", {"__pots__": [0.0, 0.0, 0.0, 0.0]}, None, 0.2), (82, 37)),
@@ -646,13 +669,13 @@ STATES = {
 
 def snapshot(plugin, spec, size):
     symbol, _, _, values, labels, seconds = load_scene(plugin, spec)
-    session = Session(plugin, {k: v for k, v in values.items() if k != "__addressed__"})
+    session = Session(plugin, {k: v for k, v in values.items() if k not in SCENE_ONLY})
     for n, text in labels.items():
         session.label(n, text)
     for number in values.get("__addressed__", []):
         session.address(f"Footswitch_{number}")
     session.show("a", symbol, *size)
-    session.run(seconds)
+    run_scene(session, values, seconds)
     session.snap("a")
     return session.finish()[0][0]
 

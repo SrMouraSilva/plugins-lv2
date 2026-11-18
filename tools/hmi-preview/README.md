@@ -36,7 +36,7 @@ The pictures go to `tools/hmi-preview/out/` (git-ignored), except the ones of th
 | Kill Switch | `pattern` | the pattern, the step that plays, the tempo (Depth on a tall area); dimmed and `OFF` when bypassed |
 | Half Mouco | `stereo` | a row of steps for each side, or the curve of the ending along its time with a moving cursor |
 | Tetr4 Switch, Hept7 Switch | `preset` | the preset that is on (number and name), what it turns on; every preset on a tall area |
-| Gossiper | `footswitches` | which of the seven are on, the name of the last one that changed; only the ones assigned to a control of the device (all seven when none is), in every area |
+| Gossiper | `footswitches` | which of the seven are on (all seven on the whole screen, the unassigned ones with a dotted box and UNASSIGNED); a footswitch that changes shows its name and state over the widget for 1.5 s; only the ones in use (all seven when none is), in every area: the settings page marks the assigned ones in `footswitch_in_use_N`, because the device only reports its own controls |
 | Gossiper | `potentiometers` | the four as bars with their value |
 
 Each widget draws what fits in the area it is given (it never assumes a size): the footers show the bare essentials,
