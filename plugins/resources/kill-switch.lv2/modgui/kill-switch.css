@@ -1402,6 +1402,12 @@
   gap: 16px 24px;
 }
 .kss-knob { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+/* A thin rule above every control but the first, so the assign button of each one reads as belonging to it
+   (the first one that is shown: Length and Speed come and go with the mode, the rule goes with them) */
+.kss-knob + .kss-knob {
+  padding-top: 16px;
+  border-top: 1px solid var(--ks-line);
+}
 .kss-tempo,
 .kss-speed { grid-column: 1 / -1; }
 /* Depth and Edge side by side only when each has room for its name, value and button (the script says so: .is-narrow) */
@@ -1525,6 +1531,7 @@
 .kss[data-h="s"] .kss-view-steps { height: 14px; }
 .kss[data-h="s"] .kss-sound { gap: 12px 24px; }
 .kss[data-h="s"] .kss-knob { gap: 6px; }
+.kss[data-h="s"] .kss-knob + .kss-knob { padding-top: 12px; }
 .kss[data-h="s"] .kss-ends { display: none; }
 
 /* In MOD UI's Performance view the page lives beside the plugin list: the window is not there to be closed */
