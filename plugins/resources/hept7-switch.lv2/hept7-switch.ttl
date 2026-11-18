@@ -30,6 +30,7 @@
 #   94     MIDI channel (1-16)
 #   95     MIDI: send only the control changes that changed
 #   96     MIDI out (atom output, a control change per CV output when the preset changes)
+#   97-98  Next preset, Previous preset (buttons; "Current preset", 15, is a button too: it loops forward)
 
 plug:preset_label_1
     a lv2:Parameter ;
@@ -167,7 +168,7 @@ doap:maintainer [
 
     lv2:majorVersion 1 ;
     lv2:minorVersion 0 ;
-    lv2:microVersion 27 ;
+    lv2:microVersion 33 ;
 
 rdfs:comment """
 Hept7 switch is a loop switcher for CV, the big sibling of Tetr4 switch. Store which of its eight CV outputs are on in each of seven presets, and change between them with a footswitch. It comes with a full-screen, touch-friendly settings page and a small display that shows the preset on every device, even the ones without a screen for plugins.
@@ -325,23 +326,16 @@ lv2:port
 # Based on
 # https://github.com/moddevices/mod-utilities/blob/b8a9d4558efc136c4ce90657a5958064640074f1/SwitchBox_2-1/switchbox_2-1.lv2/switchbox_2-1.ttl
 [
-    a lv2:ControlPort, lv2:InputPort;
+    a lv2:InputPort, lv2:ControlPort;
     lv2:index 15;
     lv2:symbol "Preset_combobox";
     pg:group plug:group_preset_selection ;
     lv2:name "Current preset";
-    lv2:portProperty lv2:integer, lv2:enumeration ;
-        lv2:scalePoint [rdfs:label "Prst 1"; rdf:value 0];
-        lv2:scalePoint [rdfs:label "Prst 2"; rdf:value 1];
-        lv2:scalePoint [rdfs:label "Prst 3"; rdf:value 2];
-        lv2:scalePoint [rdfs:label "Prst 4"; rdf:value 3];
-        lv2:scalePoint [rdfs:label "Prst 5"; rdf:value 4];
-        lv2:scalePoint [rdfs:label "Prst 6"; rdf:value 5];
-        lv2:scalePoint [rdfs:label "Prst 7"; rdf:value 6];
-    lv2:default 0;
+    lv2:default 1 ;
     lv2:minimum 0;
-    lv2:maximum 6;
-    rdfs:comment "Shows and selects which preset (1 to 7) is currently active. It is kept in sync with the Preset selector footswitches. Assigned to a footswitch, to the B+C pair or to a knob, it goes through the presets that are In the cycle and skips the others." ;
+    lv2:maximum 1;
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOffByDefault;
+    rdfs:comment "A button that goes through the presets that are In the cycle: each time you let go of it, it goes to the next one, and after the last it goes back to the first. Assign a footswitch to it to loop through the presets with one foot (it is momentary, acting when released: keep that mode). On the display of a MOD Dwarf it shows the name and the colour of the active preset. Use Next preset and Previous preset for one footswitch each." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort;
@@ -1092,7 +1086,7 @@ lv2:port
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:integer, lv2:toggled ;
-    rdfs:comment "On: preset 1 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+    rdfs:comment "On: preset 1 is one of the presets that the buttons Current preset, Next preset and Previous preset go through. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
@@ -1104,7 +1098,7 @@ lv2:port
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:integer, lv2:toggled ;
-    rdfs:comment "On: preset 2 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+    rdfs:comment "On: preset 2 is one of the presets that the buttons Current preset, Next preset and Previous preset go through. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
@@ -1116,7 +1110,7 @@ lv2:port
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:integer, lv2:toggled ;
-    rdfs:comment "On: preset 3 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+    rdfs:comment "On: preset 3 is one of the presets that the buttons Current preset, Next preset and Previous preset go through. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
@@ -1128,7 +1122,7 @@ lv2:port
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:integer, lv2:toggled ;
-    rdfs:comment "On: preset 4 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+    rdfs:comment "On: preset 4 is one of the presets that the buttons Current preset, Next preset and Previous preset go through. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
@@ -1140,7 +1134,7 @@ lv2:port
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:integer, lv2:toggled ;
-    rdfs:comment "On: preset 5 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+    rdfs:comment "On: preset 5 is one of the presets that the buttons Current preset, Next preset and Previous preset go through. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
@@ -1152,7 +1146,7 @@ lv2:port
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:integer, lv2:toggled ;
-    rdfs:comment "On: preset 6 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+    rdfs:comment "On: preset 6 is one of the presets that the buttons Current preset, Next preset and Previous preset go through. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
 ],
 [
     a lv2:InputPort, lv2:ControlPort ;
@@ -1164,7 +1158,7 @@ lv2:port
     lv2:minimum 0.0 ;
     lv2:maximum 1 ;
     lv2:portProperty lv2:integer, lv2:toggled ;
-    rdfs:comment "On: preset 7 is one of the presets that Current preset goes through when it is assigned to a footswitch, to the B+C pair of footswitches or to a knob. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
+    rdfs:comment "On: preset 7 is one of the presets that the buttons Current preset, Next preset and Previous preset go through. Off: those skip it. The preset buttons and the Preset selectors still select it." ;
 ],
 [
     a lv2:OutputPort, lv2:ControlPort ;
@@ -1306,6 +1300,30 @@ lv2:port
     atom:bufferType atom:Sequence ;
     atom:supports midi:MidiEvent ;
     rdfs:comment "Sends a MIDI control change for each CV output when the preset changes, so the outputs can also drive MIDI gear." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 97 ;
+    lv2:symbol "Next_preset" ;
+    pg:group plug:group_preset_selection ;
+    lv2:name "Next preset" ;
+    lv2:default 1 ;
+    lv2:minimum 0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOffByDefault ;
+    rdfs:comment "A button that goes to the next preset in the cycle (the presets that are In the cycle; after the last it goes back to the first) when you let go of it. Assign a footswitch to it (it is momentary, acting when released: keep that mode). On the display of a MOD Dwarf it shows the name of the preset it leads to, in that preset's colour, dimmed." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 98 ;
+    lv2:symbol "Previous_preset" ;
+    pg:group plug:group_preset_selection ;
+    lv2:name "Previous preset" ;
+    lv2:default 1 ;
+    lv2:minimum 0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOffByDefault ;
+    rdfs:comment "A button that goes to the previous preset in the cycle (the presets that are In the cycle; before the first it goes to the last) when you let go of it. Assign a footswitch to it (it is momentary, acting when released: keep that mode). On the display of a MOD Dwarf it shows the name of the preset it leads to, in that preset's colour, dimmed." ;
 ] ;
 
 patch:writable plug:preset_label_1 ,

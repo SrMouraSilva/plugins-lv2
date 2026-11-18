@@ -130,10 +130,10 @@ export const scenarios = {
       await ctx.tap('[mod-port-symbol="Preset_selector_3"]', 120);
       await ctx.eval(`document.querySelector('[mod-port-symbol="Preset_selector_3"]').classList.add('addressed')`);
       await ctx.sleep(400);
-      // pages: scenes, Current preset, screen pop-ups, MIDI out, saved presets
+      // pages: scenes, Current / Next / Previous preset, screen pop-ups, MIDI out, saved presets
       await visitPages(ctx, {
         next: '.h7s-next', dot: '.h7s-dot', tile: true,
-        tileSymbol: (page) => ['', 'Preset_combobox', 'Assign_to_notify_1'][page] || '',
+        tileSymbol: (page) => ['', 'Next_preset', 'Assign_to_notify_1'][page] || '',
         onPage: async (page) => {
           if (page !== 3) return;
           await ctx.tap('.h7s-num[data-symbol="MIDI_channel"] [data-dir="1"]', 120);

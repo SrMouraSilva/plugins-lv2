@@ -116,6 +116,12 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
     } else if (port == PORT_ACTIVE_PRESET) {
         // Hept7 Switch only, as above
         self->active_preset_output = (float*) data;
+
+    } else if (port == PORT_NEXT_PRESET) {
+        self->next_preset_button = (float*) data;
+
+    } else if (port == PORT_PREVIOUS_PRESET) {
+        self->previous_preset_button = (float*) data;
 #endif
 
     } else if (port >= PORT_MIDI_CC_FIRST && port < PORT_MIDI_CHANNEL) {
@@ -206,15 +212,14 @@ static void Controller_sync_selector_ports(Controller* self) {
         }
     }
 
-    // With a cycle (Hept7 Switch) the combobox is also the device's position (see Controller_follow_combobox). It never
-    // takes a value near that position: the next press of the device would send it (the host would see no change, and
-    // the press would be lost), or it would make a press ambiguous. It keeps its value instead, and the selectors say
-    // which preset is on
-    const bool keep_cycle_position = Controller_has_cycle(self) && !Controller_may_show_in_combobox(self, current);
+    // Hept7 Switch has buttons where Tetr4 Switch has the enumeration: nothing to keep in step there. The selectors say
+    // which preset is on, and the widgets show it
+    if (Controller_has_cycle(self)) {
+        return;
+    }
 
     // The raw value, so a value out of range is put right too
-    if (!keep_cycle_position
-        && *self->current_preset_index != (float) current
+    if (*self->current_preset_index != (float) current
         && control_input_port->request_change(control_input_port->handle, PORT_PRESET_SELECT, (float) current) == LV2_CONTROL_INPUT_PORT_CHANGE_SUCCESS) {
         self->combobox = current;
     }

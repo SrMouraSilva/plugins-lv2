@@ -28,6 +28,19 @@ typedef struct {
     LV2_HMI_Addressing select;
 
     LV2_HMI_Addressing notifiers[TOTAL_CONTROLLER_NOTIFIERS];
+
+    /**
+     * What each addressing above can show (LV2_HMI_AddressingCapabilities, as the host reported it): a call the
+     * addressing does not support is not made. Only meaningful while the addressing is not NULL
+     */
+    unsigned int preset_caps[TOTAL_PRESETS];
+    unsigned int select_caps;
+
+    /** Hept7 Switch: the buttons that go to the next and to the previous preset (NULL when not addressed), and their caps */
+    LV2_HMI_Addressing next;
+    LV2_HMI_Addressing previous;
+    unsigned int next_caps;
+    unsigned int previous_caps;
 } HMI;
 
 typedef struct {

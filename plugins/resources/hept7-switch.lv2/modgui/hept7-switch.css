@@ -993,6 +993,11 @@
   list-style: none;
 }
 
+/* Go through the presets: Current preset has the row to itself, Previous (left) and Next (right) share the one below,
+   whatever the width of the panel */
+.h7s-hw-current .h7s-assign { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.h7s-hw-current .h7s-assign > li:first-child { grid-column: 1 / -1; }
+
 .h7s .mod-address.h7s-address {
   position: static;
   display: flex;
@@ -1089,6 +1094,12 @@
 .h7s .h7s-unsupported-note { color: var(--h7-accent); font-weight: 600; }
 .h7s-panel.is-unsupported .h7s-panel-head p:not(.h7s-unsupported-note) { display: none; }
 
+
+/* Next and Previous preset: where they lead, plain text like the line of Current preset (the tile around it is the control) */
+.h7s-target { display: flex; align-items: center; min-width: 0; }
+.h7s-target-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.h7s-target-text::before { content: "\2192\00a0"; }
+.h7s-target-previous::before { content: "\2190\00a0"; }
 
 /* Current preset: the preset that is playing, in its colour. Plain text, not a control (the tile around it is) */
 .h7s-playing {
@@ -1454,7 +1465,7 @@
 .h7s-matrix.is-stacked .h7s-cell-cycle { grid-column: 1 / 4; margin-left: 0; height: 44px; }
 .h7s-matrix.is-stacked .h7s-row-assign { grid-column: 4; }
 .h7s-matrix.is-stacked .h7s-cell-cycle::after { content: "\2715  Out of the cycle"; font-size: 15px; }
-.h7s-matrix.is-stacked .h7s-cell-cycle.is-on::after { content: "\21BB  In the cycle of Current preset"; font-size: 15px; }
+.h7s-matrix.is-stacked .h7s-cell-cycle.is-on::after { content: "\21BB  In the cycle"; font-size: 15px; }
 
 /* Short (a phone on its side): tighter, with no room for the descriptions; 44px is still the smallest target */
 .h7s[data-h="s"] { --h7s-gy: 8px; }

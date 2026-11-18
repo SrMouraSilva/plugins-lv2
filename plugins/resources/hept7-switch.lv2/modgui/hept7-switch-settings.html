@@ -70,13 +70,25 @@
         <section class="h7s-panel h7s-assign-panel h7s-hw-current" data-panel="hardware-current">
           <div class="h7s-panel-head">
             <span class="h7s-eyebrow">Hardware assignment</span>
-            <h2>Current preset<span class="h7s-range"></span></h2>
-            <p>Step through the presets with a single control: a knob, or the B+C pair of footswitches. Presets switched off in Cycle are skipped. The tile shows the preset that is playing.</p>
+            <h2>Go through the presets<span class="h7s-range"></span></h2>
+            <p>Three buttons, one footswitch each. Current preset loops forward with one foot; Next and Previous take one foot each. Presets switched off in Cycle are skipped. On the device screen they show the preset they lead to (Current preset: the one that is playing).</p>
           </div>
           <ul class="h7s-assign">
             <li>
-              <button type="button" class="mod-address h7s-address" mod-role="input-control-address" mod-port-symbol="Preset_combobox" title="Assign Current preset to a hardware control">
+              <button type="button" class="mod-address h7s-address" mod-role="input-control-address" mod-port-symbol="Preset_combobox" title="Assign Current preset to a footswitch">
                 <span class="h7s-assign-name">Current preset<small class="h7s-playing"><span class="h7s-playing-dot" aria-hidden="true"></span><span class="h7s-playing-text">Preset 1</span></small></span>
+                <span class="h7s-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address h7s-address" mod-role="input-control-address" mod-port-symbol="Previous_preset" title="Assign Previous preset to a footswitch">
+                <span class="h7s-assign-name">Previous preset<small class="h7s-target"><span class="h7s-target-text h7s-target-previous">Preset 7</span></small></span>
+                <span class="h7s-assign-state" aria-hidden="true"></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="mod-address h7s-address" mod-role="input-control-address" mod-port-symbol="Next_preset" title="Assign Next preset to a footswitch">
+                <span class="h7s-assign-name">Next preset<small class="h7s-target"><span class="h7s-target-text h7s-target-next">Preset 2</span></small></span>
                 <span class="h7s-assign-state" aria-hidden="true"></span>
               </button>
             </li>

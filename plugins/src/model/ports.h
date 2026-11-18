@@ -23,12 +23,14 @@
  *   Active preset     1 output port, Hept7 Switch only
  *   MIDI              TOTAL_OUTPUTS CC numbers, the channel, "changes only" and the MIDI output (added last, for the
  *                     same reason)
+ *   Next, Previous    2 buttons, Hept7 Switch only (after the MIDI output). "Current preset" is a button there too
  *
  * Tetr4 Switch (4x4):  outputs 0-3, selectors 4-7, current preset 8, notify 9-12, dips 13-28, events 29-30,
  *                      MIDI CC 31-34, MIDI channel 35, changes only 36, MIDI out 37
  * Hept7 Switch (7 presets x 8 outputs):  outputs 0-7, selectors 8-14, current preset 15, notify 16-19, dips 20-75,
  *                                        events 76-77, in the cycle 78-84, active preset 85,
- *                                        MIDI CC 86-93, MIDI channel 94, changes only 95, MIDI out 96
+ *                                        MIDI CC 86-93, MIDI channel 94, changes only 95, MIDI out 96,
+ *                                        next preset 97, previous preset 98
  */
 #define PORT_OUTPUT_CV_FIRST          0
 #define PORT_PRESET_SELECTOR_FIRST    (PORT_OUTPUT_CV_FIRST + TOTAL_OUTPUTS)
@@ -53,6 +55,11 @@
 #define PORT_MIDI_CHANGES_ONLY        (PORT_MIDI_CHANNEL + 1)
 /** Output: the control changes, one per CV output, whenever the preset changes */
 #define PORT_MIDI_OUT                 (PORT_MIDI_CHANGES_ONLY + 1)
+#ifdef HEPT7_SWITCH
+/** Buttons: go to the next / the previous preset in the cycle. Hept7 Switch only */
+#define PORT_NEXT_PRESET              (PORT_MIDI_OUT + 1)
+#define PORT_PREVIOUS_PRESET          (PORT_NEXT_PRESET + 1)
+#endif
 
 /** Index of the dip switch that sets CV output @p output (0-based) while preset @p preset (0-based) is active */
 #define PORT_PRESET_OUTPUT(preset, output) (PORT_PRESET_OUTPUT_FIRST + (preset) * TOTAL_OUTPUTS + (output))
@@ -76,6 +83,8 @@ _Static_assert(PORT_MIDI_CC_FIRST == 86, "hept7-switch.ttl: MIDI CC numbers star
 _Static_assert(PORT_MIDI_CHANNEL == 94, "hept7-switch.ttl: MIDI channel is port 94");
 _Static_assert(PORT_MIDI_CHANGES_ONLY == 95, "hept7-switch.ttl: MIDI changes only is port 95");
 _Static_assert(PORT_MIDI_OUT == 96, "hept7-switch.ttl: MIDI out is port 96");
+_Static_assert(PORT_NEXT_PRESET == 97, "hept7-switch.ttl: next preset is port 97");
+_Static_assert(PORT_PREVIOUS_PRESET == 98, "hept7-switch.ttl: previous preset is port 98");
 #endif
 
 #endif

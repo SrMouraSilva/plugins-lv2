@@ -102,6 +102,10 @@ export const shots = {
       highlight: ['.h7s-cell-cycle[data-preset="3"]', '.h7s-cell-cycle[data-preset="4"]', '.h7s-cell-cycle[data-preset="6"]', '.h7s-cell-cycle[data-preset="7"]'],
       finger: '.h7s-cell-cycle[data-preset="4"]', crop: { closest: '.h7s-panel', of: '.h7s-cell-cycle[data-preset="4"]' },
     },
+    // Section 3: the buttons that go through the presets, one footswitch each
+    settings('step-assign-navigation.webp', tile('Next_preset'), {
+      highlight: [tile('Previous_preset'), tile('Next_preset')], crop: { closest: 'section', of: tile('Next_preset') },
+    }),
     // Section 4: the pop-up
     settings('step-assign-notify.webp', tile('Assign_to_notify_1')),
   ],

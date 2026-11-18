@@ -13,6 +13,11 @@
 
 #include "../lv2/controller/lv2-controller.h"
 
+/** The three buttons of Hept7 Switch, as bits of Controller.button_mask */
+#define BUTTON_CURRENT  (1u << 0)
+#define BUTTON_NEXT     (1u << 1)
+#define BUTTON_PREVIOUS (1u << 2)
+
 /** Tension when is on */
 #define MAX_TENSION 10 // volts
 
@@ -21,7 +26,14 @@ typedef struct {
     // Ports
     float* output_cvs[TOTAL_OUTPUTS];
     float* preset_selectors[TOTAL_PRESETS];
+    /**
+     * Tetr4 Switch: the enumeration "Current preset". Hept7 Switch: the button of that name, which loops forward
+     * through the cycle (the symbol is the same, its meaning is not)
+     */
     float* current_preset_index;
+    /** Hept7 Switch only (NULL on Tetr4 Switch): the buttons that go to the next and to the previous preset in the cycle */
+    float* next_preset_button;
+    float* previous_preset_button;
     float* preset_outputs[TOTAL_PRESETS][TOTAL_OUTPUTS];
     /** NULL when the plugin has no such port (Tetr4 Switch): the preset is in the cycle */
     float* presets_in_cycle[TOTAL_PRESETS];
@@ -70,6 +82,13 @@ typedef struct {
     unsigned int selector_mask;
     unsigned int combobox;
 
+    /**
+     * Something the widgets show, other than the active preset, changed (a preset's name, by a patch:Set or a restored
+     * state; the cycle, which changes where "Next preset" and "Previous preset" lead) and the display has not been told
+     * yet: the HMI sends the labels again. Set by the model, cleared by the HMI code
+     */
+    bool labels_changed;
+
     /** run() has not run yet: the first cycle reads the pedalboard being loaded */
     bool started;
 
@@ -81,11 +100,16 @@ typedef struct {
     unsigned int cycle_mask;
 
     /**
-     * The last value written into "Current preset" from outside: where the device thinks it is. A footswitch (or the
-     * B+C pair, or a knob) addressed to it computes the next value from its own position, which nobody updates when the
-     * plugin changes the preset, so a move of one step from here is a step, wherever the preset is
+     * Hept7 Switch: "Current preset", "Next preset" and "Previous preset" are buttons (BUTTON_* bits). The ones that
+     * were on when the previous cycle was read: a press is a button going on, not being on
      */
-    unsigned int cycle_position;
+    unsigned int button_mask;
+
+    /** run() has run at least once and the cycle was read then: a change of the cycle after that is news */
+    bool started_once;
+
+    /** The combobox was moved from outside on this cycle (Tetr4 Switch): the device has drawn its own text, which the HMI draws over */
+    bool combobox_moved;
 
     LV2_Controller* lv2;
 } Controller;
@@ -103,18 +127,12 @@ extern bool Controller_set_preset_label(Controller* self, unsigned int index, co
 extern void Controller_run(Controller* self, uint32_t n_samples);
 
 /**
- * "Current preset" goes through a cycle (Hept7 Switch, which has the "In the cycle" ports): a move of one option is a
- * step to the next or previous preset in the cycle, counted from the active preset (see Controller_follow_combobox)
+ * Hept7 Switch (it has the "In the cycle" ports): "Current preset", "Next preset" and "Previous preset" are buttons that
+ * step through the presets that are in the cycle, from the active preset
  */
 extern bool Controller_has_cycle(const Controller* self);
 
-/** +1 when @p to is the option after @p from (wrapping around), -1 when it is the one before, 0 otherwise */
-extern int Controller_cycle_step(unsigned int from, unsigned int to);
-
-/**
- * With a cycle, may "Current preset" be set to @p preset? Only when it is the device's position or the
- * option opposite to it (see Controller_follow_combobox)
- */
-extern bool Controller_may_show_in_combobox(const Controller* self, unsigned int preset);
+/** The preset a step of @p direction (+1: next, -1: previous) from the active preset leads to, in the cycle */
+extern unsigned int Controller_cycle_target(const Controller* self, int direction);
 
 #endif

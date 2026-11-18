@@ -69,7 +69,7 @@ function (event, funcs) {
 
     // Set apart from the CV outputs: whether "Current preset" goes through this preset
     const cycle = `<button type="button" role="switch" aria-checked="true" class="h7s-cell h7s-cell-cycle" data-preset="${preset}" ` +
-      `aria-label="Preset ${preset} is in the cycle of Current preset" title="Preset ${preset} - In the cycle of Current preset (footswitch, B+C, knob)"></button>`;
+      `aria-label="Preset ${preset} is in the cycle of Current preset, Next preset and Previous preset" title="Preset ${preset} - In the cycle of Current preset, Next preset and Previous preset"></button>`;
 
     // The slot after the cycle cell is where the button that assigns the preset to a hardware control goes
     const assign = `<span class="h7s-row-assign" data-preset="${preset}"></span>`;
@@ -123,7 +123,7 @@ function (event, funcs) {
 
     const head = '<div class="h7s-row h7s-head" aria-hidden="true"><span class="h7s-corner">Preset</span><span class="h7s-spacer"></span>' +
       '<div class="h7s-cells">' + range(1, OUTPUTS).map((o) => `<span class="h7s-col">${o}</span>`).join('') +
-      '<span class="h7s-col h7s-col-cycle" title="In the cycle of Current preset">Cycle</span>' +
+      '<span class="h7s-col h7s-col-cycle" title="In the cycle of Current preset, Next preset and Previous preset">Cycle</span>' +
       '<span class="h7s-col h7s-col-assign" title="Assign the preset to a control of your device">Assign</span></div></div>';
 
     settings.find('.h7s-matrix').html(head + range(1, PRESETS).map(rowHtml).join(''));
@@ -185,7 +185,7 @@ function (event, funcs) {
       pager: root.querySelector('.h7s-pager'),
       stock: root.querySelector('.h7s-stock'),
       scenes: part(root.querySelector('[data-panel="scenes"]'), '.h7s-matrix', '.h7s-row[data-preset]'),
-      // Hardware is told apart by purpose: the preset buttons, the Current preset control, the screen pop-ups
+      // Hardware is told apart by purpose: the preset buttons, the Current / Next / Previous preset buttons, the screen pop-ups
       hardware: Array.from(root.querySelectorAll('[data-panel^="hardware"]')).map((panel) => part(panel, '.h7s-assign', 'li')),
       // The MIDI out: a panel that is never split, with two groups of fields, each with its own columns
       midi: part(root.querySelector('[data-panel="midi"]')),
@@ -489,8 +489,10 @@ function (event, funcs) {
       cells: all(event.settings, '.h7s-cell[data-output]').map((el) => ({ el, preset: preset(el), output: output(el) })),
       cycleCells: all(event.settings, '.h7s-cell-cycle').map((el) => ({ el, preset: preset(el) })),
       labels: all(event.settings, '.h7s-label').map((el) => ({ el, preset: preset(el) })),
-      // The tile of Current preset says which preset is playing
+      // The tile of Current preset says which preset is playing, those of Next and Previous preset where they lead
       playing: all(event.settings, '.h7s-playing-text'),
+      nextTargets: all(event.settings, '.h7s-target-next'),
+      previousTargets: all(event.settings, '.h7s-target-previous'),
       // MIDI out: the number fields (value and the two buttons) and the switch, by port symbol
       midiNumbers: all(event.settings, '.h7s-num').map((el) => ({
         el, symbol: el.getAttribute('data-symbol'), value: el.querySelector('.h7s-num-value'), steps: Array.from(el.querySelectorAll('.h7s-num-step')),
@@ -517,6 +519,20 @@ function (event, funcs) {
     if (el !== document.activeElement && el.value !== value) {
       el.value = value;
     }
+  };
+
+  // Where Next preset (direction 1) and Previous preset (-1) lead from @p active: the next preset that is in the cycle
+  // (the active one itself when it is the only one), as the plugin counts
+  const cycleTarget = (state, active, direction) => {
+    for (let step = 1; step <= PRESETS; step++) {
+      const preset = ((active - 1 + direction * step + PRESETS * 2) % PRESETS) + 1;
+
+      if (state.inCycle[preset - 1]) {
+        return preset;
+      }
+    }
+
+    return active;
   };
 
   const draw = (event) => {
@@ -552,6 +568,9 @@ function (event, funcs) {
     el.cycleCells.forEach((cell) => toggle(cell.el, 'is-on', state.inCycle[cell.preset - 1], 'aria-checked'));
     el.labels.forEach((label) => setInput(label.el, labelOf(state, label.preset)));
     el.playing.forEach((text) => setText(text, `${active} \u00b7 ${activeLabel}`));
+    const targetText = (preset) => `${preset} \u00b7 ${labelOf(state, preset)}`;
+    el.nextTargets.forEach((text) => setText(text, targetText(cycleTarget(state, active, 1))));
+    el.previousTargets.forEach((text) => setText(text, targetText(cycleTarget(state, active, -1))));
 
     el.midiNumbers.forEach((number) => {
       const limit = MIDI_LIMITS[number.symbol];
@@ -604,8 +623,8 @@ function (event, funcs) {
 
   // The user pressed a preset button: the display announces it at once, without waiting for the host. The host's
   // answer is handled by hostSays().
-  // The click goes to the selector of that preset (not to "Current preset": when some presets are out of its cycle,
-  // the plugin takes a move of one step of it for a footswitch going through the cycle). MOD UI sends nothing when its
+  // The click goes to the selector of that preset (not to "Current preset", which is a button that steps through the
+  // cycle: it can not name a preset). MOD UI sends nothing when its
   // copy of the port already holds the value, and its copy of a selector is only put back to 0 when the host's answer
   // arrives, so a quick click back to a previous preset was lost. This page follows that copy: when it is already on,
   // the selector is turned off and on again, which the plugin always takes as that preset being selected
@@ -932,10 +951,6 @@ function (event, funcs) {
         return hostPreset(preset);
       }
 
-    } else if (symbol === 'Preset_combobox' && !announceChange) {
-      // Only when the page starts, and only if no selector is on. Afterwards the selectors say which preset is on:
-      // with presets out of the cycle, "Current preset" may hold where the device's footswitch is in the cycle
-      state.comboboxPreset = Math.round(Number(value)) + 1;
     }
 
     return false;
@@ -971,8 +986,7 @@ function (event, funcs) {
       handlePort(event, port.symbol, port.value, false);
     }
     if (!event.data.state.active) {
-      const preset = event.data.state.comboboxPreset;
-      event.data.state.active = event.data.state.hostPreset = preset >= 1 && preset <= PRESETS ? preset : 1;
+      event.data.state.active = event.data.state.hostPreset = 1;
     }
 
     // Labels come from the plugin: ask for them (the reply arrives as a 'change' event with a uri)
