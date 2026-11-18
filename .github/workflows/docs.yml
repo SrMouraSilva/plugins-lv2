@@ -24,9 +24,11 @@ permissions:
   pages: write
   id-token: write
 
-# One deployment at a time; a newer push replaces one that has not finished
+# One deployment at a time; a newer push replaces one that has not finished. The builds of pull requests have a group of
+# their own: with a shared one, the run of a merged pull request (which starts a few seconds after the push) cancelled
+# the push run, and the site was never deployed.
 concurrency:
-  group: pages
+  group: ${{ github.event_name == 'pull_request' && format('pages-pr-{0}', github.ref) || 'pages' }}
   cancel-in-progress: true
 
 jobs:
