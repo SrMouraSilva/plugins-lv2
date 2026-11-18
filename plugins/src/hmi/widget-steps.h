@@ -5,7 +5,7 @@
  */
 
 /*
- * The row of steps of Kill Switch and Half Mouco, drawn on a widget canvas: one bar for each step, as high as its level
+ * The row of steps of Kill Switch, drawn on a widget canvas: one bar for each step, as high as its level
  * says ('2' the whole height, '1' half of it, '0' only the baseline), and a caret under the step that plays.
  */
 

@@ -35,7 +35,7 @@ import build_manual_html as manual  # noqa: E402
 RESOURCES = ROOT / "plugins" / "resources"
 
 # The order of the Readme
-PLUGINS = ["gossiper", "tetr4-switch", "hept7-switch", "kill-switch", "half-mouco"]
+PLUGINS = ["gossiper", "tetr4-switch", "hept7-switch", "kill-switch"]
 
 # (source, page, one line for the card)
 GUIDES = [
@@ -200,7 +200,7 @@ def index(plugins: list, repo: str, ref: str) -> str:
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <title>SrMouraSilva plugins — documentation</title>
-<meta name="description" content="Manuals, guides and downloads of the LV2 utility plugins Gossiper, Tetr4 Switch, Hept7 Switch, Kill Switch and Half Mouco for MOD Dwarf, MOD Duo X and MOD Duo.">
+<meta name="description" content="Manuals, guides and downloads of the LV2 utility plugins Gossiper, Tetr4 Switch, Hept7 Switch and Kill Switch for MOD Dwarf, MOD Duo X and MOD Duo.">
 <style>
 :root {{ --brand: #1d2358; --brand-2: #0b0e2b; --accent: #3342c4; --accent-dark: #a9b6ff; --strip: linear-gradient(90deg, {strip}); }}
 {css}

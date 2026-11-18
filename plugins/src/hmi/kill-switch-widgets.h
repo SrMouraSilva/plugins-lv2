@@ -5,9 +5,10 @@
  */
 
 /*
- * The display widgets of Kill Switch (`pattern`): the pattern, the step that plays and the tempo, for devices with the
- * aLabs HMI widgets extension (see hmi/widget-host.h). The plugin fills `KillSwitchView` on every cycle and calls
- * `kill_switch_widgets_run`; everything else (what is on a display, what is drawn, when) is here.
+ * The display widgets of Kill Switch (`stereo`): a row of steps for each side, or the curve of the ending along its time, for
+ * devices with the aLabs HMI widgets extension (see hmi/widget-host.h). The plugin fills `KillSwitchView` on every cycle and
+ * calls `kill_switch_widgets_run`; everything else (what is on a display, what is drawn, when) is here. The only thing the widget
+ * asks of the plugin is `ending_gate`, to draw the curve of an ending from the same function that plays it.
  */
 
 #ifndef HMI_KILL_SWITCH_WIDGETS_H
@@ -24,29 +25,49 @@
 /** A pattern with more steps a second than this cannot be followed with the eye: the widget does not show the step */
 #define KILL_SWITCH_WIDGET_MAX_FOLLOW_STEPS_PER_SECOND 10.0
 
+/** What an ending remembers between two calls (the index of the bounce or of the blade): only a cache */
+typedef struct {
+    int index;
+} KillSwitchEndingState;
+
+/**
+ * The gate (0 = cut .. 1 = pass) of each side at the time `t` of an ending of `total` seconds, with `beat` seconds a beat:
+ * the function of the plugin that plays the endings. `ending` is the index of the `ending` port.
+ */
+typedef void (*KillSwitchEndingGate)(int ending, double t, double total, double beat, KillSwitchEndingState* state, float* gate_l, float* gate_r);
+
 /** What the widgets draw, as run() saw it on its last cycle */
 typedef struct {
-    bool  bypassed;
-    char  name[24];
-    char  steps[KILL_SWITCH_WIDGET_MAX_STEPS + 1];
-    int   count;
-    int   step;
-    float bpm;
+    bool   idle;
+    /** The Endings mode: the widget draws the curve of the ending (`ending`, `elapsed` of `total` seconds); otherwise the steps */
+    bool   endings;
+    /** The name of the pattern (an ending's name is the widget's) */
+    char   name[24];
+    char   left[KILL_SWITCH_WIDGET_MAX_STEPS + 1];
+    char   right[KILL_SWITCH_WIDGET_MAX_STEPS + 1];
+    int    count;
+    int    step;
+    float  bpm;
     /** 0..3: the Speed multiplier */
-    int   speed;
-    /** Percent */
-    int   depth;
+    int    speed;
     /** Too many steps a second to follow */
-    bool  fast;
+    bool   fast;
+    int    ending;
+    double elapsed;
+    double total;
+    /** The length of the ending, in beats */
+    float  length;
+    float  floor_gain;
 } KillSwitchView;
 
 typedef struct {
-    WidgetHost     host;
-    KillSwitchView view;
+    WidgetHost          host;
+    KillSwitchView       view;
+    KillSwitchEndingGate gate;
 } KillSwitchWidgets;
 
 /** In instantiate(): `features` is what the host gave */
-extern void kill_switch_widgets_init(KillSwitchWidgets* widgets, const LV2_Feature* const* features);
+extern void kill_switch_widgets_init(KillSwitchWidgets* widgets, const LV2_Feature* const* features, KillSwitchEndingGate gate);
 
 /** At the end of run(), once the view is up to date: draw what changed on the widgets that are on a display */
 extern void kill_switch_widgets_run(KillSwitchWidgets* widgets, uint32_t frames, double sample_rate);

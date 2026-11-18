@@ -10,15 +10,25 @@
 @prefix plug:   <http://srmourasilva.github.io/plugins/kill-switch#> .
 @prefix ahw:  <https://github.com/sejerpz/alabs-hmi-widgets#> .
 
-plug:group_pattern
+plug:group_mode
     a pg:Group ;
-    lv2:symbol "pattern" ;
-    lv2:name "Pattern" .
+    lv2:symbol "mode" ;
+    lv2:name "Mode" .
+
+plug:group_patterns
+    a pg:Group ;
+    lv2:symbol "patterns" ;
+    lv2:name "Patterns" .
+
+plug:group_endings
+    a pg:Group ;
+    lv2:symbol "endings" ;
+    lv2:name "Endings" .
 
 plug:group_feel
     a pg:Group ;
     lv2:symbol "feel" ;
-    lv2:name "Feel" .
+    lv2:name "Tempo and feel" .
 
 plug:group_custom
     a pg:Group ;
@@ -47,49 +57,75 @@ plug:group_custom
     ahw:widget
     [
         a ahw:Widget ;
-        lv2:symbol "pattern" ;
-        lv2:name "Pattern" ;
-        rdfs:comment "The pattern that plays: its name, the steps with the one that is playing, and the tempo. Placing it offers to assign Pattern and Tempo to controls of the device." ;
+        lv2:symbol "stereo" ;
+        lv2:name "Stereo pattern" ;
+        rdfs:comment "The left and the right side: a row of steps for each, with the step that is playing, or the curve of the ending along its time. Placing it offers to assign Mode, Pattern and Tempo to controls of the device." ;
         ahw:minWidth 40 ;
-        ahw:minHeight 8 ;
+        ahw:minHeight 14 ;
         ahw:naturalWidth 82 ;
         ahw:naturalHeight 37 ;
         ahw:pixelFormat ahw:Mono1 ;
-        ahw:suggestedPorts ( "pattern" "bpm" ) ;
+        ahw:suggestedPorts ( "mode" "pattern" "bpm" ) ;
     ] ;
 
     # Raise the micro version whenever the modgui changes (MOD UI caches it for a year, keyed by this version)
     lv2:majorVersion 1 ;
     lv2:minorVersion 0 ;
-    lv2:microVersion 19 ;
+    lv2:microVersion 23 ;
 
     rdfs:comment """
-Kill Switch chops the signal in a rhythm, like the momentary kill switch some guitars have. While the plugin is on, a looping step pattern lets the signal through or cuts it; bypassed, the signal is clean. Pick a pattern (or write your own, with three levels per step), set the tempo, and use Depth and Edge to decide how deep and how hard the cuts are.
+Kill Switch is a rhythmic signal-cut effect, like the momentary kill switch some guitars have: while it is on, a looping step pattern lets the signal through or cuts it, in time with the tempo. The left and the right side have a row of steps each, so the sound can change with the side (a ping-pong, one ear chopped while the other is not); the first ten patterns are the same on both sides, for a single instrument. Besides the looping patterns (nineteen to choose from, and one you write yourself, with three levels per step) it has endings: effects for the end of a song, such as a bouncing ball or a helicopter that lands, that play once and finish in silence. Assign Kill to a footswitch: it is meant to be momentary, so the signal is chopped while you hold it.
 """ ;
 
     lv2:port
     [
         a lv2:InputPort, lv2:AudioPort ;
         lv2:index 0 ;
-        lv2:symbol "in" ;
-        lv2:name "In"
+        lv2:symbol "in_l" ;
+        lv2:name "In L"
+    ],
+    [
+        a lv2:InputPort, lv2:AudioPort ;
+        lv2:index 1 ;
+        lv2:symbol "in_r" ;
+        lv2:name "In R"
     ],
     [
         a lv2:OutputPort, lv2:AudioPort ;
-        lv2:index 1 ;
-        lv2:symbol "out" ;
-        lv2:name "Out"
+        lv2:index 2 ;
+        lv2:symbol "out_l" ;
+        lv2:name "Out L"
+    ],
+    [
+        a lv2:OutputPort, lv2:AudioPort ;
+        lv2:index 3 ;
+        lv2:symbol "out_r" ;
+        lv2:name "Out R"
     ],
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 2 ;
-        lv2:symbol "pattern" ;
-        lv2:name "Pattern" ;
-        pg:group plug:group_pattern ;
-        rdfs:comment "The rhythm of the cuts. Every pattern starts with its first step each time the plugin is switched on. Custom plays the pattern you write on the settings page. Assign it to a knob or a footswitch to change pattern while you play." ;
+        lv2:index 4 ;
+        lv2:symbol "mode" ;
+        lv2:name "Mode" ;
+        pg:group plug:group_mode ;
+        rdfs:comment "Patterns loop for as long as the plugin is on. Endings play once when the plugin is switched on and finish in silence: effects for the end of a song. Assign it to a footswitch to jump from one to the other." ;
         lv2:default 0 ;
         lv2:minimum 0 ;
-        lv2:maximum 10 ;
+        lv2:maximum 1 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Patterns" ; rdf:value 0 ] ,
+                       [ rdfs:label "Endings" ; rdf:value 1 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 5 ;
+        lv2:symbol "pattern" ;
+        lv2:name "Pattern" ;
+        pg:group plug:group_patterns ;
+        rdfs:comment "The rhythm of the cuts: the first ten are the same on both sides, the next nine have a row for each side. Every pattern starts with its first step each time the plugin is switched on. Custom plays the pattern you write on the settings page. Used in the Patterns mode." ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 19 ;
         lv2:portProperty lv2:integer, lv2:enumeration ;
         # Keep in step with PATTERNS in src/kill-switch.c and in modgui/kill-switch.js
         lv2:scalePoint [ rdfs:label "Chop 8ths" ; rdf:value 0 ] ,
@@ -102,15 +138,41 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
                        [ rdfs:label "Morello toggle solo" ; rdf:value 7 ] ,
                        [ rdfs:label "Greenwood chunk" ; rdf:value 8 ] ,
                        [ rdfs:label "Buckethead burst" ; rdf:value 9 ] ,
-                       [ rdfs:label "Custom" ; rdf:value 10 ]
+                       [ rdfs:label "Ping-pong 8ths" ; rdf:value 10 ] ,
+                       [ rdfs:label "Ping-pong 16ths" ; rdf:value 11 ] ,
+                       [ rdfs:label "Triplet pong" ; rdf:value 12 ] ,
+                       [ rdfs:label "Half deaf: left" ; rdf:value 13 ] ,
+                       [ rdfs:label "Half deaf: right" ; rdf:value 14 ] ,
+                       [ rdfs:label "Gallop sides" ; rdf:value 15 ] ,
+                       [ rdfs:label "Stagger" ; rdf:value 16 ] ,
+                       [ rdfs:label "Seesaw" ; rdf:value 17 ] ,
+                       [ rdfs:label "Syncopated sides" ; rdf:value 18 ] ,
+                       [ rdfs:label "Custom" ; rdf:value 19 ]
     ],
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 3 ;
+        lv2:index 6 ;
+        lv2:symbol "ending" ;
+        lv2:name "Ending" ;
+        pg:group plug:group_endings ;
+        rdfs:comment "The effect for the end of a song, played once when the plugin is switched on. Used in the Endings mode." ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 4 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Bouncing ball" ; rdf:value 0 ] ,
+                       [ rdfs:label "Helicopter" ; rdf:value 1 ] ,
+                       [ rdfs:label "Stutter out" ; rdf:value 2 ] ,
+                       [ rdfs:label "Side fade" ; rdf:value 3 ] ,
+                       [ rdfs:label "Ping-pong out" ; rdf:value 4 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 7 ;
         lv2:symbol "bpm" ;
         lv2:name "Tempo" ;
-        pg:group plug:group_pattern ;
-        rdfs:comment "How fast the pattern plays, in beats per minute. Set it by hand or assign it to a knob or an expression pedal." ;
+        pg:group plug:group_feel ;
+        rdfs:comment "How fast it plays, in beats per minute. Set it by hand or assign it to a knob or an expression pedal." ;
         lv2:default 120 ;
         lv2:minimum 40 ;
         lv2:maximum 240 ;
@@ -124,11 +186,11 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
     ],
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 4 ;
+        lv2:index 8 ;
         lv2:symbol "speed" ;
         lv2:name "Speed" ;
-        pg:group plug:group_pattern ;
-        rdfs:comment "Plays the pattern at half, normal, double or four times its speed, without changing the tempo. Assign it to a footswitch to double the speed while you hold it." ;
+        pg:group plug:group_patterns ;
+        rdfs:comment "Plays the pattern at half, normal, double or four times its speed, without changing the tempo. Used in the Patterns mode." ;
         lv2:default 1 ;
         lv2:minimum 0 ;
         lv2:maximum 3 ;
@@ -140,7 +202,25 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
     ],
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 5 ;
+        lv2:index 9 ;
+        lv2:symbol "length" ;
+        lv2:name "Length" ;
+        pg:group plug:group_endings ;
+        rdfs:comment "How long an ending lasts, in beats at the tempo: at 120 BPM, 8 beats are 4 seconds. Used in the Endings mode." ;
+        lv2:default 8 ;
+        lv2:minimum 2 ;
+        lv2:maximum 32 ;
+        lv2:portProperty lv2:integer ;
+        units:unit [
+            a units:Unit ;
+            rdfs:label "beats" ;
+            units:symbol "beats" ;
+            units:render "%d beats"
+        ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 10 ;
         lv2:symbol "depth" ;
         lv2:name "Depth" ;
         pg:group plug:group_feel ;
@@ -152,7 +232,7 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
     ],
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 6 ;
+        lv2:index 11 ;
         lv2:symbol "edge" ;
         lv2:name "Edge" ;
         pg:group plug:group_feel ;
@@ -165,7 +245,19 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
     ],
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 7 ;
+        lv2:index 12 ;
+        lv2:symbol "mono" ;
+        lv2:name "Mono input" ;
+        pg:group plug:group_mode ;
+        rdfs:comment "On: the left input feeds both sides, for a single instrument. Off: each side keeps its own input." ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 1 ;
+        lv2:portProperty lv2:integer, lv2:toggled
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 13 ;
         lv2:symbol "custom_length" ;
         lv2:name "Custom length" ;
         pg:group plug:group_custom ;
@@ -177,7 +269,7 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
     ],
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 8 ;
+        lv2:index 14 ;
         lv2:symbol "custom_steps_per_beat" ;
         lv2:name "Custom steps per beat" ;
         pg:group plug:group_custom ;
@@ -189,102 +281,12 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
     ],
     [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 9 ;
-        lv2:symbol "custom_step_1" ;
-        lv2:name "Custom step 1" ;
-        pg:group plug:group_custom ;
-        rdfs:comment "The level of step 1 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
-        lv2:default 0 ;
-        lv2:minimum 0 ;
-        lv2:maximum 2 ;
-        lv2:portProperty lv2:integer, lv2:enumeration ;
-        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
-                       [ rdfs:label "Half" ; rdf:value 1 ] ,
-                       [ rdfs:label "Pass" ; rdf:value 2 ]
-    ],
-    [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 10 ;
-        lv2:symbol "custom_step_2" ;
-        lv2:name "Custom step 2" ;
-        pg:group plug:group_custom ;
-        rdfs:comment "The level of step 2 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
-        lv2:default 2 ;
-        lv2:minimum 0 ;
-        lv2:maximum 2 ;
-        lv2:portProperty lv2:integer, lv2:enumeration ;
-        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
-                       [ rdfs:label "Half" ; rdf:value 1 ] ,
-                       [ rdfs:label "Pass" ; rdf:value 2 ]
-    ],
-    [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 11 ;
-        lv2:symbol "custom_step_3" ;
-        lv2:name "Custom step 3" ;
-        pg:group plug:group_custom ;
-        rdfs:comment "The level of step 3 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
-        lv2:default 1 ;
-        lv2:minimum 0 ;
-        lv2:maximum 2 ;
-        lv2:portProperty lv2:integer, lv2:enumeration ;
-        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
-                       [ rdfs:label "Half" ; rdf:value 1 ] ,
-                       [ rdfs:label "Pass" ; rdf:value 2 ]
-    ],
-    [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 12 ;
-        lv2:symbol "custom_step_4" ;
-        lv2:name "Custom step 4" ;
-        pg:group plug:group_custom ;
-        rdfs:comment "The level of step 4 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
-        lv2:default 2 ;
-        lv2:minimum 0 ;
-        lv2:maximum 2 ;
-        lv2:portProperty lv2:integer, lv2:enumeration ;
-        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
-                       [ rdfs:label "Half" ; rdf:value 1 ] ,
-                       [ rdfs:label "Pass" ; rdf:value 2 ]
-    ],
-    [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 13 ;
-        lv2:symbol "custom_step_5" ;
-        lv2:name "Custom step 5" ;
-        pg:group plug:group_custom ;
-        rdfs:comment "The level of step 5 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
-        lv2:default 0 ;
-        lv2:minimum 0 ;
-        lv2:maximum 2 ;
-        lv2:portProperty lv2:integer, lv2:enumeration ;
-        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
-                       [ rdfs:label "Half" ; rdf:value 1 ] ,
-                       [ rdfs:label "Pass" ; rdf:value 2 ]
-    ],
-    [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 14 ;
-        lv2:symbol "custom_step_6" ;
-        lv2:name "Custom step 6" ;
-        pg:group plug:group_custom ;
-        rdfs:comment "The level of step 6 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
-        lv2:default 2 ;
-        lv2:minimum 0 ;
-        lv2:maximum 2 ;
-        lv2:portProperty lv2:integer, lv2:enumeration ;
-        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
-                       [ rdfs:label "Half" ; rdf:value 1 ] ,
-                       [ rdfs:label "Pass" ; rdf:value 2 ]
-    ],
-    [
-        a lv2:InputPort, lv2:ControlPort ;
         lv2:index 15 ;
-        lv2:symbol "custom_step_7" ;
-        lv2:name "Custom step 7" ;
+        lv2:symbol "custom_left_step_1" ;
+        lv2:name "Custom left step 1" ;
         pg:group plug:group_custom ;
-        rdfs:comment "The level of step 7 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
-        lv2:default 1 ;
+        rdfs:comment "The level of step 1 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
         lv2:minimum 0 ;
         lv2:maximum 2 ;
         lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -295,11 +297,11 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
     [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 16 ;
-        lv2:symbol "custom_step_8" ;
-        lv2:name "Custom step 8" ;
+        lv2:symbol "custom_left_step_2" ;
+        lv2:name "Custom left step 2" ;
         pg:group plug:group_custom ;
-        rdfs:comment "The level of step 8 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
-        lv2:default 2 ;
+        rdfs:comment "The level of step 2 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 1 ;
         lv2:minimum 0 ;
         lv2:maximum 2 ;
         lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -310,11 +312,11 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
     [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 17 ;
-        lv2:symbol "custom_step_9" ;
-        lv2:name "Custom step 9" ;
+        lv2:symbol "custom_left_step_3" ;
+        lv2:name "Custom left step 3" ;
         pg:group plug:group_custom ;
-        rdfs:comment "The level of step 9 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
-        lv2:default 2 ;
+        rdfs:comment "The level of step 3 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 0 ;
         lv2:minimum 0 ;
         lv2:maximum 2 ;
         lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -325,11 +327,11 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
     [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 18 ;
-        lv2:symbol "custom_step_10" ;
-        lv2:name "Custom step 10" ;
+        lv2:symbol "custom_left_step_4" ;
+        lv2:name "Custom left step 4" ;
         pg:group plug:group_custom ;
-        rdfs:comment "The level of step 10 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
-        lv2:default 2 ;
+        rdfs:comment "The level of step 4 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 1 ;
         lv2:minimum 0 ;
         lv2:maximum 2 ;
         lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -340,10 +342,10 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
     [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 19 ;
-        lv2:symbol "custom_step_11" ;
-        lv2:name "Custom step 11" ;
+        lv2:symbol "custom_left_step_5" ;
+        lv2:name "Custom left step 5" ;
         pg:group plug:group_custom ;
-        rdfs:comment "The level of step 11 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        rdfs:comment "The level of step 5 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
         lv2:default 2 ;
         lv2:minimum 0 ;
         lv2:maximum 2 ;
@@ -355,11 +357,11 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
     [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 20 ;
-        lv2:symbol "custom_step_12" ;
-        lv2:name "Custom step 12" ;
+        lv2:symbol "custom_left_step_6" ;
+        lv2:name "Custom left step 6" ;
         pg:group plug:group_custom ;
-        rdfs:comment "The level of step 12 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
-        lv2:default 2 ;
+        rdfs:comment "The level of step 6 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 1 ;
         lv2:minimum 0 ;
         lv2:maximum 2 ;
         lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -370,11 +372,11 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
     [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 21 ;
-        lv2:symbol "custom_step_13" ;
-        lv2:name "Custom step 13" ;
+        lv2:symbol "custom_left_step_7" ;
+        lv2:name "Custom left step 7" ;
         pg:group plug:group_custom ;
-        rdfs:comment "The level of step 13 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
-        lv2:default 2 ;
+        rdfs:comment "The level of step 7 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 0 ;
         lv2:minimum 0 ;
         lv2:maximum 2 ;
         lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -385,11 +387,11 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
     [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 22 ;
-        lv2:symbol "custom_step_14" ;
-        lv2:name "Custom step 14" ;
+        lv2:symbol "custom_left_step_8" ;
+        lv2:name "Custom left step 8" ;
         pg:group plug:group_custom ;
-        rdfs:comment "The level of step 14 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
-        lv2:default 2 ;
+        rdfs:comment "The level of step 8 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 1 ;
         lv2:minimum 0 ;
         lv2:maximum 2 ;
         lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -400,10 +402,10 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
     [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 23 ;
-        lv2:symbol "custom_step_15" ;
-        lv2:name "Custom step 15" ;
+        lv2:symbol "custom_left_step_9" ;
+        lv2:name "Custom left step 9" ;
         pg:group plug:group_custom ;
-        rdfs:comment "The level of step 15 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        rdfs:comment "The level of step 9 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
         lv2:default 2 ;
         lv2:minimum 0 ;
         lv2:maximum 2 ;
@@ -415,10 +417,10 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
     [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 24 ;
-        lv2:symbol "custom_step_16" ;
-        lv2:name "Custom step 16" ;
+        lv2:symbol "custom_left_step_10" ;
+        lv2:name "Custom left step 10" ;
         pg:group plug:group_custom ;
-        rdfs:comment "The level of step 16 of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        rdfs:comment "The level of step 10 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
         lv2:default 2 ;
         lv2:minimum 0 ;
         lv2:maximum 2 ;
@@ -428,16 +430,348 @@ Kill Switch chops the signal in a rhythm, like the momentary kill switch some gu
                        [ rdfs:label "Pass" ; rdf:value 2 ]
     ],
     [
-        # The bypass of the host: MOD UI hides this port and drives it from the footswitch (mod-role="bypass").
-        # The plugin does the bypass itself, with a 10 ms ramp, and the pattern restarts when it is switched on.
-        # Keep it the last port.
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 25 ;
-        lv2:symbol "lv2_enabled" ;
-        lv2:name "Enabled" ;
+        lv2:symbol "custom_left_step_11" ;
+        lv2:name "Custom left step 11" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 11 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 26 ;
+        lv2:symbol "custom_left_step_12" ;
+        lv2:name "Custom left step 12" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 12 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 27 ;
+        lv2:symbol "custom_left_step_13" ;
+        lv2:name "Custom left step 13" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 13 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 28 ;
+        lv2:symbol "custom_left_step_14" ;
+        lv2:name "Custom left step 14" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 14 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 29 ;
+        lv2:symbol "custom_left_step_15" ;
+        lv2:name "Custom left step 15" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 15 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 30 ;
+        lv2:symbol "custom_left_step_16" ;
+        lv2:name "Custom left step 16" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 16 of the left side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 31 ;
+        lv2:symbol "custom_right_step_1" ;
+        lv2:name "Custom right step 1" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 1 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 32 ;
+        lv2:symbol "custom_right_step_2" ;
+        lv2:name "Custom right step 2" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 2 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
         lv2:default 1 ;
         lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 33 ;
+        lv2:symbol "custom_right_step_3" ;
+        lv2:name "Custom right step 3" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 3 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 34 ;
+        lv2:symbol "custom_right_step_4" ;
+        lv2:name "Custom right step 4" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 4 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 1 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 35 ;
+        lv2:symbol "custom_right_step_5" ;
+        lv2:name "Custom right step 5" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 5 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 36 ;
+        lv2:symbol "custom_right_step_6" ;
+        lv2:name "Custom right step 6" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 6 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 1 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 37 ;
+        lv2:symbol "custom_right_step_7" ;
+        lv2:name "Custom right step 7" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 7 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 38 ;
+        lv2:symbol "custom_right_step_8" ;
+        lv2:name "Custom right step 8" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 8 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 1 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 39 ;
+        lv2:symbol "custom_right_step_9" ;
+        lv2:name "Custom right step 9" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 9 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 40 ;
+        lv2:symbol "custom_right_step_10" ;
+        lv2:name "Custom right step 10" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 10 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 41 ;
+        lv2:symbol "custom_right_step_11" ;
+        lv2:name "Custom right step 11" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 11 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 42 ;
+        lv2:symbol "custom_right_step_12" ;
+        lv2:name "Custom right step 12" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 12 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 43 ;
+        lv2:symbol "custom_right_step_13" ;
+        lv2:name "Custom right step 13" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 13 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 44 ;
+        lv2:symbol "custom_right_step_14" ;
+        lv2:name "Custom right step 14" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 14 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 45 ;
+        lv2:symbol "custom_right_step_15" ;
+        lv2:name "Custom right step 15" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 15 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 46 ;
+        lv2:symbol "custom_right_step_16" ;
+        lv2:name "Custom right step 16" ;
+        pg:group plug:group_custom ;
+        rdfs:comment "The level of step 16 of the right side of the custom pattern: cut, half or pass. Set it on the settings page: tap a step to go to the next level." ;
+        lv2:default 2 ;
+        lv2:minimum 0 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "Cut" ; rdf:value 0 ] ,
+                       [ rdfs:label "Half" ; rdf:value 1 ] ,
+                       [ rdfs:label "Pass" ; rdf:value 2 ]
+    ],
+    [
+        # The effect is on while this is on: assign it to a footswitch, momentary by default (it chops while it is held).
+        # The plugin switches itself with a 10 ms ramp, and the pattern or the ending restarts when it is switched on.
+        # (It is not lv2:enabled: MOD UI draws that one as a bypass, whose assignment has no momentary mode by default.)
+        # Keep it the last port.
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 47 ;
+        lv2:symbol "kill" ;
+        lv2:name "Kill" ;
+        pg:group plug:group_mode ;
+        rdfs:comment "Turns the effect on: the signal is chopped while it is on and clean while it is off. Assign it to a footswitch: it is set to Momentary by default, so it chops only while you hold the footswitch; choose Toggle in the dialog to keep it on after a tap. An ending starts every time it is switched on." ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
         lv2:maximum 1 ;
-        lv2:portProperty lv2:integer, lv2:toggled ;
-        lv2:designation lv2:enabled
+        lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault
     ] .

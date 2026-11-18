@@ -181,15 +181,17 @@ Rules that make this safe:
 
 A settings page is also the way to play the plugin from a phone or a tablet, and the pedalboard is not always at hand. So it has
 **every control of the icon**, not only the ones that need space (the editor of a pattern, the hardware tiles): the choice of
-what plays, tempo, depth and the rest, the on/off switch and any option of the face (Half Mouco's Mono). Use the room: what the
+what plays, tempo, depth and the rest, the on/off switch and any option of the face (Kill Switch's Mono). Use the room: what the
 icon shows in a corner (a row of indicator squares) is only an indicator, and must not take more than that; what you play with
 (the choice of pattern) can be a grid of buttons to tap, not two arrows.
 
-Put on the first page what is played together: the choice, what it does, the editor and the sliders, side by side. An editor that
-only matters for one choice (a custom pattern) opens **in place** when that choice is made, and the layout keeps its room (measure
-with it open, then hide it) so that the page does not jump. When everything does not fit, the editor gets a page of its own and a
-button on the first page takes to it; the same code tries the layouts in order and falls back to one panel per page (see
-`layoutTogether` in Half Mouco's script). Half Mouco's and Kill Switch's pages are the reference.
+Put on the first page what is played together: the choice, what it does, the editor and the sliders, side by side. When everything does not fit,
+the same code tries the layouts in order, from the one that keeps the most together to one panel per page (see `arrangements` and `layoutPages` in Kill
+Switch's script), and a small strip with **what plays**, flat and under the top bar, stays on every page so that nothing is lost when the choice and its
+steps are on different pages. A grid of buttons that is too big for the room gives way to arrows with the name between them (`< name >`): try every layout
+with the grid first and with the arrows only when none fits. An editor that only matters for one choice (a custom pattern) can be the preview itself: tapping
+the preview of a built-in pattern asks (a dialog inside the page, in the theme of the plugin) whether to define a custom one from it, and a custom one
+changes with the tap. Kill Switch's page is the reference.
 
 ## 6. JavaScript: one function, many instances
 

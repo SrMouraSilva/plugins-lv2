@@ -2,21 +2,32 @@ function (event, funcs) {
   // One function serves every instance of the plugin, so nothing mutable lives in this closure:
   // the state of each instance is kept in event.data.
 
-  // Mirrors PATTERNS in plugins/src/kill-switch.c (and the scale points of `pattern` in kill-switch.ttl): '0' = cut,
-  // '1' = half, '2' = the signal passes. The last pattern, Custom, is the one written on the settings page: its steps
-  // are the ports custom_step_N. Keep them in step
+  // Mirrors PATTERNS in plugins/src/kill-switch.c (and the scale points of `pattern` in kill-switch.ttl): one row of steps
+  // for each side, '0' = cut, '1' = half, '2' = the signal passes. The first ten have the same row on both sides (the
+  // single-channel kill switch), the next nine a row for each side. The last pattern, Custom, is the one written on the
+  // settings page: its steps are the ports custom_left_step_N and custom_right_step_N. Keep them in step
+  const both = (name, perBeat, steps) => ({ name, perBeat, left: steps, right: steps });
   const PATTERNS = [
-    { name: 'Chop 8ths',           steps: '02',               perBeat: 2 },
-    { name: 'Chop 16ths',          steps: '02',               perBeat: 4 },
-    { name: 'Triplet chop',        steps: '02',               perBeat: 3 },
-    { name: 'Machine gun',         steps: '02',               perBeat: 8 },
-    { name: 'Syncopated 3-3-2',    steps: '02202202',         perBeat: 2 },
-    { name: 'Gallop',              steps: '0220',             perBeat: 4 },
-    { name: 'Morello solo chop',   steps: '0202022002022022', perBeat: 4 },
-    { name: 'Morello toggle solo', steps: '0222020200220202', perBeat: 4 },
-    { name: 'Greenwood chunk',     steps: '02220222',         perBeat: 2 },
-    { name: 'Buckethead burst',    steps: '0202020222222222', perBeat: 8 },
-    { name: 'Custom',              steps: null,               perBeat: null },
+    both('Chop 8ths',           2, '02'),
+    both('Chop 16ths',          4, '02'),
+    both('Triplet chop',        3, '02'),
+    both('Machine gun',         8, '02'),
+    both('Syncopated 3-3-2',    2, '02202202'),
+    both('Gallop',              4, '0220'),
+    both('Morello solo chop',   4, '0202022002022022'),
+    both('Morello toggle solo', 4, '0222020200220202'),
+    both('Greenwood chunk',     2, '02220222'),
+    both('Buckethead burst',    8, '0202020222222222'),
+    { name: 'Ping-pong 8ths',   perBeat: 2, left: '20',       right: '02' },
+    { name: 'Ping-pong 16ths',  perBeat: 4, left: '20',       right: '02' },
+    { name: 'Triplet pong',     perBeat: 3, left: '200',      right: '020' },
+    { name: 'Half deaf: left',  perBeat: 2, left: '02',       right: '22' },
+    { name: 'Half deaf: right', perBeat: 2, left: '22',       right: '02' },
+    { name: 'Gallop sides',     perBeat: 4, left: '2200',     right: '0022' },
+    { name: 'Stagger',          perBeat: 4, left: '2002',     right: '0220' },
+    { name: 'Seesaw',           perBeat: 2, left: '2210',     right: '0122' },
+    { name: 'Syncopated sides', perBeat: 2, left: '20020020', right: '02002002' },
+    { name: 'Custom',           perBeat: null, left: null,    right: null },
   ];
   const CUSTOM = PATTERNS.length - 1;          // the value of `pattern` that plays the custom pattern
   const CUSTOM_STEPS = 16;
@@ -24,16 +35,65 @@ function (event, funcs) {
   const LEVELS = 3;
   const LEVEL_NAMES = ['Cut', 'Half', 'Pass'];
   const BEAT_NAMES = { 1: 'quarters', 2: '8ths', 3: 'triplets', 4: '16ths', 6: 'sextuplets', 8: '32nds' };
+  const SIDES = ['left', 'right'];
   const SPEEDS = 4;
   const BPM = { min: 40, max: 240 };
+  const LENGTH = { min: 2, max: 32 };          // beats
   const EDGE = { min: 0.1, max: 20 };          // ms, a logarithmic port: the slider is 0..EDGE_SLIDER
   const EDGE_SLIDER = 1000;
   const DISPLAYED_STEPS = 16;
+  const ENDING_CELLS = 48;                     // the columns that draw an ending along its time
   const SEND_EVERY_MS = 40;                    // a slider that is being dragged sends at most this often
   const HOLD_DELAY_MS = 400;                   // holding - or + repeats after this, every HOLD_EVERY_MS
   const HOLD_EVERY_MS = 70;
 
-  const stepSymbol = (index) => `custom_step_${index + 1}`;
+  // The endings: they play once when the plugin is switched on and finish in silence. Mirrors ending_gate() in
+  // kill-switch.c: the gate (0 = cut, 1 = pass) of each side at the time t (seconds since it was switched on) of an ending
+  // that lasts `total` seconds, with beats of `beat` seconds. Keep them in step
+  const BOUNCE_RATIO = 0.78, BOUNCE_OPEN = 0.55, BOUNCE_MAX_BEATS = 0.35, BOUNCE_END_SECONDS = 0.001;
+  const HELICOPTER_GROWTH = 1.12, HELICOPTER_OPEN = 0.5;
+  const ENDINGS = [
+    { name: 'Bouncing ball', gate: (t, total, beat) => {
+      // the gaps shrink by a fixed ratio and pile up at the end: tam---tam--tam-tam-ta-ta-t-t-ttt
+      const k = Math.floor(Math.log(1 - t / total) / Math.log(BOUNCE_RATIO));
+      const start = total * (1 - Math.pow(BOUNCE_RATIO, k));
+      const gap = total * Math.pow(BOUNCE_RATIO, k) * (1 - BOUNCE_RATIO);
+      if (gap < BOUNCE_END_SECONDS) return [0, 0];
+      return t - start < Math.min(gap * BOUNCE_OPEN, beat * BOUNCE_MAX_BEATS) ? [1, 1] : [0, 0];
+    } },
+    { name: 'Helicopter', gate: (t, total, beat) => {
+      // the blades go to one side, then the other, and the gap between them grows while the sound fades
+      const p0 = beat * 0.25;
+      const k = Math.max(0, Math.floor(Math.log(1 + (t * (HELICOPTER_GROWTH - 1)) / p0) / Math.log(HELICOPTER_GROWTH)));
+      const start = (p0 * (Math.pow(HELICOPTER_GROWTH, k) - 1)) / (HELICOPTER_GROWTH - 1);
+      const period = p0 * Math.pow(HELICOPTER_GROWTH, k);
+      if (t - start >= period * HELICOPTER_OPEN) return [0, 0];
+      const level = 1 - t / total;
+      return k % 2 === 0 ? [level, 0] : [0, level];
+    } },
+    { name: 'Stutter out', gate: (t, total, beat) => {
+      // sixteenth notes whose open part shrinks to nothing; the right side is half a period behind the left one
+      const period = beat * 0.25;
+      const duty = 0.9 * (1 - t / total) + 0.02;
+      return [(t % period) / period < duty ? 1 : 0, ((t + period * 0.5) % period) / period < duty ? 1 : 0];
+    } },
+    { name: 'Side fade', gate: (t, total, beat) => {
+      // eighth notes; the left side fades out first, by 60% of the ending, and the right one at the end
+      const period = beat * 0.5;
+      if ((t % period) / period >= 0.5) return [0, 0];
+      return [Math.max(0, 1 - t / total / 0.6), 1 - t / total];
+    } },
+    { name: 'Ping-pong out', gate: (t, total, beat) => {
+      // eighth notes, one to each side in turn, every one quieter than the one before
+      const period = beat * 0.5;
+      const k = Math.floor(t / period);
+      if (t - k * period >= period * 0.6) return [0, 0];
+      const level = Math.pow(1 - t / total, 1.5);
+      return k % 2 === 0 ? [level, 0] : [0, level];
+    } },
+  ];
+
+  const stepSymbol = (side, index) => `custom_${side}_step_${index + 1}`;
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const now = () => Date.now();
   const range = (from, to) => Array.from({ length: to - from + 1 }, (_, i) => from + i);
@@ -50,18 +110,25 @@ function (event, funcs) {
   const beatText = (perBeat) => BEAT_NAMES[perBeat] || `${perBeat} per beat`;
 
   // ---------------------------------------------------------------------------
-  // State: { pattern: 0..CUSTOM, bpm, speed: 0..3, depth: 0..100, edge: ms, bypassed,
-  //          custom: { length: 1..16, perBeat: 1..8, steps: [16] => 0..2 }, lastSent: [symbol] => ms, timers }
+  // State: { mode: 0 patterns / 1 endings, pattern: 0..CUSTOM, ending, bpm, speed: 0..3, length (beats), depth: 0..100,
+  //          edge: ms, mono, kill, custom: { length: 1..16, perBeat: 1..8, left: [16], right: [16] => 0..2 },
+  //          lastSent: [symbol] => ms, timers }
 
   const newState = () => ({
-    pattern: 0, bpm: 120, speed: 1, depth: 100, edge: 1.5, bypassed: true,
+    mode: 0, pattern: 0, ending: 0, bpm: 120, speed: 1, length: 8, depth: 100, edge: 1.5, mono: false, kill: false,
     // The defaults of the ports in kill-switch.ttl
-    custom: { length: 8, perBeat: 2, steps: [0, 2, 1, 2, 0, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2] },
+    custom: {
+      length: 8, perBeat: 2,
+      left: [2, 1, 0, 1, 2, 1, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2],
+      right: [0, 1, 2, 1, 0, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2],
+    },
     lastSent: {}, timers: {},
   });
 
-  // The steps of a pattern as a string of levels: those of a built-in one, or the first `length` of the custom one
-  const stepsOf = (state, index) => (index === CUSTOM ? state.custom.steps.slice(0, state.custom.length).join('') : PATTERNS[index].steps);
+  // The steps of a pattern as one string of levels for each side: those of a built-in one, or the first `length` of the custom one
+  const stepsOf = (state, index) => (index === CUSTOM
+    ? { left: state.custom.left.slice(0, state.custom.length).join(''), right: state.custom.right.slice(0, state.custom.length).join('') }
+    : { left: PATTERNS[index].left, right: PATTERNS[index].right });
 
   // ---------------------------------------------------------------------------
   // Talking to the plugin
@@ -86,12 +153,31 @@ function (event, funcs) {
     }
   };
 
-  const setPattern = (event, index) => {
-    const count = PATTERNS.length;
-    const pattern = (index % count + count) % count;       // the arrows go round
+  const setMode = (event, mode) => {
+    event.data.state.mode = mode;
+    send(event, 'mode', mode);
+    draw(event);
+  };
 
-    event.data.state.pattern = pattern;
-    send(event, 'pattern', pattern);
+  // The arrows go through what the family has, and round
+  const step = (event, direction) => {
+    const state = event.data.state;
+    const count = state.mode === 1 ? ENDINGS.length : PATTERNS.length;
+    const symbol = state.mode === 1 ? 'ending' : 'pattern';
+    const value = ((state[symbol === 'ending' ? 'ending' : 'pattern'] + direction) % count + count) % count;
+
+    state[symbol] = value;
+    send(event, symbol, value);
+    draw(event);
+  };
+
+  // Picks one of the family that is on (a pattern, or an ending)
+  const choose = (event, index) => {
+    const state = event.data.state;
+    const symbol = state.mode === 1 ? 'ending' : 'pattern';
+
+    state[symbol] = index;
+    send(event, symbol, index);
     draw(event);
   };
 
@@ -101,25 +187,50 @@ function (event, funcs) {
     draw(event);
   };
 
+  const setLengthBeats = (event, length) => {
+    event.data.state.length = clamp(Math.round(length), LENGTH.min, LENGTH.max);
+    send(event, 'length', event.data.state.length);
+    draw(event);
+  };
+
   const setSpeed = (event, speed) => {
     event.data.state.speed = speed;
     send(event, 'speed', speed);
     draw(event);
   };
 
-  // Writing the custom pattern is meant to be heard: the first edit puts Pattern on Custom
+  const setMono = (event, mono) => {
+    event.data.state.mono = mono;
+    send(event, 'mono', mono ? 1 : 0);
+    draw(event);
+  };
+
+  // The footswitch of the pedal (and its twin on the settings page). The plugin switches itself: a hardware control assigned to
+  // Kill is momentary by default, so it chops only while it is held
+  const setKill = (event, kill) => {
+    event.data.state.kill = kill;
+    send(event, 'kill', kill ? 1 : 0);
+    draw(event);
+  };
+
+  // Writing the custom pattern is meant to be heard: the first edit puts the plugin on the patterns, on Custom
   const editing = (event) => {
-    if (event.data.state.pattern !== CUSTOM) {
-      event.data.state.pattern = CUSTOM;
+    const state = event.data.state;
+    if (state.mode !== 0) {
+      state.mode = 0;
+      send(event, 'mode', 0);
+    }
+    if (state.pattern !== CUSTOM) {
+      state.pattern = CUSTOM;
       send(event, 'pattern', CUSTOM);
     }
   };
 
-  const cycleStep = (event, index) => {
+  const cycleStep = (event, side, index) => {
     const custom = event.data.state.custom;
     editing(event);
-    custom.steps[index] = (custom.steps[index] + 1) % LEVELS;      // cut -> half -> pass -> cut
-    send(event, stepSymbol(index), custom.steps[index]);
+    custom[side][index] = (custom[side][index] + 1) % LEVELS;      // cut -> half -> pass -> cut
+    send(event, stepSymbol(side, index), custom[side][index]);
     draw(event);
   };
 
@@ -137,23 +248,60 @@ function (event, funcs) {
     draw(event);
   };
 
-  // Copies a built-in pattern into the custom one, to change it from there
+  // Copies a built-in pattern (both sides) into the custom one and plays that one
   const copyPattern = (event, index) => {
     const source = PATTERNS[index];
     const custom = event.data.state.custom;
-    if (!source || !source.steps) {
+    if (!source || !source.left) {
       return;
     }
 
-    editing(event);
-    custom.length = source.steps.length;
+    custom.length = source.left.length;
     custom.perBeat = source.perBeat;
-    // The steps after the end keep the level of the pass, as in the defaults: they do not play until the length grows
-    custom.steps = range(0, CUSTOM_STEPS - 1).map((i) => (i < custom.length ? Number(source.steps[i]) : 2));
     send(event, 'custom_length', custom.length);
     send(event, 'custom_steps_per_beat', custom.perBeat);
-    custom.steps.forEach((level, i) => send(event, stepSymbol(i), level));
+    SIDES.forEach((side) => {
+      // The steps after the end keep the level of the pass, as in the defaults: they do not play until the length grows
+      custom[side] = range(0, CUSTOM_STEPS - 1).map((i) => (i < custom.length ? Number(source[side][i]) : 2));
+      custom[side].forEach((level, i) => send(event, stepSymbol(side, i), level));
+    });
+    // Only now: Custom starts to play with its steps already in place
+    editing(event);
     draw(event);
+  };
+
+  // ---------------------------------------------------------------------------
+  // The question that comes before a built-in pattern becomes a Custom one: the dialog is part of the settings page, so it
+  // has the theme of the plugin (and is still there in MOD UI's Performance view)
+
+  const askCustom = (event, opener) => {
+    const { state, el } = event.data;
+    const pattern = PATTERNS[state.pattern];
+    if (state.mode !== 0 || !pattern || !pattern.left) {
+      return;
+    }
+
+    event.data.asked = { index: state.pattern, opener };
+    el.modalText.textContent = `${pattern.name} is a built-in pattern, so its steps stay as they are. Define a Custom pattern that starts as a copy of it, and play that one? You can then tap its steps to change them.`;
+    el.modal.hidden = false;
+    el.modalOk.focus();
+  };
+
+  const closeModal = (event) => {
+    const { el, asked } = event.data;
+    el.modal.hidden = true;
+    event.data.asked = null;
+    if (asked && asked.opener && asked.opener.focus) {
+      asked.opener.focus();
+    }
+  };
+
+  const confirmCustom = (event) => {
+    const asked = event.data.asked;
+    closeModal(event);
+    if (asked) {
+      copyPattern(event, asked.index);
+    }
   };
 
   // ---------------------------------------------------------------------------
@@ -167,6 +315,7 @@ function (event, funcs) {
   const MEDIUM_PX = 700;
   const SHORT_PX = 600;          // below this height, the descriptions go and everything gets tighter
   const CELL_MIN_PX = 44;        // the narrowest a step of the editor can be
+  const LANE_LABEL_PX = 26;      // the L and the R beside a row of steps: their column and its gap
   const SOUND_TWO_COLUMNS_PX = 420;  // Depth and Edge side by side from this width of the panel
 
   // The panels, the lists they hold, and what moves them: found once, on 'start'
@@ -177,8 +326,10 @@ function (event, funcs) {
       stock: root.querySelector('.kss-stock'),
       play: root.querySelector('[data-panel="play"]'),
       sound: root.querySelector('[data-panel="sound"]'),
-      pattern: { panel: root.querySelector('[data-panel="pattern"]'), body: root.querySelector('.kss-steps') },
       presets: { panel: root.querySelector('[data-panel="presets"]') },
+      led: root.querySelector('.kss-led'),
+      ledCells: Array.from(root.querySelectorAll('.kss-led-cells')),
+      columns: 8,
       page: 0,
       key: '',
       pending: false,
@@ -212,7 +363,7 @@ function (event, funcs) {
 
   // Everything back in the stock, in the order it was written, and the pages (with their copies) thrown away
   const gather = (view) => {
-    view.stock.append(view.play, view.sound, view.pattern.panel, view.presets.panel);
+    view.stock.append(view.play, view.sound, view.presets.panel);
     view.pager.textContent = '';
   };
 
@@ -226,16 +377,22 @@ function (event, funcs) {
     });
   };
 
-  // What depends on the width of a panel (it must be on a page to be measured): the columns of the steps (16, 8 or 4,
-  // so that every line is full)
+  // The LEDs fill a row at most `view.columns` wide; fewer of them (a short pattern) share the width among themselves
+  const applyColumns = (view, shown) => view.ledCells.forEach((body) => body.style.setProperty('--kss-cols', Math.min(view.columns, shown)));
+
+  // What depends on the width of a panel (it must be on a page to be measured): the columns of the LEDs (16, 8 or 4,
+  // so that every line is full), and Depth and Edge side by side
   const sizeAll = (view) => {
-    const steps = view.pattern.body;
-    const stepGap = px(getComputedStyle(steps).columnGap);
+    const room = view.led.clientWidth - LANE_LABEL_PX;
+    const gap = px(getComputedStyle(view.ledCells[0]).columnGap);
     let columns = CUSTOM_STEPS;
-    while (columns > 4 && (steps.clientWidth - stepGap * (columns - 1)) / columns < CELL_MIN_PX) {
+    // (a phone gives a step a little less than 44px of width, which its 44px of height makes up for)
+    const narrowest = view.root.getAttribute('data-w') === 's' ? CELL_MIN_PX - 10 : CELL_MIN_PX;
+    while (columns > 4 && (room - gap * (columns - 1)) / columns < narrowest) {
       columns /= 2;
     }
-    steps.style.setProperty('--kss-cols', columns);
+    view.columns = columns;
+    applyColumns(view, CUSTOM_STEPS);
 
     // Depth and Edge side by side need room for a name, a value and a button each
     const sound = view.sound.querySelector('.kss-sound');
@@ -245,32 +402,32 @@ function (event, funcs) {
   const fits = (page) => [page, ...page.querySelectorAll('.kss-panel, .kss-stack, .kss-row')]
     .every((el) => el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1);
 
-  // Roomy screens. The first page holds everything that is played with: the choice of pattern, what it does, the
-  // editor (only while Custom is chosen: `together`), and tempo and feel beside them, with the buttons that assign
-  // each of those to a control of the device next to what they assign; the saved presets sit beside them, or follow.
-  // When the editor does not fit with them, it goes back to a page of its own.
-  // Returns the pages, or null when none of them fits
-  const layoutTogether = (view, wide) => {
-    const { play, sound, pattern, presets } = view;
-    const stack = (...nodes) => { const el = element('kss-stack'); el.append(...nodes); return el; };
+  // What goes on which page, from the one that keeps the most together to the one panel to a page. The choice of pattern and
+  // the LEDs that show it (and, for Custom, write it) are one panel, always together; tempo and feel sit beside it, and the
+  // saved presets beside them, or follow
+  const arrangements = (view, width) => {
+    const { play, sound, presets } = view;
     const row = (...nodes) => { const el = element('kss-row'); el.append(...nodes); return el; };
+    return [
+      ...(width >= WIDE_PX ? [() => [[row(play, sound, presets.panel)]]] : []),
+      ...(width >= MEDIUM_PX ? [() => [[row(play, sound)], [presets.panel]]] : []),
+      () => [[play], [sound], [presets.panel]],
+    ];
+  };
+
+  // Tries every arrangement with all the patterns at hand (a grid of buttons) and, only when none fits, again with the
+  // arrows that show one at a time ("< name >"), which take much less room. The last arrangement is also the last resort:
+  // it is used with the arrows even when it does not fit
+  const layoutPages = (view, width) => {
+    const list = arrangements(view, width);
     const attempts = [
-      ...(wide ? [
-        { together: true, pages: () => [[row(stack(play, pattern.panel), sound, presets.panel)]] },
-        { together: true, pages: () => [[row(stack(play, pattern.panel), sound)], [presets.panel]] },
-        { together: false, pages: () => [[row(play, sound, presets.panel)], [pattern.panel]] },
-        { together: false, pages: () => [[row(play, sound)], [row(pattern.panel, presets.panel)]] },
-        // Short screens: the editor on a page of its own, the rest as before
-        { together: false, pages: () => [[row(play, sound)], [pattern.panel], [presets.panel]] },
-      ] : []),
-      { together: true, pages: () => [[row(stack(play, pattern.panel), sound)], [presets.panel]] },
-      { together: false, pages: () => [[stack(play, sound)], [pattern.panel], [presets.panel]] },
+      ...['grid', 'stepper'].flatMap((choice) => list.map((make) => ({ choice, make }))),
     ];
 
-    for (const attempt of attempts) {
+    for (const { choice, make } of attempts) {
       gather(view);
-      view.root.setAttribute('data-together', attempt.together ? '1' : '0');
-      const pages = setPages(view, attempt.pages());
+      view.root.setAttribute('data-choice', choice);
+      const pages = setPages(view, make());
       sizeAll(view);
       if (pages.every(fits)) {
         return pages;
@@ -279,13 +436,12 @@ function (event, funcs) {
     return null;
   };
 
-  // Last resort and the way of the small screens: each panel on its own page
   const layoutOneByOne = (view) => {
-    const { play, sound, pattern, presets } = view;
     gather(view);
-    view.root.setAttribute('data-together', '0');
-
-    const pages = setPages(view, [play, sound, pattern.panel, presets.panel].map((panel) => [panel]));
+    view.root.setAttribute('data-choice', 'stepper');
+    const pages = setPages(view, [view.play, view.sound, view.presets.panel].map((panel) => [panel]));
+    // What still does not fit scrolls, rather than being cut off
+    pages.forEach((page) => page.classList.toggle('is-scroll', !fits(page)));
     sizeAll(view);          // now that the panels are on a page, they have a width to measure
     return pages;
   };
@@ -367,11 +523,15 @@ function (event, funcs) {
     root.setAttribute('data-w', width >= WIDE_PX ? 'l' : width >= MEDIUM_PX ? 'm' : 's');
     root.setAttribute('data-h', height < SHORT_PX ? 's' : 'm');
 
-    // The editor is only shown while Custom plays, but the room for it is kept: measure as if it were there
+    // The tools of Custom are only shown while Custom plays, but the room for them is kept: measure as if they were there
     const custom = root.getAttribute('data-custom');
+    // ... and with every LED of the longest pattern
     root.setAttribute('data-custom', '1');
-    (width >= MEDIUM_PX && layoutTogether(view, width >= WIDE_PX)) || layoutOneByOne(view);
+    root.setAttribute('data-measure', '1');
+    layoutPages(view, width) || layoutOneByOne(view);
+    root.removeAttribute('data-measure');
     root.setAttribute('data-custom', custom || '0');
+    drawSettings(event);
 
     goToPage(view, keep, false);
     view.laying = false;
@@ -402,6 +562,24 @@ function (event, funcs) {
     return html;
   };
 
+  // An ending along its time: the columns are slices of it, as bright as the gate is open (the highest in the slice)
+  const endingHtml = (state, side) => {
+    const ending = ENDINGS[state.ending] || ENDINGS[0];
+    const beat = 60 / state.bpm;
+    const total = state.length * beat;
+    const SUBSAMPLES = 24;
+    let html = '';
+
+    for (let i = 0; i < ENDING_CELLS; i++) {
+      let level = 0;
+      for (let s = 0; s < SUBSAMPLES; s++) {
+        level = Math.max(level, ending.gate(((i + (s + 0.5) / SUBSAMPLES) / ENDING_CELLS) * total, total, beat)[side]);
+      }
+      html += `<i style="opacity:${(0.14 + 0.86 * level).toFixed(2)}" class="${level > 0.02 ? 'l2' : 'l0'}"></i>`;
+    }
+    return html;
+  };
+
   const setSlider = (input, value, min, max) => {
     input.value = String(value);
     input.style.setProperty('--ks-fill', `${((value - min) / (max - min)) * 100}%`);
@@ -415,20 +593,24 @@ function (event, funcs) {
 
   const drawIcon = (event) => {
     const { state, el } = event.data;
+    const endings = state.mode === 1;
     const pattern = PATTERNS[state.pattern] || PATTERNS[0];
-    const steps = stepsOf(state, state.pattern);
+    const name = endings ? (ENDINGS[state.ending] || ENDINGS[0]).name : pattern.name;
 
-    el.root.classList.toggle('is-bypassed', state.bypassed);
-    setText(el.state, state.bypassed ? 'Bypassed' : 'On');
-    setText(el.name, pattern.name);
+    el.root.classList.toggle('is-idle', !state.kill);
+    el.root.setAttribute('data-mode', String(state.mode));
+    setText(el.state, state.kill ? 'On' : 'Off');
+    setText(el.name, name);
+    el.foot.setAttribute('aria-pressed', String(state.kill));
+    el.modes.forEach((button) => button.setAttribute('aria-checked', String(Number(button.getAttribute('data-mode')) === state.mode)));
+    el.mono.setAttribute('aria-pressed', String(state.mono));
+    el.monoSettings.setAttribute('aria-pressed', String(state.mono));
 
-    if (el.steps.getAttribute('data-steps') !== steps) {
-      el.steps.setAttribute('data-steps', steps);
-      el.steps.innerHTML = stepsHtml(steps);
-      el.steps.setAttribute('aria-label', `The steps of ${pattern.name}: ${steps.split('').map((level) => LEVEL_NAMES[level].toLowerCase()).join(', ')}`);
-    }
+    // What the two lanes draw is only built again when it changes
+    el.lanes.forEach((lane) => drawLane(state, lane, lane.querySelector('.ks-steps'), name));
 
     el.bpm.innerHTML = `<b>${state.bpm}</b> BPM`;
+    el.lengthValue.innerHTML = `<b>${state.length}</b> beats`;
     el.segments.forEach((button) => button.setAttribute('aria-checked', String(Number(button.getAttribute('data-speed')) === state.speed)));
     setSlider(el.depth, state.depth, 0, 100);
     setText(el.depthValue, `${Math.round(state.depth)}%`);
@@ -436,28 +618,97 @@ function (event, funcs) {
     setText(el.edgeValue, edgeText(state.edge));
   };
 
+  // The lanes of the pedal, of the glance and of the endings draw the same: only built again when what they draw changes
+  const drawLane = (state, lane, cells, name) => {
+    const endings = state.mode === 1;
+    const side = lane.getAttribute('data-side') === 'l' ? 'left' : 'right';
+    const key = endings ? `e${state.ending}/${state.length}/${state.bpm}` : `p${stepsOf(state, state.pattern)[side]}`;
+
+    if (cells.getAttribute('data-key') !== key) {
+      cells.setAttribute('data-key', key);
+      cells.setAttribute('data-kind', endings ? 'ending' : 'pattern');
+      cells.style.gridTemplateColumns = `repeat(${endings ? ENDING_CELLS : DISPLAYED_STEPS}, minmax(0, 1fr))`;
+      cells.innerHTML = endings ? endingHtml(state, side === 'left' ? 0 : 1) : stepsHtml(stepsOf(state, state.pattern)[side]);
+      cells.setAttribute('aria-label', `${side === 'left' ? 'The left' : 'The right'} side of ${name}`);
+    }
+  };
+
+  // The LEDs of the big preview: the steps of the pattern that plays, a level to each: cut (dark), half (lit from the bottom up to
+  // half) or pass (lit). Twice the length of the pattern is shown (at most sixteen): the second run, drawn as outlines, is the
+  // pattern coming round again, and a tap on it changes the step it repeats
+  const drawLeds = (state, el, view) => {
+    const custom = state.custom;
+    const writing = state.pattern === CUSTOM;
+    const built = PATTERNS[state.pattern] || PATTERNS[0];
+    const steps = writing ? null : { left: built.left, right: built.right };
+    const length = writing ? custom.length : built.left.length;
+    const perBeat = writing ? custom.perBeat : built.perBeat;
+    const shown = Math.min(length * 2, CUSTOM_STEPS);
+
+    applyColumns(view, shown);
+    SIDES.forEach((side) => {
+      el.cells[side].forEach((cell, i) => {
+        const source = i % length;
+        const level = writing ? custom[side][source] : Number(steps[side][source]);
+        cell.setAttribute('data-level', String(level));
+        cell.setAttribute('data-source', String(source));
+        cell.classList.toggle('is-unused', i >= shown);
+        cell.classList.toggle('again', i >= length);
+        cell.classList.toggle('is-beat', i % perBeat === 0);
+        cell.setAttribute('aria-label', `${side} step ${source + 1}${i >= length ? ' (again)' : ''}: ${LEVEL_NAMES[level].toLowerCase()}${writing
+          ? '. Tap to change'
+          : '. A built-in pattern: tap to define a Custom one from it'}`);
+      });
+    });
+    setText(el.ledBeat, ` · ${beatText(perBeat)}`);
+  };
+
   const drawSettings = (event) => {
     const { state, el } = event.data;
     const custom = state.custom;
-    const playing = state.pattern === CUSTOM;
-    const pattern = PATTERNS[state.pattern] || PATTERNS[0];
-    const steps = stepsOf(state, state.pattern);
+    const endings = state.mode === 1;
+    const playing = !endings && state.pattern === CUSTOM;
+    const family = endings ? ENDINGS : PATTERNS;
+    const current = endings ? state.ending : state.pattern;
+    const name = (family[current] || family[0]).name;
+    const kind = endings ? 'Ending' : 'Pattern';
 
-    setText(el.now, pattern.name);
-
-    // What is playing: every pattern to choose from, and what the pattern does
+    // What is playing, small, on every page
+    el.settingsRoot.setAttribute('data-mode', String(state.mode));
     el.settingsRoot.setAttribute('data-custom', playing ? '1' : '0');
-    el.settingsRoot.classList.toggle('is-bypassed', state.bypassed);
-    setText(el.playName, pattern.name);
-    setText(el.playHint, playing ? 'Your own pattern: tap the steps below to write it.' : 'The rhythm that cuts the signal. Choose Custom to write your own.');
-    if (!el.choices.children.length) {
-      el.choices.innerHTML = PATTERNS.map((item, i) => `<button type="button" class="kss-choice" role="radio" data-index="${i}" aria-checked="false">${item.name}</button>`).join('');
+    el.settingsRoot.classList.toggle('is-idle', !state.kill);
+    setText(el.glanceKind, kind);
+    setText(el.glanceName, name);
+    el.glance.setAttribute('aria-label', `${kind}: ${name}`);
+    el.glanceLanes.forEach(({ lane, cells }) => drawLane(state, lane, cells, name));
+
+    // The choice: the whole family to pick from, or one at a time with the arrows
+    el.modesSettings.forEach((button) => button.setAttribute('aria-checked', String(Number(button.getAttribute('data-mode')) === state.mode)));
+    setText(el.playKind, kind);
+    setText(el.playName, name);
+    setText(el.playHint, endings
+      ? 'An ending plays once, as soon as you switch the effect on, and ends in silence. Its length is set under Tempo and feel.'
+      : 'The rhythm of the two sides. Custom is the one you define yourself.');
+    if (el.choices.getAttribute('data-family') !== String(state.mode)) {
+      el.choices.setAttribute('data-family', String(state.mode));
+      el.choices.setAttribute('aria-label', endings ? 'Endings' : 'Patterns');
+      el.choices.innerHTML = family.map((item, i) => `<button type="button" class="kss-choice" role="radio" data-index="${i}" aria-checked="false">${item.name}</button>`).join('');
     }
-    Array.from(el.choices.children).forEach((button) => button.setAttribute('aria-checked', String(Number(button.getAttribute('data-index')) === state.pattern)));
-    if (el.viewSteps.getAttribute('data-steps') !== steps) {
-      el.viewSteps.setAttribute('data-steps', steps);
-      el.viewSteps.innerHTML = stepsHtml(steps);
-      el.viewSteps.setAttribute('aria-label', `The steps of ${pattern.name}`);
+    Array.from(el.choices.children).forEach((button) => button.setAttribute('aria-checked', String(Number(button.getAttribute('data-index')) === current)));
+    setText(el.pickLabel, name);
+    setText(el.pickCount, `${current + 1} of ${family.length}`);
+
+    // What each side does: LEDs to tap (patterns) or the ending along its time
+    el.ledRoot.setAttribute('data-playing', playing ? '1' : '0');
+    if (endings) {
+      el.endingLanes.forEach(({ lane, cells }) => drawLane(state, lane, cells, name));
+      setText(el.ledTitle, 'Ending');
+      setText(el.ledBeat, '');
+      setText(el.ledHint, 'The level of each side along the ending. Endings are not written, only chosen.');
+    } else {
+      drawLeds(state, el, event.data.view);
+      setText(el.ledTitle, playing ? 'Your pattern' : 'Preview');
+      setText(el.ledHint, playing ? 'Tap a step: cut, then half, then pass.' : 'Tap a step to define your own pattern from this one. An outlined step is the pattern coming round again.');
     }
 
     // Tempo and feel
@@ -465,26 +716,20 @@ function (event, funcs) {
     el.bpmInput.value = String(state.bpm);
     el.bpmInput.style.setProperty('--ks-fill', `${((state.bpm - BPM.min) / (BPM.max - BPM.min)) * 100}%`);
     el.segmentsSettings.forEach((button) => button.setAttribute('aria-checked', String(Number(button.getAttribute('data-speed')) === state.speed)));
+    setText(el.endingLength, String(state.length));
+    el.endingLengthDown.disabled = state.length <= LENGTH.min;
+    el.endingLengthUp.disabled = state.length >= LENGTH.max;
     setSlider(el.depthSettings, state.depth, 0, 100);
     setText(el.depthValueSettings, `${Math.round(state.depth)}%`);
     setSlider(el.edgeSettings, edgeToSlider(state.edge), 0, EDGE_SLIDER);
     setText(el.edgeValueSettings, edgeText(state.edge));
 
-    setText(el.power, state.bypassed ? 'Bypassed' : 'On');
-    el.power.setAttribute('aria-pressed', String(!state.bypassed));
+    setText(el.power, state.kill ? 'Kill on' : 'Kill off');
+    el.power.setAttribute('aria-pressed', String(state.kill));
 
-    el.cells.forEach((cell, i) => {
-      const level = custom.steps[i];
-      cell.button.setAttribute('data-level', String(level));
-      cell.button.classList.toggle('is-off', i >= custom.length);
-      setText(cell.level, LEVEL_NAMES[level]);
-      cell.button.setAttribute('aria-label', `Step ${i + 1}: ${LEVEL_NAMES[level].toLowerCase()}${i >= custom.length ? ', beyond the length, not played' : ''}. Tap to change`);
-    });
-
+    // The length of the Custom pattern, only shown while it plays
     setText(el.length, String(custom.length));
     el.beat.innerHTML = `${custom.perBeat}<small>${beatText(custom.perBeat)}</small>`;
-    el.use.setAttribute('aria-pressed', String(state.pattern === CUSTOM));
-    setText(el.use, state.pattern === CUSTOM ? 'Playing' : 'Play this pattern');
     el.lengthDown.disabled = custom.length <= 1;
     el.lengthUp.disabled = custom.length >= CUSTOM_STEPS;
     el.beatDown.disabled = custom.perBeat <= 1;
@@ -499,7 +744,7 @@ function (event, funcs) {
   // ---------------------------------------------------------------------------
   // Events from the user
 
-  const holdToRepeat = (event, button, step) => {
+  const holdToRepeat = (event, button, action) => {
     const stop = () => {
       clearTimeout(event.data.state.timers.hold);
       clearInterval(event.data.state.timers.holdRepeat);
@@ -508,9 +753,9 @@ function (event, funcs) {
     button.addEventListener('pointerdown', () => {
       stop();
       button.setAttribute('data-pointer', '1');
-      step();
+      action();
       event.data.state.timers.hold = setTimeout(() => {
-        event.data.state.timers.holdRepeat = setInterval(step, HOLD_EVERY_MS);
+        event.data.state.timers.holdRepeat = setInterval(action, HOLD_EVERY_MS);
       }, HOLD_DELAY_MS);
     });
     ['pointerup', 'pointercancel', 'pointerleave'].forEach((type) => button.addEventListener(type, stop));
@@ -520,7 +765,7 @@ function (event, funcs) {
       if (button.getAttribute('data-pointer')) {
         button.removeAttribute('data-pointer');
       } else {
-        step();
+        action();
       }
     });
   };
@@ -571,38 +816,34 @@ function (event, funcs) {
     const state = () => event.data.state;
 
     // The icon
-    el.prev.addEventListener('click', () => setPattern(event, state().pattern - 1));
-    el.next.addEventListener('click', () => setPattern(event, state().pattern + 1));
+    el.prev.addEventListener('click', () => step(event, -1));
+    el.next.addEventListener('click', () => step(event, 1));
     el.open.addEventListener('click', () => openSettings(event));
+    el.mono.addEventListener('click', () => setMono(event, !state().mono));
+    el.monoSettings.addEventListener('click', () => setMono(event, !state().mono));
+    el.foot.addEventListener('click', () => setKill(event, !state().kill));
+    el.modesSettings.forEach((button) => button.addEventListener('click', () => setMode(event, Number(button.getAttribute('data-mode')))));
+    el.modes.forEach((button) => button.addEventListener('click', () => setMode(event, Number(button.getAttribute('data-mode')))));
     holdToRepeat(event, el.down, () => setBpm(event, state().bpm - 1));
     holdToRepeat(event, el.up, () => setBpm(event, state().bpm + 1));
+    holdToRepeat(event, el.lengthBeatsDown, () => setLengthBeats(event, state().length - 1));
+    holdToRepeat(event, el.lengthBeatsUp, () => setLengthBeats(event, state().length + 1));
 
     el.segments.forEach((button) => button.addEventListener('click', () => setSpeed(event, Number(button.getAttribute('data-speed')))));
 
-    el.depth.addEventListener('input', () => {
-      state().depth = Number(el.depth.value);
-      sendThrottled(event, 'depth', state().depth);
-      draw(event);
-    });
-    el.edge.addEventListener('input', () => {
-      state().edge = Math.round(sliderToEdge(Number(el.edge.value)) * 100) / 100;
-      sendThrottled(event, 'edge', state().edge);
-      draw(event);
-    });
-
-    // The big view and the controls of the settings page: the same actions as on the pedal
+    // The choice, the LEDs and the controls of the settings page: the same actions as on the pedal
     el.choices.addEventListener('click', (e) => {
       const button = e.target.closest('button[data-index]');
-      if (button) { setPattern(event, Number(button.getAttribute('data-index'))); }
+      if (button) { choose(event, Number(button.getAttribute('data-index'))); }
     });
-    el.editPattern.addEventListener('click', () => {
-      const view = event.data.view;
-      goToPage(view, Array.from(view.pager.children).findIndex((page) => page.contains(view.pattern.panel)), true);
-    });
-    el.power.addEventListener('click', () => event.icon.find('[mod-role="bypass"]').first().trigger('click'));
+    el.pickPrev.addEventListener('click', () => step(event, -1));
+    el.pickNext.addEventListener('click', () => step(event, 1));
+    el.power.addEventListener('click', () => setKill(event, !state().kill));
     holdToRepeat(event, el.bpmDown, () => setBpm(event, state().bpm - 1));
     holdToRepeat(event, el.bpmUp, () => setBpm(event, state().bpm + 1));
     el.bpmInput.addEventListener('input', () => setBpm(event, Number(el.bpmInput.value)));
+    holdToRepeat(event, el.endingLengthDown, () => setLengthBeats(event, state().length - 1));
+    holdToRepeat(event, el.endingLengthUp, () => setLengthBeats(event, state().length + 1));
     el.segmentsSettings.forEach((button) => button.addEventListener('click', () => setSpeed(event, Number(button.getAttribute('data-speed')))));
     el.depthSettings.addEventListener('input', () => {
       state().depth = Number(el.depthSettings.value);
@@ -615,17 +856,47 @@ function (event, funcs) {
       draw(event);
     });
 
-    // The editor of the custom pattern
-    el.cells.forEach((cell, i) => cell.button.addEventListener('click', () => cycleStep(event, i)));
+    el.depth.addEventListener('input', () => {
+      state().depth = Number(el.depth.value);
+      sendThrottled(event, 'depth', state().depth);
+      draw(event);
+    });
+    el.edge.addEventListener('input', () => {
+      state().edge = Math.round(sliderToEdge(Number(el.edge.value)) * 100) / 100;
+      sendThrottled(event, 'edge', state().edge);
+      draw(event);
+    });
+
+    // The LEDs: a step of Custom goes to the next level; a step of a built-in pattern asks whether to make a Custom one
+    el.ledSteps.addEventListener('click', (e) => {
+      const cell = e.target.closest('.kss-cell');
+      if (!cell || state().mode !== 0) {
+        return;
+      }
+      if (state().pattern === CUSTOM) {
+        cycleStep(event, cell.getAttribute('data-side') === 'l' ? 'left' : 'right', Number(cell.getAttribute('data-source')));
+      } else {
+        askCustom(event, cell);
+      }
+    });
     holdToRepeat(event, el.lengthDown, () => setLength(event, state().custom.length - 1));
     holdToRepeat(event, el.lengthUp, () => setLength(event, state().custom.length + 1));
     holdToRepeat(event, el.beatDown, () => setPerBeat(event, state().custom.perBeat - 1));
     holdToRepeat(event, el.beatUp, () => setPerBeat(event, state().custom.perBeat + 1));
-    el.use.addEventListener('click', () => setPattern(event, CUSTOM));
-    el.from.addEventListener('change', () => {
-      if (el.from.value !== '') {
-        copyPattern(event, Number(el.from.value));
-        el.from.value = '';
+
+    // The dialog: Escape and a tap outside it say no, and the keyboard stays inside it
+    el.modalOk.addEventListener('click', () => confirmCustom(event));
+    el.modalCancel.addEventListener('click', () => closeModal(event));
+    el.modalScrim.addEventListener('click', () => closeModal(event));
+    el.modal.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        closeModal(event);
+      } else if (e.key === 'Tab') {
+        const first = el.modalCancel;
+        const last = el.modalOk;
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
       }
     });
 
@@ -635,6 +906,9 @@ function (event, funcs) {
     event.settings.on('click', '.kss-dot', function () { goToPage(view, Number($(this).attr('data-page')), true); });
     event.settings.on('keydown', (e) => {
       if (e.target.matches && e.target.matches('input, select')) {
+        return;
+      }
+      if (!el.modal.hidden) {
         return;
       }
       if (e.key === 'ArrowRight') { stepPage(event, 1); } else if (e.key === 'ArrowLeft') { stepPage(event, -1); }
@@ -656,12 +930,10 @@ function (event, funcs) {
   const buildSettings = (event) => {
     const settings = event.settings;
 
-    settings.find('.kss-steps').html(range(0, CUSTOM_STEPS - 1).map((i) =>
-      `<button type="button" class="kss-cell" data-level="2"><span class="kss-cell-bar" aria-hidden="true"></span>` +
-      `<span class="kss-cell-n">${i + 1}</span><span class="kss-cell-level">Pass</span></button>`).join(''));
-
-    settings.find('.kss-from').html('<option value="">Copy from&hellip;</option>' +
-      PATTERNS.map((pattern, i) => (pattern.steps ? `<option value="${i}">${pattern.name}</option>` : '')).join(''));
+    SIDES.forEach((side) => {
+      settings.find(`.kss-led-cells[data-side="${side[0]}"]`).html(range(0, CUSTOM_STEPS - 1).map((i) =>
+        `<button type="button" class="kss-cell" data-side="${side[0]}" data-step="${i}" data-n="${i + 1}" data-level="2"></button>`).join(''));
+    });
   };
 
   const cacheElements = (event) => {
@@ -669,50 +941,78 @@ function (event, funcs) {
     const one = (selector) => root.querySelector(selector);
     const settings = event.settings[0];
     const inSettings = (selector) => settings.querySelector(selector);
+    const cellsOf = (side) => Array.from(settings.querySelectorAll(`.kss-led-cells[data-side="${side[0]}"] .kss-cell`));
+    const lanesOf = (selector) => Array.from(settings.querySelectorAll(selector)).map((lane) => ({ lane, cells: lane.querySelector('[class$="-steps"]') }));
 
     event.data.el = {
       root,
       state: one('.ks-state'),
       name: one('.ks-pattern-name'),
-      steps: one('.ks-steps'),
+      lanes: Array.from(root.querySelectorAll('.ks-lane')),
       prev: one('.ks-prev'),
       next: one('.ks-next'),
       open: one('.ks-open'),
+      mono: one('.ks-mono'),
+      foot: one('.ks-foot'),
+      modes: Array.from(root.querySelectorAll('.ks-mode')),
       down: one('.ks-bpm-down'),
       up: one('.ks-bpm-up'),
       bpm: one('.ks-bpm'),
+      lengthBeatsDown: one('.ks-length-down'),
+      lengthBeatsUp: one('.ks-length-up'),
+      lengthValue: one('.ks-length-value'),
       segments: Array.from(root.querySelectorAll('.ks-segment')),
       depth: one('.ks-depth-input'),
       depthValue: one('.ks-depth-value'),
       edge: one('.ks-edge-input'),
       edgeValue: one('.ks-edge-value'),
       // The settings page
-      now: inSettings('.kss-now-label'),
       settingsRoot: inSettings('.kss'),
+      glance: inSettings('.kss-glance'),
+      glanceKind: inSettings('.kss-glance-kind'),
+      glanceName: inSettings('.kss-glance-name'),
+      glanceLanes: lanesOf('.kss-glance .kss-lane'),
+      monoSettings: inSettings('.kss-mono'),
       power: inSettings('.kss-power'),
-      editPattern: inSettings('.kss-edit-pattern'),
+      modesSettings: Array.from(settings.querySelectorAll('.kss-mode')),
+      playKind: inSettings('.kss-play-kind'),
       playName: inSettings('.kss-play-name'),
       playHint: inSettings('.kss-play-hint'),
       choices: inSettings('.kss-choices'),
-      viewSteps: inSettings('.kss-view-steps'),
-      bpmValue: inSettings('.kss-bpm b'),
-      bpmDown: inSettings('.kss-bpm-down'),
-      bpmUp: inSettings('.kss-bpm-up'),
-      bpmInput: inSettings('.kss-bpm-input'),
-      segmentsSettings: Array.from(settings.querySelectorAll('.kss-segment')),
-      depthSettings: inSettings('.kss-depth-input'),
-      depthValueSettings: inSettings('.kss-depth-value'),
-      edgeSettings: inSettings('.kss-edge-input'),
-      edgeValueSettings: inSettings('.kss-edge-value'),
-      cells: Array.from(settings.querySelectorAll('.kss-cell')).map((button) => ({ button, level: button.querySelector('.kss-cell-level') })),
+      pickPrev: inSettings('.kss-pick-prev'),
+      pickNext: inSettings('.kss-pick-next'),
+      pickLabel: inSettings('.kss-pick-label'),
+      pickCount: inSettings('.kss-pick-count'),
+      ledRoot: inSettings('.kss-led'),
+      ledSteps: inSettings('.kss-led-steps'),
+      ledHint: inSettings('.kss-led-hint'),
+      ledTitle: inSettings('.kss-led-title'),
+      ledBeat: inSettings('.kss-led-beat'),
+      cells: { left: cellsOf('left'), right: cellsOf('right') },
+      endingLanes: lanesOf('.kss-led-ending .kss-lane'),
       length: inSettings('.kss-length'),
       lengthDown: inSettings('.kss-length-down'),
       lengthUp: inSettings('.kss-length-up'),
       beat: inSettings('.kss-beat'),
       beatDown: inSettings('.kss-beat-down'),
       beatUp: inSettings('.kss-beat-up'),
-      from: inSettings('.kss-from'),
-      use: inSettings('.kss-use'),
+      bpmValue: inSettings('.kss-bpm b'),
+      bpmDown: inSettings('.kss-bpm-down'),
+      bpmUp: inSettings('.kss-bpm-up'),
+      bpmInput: inSettings('.kss-bpm-input'),
+      segmentsSettings: Array.from(settings.querySelectorAll('.kss-segment')),
+      endingLength: inSettings('.kss-ending-length b'),
+      endingLengthDown: inSettings('.kss-ending-length-down'),
+      endingLengthUp: inSettings('.kss-ending-length-up'),
+      depthSettings: inSettings('.kss-depth-input'),
+      depthValueSettings: inSettings('.kss-depth-value'),
+      edgeSettings: inSettings('.kss-edge-input'),
+      edgeValueSettings: inSettings('.kss-edge-value'),
+      modal: inSettings('.kss-modal'),
+      modalScrim: inSettings('.kss-modal-scrim'),
+      modalText: inSettings('.kss-modal-text'),
+      modalOk: inSettings('.kss-modal-ok'),
+      modalCancel: inSettings('.kss-modal-cancel'),
     };
   };
 
@@ -724,23 +1024,21 @@ function (event, funcs) {
     const number = Number(value);
     let match;
 
-    if (symbol === ':bypass') {
-      // MOD UI's bypass: 1 = bypassed
-      const bypassed = number >= 0.5;
-      const changed = state.bypassed !== bypassed;
-      state.bypassed = bypassed;
-      return changed;
-    }
-
-    if (symbol === 'pattern') state.pattern = clamp(Math.round(number), 0, CUSTOM);
+    // (MOD UI's own ':bypass' is the host's: the plugin does not draw it)
+    if (symbol === 'mode') state.mode = clamp(Math.round(number), 0, 1);
+    else if (symbol === 'pattern') state.pattern = clamp(Math.round(number), 0, CUSTOM);
+    else if (symbol === 'ending') state.ending = clamp(Math.round(number), 0, ENDINGS.length - 1);
     else if (symbol === 'bpm') state.bpm = clamp(Math.round(number), BPM.min, BPM.max);
     else if (symbol === 'speed') state.speed = clamp(Math.round(number), 0, SPEEDS - 1);
+    else if (symbol === 'length') state.length = clamp(Math.round(number), LENGTH.min, LENGTH.max);
     else if (symbol === 'depth') state.depth = clamp(number, 0, 100);
     else if (symbol === 'edge') state.edge = clamp(number, EDGE.min, EDGE.max);
+    else if (symbol === 'mono') state.mono = number >= 0.5;
+    else if (symbol === 'kill') state.kill = number >= 0.5;
     else if (symbol === 'custom_length') state.custom.length = clamp(Math.round(number), 1, CUSTOM_STEPS);
     else if (symbol === 'custom_steps_per_beat') state.custom.perBeat = clamp(Math.round(number), 1, CUSTOM_MAX_PER_BEAT);
-    else if ((match = /^custom_step_(\d+)$/.exec(symbol || '')) && Number(match[1]) >= 1 && Number(match[1]) <= CUSTOM_STEPS) {
-      state.custom.steps[Number(match[1]) - 1] = clamp(Math.round(number), 0, LEVELS - 1);
+    else if ((match = /^custom_(left|right)_step_(\d+)$/.exec(symbol || '')) && Number(match[2]) >= 1 && Number(match[2]) <= CUSTOM_STEPS) {
+      state.custom[match[1]][Number(match[2]) - 1] = clamp(Math.round(number), 0, LEVELS - 1);
     } else {
       return false;
     }

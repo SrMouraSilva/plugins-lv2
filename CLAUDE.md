@@ -1,12 +1,12 @@
 # CLAUDE.md
 
 LV2 utility plugins for MOD devices (MOD Dwarf first; Duo and Duo X must keep working). Plugins: **Gossiper**,
-**Tetr4 Switch**, **Hept7 Switch**, **Kill Switch** and **Half Mouco**. Code, comments, commits and docs are in English.
+**Tetr4 Switch**, **Hept7 Switch** and **Kill Switch**. Code, comments, commits and docs are in English.
 
 ## Layout
 
 ```
-plugins/src/                 C sources (shared code in lv2/, model/, utils/; kill-switch.c and half-mouco.c are standalone)
+plugins/src/                 C sources (shared code in lv2/, model/, utils/; kill-switch.c is standalone)
 plugins/resources/<name>.lv2 the bundle: <name>.ttl, manifest.ttl, modgui.ttl, presets.ttl, modgui/, docs/
 plugins/Makefile             build-<plugin> targets; srmourasilva-plugins.mk is the mod-plugin-builder package
 tools/modgui-preview/        browser preview of any plugin's modgui (no device needed)
@@ -59,16 +59,18 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
 
 ## C code and LV2
 
-* **Kill Switch is one standalone file** (`src/kill-switch.c`, only LV2's core header; its display widget is apart, in `src/hmi/kill-switch-widgets.c`, which only needs the headers of `src/hmi/` that every plugin shares): its bypass is the `lv2:enabled`
-  port (1 = on), kept last, and `PATTERNS` is repeated in its modgui script and in the scale points of `pattern`. A step has
-  three levels ('0' cut, '1' half, '2' pass); the built-in patterns use 0 and 2, and the custom one is the ports
-  `custom_length`, `custom_steps_per_beat` and `custom_step_1..16` (the value 10 of `pattern`). A new port goes before
-  `lv2_enabled` only while the plugin is unreleased (the TTL indices, `PortIndex` and the harness must agree).
-* **Half Mouco is Kill Switch in stereo** (`src/half-mouco.c`, also standalone; its widget is `src/hmi/half-mouco-widgets.c`, which draws the endings with the plugin's own `ending_gate`, handed to it): a row of steps for each side, plus *endings*,
-  one-shot effects that are functions of the time since the plugin was switched on (`ending_gate` in C, `ENDINGS[].gate` in the
-  modgui script: keep them in step, the script draws the ending along its time). Its `PATTERNS`, the scale points of `pattern` and
-  `ending` and the modgui script must agree too. The ports are `mode`, `pattern`, `ending`, ..., `custom_left_step_1..16`,
-  `custom_right_step_1..16`, and `lv2_enabled` last (index 47).
+* **Kill Switch is one standalone file** (`src/kill-switch.c`, only LV2's core header; its display widget is apart, in `src/hmi/kill-switch-widgets.c`, which only needs the headers of `src/hmi/` that every plugin shares, and draws the endings with the plugin's own `ending_gate`, handed to it).
+  It is stereo: a row of steps for each side, plus *endings*, one-shot effects that are functions of the time since the effect was switched on
+  (`ending_gate` in C, `ENDINGS[].gate` in the modgui script: keep them in step, the script draws the ending along its time). A step has three levels
+  ('0' cut, '1' half, '2' pass). `PATTERNS` (the first ten have the same row on both sides: the single-channel kill switch; then nine with a row for each
+  side; then Custom, value 19 of `pattern`), the scale points of `pattern` and `ending` and the modgui script must agree. The custom pattern is the ports
+  `custom_length`, `custom_steps_per_beat`, `custom_left_step_1..16` and `custom_right_step_1..16`. The ports are `mode`, `pattern`, `ending`, ...,
+  and `kill` last (index 47). A new port goes before `kill` only while the plugin is unreleased (the TTL indices, `PortIndex` and the harness must agree).
+* **The on/off is the `kill` port, not `lv2:enabled`**: MOD UI draws `lv2:enabled` as its own `:bypass`, a made-up port whose properties are fixed
+  (`toggled`, `integer`), so a `mod:preferMomentaryOnByDefault` on it never reaches the assignment dialog; a plain toggled port with that property does,
+  and the dialog then comes as *Momentary*. It is off by default; the effect (the pattern or the ending) starts from its first step each time it goes on,
+  and goes back to the clean signal with a 10 ms ramp. MOD's own bypass of the plugin is still the host's. The pedal's footswitch and the settings page's
+  *Kill* button write `kill` themselves (a tap toggles it).
 * **One code base, several plugins.** Tetr4 and Hept7 Switch are the same sources sized by `src/config.h`
   (`-DHEPT7_SWITCH`). Do not copy files to make a variant: parametrise (`TOTAL_PRESETS`, `TOTAL_OUTPUTS`).
 * **Port layout lives in `src/model/ports.h`** as contiguous ranges (`PORT_*_FIRST`), never as one `case` per port.
@@ -186,11 +188,15 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   pill, no sunken box (raised means button, sunken means text field). A rule at its side in the colour of the state, the caption in small capitals and the value
   as plain text. Details in `docs/custom-settings-pages.md` (section 9).
 * **The settings page has every control the icon has** (and more room to show it): the page of a plugin with a pedal face is the
-  place to play it from a phone or a tablet, so nothing that is on the pedal may exist only there. Half Mouco and Kill Switch:
-  the first page is the choice of pattern (every one at hand, with a small picture of it, which only shows), tempo and feel,
-  and the editor of the custom pattern, which appears under the choice only while Custom is chosen (`data-together` /
-  `data-custom` of `.hms` / `.kss`; the layout reserves the room for it, so the page does not jump). When the editor does not fit
-  with the rest, it has a page of its own and a button on the first page takes to it. On and off (and Mono) are in the top bar.
+  place to play it from a phone or a tablet, so nothing that is on the pedal may exist only there. Kill Switch: the top bar has Mono,
+  Kill, the page arrows and Close; under it, on every page, **what plays** as a flat strip (`.kss-glance`: its name and the two rows of the
+  steps); then the pages: the choice of pattern (every one at hand as a grid, or `< name >` arrows when the screen is too small for the grid:
+  `data-choice` of `.kss`, decided by trying the layouts), the **steps as LEDs** (a recessed cell that lights, as Hept7's outputs do; white for
+  the left side, red for the right one) which are also the editor, tempo and feel, and the saved presets. The LEDs of Custom change level
+  with a tap; those of a built-in pattern open a dialog (`.kss-modal`, inside the page, so it has the theme of the plugin and survives the
+  Performance view) that asks whether to define a Custom pattern from it: *yes* writes the length, the steps per beat and every step into the
+  custom ports first and only then switches `pattern`. Length and steps per beat are with the LEDs and only show while Custom plays (`data-custom`;
+  the layout measures with them shown, so the page does not jump).
 
 ## Display widgets
 

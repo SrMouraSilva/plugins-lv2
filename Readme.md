@@ -113,15 +113,15 @@ The big sibling of Tetr4 Switch, in turquoise: **7 presets** (one footswitch eac
 
 <img src="./plugins/resources/kill-switch.lv2/docs/alternative-thumbnail.webp" alt="Kill Switch" width="120" align="right">
 
-A rhythmic signal-cut effect, like the momentary kill switch some guitars have: while the plugin is on, a looping step pattern lets the signal through or cuts it, in time with the tempo. Bypassed, the signal is clean. A mono audio effect, in red and charcoal.
+A rhythmic signal-cut effect, like the momentary kill switch some guitars have: while it is on, a looping step pattern lets the signal through or cuts it, in time with the tempo. It is **stereo**: **the left and the right side each have a row of steps**, so the sound can change with the side (a ping-pong, an ear that is chopped while the other is not); the first ten patterns have the same row on both sides, which is the plain single-channel kill switch. In white (left), red (right) and charcoal.
 
-* **A settings page with the whole plugin** (`modgui:settingsTemplate`): every pattern to pick with one tap (with a small picture of its steps), tempo, speed, depth and edge, and the on/off switch, with the room the pedal face does not have. Choosing *Custom* opens the editor in place: up to 16 steps, each with **three levels** (cut, half, pass) that a tap goes through in a circle, a length, the steps per beat and *Copy from…* a built-in pattern. The steps are control ports (`custom_step_N`), so the pattern is saved with the pedalboard, the presets and the snapshots. The page also holds the assignment tiles (the bypass included) and the saved presets, spread over pages like the other settings pages
-* **10 patterns**: six generic grooves (*Chop 8ths*, *Chop 16ths*, *Triplet chop*, *Machine gun*, *Syncopated 3-3-2*, *Gallop*) and four inspired by guitarists famous for the kill switch (the rhythms are an approximation, not a transcription). Every pattern starts from its first step, a cut, each time the plugin is switched on
-* **Tempo** (40-240 BPM) and **Speed** (1/2x, 1x, 2x, 4x) set how fast it plays; **Depth** (how much of the signal a cut removes) and **Edge** (how long a cut takes to close and open, 0.1-20 ms) set how hard it is. The plugin has its own tempo: it does not follow the pedalboard's
-* **An interface drawn for touch**: the arrows change the pattern and a row of sixteen squares shows it (lit: the signal passes), a stepper for the tempo, a segmented control for the speed, sliders for depth and edge, and a footswitch that is the bypass of the plugin. The *Edit pattern* button opens the settings page
-* **In-plugin bypass** (`lv2:enabled`) with a 10 ms ramp back to the dry signal. Assigned in *Momentary* mode, the effect is on only while the footswitch is held, like the switch on a guitar
-* A single C file against LV2's core header, with no dependencies and no allocation after `instantiate`; no latency
-* 11 factory presets (they do not touch the custom pattern)
+* **Two families.** *Patterns* loop for as long as the effect is on: ten with the same row on both sides (six generic grooves, *Chop 8ths*, *Chop 16ths*, *Triplet chop*, *Machine gun*, *Syncopated 3-3-2*, *Gallop*, and four inspired by guitarists famous for the kill switch, an approximation and not a transcription), nine with a row for each side (*Ping-pong 8ths* and *16ths*, *Triplet pong*, *Half deaf: left* and *right*, *Gallop sides*, *Stagger*, *Seesaw*, *Syncopated sides*) and one you write. *Endings* play **once** when the effect is switched on and finish in silence, for the end of a song: *Bouncing ball* (tam---tam--tam-tam-ta-ta-t-t-ttt), *Helicopter* (blades that go from one side to the other, slower and fainter), *Stutter out*, *Side fade* and *Ping-pong out*. The endings are chosen, not drawn: only Ending, Length (in beats), Tempo, Depth and Edge
+* **Kill, a momentary footswitch.** The effect is on while the `kill` control is on, and the control asks the device to be assigned as *Momentary* (`mod:preferMomentaryOnByDefault`): it chops while the footswitch is held, like the switch on a guitar, with a 10 ms ramp back to the dry signal. (It is not `lv2:enabled`: MOD UI draws that one as a bypass whose assignment has no such default.) A pattern or an ending starts from its beginning each time it is switched on
+* **A settings page with the whole plugin** (`modgui:settingsTemplate`): the pattern or ending to pick with one tap (or with *‹ name ›* arrows on a small screen), a small strip under the top bar that tells what plays on every page, tempo, speed or length, depth, edge, Mono and Kill. What each side does is shown as **LEDs** (white for the left side, red for the right one): a tap on a step of your own pattern goes through its **three levels** (cut, half, pass), and a tap on a built-in pattern asks whether to define a *Custom* pattern from it. The custom pattern has up to 16 steps for each side, a length and the steps per beat; the steps are control ports (`custom_left_step_N`, `custom_right_step_N`), so it is saved with the pedalboard, the presets and the snapshots. The page also holds the assignment tiles and the saved presets, spread over pages like the other settings pages; the two rows fit a phone upright or on its side
+* **Tempo** (40-240 BPM) and **Speed** (1/2x, 1x, 2x, 4x) set how fast a pattern plays; **Depth** (how much of the signal a cut removes) and **Edge** (how long a cut takes to close and open, 0.1-20 ms) set how hard it is. The plugin has its own tempo: it does not follow the pedalboard's
+* **Mono input** switch: the left input feeds both sides, for a single instrument
+* A single C file against LV2's core header, with no dependencies and no allocation after `instantiate`; no latency. The endings are functions of the time since the effect was switched on, repeated in the modgui script to draw them along their time
+* 22 factory presets (they do not touch the custom pattern)
 * [User manual](./plugins/resources/kill-switch.lv2/docs/manual.md); the device opens the HTML version, [manual.html](./plugins/resources/kill-switch.lv2/modgui/manual.html) · [Store page](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9raWxsLXN3aXRjaA==) (coming soon)
 
 <picture>
@@ -129,28 +129,9 @@ A rhythmic signal-cut effect, like the momentary kill switch some guitars have: 
   <img src="./plugins/resources/kill-switch.lv2/docs/images/kill-switch-demo.gif" alt="Kill Switch on a pedalboard">
 </picture>
 
-## Half Mouco
-
-<img src="./plugins/resources/half-mouco.lv2/docs/alternative-thumbnail.webp" alt="Half Mouco" width="120" align="right">
-
-The stereo sibling of [Kill Switch](#kill-switch), in teal, blue and amber: a rhythmic signal-cut effect in which **the left and the right side each have a row of steps**, so the sound changes with the side (a ping-pong, an ear that is chopped while the other is not). *Mouco* is Portuguese for hard of hearing: *half mouco* is half deaf.
-
-* **Two families.** *Patterns* loop for as long as the plugin is on: nine built-in ones (*Ping-pong 8ths* and *16ths*, *Triplet pong*, *Half deaf: left* and *right*, *Gallop sides*, *Stagger*, *Seesaw*, *Syncopated sides*) and one you write. *Endings* play **once** when the plugin is switched on and finish in silence, for the end of a song: *Bouncing ball* (tam---tam--tam-tam-ta-ta-t-t-ttt), *Helicopter* (blades that go from one side to the other, slower and fainter), *Stutter out*, *Side fade* and *Ping-pong out*. The endings are chosen, not drawn: only Ending, Length (in beats), Tempo, Depth and Edge
-* **A settings page with the whole plugin** (`modgui:settingsTemplate`): patterns or endings to pick with one tap, what each side does, tempo, speed or length, depth, edge, Mono and the on/off switch. Choosing *Custom* opens **your own pattern** in place: two rows of up to 16 steps (left and right), each step with **three levels** (cut, half, pass) that a tap goes through in a circle, a length, the steps per beat and *Copy from…* a built-in pattern. The steps are control ports (`custom_left_step_N`, `custom_right_step_N`), so the pattern is saved with the pedalboard, the presets and the snapshots. The page also holds the assignment tiles (the bypass has a panel of its own) and the saved presets, spread over pages like the other settings pages; the two rows fit a phone upright or on its side
-* **Mono input** switch: the left input feeds both sides, for a single instrument
-* **In-plugin bypass** (`lv2:enabled`) with a 10 ms ramp. A pattern or an ending starts from its beginning each time the plugin is switched on. Assigned in *Momentary* mode, the effect is on only while the footswitch is held
-* A single C file against LV2's core header, with no dependencies and no allocation after `instantiate`; no latency. The endings are functions of the time since the plugin was switched on, repeated in the modgui script to draw them along their time
-* 11 factory presets (they do not touch the custom pattern)
-* [User manual](./plugins/resources/half-mouco.lv2/docs/manual.md); the device opens the HTML version, [manual.html](./plugins/resources/half-mouco.lv2/modgui/manual.html) · [Store page](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9oYWxmLW1vdWNv) (coming soon)
-
 <picture>
-  <source srcset="./plugins/resources/half-mouco.lv2/docs/images/half-mouco-demo.webp" type="image/webp">
-  <img src="./plugins/resources/half-mouco.lv2/docs/images/half-mouco-demo.gif" alt="Half Mouco on a pedalboard">
-</picture>
-
-<picture>
-  <source srcset="./plugins/resources/half-mouco.lv2/docs/images/half-mouco-settings.webp" type="image/webp">
-  <img src="./plugins/resources/half-mouco.lv2/docs/images/half-mouco-settings.gif" alt="The settings page of Half Mouco">
+  <source srcset="./plugins/resources/kill-switch.lv2/docs/images/kill-switch-settings.webp" type="image/webp">
+  <img src="./plugins/resources/kill-switch.lv2/docs/images/kill-switch-settings.gif" alt="The settings page of Kill Switch">
 </picture>
 
 ## Download
@@ -173,7 +154,7 @@ MOD UI has an endpoint that installs a plugin archive, the same one the plugin S
 ```bash
 DEVICE=192.168.51.1
 TAG=20261114-1642-feature-hept7-switch-ffb748d    # the release to install, from the Releases page
-for plugin in gossiper tetr4-switch hept7-switch kill-switch half-mouco; do
+for plugin in gossiper tetr4-switch hept7-switch kill-switch; do
   curl -sL -o $plugin.tar.gz "https://github.com/SrMouraSilva/plugins-lv2/releases/download/$TAG/$plugin-dwarf.lv2.tar.gz"
   base64 -i $plugin.tar.gz | curl -s -F "package=@-;filename=$plugin.tar.gz" http://$DEVICE/sdk/install
   echo
@@ -237,7 +218,7 @@ python3 tools/modgui-preview/serve.py        # http://localhost:8000/?plugin=hep
 
 ### Display widgets (MOD Dwarf and Duo X)
 
-Every plugin can draw on the display of a device that implements the [aLabs HMI widgets](https://github.com/sejerpz/alabs-hmi-widgets) extension (the Starless images for the Dwarf and the Duo X; stock firmware does not, and the plugins simply draw nothing there): the pattern of Kill Switch, the two sides of Half Mouco, the active preset of Tetr4 and Hept7 Switch, the footswitches and knobs of Gossiper. Each widget adapts to the area it is given, from a footer to the full screen.
+Every plugin can draw on the display of a device that implements the [aLabs HMI widgets](https://github.com/sejerpz/alabs-hmi-widgets) extension (the Starless images for the Dwarf and the Duo X; stock firmware does not, and the plugins simply draw nothing there): the two sides of Kill Switch, the active preset of Tetr4 and Hept7 Switch, the footswitches and knobs of Gossiper. Each widget adapts to the area it is given, from a footer to the full screen.
 
 ```bash
 python3 tools/hmi-preview/preview.py all   # sheets of every widget on every area, and a Dwarf and a Duo X (needs pillow and the .so files)
@@ -289,7 +270,6 @@ docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/tetr4-switch.l
 docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/hept7-switch.lv2/ binaries/dwarf
 docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/gossiper.lv2/ binaries/dwarf
 docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/kill-switch.lv2/ binaries/dwarf
-docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/half-mouco.lv2/ binaries/dwarf
 ```
 
 ### One package per plugin, for the MOD store
@@ -297,7 +277,7 @@ docker cp mpb:/root/mod-workdir/moddwarf/target/usr/local/lib/lv2/half-mouco.lv2
 `plugins/srmourasilva-plugins.mk` builds the four plugins together, which is what the CI and a local `./build` use. The
 store (and [builder.mod.audio](https://builder.mod.audio/buildroot)) takes **one bundle per package**, so that a person
 installs only the plugin they want: each plugin has its own recipe in [store/](./store), `gossiper.mk`, `tetr4-switch.mk`,
-`hept7-switch.mk`, `kill-switch.mk` and `half-mouco.mk`. A recipe clones this repository at a commit, builds `build-<plugin>` and installs
+`hept7-switch.mk` and `kill-switch.mk`. A recipe clones this repository at a commit, builds `build-<plugin>` and installs
 `install-<plugin>` (see [plugins/Makefile](./plugins/Makefile)). The commit has to exist on GitHub:
 
 ```bash

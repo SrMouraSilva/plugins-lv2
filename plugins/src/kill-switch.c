@@ -5,26 +5,30 @@
  */
 
 /*
- * Kill Switch: a rhythmic signal-cut effect, like the momentary kill switch some guitars have. While the plugin is on, a
- * looping step pattern chops the signal; bypassed, it is clean.
+ * Kill Switch: a rhythmic signal-cut effect, like the momentary kill switch some guitars have. A looping step pattern
+ * chops the signal, and the left and the right side each have a row of their own, so the sound can change with the side
+ * (a ping-pong, an ear that is chopped while the other one is not...). The first ten patterns have the same row on both
+ * sides: the single-channel kill switch. A second family, the "endings", plays once when the plugin is switched on and
+ * finishes in silence: effects for the end of a song (a bouncing ball, a helicopter that lands...), that the musician
+ * chooses but does not draw.
  *
- * Standalone: it shares no code with the other plugins (it only needs LV2's core header), so its macros cannot clash
- * with theirs.
+ * The plugin is switched on by the `kill` port, a footswitch that is meant to be momentary: it chops while it is held.
  *
- * Patterns: one character per step, `steps_per_beat` steps per beat (before the Speed multiplier). A step has one of
- * three levels, and the gain of each depends on Depth: '0' = cut (the signal is lowered by Depth: silence at 100%),
- * '1' = half (halfway between a cut and the whole signal), '2' = pass (the signal as it is). Every pattern starts
- * with its first step the moment the plugin is switched on, as if a button had been pressed then. The gate can only
- * lower the level, so there is no output limiter.
+ * Standalone: it only needs LV2's core header (and the display widget, hmi/kill-switch-widgets.c).
  *
- * The ten built-in patterns are in PATTERNS; the eleventh, "Custom", is the one the musician writes on the settings
- * page: its length, its steps per beat and its steps are control ports (saved with the pedalboard and the presets).
+ * Steps: one character per step, `steps_per_beat` steps per beat (before the Speed multiplier). A step has one of three
+ * levels: '0' = cut (the signal is lowered by Depth: silence at 100%), '1' = half (halfway between a cut and the whole
+ * signal), '2' = pass. Every pattern starts with its first step the moment the plugin is switched on.
  *
- * modgui/kill-switch.js repeats the names and the steps of PATTERNS (to draw them): keep the two in step, and the
- * scale points of the `pattern` port in kill-switch.ttl too.
+ * Endings: the gate (0 = cut .. 1 = pass) of each side is a function of the time since the plugin was switched on
+ * (see ending_gate), which lasts `length` beats at the tempo; after it, everything is cut.
  *
- * The display widget (`pattern`, for devices with the aLabs HMI widgets extension) is in hmi/kill-switch-widgets.c: it draws
- * the pattern, the step that plays and the tempo. It is optional: without the extension the plugin does not draw anything.
+ * modgui/kill-switch.js repeats the names, the steps and the endings (to draw them): keep them in step, and the scale
+ * points of `pattern` and `ending` in kill-switch.ttl too.
+ *
+ * The display widget (`stereo`, for devices with the aLabs HMI widgets extension) is in hmi/kill-switch-widgets.c: it draws the row
+ * of each side and the step that plays, or the curve of the ending along its time. It is optional: without the
+ * extension the plugin does not draw anything.
  */
 
 #include <math.h>
@@ -45,44 +49,64 @@ _Static_assert(CUSTOM_MAX_STEPS == KILL_SWITCH_WIDGET_MAX_STEPS, "the widget kee
 #define CUSTOM_MAX_STEPS_PER_BEAT 8
 #define LEVEL_COUNT 3
 
-/** Port indices: the order of the ports in kill-switch.ttl. New ports go at the end, after `ENABLED` */
+/** Port indices: the order of the ports in kill-switch.ttl. */
 typedef enum {
-    AUDIO_IN = 0,
-    AUDIO_OUT,
+    AUDIO_IN_L = 0,
+    AUDIO_IN_R,
+    AUDIO_OUT_L,
+    AUDIO_OUT_R,
+    /** 0 = the patterns (they loop), 1 = the endings (they play once) */
+    MODE,
     PATTERN,
+    ENDING,
     BPM,
     SPEED,
+    /** How long an ending lasts, in beats */
+    LENGTH,
     DEPTH,
     EDGE,
-    /** The custom pattern: how many steps it has (1..CUSTOM_MAX_STEPS) and how many of them make a beat */
+    /** 1 = the left input feeds both sides */
+    MONO,
     CUSTOM_LENGTH,
     CUSTOM_STEPS_PER_BEAT,
-    /** CUSTOM_MAX_STEPS ports, one per step, in a row: the level (0..2) of each */
-    CUSTOM_STEP_FIRST,
-    /** `lv2:enabled`, the bypass of the host: 1 = the effect is on, 0 = bypassed (clean). Always the last port */
-    ENABLED = CUSTOM_STEP_FIRST + CUSTOM_MAX_STEPS,
+    /** CUSTOM_MAX_STEPS ports for the left side, then CUSTOM_MAX_STEPS for the right side: the level (0..2) of each step */
+    CUSTOM_LEFT_FIRST,
+    CUSTOM_RIGHT_FIRST = CUSTOM_LEFT_FIRST + CUSTOM_MAX_STEPS,
+    /** 1 = the effect is on, 0 = clean. A footswitch, momentary by default (mod:preferMomentaryOnByDefault). Always the last port */
+    KILL = CUSTOM_RIGHT_FIRST + CUSTOM_MAX_STEPS,
     PORT_COUNT
 } PortIndex;
 
 typedef struct {
     const char* name;
     int         steps_per_beat;
-    const char* steps;
+    const char* left;
+    const char* right;
 } Pattern;
 
 static const Pattern PATTERNS[] = {
-    // Generic grooves
-    { "Chop 8ths",            2, "02" },
-    { "Chop 16ths",           4, "02" },
-    { "Triplet chop",         3, "02" },
-    { "Machine gun",          8, "02" },
-    { "Syncopated 3-3-2",     2, "02202202" },
-    { "Gallop",               4, "0220" },
+    // The single-channel kill switch: the same row on both sides. Generic grooves
+    { "Chop 8ths",            2, "02",               "02" },
+    { "Chop 16ths",           4, "02",               "02" },
+    { "Triplet chop",         3, "02",               "02" },
+    { "Machine gun",          8, "02",               "02" },
+    { "Syncopated 3-3-2",     2, "02202202",         "02202202" },
+    { "Gallop",               4, "0220",             "0220" },
     // Inspired by guitarists famous for the kill switch: the rhythms are an approximation, not a transcription
-    { "Morello solo chop",    4, "0202022002022022" },
-    { "Morello toggle solo",  4, "0222020200220202" },
-    { "Greenwood chunk",      2, "02220222" },
-    { "Buckethead burst",     8, "0202020222222222" },
+    { "Morello solo chop",    4, "0202022002022022", "0202022002022022" },
+    { "Morello toggle solo",  4, "0222020200220202", "0222020200220202" },
+    { "Greenwood chunk",      2, "02220222",         "02220222" },
+    { "Buckethead burst",     8, "0202020222222222", "0202020222222222" },
+    // A row for each side
+    { "Ping-pong 8ths",      2, "20",       "02" },
+    { "Ping-pong 16ths",     4, "20",       "02" },
+    { "Triplet pong",        3, "200",      "020" },
+    { "Half deaf: left",     2, "02",       "22" },
+    { "Half deaf: right",    2, "22",       "02" },
+    { "Gallop sides",        4, "2200",     "0022" },
+    { "Stagger",             4, "2002",     "0220" },
+    { "Seesaw",              2, "2210",     "0122" },
+    { "Syncopated sides",    2, "20020020", "02002002" },
 };
 
 #define BUILT_IN_COUNT ((int) (sizeof(PATTERNS) / sizeof(PATTERNS[0])))
@@ -90,37 +114,71 @@ static const Pattern PATTERNS[] = {
 #define CUSTOM_PATTERN BUILT_IN_COUNT
 #define PATTERN_COUNT (BUILT_IN_COUNT + 1)
 
+typedef enum {
+    ENDING_BOUNCING_BALL = 0,
+    ENDING_HELICOPTER,
+    ENDING_STUTTER_OUT,
+    ENDING_SIDE_FADE,
+    ENDING_PING_PONG_OUT,
+    ENDING_COUNT
+} Ending;
+
 static const float SPEED_MULTIPLIER[] = { 0.5f, 1.0f, 2.0f, 4.0f };
 #define SPEED_COUNT ((int) (sizeof(SPEED_MULTIPLIER) / sizeof(SPEED_MULTIPLIER[0])))
 
 #define BPM_MIN 40.0f
 #define BPM_MAX 240.0f
+#define LENGTH_MIN 2.0f
+#define LENGTH_MAX 32.0f
 #define EDGE_MIN_MS 0.1f
 #define EDGE_MAX_MS 20.0f
 /** Coming back to the dry signal when the effect is switched off: a fixed time, whatever Edge says */
-#define BYPASS_RAMP_SECONDS 0.010f
+#define IDLE_RAMP_SECONDS 0.010f
+
+/** The bouncing ball: every gap is this fraction of the one before, so the bounces pile up at the end of the ending */
+#define BOUNCE_RATIO 0.78
+/** ... and a bounce is this fraction of its gap long (never longer than BOUNCE_MAX_BEATS). When a gap is shorter than BOUNCE_END_SECONDS the ball has stopped */
+#define BOUNCE_OPEN 0.55
+#define BOUNCE_MAX_BEATS 0.35
+#define BOUNCE_END_SECONDS 0.001
+/** The helicopter: the gap between two blades grows by this factor, from a sixteenth note */
+#define HELICOPTER_GROWTH 1.12
+#define HELICOPTER_OPEN 0.5
 
 typedef struct {
     // Ports
-    const float* in;
-    float*       out;
+    const float* in_l;
+    const float* in_r;
+    float*       out_l;
+    float*       out_r;
+    const float* mode;
     const float* pattern;
+    const float* ending;
     const float* bpm;
     const float* speed;
+    const float* length;
     const float* depth;
     const float* edge;
+    const float* mono;
     const float* custom_length;
     const float* custom_steps_per_beat;
-    const float* custom_step[CUSTOM_MAX_STEPS];
-    const float* enabled;
+    const float* custom_left[CUSTOM_MAX_STEPS];
+    const float* custom_right[CUSTOM_MAX_STEPS];
+    const float* kill;
 
     float  sample_rate;
     /** Samples since the current step began (a double, so a long loop does not drift) */
     double position;
     int    step;
-    /** Current gain: 1 = the signal passes, 1 - Depth = cut */
-    float  gain;
-    bool   was_bypassed;
+    /** Seconds since the plugin was switched on, for the endings */
+    double elapsed;
+    /** The mode and the ending of the last run: a change starts the ending again */
+    int    last_mode;
+    int    last_ending;
+    /** Current gain of each side: 1 = the signal passes, 1 - Depth = cut */
+    float  gain_l;
+    float  gain_r;
+    bool   was_idle;
 
     /** The display widgets: what they show and which are on a display (hmi/kill-switch-widgets.c) */
     KillSwitchWidgets widgets;
@@ -139,9 +197,109 @@ static int choice(const float* port, int count) {
 static void reset(KillSwitch* self) {
     self->position = 0.0;
     self->step = 0;
-    // Starts at unity: bypassed from the first sample means no fade
-    self->gain = 1.0f;
-    self->was_bypassed = true;
+    self->elapsed = 0.0;
+    self->last_mode = 0;
+    self->last_ending = 0;
+    // Starts at unity: idle from the first sample means no fade
+    self->gain_l = 1.0f;
+    self->gain_r = 1.0f;
+    self->was_idle = true;
+}
+
+/*
+ * The endings. `t` is the time in seconds since the plugin was switched on, `total` how long the ending lasts and `beat`
+ * the length of a beat, both in seconds. Gives the gate of each side: 0 = cut, 1 = pass. After `total` everything is cut.
+ * `state` keeps what the ending found out at the last call (the index of the bounce or of the blade), so that a block
+ * does not search from the start; it is only a cache: a wrong value is corrected.
+ *
+ * modgui/kill-switch.js has the same functions (to draw the ending): keep them in step.
+ */
+typedef KillSwitchEndingState EndingState;
+
+static void ending_gate(int ending, double t, double total, double beat, EndingState* state, float* gate_l, float* gate_r) {
+    *gate_l = 0.0f;
+    *gate_r = 0.0f;
+
+    if (t < 0.0 || t >= total) {
+        return;
+    }
+
+    const double u = t / total;
+
+    switch (ending) {
+        case ENDING_BOUNCING_BALL: {
+            // Bounce k starts at total * (1 - r^k): the gaps shrink by r each time and pile up at the end
+            int k = state->index;
+            if (k < 0) k = 0;
+            while (k > 0 && t < total * (1.0 - pow(BOUNCE_RATIO, k))) --k;
+            while (t >= total * (1.0 - pow(BOUNCE_RATIO, k + 1))) ++k;
+            state->index = k;
+
+            const double start = total * (1.0 - pow(BOUNCE_RATIO, k));
+            const double gap = total * pow(BOUNCE_RATIO, k) * (1.0 - BOUNCE_RATIO);
+            if (gap < BOUNCE_END_SECONDS) {
+                return;
+            }
+            double open = gap * BOUNCE_OPEN;
+            if (open > beat * BOUNCE_MAX_BEATS) open = beat * BOUNCE_MAX_BEATS;
+            if (t - start < open) {
+                *gate_l = *gate_r = 1.0f;
+            }
+            break;
+        }
+
+        case ENDING_HELICOPTER: {
+            // Blade k starts at p0 * (g^k - 1) / (g - 1): the gap between blades grows, and the blades go to one side then the other
+            const double p0 = beat * 0.25;
+            const double g = HELICOPTER_GROWTH;
+            int k = (int) (log(1.0 + t * (g - 1.0) / p0) / log(g));
+            if (k < 0) k = 0;
+            const double start = p0 * (pow(g, k) - 1.0) / (g - 1.0);
+            const double period = p0 * pow(g, k);
+            if (t - start < period * HELICOPTER_OPEN) {
+                const float level = (float) (1.0 - u);
+                if (k % 2 == 0) *gate_l = level; else *gate_r = level;
+            }
+            break;
+        }
+
+        case ENDING_STUTTER_OUT: {
+            // Sixteenth notes whose open part shrinks to nothing; the right side is half a period behind the left one
+            const double period = beat * 0.25;
+            const double duty = 0.9 * (1.0 - u) + 0.02;
+            const double phase_l = fmod(t, period) / period;
+            const double phase_r = fmod(t + period * 0.5, period) / period;
+            if (phase_l < duty) *gate_l = 1.0f;
+            if (phase_r < duty) *gate_r = 1.0f;
+            break;
+        }
+
+        case ENDING_SIDE_FADE: {
+            // Eighth notes, half open; the left side fades out first (by 60% of the ending), the right one at the end
+            const double period = beat * 0.5;
+            if (fmod(t, period) / period < 0.5) {
+                double fade_l = 1.0 - u / 0.6;
+                if (fade_l < 0.0) fade_l = 0.0;
+                *gate_l = (float) fade_l;
+                *gate_r = (float) (1.0 - u);
+            }
+            break;
+        }
+
+        case ENDING_PING_PONG_OUT: {
+            // Eighth notes, one to each side in turn, every one quieter than the one before
+            const double period = beat * 0.5;
+            const int k = (int) (t / period);
+            if (t - k * period < period * 0.6) {
+                const float level = (float) pow(1.0 - u, 1.5);
+                if (k % 2 == 0) *gate_l = level; else *gate_r = level;
+            }
+            break;
+        }
+
+        default:
+            break;
+    }
 }
 
 static LV2_Handle
@@ -158,7 +316,7 @@ instantiate(const LV2_Descriptor*     descriptor,
 
     self->sample_rate = (float) rate;
     reset(self);
-    kill_switch_widgets_init(&self->widgets, features);
+    kill_switch_widgets_init(&self->widgets, features, ending_gate);
 
     return (LV2_Handle) self;
 }
@@ -167,19 +325,27 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
     KillSwitch* self = (KillSwitch*) instance;
 
     switch ((PortIndex) port) {
-        case AUDIO_IN: self->in      = (const float*) data; break;
-        case AUDIO_OUT: self->out    = (float*) data;       break;
-        case PATTERN:  self->pattern = (const float*) data; break;
-        case BPM:      self->bpm     = (const float*) data; break;
-        case SPEED:    self->speed   = (const float*) data; break;
-        case DEPTH:    self->depth   = (const float*) data; break;
-        case EDGE:     self->edge    = (const float*) data; break;
+        case AUDIO_IN_L:  self->in_l  = (const float*) data; break;
+        case AUDIO_IN_R:  self->in_r  = (const float*) data; break;
+        case AUDIO_OUT_L: self->out_l = (float*) data;       break;
+        case AUDIO_OUT_R: self->out_r = (float*) data;       break;
+        case MODE:    self->mode    = (const float*) data; break;
+        case PATTERN: self->pattern = (const float*) data; break;
+        case ENDING:  self->ending  = (const float*) data; break;
+        case BPM:     self->bpm     = (const float*) data; break;
+        case SPEED:   self->speed   = (const float*) data; break;
+        case LENGTH:  self->length  = (const float*) data; break;
+        case DEPTH:   self->depth   = (const float*) data; break;
+        case EDGE:    self->edge    = (const float*) data; break;
+        case MONO:    self->mono    = (const float*) data; break;
         case CUSTOM_LENGTH:          self->custom_length          = (const float*) data; break;
         case CUSTOM_STEPS_PER_BEAT:  self->custom_steps_per_beat  = (const float*) data; break;
-        case ENABLED:  self->enabled = (const float*) data; break;
+        case KILL:    self->kill    = (const float*) data; break;
         default:
-            if (port >= CUSTOM_STEP_FIRST && port < CUSTOM_STEP_FIRST + CUSTOM_MAX_STEPS) {
-                self->custom_step[port - CUSTOM_STEP_FIRST] = (const float*) data;
+            if (port >= CUSTOM_LEFT_FIRST && port < CUSTOM_LEFT_FIRST + CUSTOM_MAX_STEPS) {
+                self->custom_left[port - CUSTOM_LEFT_FIRST] = (const float*) data;
+            } else if (port >= CUSTOM_RIGHT_FIRST && port < CUSTOM_RIGHT_FIRST + CUSTOM_MAX_STEPS) {
+                self->custom_right[port - CUSTOM_RIGHT_FIRST] = (const float*) data;
             }
             break;
     }
@@ -190,21 +356,32 @@ static void activate(LV2_Handle instance) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-// The display widgets (hmi/kill-switch-widgets.c draw them; here only what they show is filled in)
+// The display widgets (hmi/kill-switch-widgets.c draws them; here only what they show is filled in)
 
-static void update_view(KillSwitch* self, bool bypassed, int pattern_index, const char* steps, int count, float steps_per_second_factor, float bpm) {
+static void update_view(KillSwitch* self, bool idle, bool endings, int pattern_index, const char* steps_l, const char* steps_r,
+                        int count, float steps_per_second_factor, float bpm, Ending ending, double total, float length) {
     KillSwitchView* view = &self->widgets.view;
 
-    view->bypassed = bypassed;
+    view->idle = idle;
+    view->endings = endings;
+    // (An ending's name is the widget's: it has the list)
     snprintf(view->name, sizeof(view->name), "%s", pattern_index == CUSTOM_PATTERN ? "Custom" : PATTERNS[pattern_index].name);
-    memcpy(view->steps, steps, (size_t) count);
-    view->steps[count] = '\0';
-    view->count = count;
+    if (!endings) {
+        memcpy(view->left, steps_l, (size_t) count);
+        memcpy(view->right, steps_r, (size_t) count);
+    }
+    view->left[endings ? 0 : count] = '\0';
+    view->right[endings ? 0 : count] = '\0';
+    view->count = endings ? 0 : count;
     view->step = self->step;
     view->bpm = bpm;
     view->speed = choice(self->speed, SPEED_COUNT);
-    view->depth = (int) (clampf(self->depth ? *self->depth : 100.0f, 0.0f, 100.0f) + 0.5f);
-    view->fast = (double) bpm * (double) steps_per_second_factor / 60.0 > KILL_SWITCH_WIDGET_MAX_FOLLOW_STEPS_PER_SECOND;
+    view->fast = !endings && (double) bpm * (double) steps_per_second_factor / 60.0 > KILL_SWITCH_WIDGET_MAX_FOLLOW_STEPS_PER_SECOND;
+    view->ending = (int) ending;
+    view->elapsed = self->elapsed;
+    view->total = total;
+    view->length = length;
+    view->floor_gain = 1.0f - clampf(self->depth ? *self->depth * 0.01f : 1.0f, 0.0f, 1.0f);
 }
 
 static void widget_shown(LV2_Handle instance, const char* symbol, ALABS_HMI_Widget widget, const ALABS_HMI_WidgetArea* area) {
@@ -219,34 +396,19 @@ static void run(LV2_Handle instance, uint32_t frames) {
     KillSwitch* self = (KillSwitch*) instance;
 
     // Nothing to do (or to write to) until the host has connected the audio ports
-    if (self->in == NULL || self->out == NULL) {
+    if (self->in_l == NULL || self->out_l == NULL || self->out_r == NULL) {
         return;
     }
 
-    const bool  bypassed  = self->enabled != NULL && *self->enabled < 0.5f;
-    const int   pattern_index = choice(self->pattern, PATTERN_COUNT);
-    // The steps of the pattern, one character per step: '0'..'2' (a built-in one points into PATTERNS)
-    char        custom_steps[CUSTOM_MAX_STEPS + 1];
-    const char* steps;
-    int         steps_count;
-    int         steps_per_beat;
+    // `idle`: the effect is off and the signal passes clean. Until the host has connected the port (it always does before run)
+    // the effect is off, which is the default of the port
+    const bool  idle  = self->kill == NULL || *self->kill < 0.5f;
+    const bool  endings   = choice(self->mode, 2) == 1;
+    const bool  mono      = self->mono != NULL && *self->mono >= 0.5f;
+    const float* in_l = self->in_l;
+    // Without a right input (or in mono), the left one feeds both sides
+    const float* in_r = (mono || self->in_r == NULL) ? self->in_l : self->in_r;
 
-    if (pattern_index == CUSTOM_PATTERN) {
-        steps_count = (int) clampf(self->custom_length ? *self->custom_length + 0.5f : 8.0f, 1.0f, (float) CUSTOM_MAX_STEPS);
-        steps_per_beat = (int) clampf(self->custom_steps_per_beat ? *self->custom_steps_per_beat + 0.5f : 2.0f, 1.0f, (float) CUSTOM_MAX_STEPS_PER_BEAT);
-
-        for (int i = 0; i < steps_count; ++i) {
-            custom_steps[i] = (char) ('0' + choice(self->custom_step[i], LEVEL_COUNT));
-        }
-        custom_steps[steps_count] = '\0';
-        steps = custom_steps;
-    } else {
-        steps = PATTERNS[pattern_index].steps;
-        steps_count = (int) strlen(steps);
-        steps_per_beat = PATTERNS[pattern_index].steps_per_beat;
-    }
-
-    const float multiplier = SPEED_MULTIPLIER[choice(self->speed, SPEED_COUNT)];
     const float bpm        = clampf(self->bpm ? *self->bpm : 120.0f, BPM_MIN, BPM_MAX);
     const float floor_gain = 1.0f - clampf(self->depth ? *self->depth * 0.01f : 1.0f, 0.0f, 1.0f);
     const float edge_ms    = clampf(self->edge ? *self->edge : 1.5f, EDGE_MIN_MS, EDGE_MAX_MS);
@@ -254,63 +416,133 @@ static void run(LV2_Handle instance, uint32_t frames) {
     // The gain of each level: a cut is as deep as Depth says, the middle level halfway between a cut and the whole signal
     const float level_gain[LEVEL_COUNT] = { floor_gain, floor_gain + (1.0f - floor_gain) * 0.5f, 1.0f };
 
-    double step_length = 60.0 * (double) self->sample_rate / ((double) bpm * (double) steps_per_beat * (double) multiplier);
-    if (step_length < 2.0) {
-        step_length = 2.0;
+    // The steps of the pattern of each side, one character per step: '0'..'2' (a built-in one points into PATTERNS)
+    char        custom_left[CUSTOM_MAX_STEPS + 1];
+    char        custom_right[CUSTOM_MAX_STEPS + 1];
+    const char* steps_l = "2";
+    const char* steps_r = "2";
+    int         steps_count = 1;
+    double      step_length = 1.0;
+    // Steps per beat times the Speed multiplier (0 in the endings), for the display widget
+    float       steps_per_beat_scaled = 0.0f;
+
+    // The ending: how long it lasts and how long a beat is
+    const double beat = 60.0 / (double) bpm;
+    const double total = (double) clampf(self->length ? *self->length : 8.0f, LENGTH_MIN, LENGTH_MAX) * beat;
+    const Ending ending = (Ending) choice(self->ending, ENDING_COUNT);
+    EndingState ending_state = { 0 };
+
+    if (!endings) {
+        const int pattern_index = choice(self->pattern, PATTERN_COUNT);
+        int steps_per_beat;
+
+        if (pattern_index == CUSTOM_PATTERN) {
+            steps_count = (int) clampf(self->custom_length ? *self->custom_length + 0.5f : 8.0f, 1.0f, (float) CUSTOM_MAX_STEPS);
+            steps_per_beat = (int) clampf(self->custom_steps_per_beat ? *self->custom_steps_per_beat + 0.5f : 2.0f, 1.0f, (float) CUSTOM_MAX_STEPS_PER_BEAT);
+
+            for (int i = 0; i < steps_count; ++i) {
+                custom_left[i] = (char) ('0' + choice(self->custom_left[i], LEVEL_COUNT));
+                custom_right[i] = (char) ('0' + choice(self->custom_right[i], LEVEL_COUNT));
+            }
+            custom_left[steps_count] = custom_right[steps_count] = '\0';
+            steps_l = custom_left;
+            steps_r = custom_right;
+        } else {
+            steps_l = PATTERNS[pattern_index].left;
+            steps_r = PATTERNS[pattern_index].right;
+            steps_count = (int) strlen(steps_l);
+            steps_per_beat = PATTERNS[pattern_index].steps_per_beat;
+        }
+
+        const float multiplier = SPEED_MULTIPLIER[choice(self->speed, SPEED_COUNT)];
+        steps_per_beat_scaled = (float) steps_per_beat * multiplier;
+        step_length = 60.0 * (double) self->sample_rate / ((double) bpm * (double) steps_per_beat * (double) multiplier);
+        if (step_length < 2.0) {
+            step_length = 2.0;
+        }
     }
 
-    // Slew per sample: the Edge time while chopping, a fixed 10 ms back to the dry signal on bypass
+    // Slew per sample: the Edge time while chopping, a fixed 10 ms back to the dry signal when it is switched off
     const float slew_chop   = 1.0f / (edge_ms * 0.001f * self->sample_rate);
-    const float slew_bypass = 1.0f / (BYPASS_RAMP_SECONDS * self->sample_rate);
+    const float slew_idle = 1.0f / (IDLE_RAMP_SECONDS * self->sample_rate);
 
-    if (!bypassed && self->was_bypassed) {
-        // Switched on: the pattern starts now, with its first step
+    // Switched on, or another family or another ending: it starts now, with its first step
+    if ((!idle && self->was_idle) || (int) endings != self->last_mode || (int) ending != self->last_ending) {
         self->position = 0.0;
         self->step = 0;
+        self->elapsed = 0.0;
     }
-    self->was_bypassed = bypassed;
+    self->was_idle = idle;
+    self->last_mode = (int) endings;
+    self->last_ending = (int) ending;
 
     // The pattern was changed to a shorter one
     if (self->step >= steps_count) {
         self->step = 0;
     }
 
-    for (uint32_t i = 0; i < frames; ++i) {
-        float target = 1.0f;
-        float slew = slew_bypass;
+    const double dt = 1.0 / (double) self->sample_rate;
 
-        if (!bypassed) {
-            target = level_gain[steps[self->step] - '0'];
+    for (uint32_t i = 0; i < frames; ++i) {
+        float target_l = 1.0f;
+        float target_r = 1.0f;
+        float slew = slew_idle;
+
+        if (!idle) {
+            if (endings) {
+                float gate_l, gate_r;
+                ending_gate(ending, self->elapsed, total, beat, &ending_state, &gate_l, &gate_r);
+                target_l = floor_gain + (1.0f - floor_gain) * gate_l;
+                target_r = floor_gain + (1.0f - floor_gain) * gate_r;
+            } else {
+                target_l = level_gain[steps_l[self->step] - '0'];
+                target_r = level_gain[steps_r[self->step] - '0'];
+            }
             slew = slew_chop;
         }
 
-        if (self->gain < target) {
-            self->gain += slew;
-            if (self->gain > target) self->gain = target;
-        } else if (self->gain > target) {
-            self->gain -= slew;
-            if (self->gain < target) self->gain = target;
+        if (self->gain_l < target_l) {
+            self->gain_l += slew;
+            if (self->gain_l > target_l) self->gain_l = target_l;
+        } else if (self->gain_l > target_l) {
+            self->gain_l -= slew;
+            if (self->gain_l < target_l) self->gain_l = target_l;
+        }
+        if (self->gain_r < target_r) {
+            self->gain_r += slew;
+            if (self->gain_r > target_r) self->gain_r = target_r;
+        } else if (self->gain_r > target_r) {
+            self->gain_r -= slew;
+            if (self->gain_r < target_r) self->gain_r = target_r;
         }
 
-        self->out[i] = self->in[i] * self->gain;
+        self->out_l[i] = in_l[i] * self->gain_l;
+        self->out_r[i] = in_r[i] * self->gain_r;
 
         // The clock only runs while the effect is on
-        if (!bypassed) {
-            self->position += 1.0;
+        if (!idle) {
+            if (endings) {
+                self->elapsed += dt;
+            } else {
+                self->position += 1.0;
 
-            if (self->position >= step_length) {
-                self->position -= step_length;
+                if (self->position >= step_length) {
+                    self->position -= step_length;
 
-                if (++self->step >= steps_count) {
-                    self->step = 0;
+                    if (++self->step >= steps_count) {
+                        self->step = 0;
+                    }
                 }
             }
         }
     }
 
-    update_view(self, bypassed, pattern_index, steps, steps_count, steps_per_beat * multiplier, bpm);
+    update_view(self, idle, endings, choice(self->pattern, PATTERN_COUNT), steps_l, steps_r, steps_count,
+                steps_per_beat_scaled, bpm, ending, total,
+                self->length ? *self->length : 8.0f);
     kill_switch_widgets_run(&self->widgets, frames, (double) self->sample_rate);
 }
+
 
 static void deactivate(LV2_Handle instance) {}
 

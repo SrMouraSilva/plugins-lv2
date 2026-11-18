@@ -148,53 +148,70 @@ export const scenarios = {
   },
 
   'kill-switch': {
-    // The bypass footswitch is driven by MOD UI, not by the preview: a tap on it is followed by what MOD UI then tells the plugin
+    // The footswitch of the pedal is the Kill port: a tap on it is what the plugin sees (the preview does not simulate the
+    // device's own controls). The pedal starts off, on Chop 8ths, and ends the same way
     demo: pedalboard('kill-switch', '.kill-switch', true, async (ctx) => {
-      const bypass = (value) => ctx.eval(`send({ type: 'change', symbol: ':bypass', value: ${value} })`);
+      const send = (symbol, value) => ctx.eval(`send({ type: 'change', symbol: '${symbol}', value: ${value} })`);
       const bpm = () => ctx.eval(`Number(document.querySelector('.ks-bpm b').textContent)`);
+      await ctx.sleep(700);
+      await ctx.tap('.ks-foot');                                          // on: the chop starts with its first step
       await ctx.sleep(900);
       await ctx.tap('.ks-next');                                          // Chop 16ths
-      await ctx.sleep(600);
-      await ctx.tap('.ks-next');                                          // Triplet chop
-      await ctx.sleep(600);
-      await ctx.tap('.ks-segment[data-speed="2"]');                       // 2x
-      await ctx.sleep(600);
-      await ctx.tap('.ks-bpm-up', 1300);                                  // held: it goes on
-      await ctx.sleep(600);
-      await ctx.tap('.ks-foot'); await bypass(1);                         // bypassed
-      await ctx.sleep(1300);
-      await ctx.tap('.ks-foot'); await bypass(0);                         // on again
-      await ctx.sleep(900);
-      await ctx.tap('.ks-prev');
-      await ctx.tap('.ks-prev');                                          // back to Chop 8ths
-      await ctx.tap('.ks-segment[data-speed="1"]');                       // 1x
-      await ctx.tap('.ks-bpm-down', 1300);                                // held: it goes back down
-      while ((await bpm()) !== 120) await ctx.tap((await bpm()) > 120 ? '.ks-bpm-down' : '.ks-bpm-up', 60);
-      await ctx.sleep(700);
-    }),
-    // What plays (a pattern, then Custom), its tempo and the editor of the custom pattern: a step goes through its three
-    // levels in a circle, the length and the steps per beat. On a screen with room the editor sits under the choices; on a
-    // small one a button takes to it
-    settings: settings('kill-switch', async (ctx) => {
-      await ctx.sleep(800);
-      await ctx.tap('.kss-choice[data-index="5"]');                       // Gallop
-      await ctx.sleep(900);
-      await ctx.tap('.kss-choice[data-index="10"]');                      // Custom
-      await ctx.sleep(800);
-      if (await ctx.eval(`getComputedStyle(document.querySelector('.kss-edit-pattern')).display !== 'none'`)) {
-        await ctx.tap('.kss-edit-pattern');                               // the editor is on a page of its own
-        await ctx.sleep(1100);
-      }
-      for (let i = 0; i < 3; i++) { await ctx.tap('.kss-cell:nth-child(1)', 100); await ctx.sleep(450); }     // cut, half, pass, and cut again
-      await ctx.tap('.kss-cell:nth-child(4)', 100);                       // pass -> cut
       await ctx.sleep(450);
+      await ctx.tap('.ks-segment[data-speed="2"]');                       // 2x
+      await ctx.sleep(450);
+      await ctx.tap('.ks-bpm-up', 900);                                   // held: it goes on
+      await ctx.sleep(400);
+      for (let i = 0; i < 9; i++) await ctx.tap('.ks-next', 40);          // a pattern with a row for each side: Ping-pong 8ths
+      await ctx.sleep(1200);
+      await ctx.tap('.ks-mode[data-mode="1"]');                           // the endings
+      await ctx.sleep(500);
+      await ctx.tap('.ks-next');                                          // Helicopter
+      await ctx.sleep(700);
+      await ctx.tap('.ks-foot');                                          // off ...
+      await ctx.sleep(500);
+      await ctx.tap('.ks-foot');                                          // ... and on again: the ending plays from its start
+      await ctx.sleep(1300);
+      await ctx.tap('.ks-foot');                                          // off
+      await ctx.tap('.ks-mode[data-mode="0"]');                           // back to the patterns
+      await ctx.sleep(300);
+      await ctx.tap('.ks-segment[data-speed="1"]');                       // 1x
+      await send('pattern', 0); await send('ending', 0);                  // Chop 8ths, as a controller would put it
+      await ctx.tap('.ks-bpm-down', 900);                                 // held: it goes back down
+      while ((await bpm()) !== 120) await ctx.tap((await bpm()) > 120 ? '.ks-bpm-down' : '.ks-bpm-up', 60);
+      await ctx.sleep(500);
+    }),
+    // What plays (a pattern, an ending), the LEDs that show it, the question that comes before a Custom pattern, the
+    // steps going through their three levels, the length, and every page. The pages depend on the size of the window,
+    // so the script finds where things are
+    settings: settings('kill-switch', async (ctx) => {
+      const send = (symbol, value) => ctx.eval(`send({ type: 'change', symbol: '${symbol}', value: ${value} })`);
+      // The grid of patterns when it is there, the arrows when the screen is small
+      const choose = async (index, from) => {
+        if (await ctx.eval(`getComputedStyle(document.querySelector('.kss-choices')).display !== 'none'`)) {
+          await ctx.tap(`.kss-choice[data-index="${index}"]`);
+        } else {
+          for (let i = from; i < index; i++) await ctx.tap('.kss-pick-next', 60);
+        }
+      };
+      await ctx.sleep(800);
+      await ctx.tap('[mod-port-symbol="kill"]', 120);                     // Kill assigned to a footswitch (marked as MOD UI does once its dialog is confirmed)
+      await ctx.eval(`document.querySelector('[mod-port-symbol="kill"]').classList.add('addressed')`);
+      await send('kill', 1);
+      await ctx.sleep(700);
+      await choose(12, 0);                                                // Triplet pong: a row for each side
+      await ctx.sleep(900);
+      await ctx.tap('.kss-cell[data-side="r"][data-step="1"]', 120);      // a built-in pattern: it asks first
+      await ctx.sleep(1000);
+      await ctx.tap('.kss-modal-ok', 120);                                // Create custom pattern
+      await ctx.sleep(700);
+      for (let i = 0; i < 3; i++) { await ctx.tap('.kss-cell[data-side="l"][data-step="0"]', 100); await ctx.sleep(450); }   // cut, half, pass, and cut again
+      for (let i = 0; i < 2; i++) { await ctx.tap('.kss-cell[data-side="r"][data-step="3"]', 100); await ctx.sleep(450); }
       await ctx.tap('.kss-length-up', 100); await ctx.tap('.kss-length-up', 100);
       await ctx.tap('.kss-beat-up', 100);
       await ctx.sleep(700);
-      // from the first page, going through every page with the arrows; the small button beside the tempo assigns it to the
-      // device (marked as MOD UI does once its dialog is confirmed) on the page that shows it
-      await ctx.tap('.kss-dot[data-page="0"]', 120);
-      await ctx.sleep(900);
+      // going through every page with the arrows, from the first one; the small button beside the tempo assigns it to
+      // the device on the page that shows it
       let assigned = false;
       const assignTempo = async () => {
         if (assigned || !(await ctx.eval(`!!document.querySelector('[mod-port-symbol="bpm"]')?.offsetParent`))) return;
@@ -205,86 +222,14 @@ export const scenarios = {
       };
       await assignTempo();
       await visitPages(ctx, { next: '.kss-next', dot: '.kss-dot', tile: false, onPage: assignTempo });
-      // Back to the start, as a controller would put it (the first edit switched Pattern to Custom)
-      for (const [symbol, value] of [['pattern', 0], ['custom_step_4', 2], ['custom_length', 8], ['custom_steps_per_beat', 2]]) {
-        await ctx.eval(`send({ type: 'change', symbol: '${symbol}', value: ${value} })`);
-      }
-      await ctx.sleep(600);
-    }, 540),
-  },
-
-  'half-mouco': {
-    // The bypass footswitch is driven by MOD UI, not by the preview: a tap on it is followed by what MOD UI then tells the plugin
-    demo: pedalboard('half-mouco', '.half-mouco', true, async (ctx) => {
-      const send = (symbol, value) => ctx.eval(`send({ type: 'change', symbol: '${symbol}', value: ${value} })`);
-      await ctx.sleep(900);
-      await ctx.tap('.hm-next');                                          // Ping-pong 16ths
-      await ctx.sleep(600);
-      await ctx.tap('.hm-next');                                          // Triplet pong
-      await ctx.sleep(600);
-      await ctx.tap('.hm-segment[data-speed="2"]');                       // 2x
-      await ctx.sleep(700);
-      await ctx.tap('.hm-mode[data-mode="1"]');                           // the endings
-      await ctx.sleep(900);
-      await ctx.tap('.hm-next');                                          // Helicopter
-      await ctx.sleep(900);
-      await ctx.tap('.hm-length-up', 1100);                               // held: it goes on
-      await ctx.sleep(900);
-      await ctx.tap('.hm-foot'); await send(':bypass', 1);                // bypassed
-      await ctx.sleep(1100);
-      await ctx.tap('.hm-foot'); await send(':bypass', 0);                // on again
-      await ctx.sleep(700);
-      await ctx.tap('.hm-mode[data-mode="0"]');                           // back to the patterns
-      await ctx.sleep(500);
-      await ctx.tap('.hm-segment[data-speed="1"]');
-      await ctx.tap('.hm-prev'); await ctx.tap('.hm-prev');               // Ping-pong 8ths
-      // The ending and its length go back to the start, as a controller would put them
-      await send('ending', 0); await send('length', 8);
-      await ctx.sleep(700);
-    }),
-    // What plays (a pattern, an ending, Custom), its tempo and the editor of the custom pattern: a step goes through its
-    // three levels in a circle, on each side. On a screen with room the editor sits under the choices; on a small one a
-    // button takes to it
-    settings: settings('half-mouco', async (ctx) => {
-      const send = (symbol, value) => ctx.eval(`send({ type: 'change', symbol: '${symbol}', value: ${value} })`);
-      await ctx.sleep(800);
-      await ctx.tap('.hms-choice[data-index="5"]');                        // Gallop sides
-      await ctx.sleep(900);
-      await ctx.tap('.hms-mode[data-mode="1"]');                           // the endings
-      await ctx.sleep(500);
-      await ctx.tap('.hms-choice[data-index="1"]');                        // Helicopter
-      await ctx.sleep(1000);
-      await ctx.tap('.hms-mode[data-mode="0"]');                           // back to the patterns
-      await ctx.sleep(500);
-      await ctx.tap('.hms-choice[data-index="9"]');                        // Custom
-      await ctx.sleep(800);
-      if (await ctx.eval(`getComputedStyle(document.querySelector('.hms-edit-pattern')).display !== 'none'`)) {
-        await ctx.tap('.hms-edit-pattern');                                // the editor is on a page of its own
-        await ctx.sleep(1100);
-      }
-      for (let i = 0; i < 3; i++) { await ctx.tap('.hms-steps[data-side="l"] .hms-cell:nth-child(1)', 100); await ctx.sleep(450); }   // cut, half, pass, and cut again
-      for (let i = 0; i < 3; i++) { await ctx.tap('.hms-steps[data-side="r"] .hms-cell:nth-child(1)', 100); await ctx.sleep(450); }
-      await ctx.tap('.hms-length-up', 100); await ctx.tap('.hms-length-up', 100);
-      await ctx.tap('.hms-beat-up', 100);
-      await ctx.sleep(700);
-      // from the first page, going through every page with the arrows; the small button beside Patterns / Endings assigns
-      // the mode to the device (marked as MOD UI does once its dialog is confirmed) on the page that shows it
-      await ctx.tap('.hms-dot[data-page="0"]', 120);
-      await ctx.sleep(900);
-      let assigned = false;
-      const assignMode = async () => {
-        if (assigned || !(await ctx.eval(`!!document.querySelector('[mod-port-symbol="mode"]')?.offsetParent`))) return;
-        assigned = true;
-        await ctx.tap('[mod-port-symbol="mode"]', 120);
-        await ctx.eval(`document.querySelector('[mod-port-symbol="mode"]').classList.add('addressed')`);
-        await ctx.sleep(600);
-      };
-      await assignMode();
-      await visitPages(ctx, { next: '.hms-next', dot: '.hms-dot', tile: false, onPage: assignMode });
-      // Back to the start, as a controller would put it
-      for (const [symbol, value] of [['mode', 0], ['ending', 0], ['pattern', 0], ['custom_length', 8], ['custom_steps_per_beat', 2]]) {
-        await send(symbol, value);
-      }
+      // Back to the start, as a controller would put it (Kill is off again, the first edit switched Pattern to Custom)
+      await send('kill', 0);
+      await send('pattern', 0);
+      await send('custom_length', 8);
+      await send('custom_steps_per_beat', 2);
+      const left = [2, 1, 0, 1, 2, 1, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2];
+      const right = [0, 1, 2, 1, 0, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2];
+      for (let i = 0; i < 16; i++) { await send(`custom_left_step_${i + 1}`, left[i]); await send(`custom_right_step_${i + 1}`, right[i]); }
       await ctx.sleep(600);
     }, 540),
   },

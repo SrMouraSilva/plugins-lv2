@@ -33,8 +33,7 @@ The pictures go to `tools/hmi-preview/out/` (git-ignored), except the ones of th
 
 | Plugin | Widget (symbol) | Shows |
 |---|---|---|
-| Kill Switch | `pattern` | the pattern, the step that plays, the tempo (Depth on a tall area); dimmed and `OFF` when bypassed |
-| Half Mouco | `stereo` | a row of steps for each side, or the curve of the ending along its time with a moving cursor |
+| Kill Switch | `stereo` | a row of steps for each side (the same on both for most patterns), or the curve of the ending along its time with a moving cursor; dimmed and `OFF` when Kill is off |
 | Tetr4 Switch, Hept7 Switch | `preset` | the preset that is on (number and name), what it turns on; every preset on a tall area |
 | Gossiper | `footswitches` | which of the seven are on (all seven on the whole screen, the unassigned ones with a dotted box and UNASSIGNED); a footswitch that changes shows its name and state over the widget for 1.5 s; only the ones in use (all seven when none is), in every area: the settings page marks the assigned ones in `footswitch_in_use_N`, because the device only reports its own controls |
 | Gossiper | `potentiometers` | the four as bars with their value |
@@ -45,7 +44,7 @@ the full screen shows everything. `ahw:minWidth` / `ahw:minHeight` in each TTL s
 ## For whoever changes a widget
 
 * The code is in `plugins/src/hmi/` (the canvas, the fonts, the bookkeeping of what is on screen and when to draw, and the
-  widgets of Kill Switch and Half Mouco) and in `plugins/src/lv2/*/lv2-*-widgets.c` (the switches and Gossiper); the plugin's
+  widget of Kill Switch) and in `plugins/src/lv2/*/lv2-*-widgets.c` (the switches and Gossiper); the plugin's
   own file only fills in what the widget shows. A widget gives `widgets_run` a *signature* of what it draws; it is redrawn only when
   that changes, at most 20 times a second. Keep `run()` cheap: no allocation, no logging.
 * `widget_shown` / `widget_hidden` come from another thread than `run()`: `hmi/widget-host.h` explains how the two meet.

@@ -14,7 +14,8 @@
 .kill-switch,
 .kss {
   /* Neutral charcoal surfaces, warm white for what is lit or chosen, and one red (modgui:color is #a30d2b) kept for what is
-     ON (the power, the LED, the footswitch ring) and for the knobs of the sliders, so it is not on everything */
+     ON (the power, the LED, the footswitch ring) and for the knobs of the sliders. The two sides are told apart by
+     white (left) and red (right) */
   --ks-ink: #0d0e11;       /* the darkest: slots, the display */
   --ks-ink-2: #16181d;     /* panels */
   --ks-ink-3: #262930;     /* raised controls */
@@ -54,7 +55,8 @@
  * MOD UI covers the whole icon with a drag handle (.mod-drag-handle, absolute, z-index 20) so the plugin can be
  * moved by dragging it. Whatever must be clickable has to sit above it; the rest still drags the plugin.
  */
-.ks-open,
+.ks-chip,
+.ks-mode,
 .ks-step-button,
 .ks-segment,
 .ks-slider,
@@ -77,15 +79,15 @@
  * The plugin on the pedalboard
  * ========================================================================== */
 
-/* One jack on each side, at the middle of the plugin (300 px tall, a jack is 56 px) */
+/* One jack on each side, at the middle of the plugin (318 px tall, a jack is 56 px) */
 .kill-switch-base.mod-pedal .mod-pedal-input,
 .kill-switch-base.mod-pedal .mod-pedal-output {
-  top: 122px;
+  top: 131px;
 }
 
 .kill-switch {
   --ks-width: 520px;
-  --ks-height: 300px;
+  --ks-height: 318px;
 
   box-sizing: border-box;
   position: relative;
@@ -106,7 +108,7 @@
     linear-gradient(170deg, #2a2c33 0%, #14151a 100%);
   border-radius: 22px;
   box-shadow:
-    inset 0 2px 1px rgba(255, 255, 255, 0.16),
+    inset 0 2px 1px rgba(255, 255, 255, 0.18),
     inset 0 -4px 8px rgba(0, 0, 0, 0.5),
     0 0 0 2px #3a3d46;
 }
@@ -160,7 +162,7 @@
   transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
-.kill-switch.is-bypassed .ks-state {
+.kill-switch.is-idle .ks-state {
   color: var(--ks-muted);
   background: var(--ks-ink-3);
   box-shadow: none;
@@ -219,7 +221,7 @@
 .ks-steps i.start { margin-left: 3px; }
 .ks-steps i.first { margin-left: 0; }
 
-.kill-switch.is-bypassed .ks-steps i.l2 {
+.kill-switch.is-idle .ks-steps i.l2 {
   background: #6f6d68;
   box-shadow: none;
 }
@@ -289,13 +291,15 @@
   gap: 4px;
 }
 
-.ks-bpm {
+.ks-bpm,
+.ks-length-value {
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--ks-muted);
 }
-.ks-bpm b {
+.ks-bpm b,
+.ks-length-value b {
   display: block;
   font-size: 22px;
   line-height: 1;
@@ -396,7 +400,7 @@
   box-shadow: inset 0 0 0 1px var(--ks-line);
   transition: background-color 0.2s, box-shadow 0.2s;
 }
-.kill-switch:not(.is-bypassed) .ks-led {
+.kill-switch:not(.is-idle) .ks-led {
   background: var(--ks-red);
   box-shadow: 0 0 14px 1px var(--ks-red);
 }
@@ -413,7 +417,7 @@
   box-shadow: 0 0 0 3px var(--ks-ink-3), inset 0 3px 8px rgba(0, 0, 0, 0.7), 0 6px 10px rgba(0, 0, 0, 0.5);
   transition: box-shadow 0.2s;
 }
-.kill-switch:not(.is-bypassed) .ks-foot {
+.kill-switch:not(.is-idle) .ks-foot {
   box-shadow: 0 0 0 3px var(--ks-red), 0 0 18px 0 rgba(227, 33, 63, 0.6), inset 0 3px 8px rgba(0, 0, 0, 0.7), 0 6px 10px rgba(0, 0, 0, 0.5);
 }
 
@@ -757,7 +761,7 @@
 
 .kss .mod-address.kss-address:hover { background-color: rgba(255, 255, 255, 0.1); }
 
-/* Only the icon, beside the control it assigns (as in Gossiper): 44px, with the disc that says whether it is addressed */
+/* Only the icon, beside the control it assigns: 44px, with the disc that says whether it is addressed */
 .kss .mod-address.kss-address.kss-address-small {
   flex: 0 0 auto;
   width: 44px;
@@ -768,6 +772,27 @@
   justify-content: center;
   border-radius: 14px;
 }
+
+/* A switch (or the choice of family) and the button that assigns it are one piece, so it is clear what the small button is for */
+.kss-pill {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 28px;
+  background: var(--ks-ink-2);
+  box-shadow: inset 0 0 0 1px var(--ks-line);
+}
+.kss-pill .kss-button { min-height: 44px; border-radius: 22px; }
+.kss .kss-pill .mod-address.kss-address.kss-address-small {
+  border-radius: 22px;
+  background-color: transparent;
+  box-shadow: none;
+}
+.kss .kss-pill .mod-address.kss-address.kss-address-small:hover { background-color: rgba(255, 255, 255, 0.08); }
+.kss .kss-pill .mod-address.kss-address.kss-address-small.addressed { background-color: rgba(245, 242, 234, 0.12); }
+.kss-pill .kss-modes { background: transparent; box-shadow: none; padding: 0; }
+.kss-pill .kss-mode { min-height: 44px; border-radius: 22px; }
 
 
 /* The state of the assignment button: a dark disc that holds the icon (below), filled when the control is addressed */
@@ -980,22 +1005,6 @@
  * data-h (s: short, m), and with .is-row on the scenes when a card is wide enough for its name to sit beside the switches
  * -------------------------------------------------------------------------- */
 
-/* A column of panels, and a row of them (wide screens) */
-.kss-stack {
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  align-self: stretch;
-  min-width: 0;
-  min-height: 0;
-}
-
-.kss-stack > .kss-panel { flex: 0 0 auto; }
-
-.kss-stack > .kss-presets-panel { flex: 1 1 0; min-height: 0; }
-
-
 .kss-row {
   flex: 1 1 auto;
   display: flex;
@@ -1005,11 +1014,11 @@
   min-height: 0;
 }
 
-.kss-row > .kss-presets-panel { flex: 3 1 0; align-self: stretch; }
+.kss-row > .kss-presets-panel { flex: 2 1 0; align-self: stretch; }
 
 
-/* Narrow: the logo, the pattern playing and the close button on the first line; under them the on/off (with its
-   assign button) and the page controls, side by side while they fit */
+/* Narrow: the logo and the close button on the first line; under them Mono, Kill (each with its assign
+   button) and the page controls, side by side while they fit */
 .kss[data-w="s"] { font-size: 15px; }
 
 .kss[data-w="s"] .kss-bar { gap: 8px 10px; }
@@ -1017,10 +1026,6 @@
 .kss[data-w="s"] .kss-name { display: none; }
 
 .kss[data-w="s"] .kss-title { order: 1; margin-right: 0; }
-
-.kss[data-w="s"] .kss-now { order: 2; flex: 1 1 120px; min-width: 120px; }
-
-.kss[data-w="s"] .kss-now small { display: none; }
 
 .kss[data-w="s"] .kss-close { order: 3; min-width: 88px; padding: 0 20px; }
 
@@ -1056,125 +1061,18 @@
 }
 
 
-/* The mark and the pattern that is playing, in the top bar */
+/* The mark, in the top bar */
 .kss-logo {
   flex: 0 0 auto;
   width: 36px;
   height: 32px;
   border-radius: 10px;
   overflow: hidden;
-  /* four steps of the signal cut in two by a slash (an inline SVG: nothing to load) */
+  /* four steps of the signal cut in two by a slash: the part above stays white, the part below is red (an inline SVG: nothing to load) */
   background:
-    url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 36 32%22%3E%3Cdefs%3E%3CclipPath id=%22u%22%3E%3Cpolygon points=%220%2C0 36%2C0 0%2C32%22/%3E%3C/clipPath%3E%3CclipPath id=%22l%22%3E%3Cpolygon points=%2236%2C0 36%2C32 0%2C32%22/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path=%22url(%23u)%22 transform=%22translate(-1.4 -1.4)%22%3E%3Cg fill=%22%23f5f2ea%22%3E%3Crect x=%226%22 y=%2210%22 width=%224.6%22 height=%2214%22 rx=%221.3%22/%3E%3Crect x=%2212.6%22 y=%226%22 width=%224.6%22 height=%2220%22 rx=%221.3%22/%3E%3Crect x=%2219.2%22 y=%2210%22 width=%224.6%22 height=%2214%22 rx=%221.3%22/%3E%3Crect x=%2225.8%22 y=%226%22 width=%224.6%22 height=%2220%22 rx=%221.3%22/%3E%3C/g%3E%3C/g%3E%3Cg clip-path=%22url(%23l)%22 transform=%22translate(1.4 1.4)%22%3E%3Cg fill=%22%23f5f2ea%22%3E%3Crect x=%226%22 y=%2210%22 width=%224.6%22 height=%2214%22 rx=%221.3%22/%3E%3Crect x=%2212.6%22 y=%226%22 width=%224.6%22 height=%2220%22 rx=%221.3%22/%3E%3Crect x=%2219.2%22 y=%2210%22 width=%224.6%22 height=%2214%22 rx=%221.3%22/%3E%3Crect x=%2225.8%22 y=%226%22 width=%224.6%22 height=%2220%22 rx=%221.3%22/%3E%3C/g%3E%3C/g%3E%3Cline x1=%222%22 y1=%2231%22 x2=%2234%22 y2=%221%22 stroke=%22%23e3213f%22 stroke-width=%221.2%22 stroke-linecap=%22round%22/%3E%3C/svg%3E") center / 100% 100% no-repeat,
+    url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2036%2032%22%3E%3Cdefs%3E%3CclipPath%20id=%22u%22%3E%3Cpolygon%20points=%220,0%2036,0%200,32%22/%3E%3C/clipPath%3E%3CclipPath%20id=%22l%22%3E%3Cpolygon%20points=%2236,0%2036,32%200,32%22/%3E%3C/clipPath%3E%3C/defs%3E%3Cg%20clip-path=%22url(%23u)%22%20transform=%22translate(-1.4%20-1.4)%22%3E%3Cg%20fill=%22%23f5f2ea%22%3E%3Crect%20x=%226%22%20y=%2210%22%20width=%224.6%22%20height=%2214%22%20rx=%221.3%22/%3E%3Crect%20x=%2212.6%22%20y=%226%22%20width=%224.6%22%20height=%2220%22%20rx=%221.3%22/%3E%3Crect%20x=%2219.2%22%20y=%2210%22%20width=%224.6%22%20height=%2214%22%20rx=%221.3%22/%3E%3Crect%20x=%2225.8%22%20y=%226%22%20width=%224.6%22%20height=%2220%22%20rx=%221.3%22/%3E%3C/g%3E%3C/g%3E%3Cg%20clip-path=%22url(%23l)%22%20transform=%22translate(1.4%201.4)%22%3E%3Cg%20fill=%22%23e3213f%22%3E%3Crect%20x=%226%22%20y=%2210%22%20width=%224.6%22%20height=%2214%22%20rx=%221.3%22/%3E%3Crect%20x=%2212.6%22%20y=%226%22%20width=%224.6%22%20height=%2220%22%20rx=%221.3%22/%3E%3Crect%20x=%2219.2%22%20y=%2210%22%20width=%224.6%22%20height=%2214%22%20rx=%221.3%22/%3E%3Crect%20x=%2225.8%22%20y=%226%22%20width=%224.6%22%20height=%2220%22%20rx=%221.3%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") center / 100% 100% no-repeat,
     var(--ks-ink);
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 1px var(--ks-line);
-}
-
-/* Only tells the state (it cannot be pressed): flat, with no fill, no shadow and no box, so it is neither a button
-   (raised) nor a field (sunk): a rule at its side in the colour of the state, the caption and the value as text */
-.kss-now {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  max-width: 100%;
-  padding: 2px 0 2px 12px;
-  border-left: 3px solid var(--ks-accent);
-  cursor: default;
-  -webkit-user-select: none;
-  user-select: none;
-}
-.kss-now small {
-  flex: 0 0 auto;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ks-muted);
-}
-.kss-now-label {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-weight: 700;
-}
-
-
-/* ==========================================================================
- * The custom pattern: a row of steps, each with three levels that a tap goes through in a circle
- * ========================================================================== */
-
-.kss-editor {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* The script chooses the columns (16, 8 or 4: every line is full) from the width of the panel */
-.kss-steps {
-  display: grid;
-  grid-template-columns: repeat(var(--kss-cols, 8), minmax(0, 1fr));
-  gap: 8px;
-}
-
-.kss-cell {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-width: 0;
-  height: var(--kss-cell, 84px);
-  padding: 6px 4px 5px;
-  border-radius: 14px;
-  cursor: pointer;
-  overflow: hidden;
-  text-align: center;
-  color: var(--ks-text);
-  background: var(--ks-ink);
-  box-shadow: inset 0 0 0 1px var(--ks-line), 0 3px 0 rgba(0, 0, 0, 0.45);
-  transition: opacity 0.15s, box-shadow 0.15s;
-}
-.kss-cell:active { transform: translateY(2px); box-shadow: inset 0 0 0 1px var(--ks-line), 0 1px 0 rgba(0, 0, 0, 0.45); }
-
-/* The level as a bar that fills the cell from the bottom: nothing (cut), half, all (pass) */
-.kss-cell-bar {
-  position: absolute;
-  left: 6px;
-  right: 6px;
-  bottom: 22px;
-  height: 0;
-  border-radius: 7px;
-  background: var(--ks-lit);
-  transition: height 0.15s, background-color 0.15s;
-}
-.kss-cell[data-level="0"] .kss-cell-bar { height: 4px; background: var(--ks-cut); }
-.kss-cell[data-level="1"] .kss-cell-bar { height: calc((100% - 52px) / 2); background: var(--ks-half); }
-.kss-cell[data-level="2"] .kss-cell-bar { height: calc(100% - 52px); box-shadow: 0 0 12px -2px var(--ks-lit); }
-
-.kss-cell-n {
-  position: relative;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: var(--ks-muted);
-}
-.kss-cell-level {
-  position: relative;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-}
-
-/* A step beyond the length of the pattern is not played */
-.kss-cell.is-off { opacity: 0.4; }
-.kss-cell.is-off .kss-cell-level::after { content: " ·"; }
-
-.kss-tools {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 10px 18px;
 }
 
 .kss-field {
@@ -1228,21 +1126,43 @@
 .kss-select:hover { background: #343740; }
 .kss-button:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ks-ink), inset 0 0 0 1px var(--ks-line); }
 .kss-select { appearance: auto; -webkit-appearance: menulist; padding: 0 10px; }
-.kss-select option { color: #120d0b; background: #fff; }
+.kss-select option { color: #0d0e11; background: #fff; }
 
-/* "Play this pattern": pressed while Pattern is on Custom */
-.kss-use {
-  margin-left: auto;
+/* What plays and Mono, in the top bar as on the pedal */
+.kss-switches {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.kss-modes {
+  display: flex;
+  padding: 3px;
+  gap: 3px;
+  border-radius: 17px;
+  background: var(--ks-ink);
+  box-shadow: inset 0 0 0 1px var(--ks-line), inset 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+.kss-mode {
+  min-width: 0;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ks-muted);
+  transition: background-color 0.15s, color 0.15s;
+}
+.kss-mode:hover { color: var(--ks-text); }
+.kss-mode[aria-checked="true"] { color: var(--ks-ink); background: var(--ks-lit); box-shadow: 0 0 12px -2px var(--ks-lit); }
+
+/* Mono: lit while the left input feeds both sides */
+.kss-mono[aria-pressed="true"] {
   color: var(--ks-ink);
   background: var(--ks-lit);
   box-shadow: 0 3px 0 var(--ks-lit-deep);
 }
-.kss-use:hover { background: #fff; }
-.kss-use[aria-pressed="true"] {
-  color: var(--ks-text);
-  background: var(--ks-ink-3);
-  box-shadow: inset 0 0 0 2px var(--ks-red), 0 3px 0 var(--ks-ink);
-}
+.kss-mono[aria-pressed="true"]:hover { background: #fff; }
 
 /* A pattern is written on the pedal too: the button that opens this page */
 .ks-open {
@@ -1266,50 +1186,133 @@
 .ks-steps i.l1 {
   background: var(--ks-half);
 }
-.kill-switch.is-bypassed .ks-steps i.l1 { background: #4a4945; }
+.kill-switch.is-idle .ks-steps i.l1 { background: #4a4945; }
 
-.kss[data-h="s"] .kss-cell { --kss-cell: 64px; }
-.kss[data-h="s"] .kss-cell-bar { bottom: 20px; }
-.kss[data-h="s"] .kss-cell[data-level="1"] .kss-cell-bar { height: calc((100% - 44px) / 2); }
-.kss[data-h="s"] .kss-cell[data-level="2"] .kss-cell-bar { height: calc(100% - 44px); }
+/* ==========================================================================
+ * Kill Switch: what is different from the single-channel pedal this look comes from
+ * ========================================================================== */
 
-/* The editor and the controls in one column, the saved presets in another */
-.kss-row > .kss-stack { flex: 5 1 0; }
-.kss-row > .kss-presets-panel { flex: 2 1 0; }
-.kss-stack > .kss-pattern-panel { flex: 0 0 auto; }
+.kill-switch,
+.kss {
+  --ks-l: #f5f2ea;         /* the left side: white */
+  --ks-r: #ff3d58;         /* the right side: red */
+}
 
-/* A phone: smaller steps, the two steppers side by side, then "start from" and "play" */
-.kss[data-w="s"] .kss-cell { --kss-cell: 60px; }
-.kss[data-w="s"] .kss-cell-bar { bottom: 20px; }
-.kss[data-w="s"] .kss-cell[data-level="1"] .kss-cell-bar { height: calc((100% - 44px) / 2); }
-.kss[data-w="s"] .kss-cell[data-level="2"] .kss-cell-bar { height: calc(100% - 44px); }
-.kss[data-w="s"] .kss-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; gap: 8px 10px; }
-.kss[data-w="s"] .kss-stepper { grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 2px; }
-.kss[data-w="s"] .kss-select { width: 100%; }
-.kss[data-w="s"] .kss-use { margin-left: 0; }
-.kss[data-h="s"] .kss-pattern-panel .kss-panel-head p { display: none; }
+.ks-lane,
+.kss-lane {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+.ks-lane[data-side="l"], .kss-lane[data-side="l"] { --lane: var(--ks-l); --lane-half: #97948c; --lane-off: #55534f; }
+.ks-lane[data-side="r"], .kss-lane[data-side="r"] { --lane: var(--ks-r); --lane-half: #a3263a; --lane-off: #5e2b34; }
+.ks-lane > b, .kss-lane > b {
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+  color: var(--lane);
+}
 
+/* The display: the name, and a row for each side */
+.ks-display { display: flex; flex-direction: column; gap: 4px; padding-bottom: 8px; }
+.ks-display .ks-pattern { margin-bottom: 2px; }
+.ks-steps { height: 14px; padding: 0; }
+.ks-lane .ks-steps i.l2 { background: var(--lane); box-shadow: 0 0 10px -1px var(--lane); }
+.ks-lane .ks-steps i.l1 { background: var(--lane-half); box-shadow: none; }
+.kill-switch.is-idle .ks-lane .ks-steps i.l2,
+.kill-switch.is-idle .ks-lane .ks-steps i.l1 { background: var(--lane-off); box-shadow: none; }
+/* An ending is drawn along its time, in thin columns that are as bright as the gate is open */
+.ks-steps[data-kind="ending"] { gap: 1px; }
+.ks-steps[data-kind="ending"] i { border-radius: 2px; }
+.ks-steps[data-kind="ending"] i.l0 { background: var(--ks-cut); }
+.ks-steps[data-kind="ending"] i.start { margin-left: 0; }
+
+/* The head: the name, the mono chip, the button of the settings page and the state */
+.ks-head { gap: 8px; }
+.ks-brand { margin-right: auto; white-space: nowrap; }
+.ks-head > * { white-space: nowrap; }
+.ks-chip {
+  min-height: 24px;
+  padding: 0 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ks-text);
+  background: var(--ks-ink-3);
+  box-shadow: 0 2px 0 #07080a;
+  transition: background-color 0.15s;
+}
+.ks-chip:hover { background: #343740; }
+.ks-chip:active { transform: translateY(1px); box-shadow: 0 1px 0 #07080a; }
+.ks-mono[aria-pressed="true"] { color: var(--ks-ink); background: var(--ks-lit); box-shadow: 0 2px 0 var(--ks-lit-deep); }
+
+/* Patterns have a speed, endings a length */
+.kill-switch[data-mode="0"] .ks-length,
+.kill-switch[data-mode="1"] .ks-speed { display: none; }
+
+/* The two families, one above the other in the column of the footswitch */
+.ks-pedal { gap: 8px; }
+.ks-modes {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 3px;
+  gap: 3px;
+  border-radius: 14px;
+  background: var(--ks-ink);
+  box-shadow: inset 0 0 0 1px var(--ks-line), inset 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+.ks-mode {
+  min-height: 44px;
+  min-width: 0;
+  border-radius: 11px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--ks-muted);
+  transition: background-color 0.15s, color 0.15s;
+}
+.ks-mode:hover { color: var(--ks-text); }
+.ks-mode[aria-checked="true"] { color: var(--ks-ink); background: var(--ks-lit); box-shadow: 0 0 12px -2px var(--ks-lit); }
+.ks-foot { width: 80px; height: 80px; }
+.ks-cap { width: 56px; height: 56px; }
 
 /* ==========================================================================
  * Settings page: what is playing, and tempo and feel (all that the pedal has in its face, with room to spare)
  * ========================================================================== */
 
-.kss-row > .kss-play-panel { flex: 3 1 0; }
-.kss-row > .kss-sound-panel { flex: 2 1 0; }
-.kss-play-panel,
-.kss-sound-panel { display: flex; flex-direction: column; }
-.kss-page > .kss-row { align-self: stretch; }
-.kss-page > .kss-row > .kss-sound-panel { align-self: flex-start; }
-.kss-row > .kss-stack > .kss-pattern-panel { flex: 0 0 auto; }
+.kss-row > .kss-play-panel { flex: 4 1 0; }
+.kss-row > .kss-sound-panel { flex: 3 1 0; }
+.kss-row > .kss-play-panel,
+.kss-row > .kss-sound-panel { align-self: stretch; }
 
+/* The head of the playing panel: its name, and the two families beside it */
+.kss-play-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-bottom: 6px;
+}
+.kss-play-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+/* Pattern for the patterns, Ending for the endings: the one that does not apply is not shown */
+.kss[data-mode="0"] .kss-assign-ending,
+.kss[data-mode="1"] .kss-assign-pattern { display: none; }
+.kss-play-head { align-items: center; }
+.kss-play-head .kss-modes { min-width: 220px; }
+.kss-play-head .kss-mode { flex: 1 1 0; }
 .kss .kss-play-name {
   font-size: 22px;
   letter-spacing: 0.04em;
   text-transform: none;
   color: var(--ks-text);
 }
-.kss-play-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
-.kss-play-title { min-width: 0; }
 .kss-play-hint {
   margin: 0 0 12px;
   font-size: 14px;
@@ -1319,7 +1322,7 @@
 /* Everything that can play, to pick with one tap */
 .kss-choices {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 8px;
 }
 .kss-choice {
@@ -1357,49 +1360,11 @@
   box-shadow: 0 0 8px -1px var(--ks-red);
 }
 
-/* What the pattern does: its steps, as on the pedal but a little bigger. It only shows what it is */
-.kss-view {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 14px;
-  padding: 2px 0 2px 12px;
-  border-left: 3px solid var(--ks-accent);
-  cursor: default;
-  -webkit-user-select: none;
-  user-select: none;
-}
-.kss-view-caption {
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ks-muted);
-}
-.kss-view-steps {
-  display: grid;
-  grid-template-columns: repeat(16, minmax(0, 1fr));
-  gap: 4px;
-  height: 18px;
-}
-.kss-view-steps i {
-  display: block;
-  border-radius: 5px;
-  background: var(--ks-cut);
-  transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
-}
-.kss-view-steps i.l2 { background: var(--ks-lit); box-shadow: 0 0 12px -2px var(--ks-lit); }
-.kss-view-steps i.l1 { background: var(--ks-half); }
-.kss-view-steps i.again { opacity: 0.4; }
-.kss-view-steps i.start { margin-left: 4px; }
-.kss.is-bypassed .kss-view-steps i.l2 { background: #6f6d68; box-shadow: none; }
-.kss.is-bypassed .kss-view-steps i.l1 { background: #4a4945; }
-
 /* Tempo and feel: one block for each thing the pedal has under its display */
 .kss-sound {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px 24px;
+  gap: 22px 28px;
 }
 .kss-knob { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 /* A thin rule above every control but the first, so the assign button of each one reads as belonging to it
@@ -1408,11 +1373,6 @@
   padding-top: 16px;
   border-top: 1px solid var(--ks-line);
 }
-.kss-tempo,
-.kss-speed { grid-column: 1 / -1; }
-/* Depth and Edge side by side only when each has room for its name, value and button (the script says so: .is-narrow) */
-.kss-sound.is-narrow { grid-template-columns: minmax(0, 1fr); }
-/* The button that assigns the knob sits at the end of its head, where its name and value are */
 .kss-knob-head {
   display: flex;
   align-items: center;
@@ -1427,18 +1387,26 @@
 /* The name takes what is left, the value and the button keep their size */
 .kss-knob-head > :first-child { margin-right: auto; }
 .kss-knob-head > .kss-address { margin-left: 4px; }
-.kss-depth .kss-knob-head output,
-.kss-edge .kss-knob-head output { font-size: 18px; }
 .kss-knob-head small { font-size: 12px; font-weight: 600; letter-spacing: 0; text-transform: none; }
 .kss-knob-head output { font-size: 20px; letter-spacing: 0; text-transform: none; white-space: nowrap; color: var(--ks-text); }
+.kss-depth .kss-knob-head output,
+.kss-edge .kss-knob-head output { font-size: 18px; }
+.kss-sound.is-narrow { grid-template-columns: minmax(0, 1fr); }
 .kss-ends { display: flex; justify-content: space-between; gap: 8px; margin-top: -6px; }
 .kss-ends small { font-size: 12px; color: var(--ks-muted); }
 
-.kss-stepper-big { grid-template-columns: 52px minmax(96px, 1fr) 52px; gap: 8px; }
-.kss-stepper-big .kss-button { min-height: 52px; font-size: 22px; }
+.kss-tempo,
+.kss-speed,
+.kss-length-knob { grid-column: 1 / -1; }
+.kss-stepper-big { grid-template-columns: 56px minmax(96px, 1fr) 56px; gap: 8px; }
+.kss-stepper-big .kss-button { min-height: 56px; font-size: 22px; }
 .kss-stepper-big output { display: flex; align-items: baseline; justify-content: center; gap: 8px; }
-.kss-stepper-big output b { font-size: 34px; line-height: 1; letter-spacing: 0; }
+.kss-stepper-big output b { font-size: 40px; line-height: 1; letter-spacing: 0; }
 .kss-stepper-big output small { display: inline; font-size: 13px; letter-spacing: 0.1em; }
+
+/* Patterns have a speed, endings a length */
+.kss[data-mode="0"] .kss-length-knob,
+.kss[data-mode="1"] .kss-speed { display: none; }
 
 .kss-segments {
   display: grid;
@@ -1491,48 +1459,318 @@
 .kss-slider::-moz-range-thumb { width: 30px; height: 30px; border: 0; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ff6a80 0, var(--ks-red) 45%, var(--ks-red-deep) 100%); box-shadow: 0 0 0 3px var(--ks-lit), 0 2px 6px rgba(0, 0, 0, 0.6); }
 
 /* On/off, in the top bar: lit while the effect is on */
-.kss-switches { display: flex; align-items: center; gap: 10px; }
-
-/* On/off: the switch and the button that assigns it to a footswitch of the device are one piece, so it is clear what
-   the small button is for */
-.kss-onoff {
-  gap: 2px;
-  padding: 4px;
-  border-radius: 28px;
-  background: var(--ks-ink-2);
-  box-shadow: inset 0 0 0 1px var(--ks-line);
-}
-.kss-onoff .kss-power { min-height: 44px; border-radius: 22px; }
-.kss .kss-onoff .mod-address.kss-address.kss-address-small {
-  border-radius: 22px;
-  background-color: transparent;
-  box-shadow: none;
-}
-.kss .kss-onoff .mod-address.kss-address.kss-address-small:hover { background-color: rgba(255, 255, 255, 0.08); }
-.kss .kss-onoff .mod-address.kss-address.kss-address-small.addressed { background-color: rgba(245, 242, 234, 0.12); }
 .kss-power[aria-pressed="true"] { color: #fff; background: var(--ks-red); box-shadow: 0 3px 0 var(--ks-red-deep); }
 .kss-power[aria-pressed="true"]:hover { background: #ff3b58; }
-
-/* What belongs on the first page, in a column: the editor only while Custom plays. The view stays: it is what the
-   pattern does, and it is the same for every choice, so there is nothing new to learn when the choice is Custom */
-.kss[data-together="1"][data-custom="0"] .kss-pattern-panel { display: none; }
-.kss[data-together="1"] .kss-use { display: none; }
-
-/* The way to the editor, only while Custom plays and the editor is on a page of its own */
-.kss-edit-pattern { display: none; margin-top: 12px; width: 100%; }
-.kss[data-together="0"][data-custom="1"] .kss-edit-pattern { display: block; }
+.kss-switches { flex-wrap: wrap; }
 
 /* Narrow and short screens: one column, tighter */
 .kss[data-w="s"] .kss-sound { grid-template-columns: minmax(0, 1fr); gap: 16px; }
 .kss[data-w="s"] .kss-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .kss[data-w="s"] .kss-play-hint { display: none; }
-.kss[data-w="s"] .kss-view-steps { height: 16px; gap: 3px; }
+.kss[data-w="s"] .kss-play-head .kss-modepill { width: 100%; }
+.kss[data-w="s"] .kss-play-head .kss-modes { min-width: 0; flex: 1 1 auto; }
+.kss[data-w="s"] .kss-stepper-big output b { font-size: 34px; }
 .kss[data-h="s"] .kss-play-hint { display: none; }
-.kss[data-h="s"] .kss-view-steps { height: 14px; }
 .kss[data-h="s"] .kss-sound { gap: 12px 24px; }
 .kss[data-h="s"] .kss-knob { gap: 6px; }
 .kss[data-h="s"] .kss-knob + .kss-knob { padding-top: 12px; }
 .kss[data-h="s"] .kss-ends { display: none; }
 
+
 /* In MOD UI's Performance view the page lives beside the plugin list: the window is not there to be closed */
 [data-performance] .kss-close { display: none; }
+
+
+/* ==========================================================================
+ * What plays, small, on every page (under the top bar): read-only, so flat: a rule at its side in the colour of the state,
+ * the caption in small capitals, the name as text, and thin bars for the steps
+ * ========================================================================== */
+
+.kss-glance {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: minmax(130px, 230px) minmax(0, 1fr);
+  align-items: center;
+  gap: 4px 18px;
+  padding: 3px 0 3px 12px;
+  border-left: 3px solid var(--ks-accent);
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.kss-glance-what { display: flex; flex-direction: column; min-width: 0; }
+.kss-glance-kind {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ks-muted);
+}
+.kss-glance-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 17px;
+  font-weight: 700;
+}
+.kss-glance-lanes { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.kss-glance .kss-lane { grid-template-columns: 12px minmax(0, 1fr); gap: 6px; }
+.kss-glance .kss-lane > b { font-size: 10px; }
+
+/* The steps of a lane: thin bars (a pattern, repeated to fill the row) or thin columns along the time of an ending */
+.kss-glance-steps,
+.kss-ending-steps {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.kss-glance-steps { height: 8px; gap: 3px; }
+.kss-ending-steps { height: 28px; }
+.kss-glance-steps i,
+.kss-ending-steps i {
+  display: block;
+  border-radius: 3px;
+  background: var(--ks-cut);
+  transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+.kss-glance-steps i.l2,
+.kss-ending-steps i.l2 { background: var(--lane); box-shadow: 0 0 10px -1px var(--lane); }
+.kss-glance-steps i.l1,
+.kss-ending-steps i.l1 { background: var(--lane-half); }
+.kss-glance-steps i.again { opacity: 0.4; }
+.kss-glance-steps i.start { margin-left: 3px; }
+.kss-glance-steps[data-kind="ending"],
+.kss-ending-steps[data-kind="ending"] { gap: 1px; }
+.kss-glance-steps[data-kind="ending"] i,
+.kss-ending-steps[data-kind="ending"] i { border-radius: 2px; }
+.kss-glance-steps[data-kind="ending"] i.start,
+.kss-ending-steps[data-kind="ending"] i.start { margin-left: 0; }
+.kss-glance-steps[data-kind="ending"] i.l0,
+.kss-ending-steps[data-kind="ending"] i.l0 { background: var(--ks-cut); }
+.kss[data-w="s"] .kss-glance { grid-template-columns: minmax(110px, 0.45fr) minmax(0, 1fr); gap: 2px 12px; }
+.kss[data-w="s"] .kss-glance-kind { display: none; }
+.kss[data-w="s"] .kss-glance-name { font-size: 15px; }
+.kss[data-h="s"] .kss-glance { padding-top: 0; padding-bottom: 0; }
+
+
+/* ==========================================================================
+ * What each side does, as LEDs: a step is a recessed cell that lights, as the outputs of Hept7 Switch do. White for the left
+ * side, red for the right one. A tap on a step of Custom goes to the next level (cut, half, pass); a tap on a built-in
+ * pattern asks whether to make a Custom one from it
+ * ========================================================================== */
+
+.kss-led-block { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.kss-led-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 18px;
+}
+.kss-led-what { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 200px; }
+.kss-led-caption {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ks-muted);
+}
+.kss-led-caption small { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--ks-text); }
+.kss-led-hint { font-size: 13px; color: var(--ks-muted); }
+.kss-led {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+.kss-led-steps,
+.kss-led-ending { display: flex; flex-direction: column; gap: 10px; }
+.kss[data-mode="1"] .kss-led-steps,
+.kss[data-mode="0"] .kss-led-ending { display: none; }
+
+.kss-led .kss-lane { grid-template-columns: 18px minmax(0, 1fr); gap: 8px; align-items: start; }
+.kss-led .kss-lane > b { padding-top: 16px; font-size: 14px; }
+.kss-led .kss-ending-steps { align-self: center; }
+
+/* The script chooses the columns (16, 8 or 4: every line is full) from the width of the panel */
+.kss-led-cells {
+  display: grid;
+  grid-template-columns: repeat(var(--kss-cols, 8), minmax(0, 1fr));
+  gap: 6px;
+  min-width: 0;
+}
+
+.kss-cell {
+  position: relative;
+  min-width: 0;
+  height: var(--kss-cell, 52px);
+  border-radius: 12px;
+  cursor: pointer;
+  background: var(--ks-ink);
+  box-shadow: inset 0 0 0 1px var(--ks-line), inset 0 3px 5px rgba(0, 0, 0, 0.5);
+  transition: background-color 0.15s, box-shadow 0.15s, opacity 0.15s, transform 0.08s;
+}
+.kss-cell:active { transform: scale(0.93); }
+
+/* The number of the step; the first of every beat is brighter */
+.kss-cell::before {
+  content: attr(data-n);
+  position: absolute;
+  top: 5px;
+  right: 0;
+  left: 0;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ks-muted);
+  opacity: 0.75;
+}
+.kss-cell.is-beat::before { color: var(--ks-text); opacity: 1; }
+
+/* The level: cut (dark), half (lit from the bottom up to half of the cell), pass (lit) */
+.kss-cell[data-level="1"] {
+  background: linear-gradient(0deg, var(--lane-half) 0 50%, var(--ks-ink) 50% 100%);
+}
+.kss-cell[data-level="2"] {
+  background: var(--lane);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.55), 0 0 14px -2px var(--lane);
+}
+.kss-cell[data-level="2"]::before { color: var(--ks-ink); opacity: 0.8; }
+.kss-cell[data-level="2"].is-beat::before { opacity: 1; }
+
+/* Beyond the length of Custom a step is not played; a built-in pattern comes round again there: the same steps, only
+   outlined, so that they are not taken for a level of their own */
+.kss-cell.is-unused { display: none; }
+.kss[data-measure] .kss-cell.is-unused { display: block; }
+.kss-cell.again[data-level="1"],
+.kss-cell.again[data-level="2"] {
+  background: var(--ks-ink);
+  box-shadow: inset 0 0 0 2px var(--lane-half), inset 0 3px 5px rgba(0, 0, 0, 0.5);
+}
+.kss-cell.again[data-level="2"] { box-shadow: inset 0 0 0 2px var(--lane), inset 0 3px 5px rgba(0, 0, 0, 0.5); }
+.kss-cell.again[data-level="2"]::before { color: var(--ks-muted); opacity: 0.75; }
+
+.kss[data-h="s"] .kss-cell { --kss-cell: 44px; }
+.kss[data-h="s"] .kss-led-cells { gap: 4px; }
+.kss[data-h="s"] .kss-led { gap: 6px; }
+.kss[data-h="s"] .kss-led-block { margin-top: 8px; gap: 6px; }
+.kss[data-h="s"] .kss-led .kss-lane > b { padding-top: 12px; }
+.kss[data-h="s"] .kss-led-hint,
+.kss[data-w="s"] .kss-led-hint,
+.kss[data-choice="stepper"] .kss-led-hint { display: none; }
+.kss[data-w="s"] .kss-cell { --kss-cell: 44px; }
+.kss[data-w="s"] .kss-led-steps { gap: 6px; }
+.kss[data-w="s"] .kss-led .kss-lane { grid-template-columns: 14px minmax(0, 1fr); gap: 4px; }
+.kss[data-w="s"] .kss-led .kss-lane > b { padding-top: 12px; font-size: 12px; }
+.kss[data-w="s"] .kss-led-cells { gap: 4px; }
+.kss[data-w="s"] .kss-ending-steps { height: 22px; }
+
+
+/* ==========================================================================
+ * The choice of pattern: every one at hand, or one at a time with arrows ("< name >") when the screen is small
+ * ========================================================================== */
+
+.kss-pick {
+  display: none;
+  grid-template-columns: 56px minmax(0, 1fr) 56px;
+  align-items: center;
+  gap: 8px;
+}
+.kss-pick .kss-button { display: grid; place-items: center; min-height: 56px; padding: 0; }
+.kss-pick-name { display: flex; flex-direction: column; align-items: center; min-width: 0; text-align: center; }
+.kss-pick-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ks-text);
+}
+.kss-pick-count { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: var(--ks-muted); }
+.kss[data-choice="stepper"] .kss-pick { display: grid; }
+.kss[data-choice="stepper"] .kss-choices { display: none; }
+/* The name is in the arrows already */
+.kss[data-choice="stepper"] .kss-play-name { display: none; }
+.kss[data-choice="stepper"] .kss-play-hint { display: none; }
+
+
+/* ==========================================================================
+ * Length and steps per beat of Custom: with the LEDs, only while it plays
+ * ========================================================================== */
+
+.kss-tools {
+  display: none;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 18px;
+}
+.kss[data-custom="1"] .kss-tools { display: flex; }
+.kss[data-w="s"] .kss-tools { display: none; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; gap: 8px 10px; width: 100%; }
+.kss[data-w="s"][data-custom="1"] .kss-tools { display: grid; }
+.kss[data-w="s"] .kss-stepper { grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 2px; }
+
+/* ==========================================================================
+ * The question before a built-in pattern becomes a Custom one
+ * ========================================================================== */
+
+.kss-modal[hidden] { display: none; }
+.kss-modal {
+  position: absolute;
+  z-index: 60;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+.kss-modal-scrim {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(5, 6, 8, 0.74);
+}
+.kss-modal-card {
+  position: relative;
+  width: min(460px, 100%);
+  padding: 22px 22px 18px;
+  border-radius: 22px;
+  background: var(--ks-ink-2);
+  box-shadow: inset 0 3px 0 var(--ks-red), inset 0 0 0 1px var(--ks-line), 0 20px 44px rgba(0, 0, 0, 0.65);
+}
+.kss-modal-title {
+  margin-bottom: 8px;
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--ks-text);
+}
+.kss-modal-text {
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ks-muted);
+}
+.kss-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+.kss-modal-ok {
+  color: var(--ks-ink);
+  background: var(--ks-lit);
+  box-shadow: 0 3px 0 var(--ks-lit-deep);
+}
+.kss-modal-ok:hover { background: #fff; }
+
+
+/* What still does not fit on a page (a very small screen) scrolls, rather than being cut off */
+.kss-page.is-scroll { overflow-y: auto; }
