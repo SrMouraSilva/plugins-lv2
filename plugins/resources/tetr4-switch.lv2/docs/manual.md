@@ -62,7 +62,7 @@ any drive plugin and any delay plugin in the chain.
 
 [![Watch: switching presets on a pedalboard — The CV outputs are shown at the bottom so you can see each preset change them (silent video).](images/video-pedalboard.jpg)](https://youtu.be/sHKzSBM5Z8U)
 
-[![Example pedalboard — A simple pedalboard from the developer that shows a typical setup. Load it and explore.](images/example-pedalboard.jpg)](https://pedalboards.moddevices.com/pedalboards/66f8238d5e57562fcb26b0f3)
+[![Example pedalboard — A simple pedalboard from the developer that shows a typical setup. Load it and explore.](images/example-pedalboard.webp)](https://pedalboards.moddevices.com/pedalboards/66f8238d5e57562fcb26b0f3)
 
 ## 3. The controls
 
@@ -370,7 +370,7 @@ A balanced live setup. **Rhythm** uses a light drive. **Lead** adds a boost and 
 assign: **Assigning the Tetr4 Switch:** Out 1 → Drive · Out 2 → Boost · Out 3 → Delay · Out 4 → Reverb
 ```
 
-[![Try it: example pedalboard — The developer's demo pedalboard. Load it and rewire it to match any recipe above.](images/example-pedalboard.jpg)](https://pedalboards.moddevices.com/pedalboards/66f8238d5e57562fcb26b0f3)
+[![Try it: example pedalboard — The developer's demo pedalboard. Load it and rewire it to match any recipe above.](images/example-pedalboard.webp)](https://pedalboards.moddevices.com/pedalboards/66f8238d5e57562fcb26b0f3)
 
 [![Watch: Four-scene rig in action — The first recipe being switched on a live pedalboard.](images/video-pedalboard.jpg)](https://youtu.be/sHKzSBM5Z8U)
 

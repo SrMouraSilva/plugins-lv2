@@ -164,6 +164,12 @@ Raw HTML, with the position of each pin in percent of the picture. Describe the 
 </figure>
 ```
 
+### A picture of a pedalboard
+
+A card made of a picture and a link (not a video) sits on the **dark, dotted board** of the interactive section. Give it a picture with a **transparent background**:
+`python3 tools/media/white_to_alpha.py IN.jpg OUT.webp` takes out the white that is connected to the border (a white pedal inside stays) and softens the edge, so
+there is no white fringe on the dark.
+
 ### The plugin inside the manual
 
 A manual can also hold one section in which the plugin itself is loaded, to tap and to follow in guided tours: a fenced block
