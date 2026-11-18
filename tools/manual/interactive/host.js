@@ -61,6 +61,7 @@
       // MOD UI sends nothing when the port already has that value (setPortValue: `port.value == value`)
       if (portValues[symbol] == value) { Host.log.push(['dropped by MOD UI (same value)', symbol, value]); return; }
       portValues[symbol] = value;
+      updateMeters();
       Host.log.push(['set_port_value', symbol, value]);
       var selector = /^Preset_selector_(\d+)$/.exec(symbol);
       if (simulate && selector && value == 1) { setTimeout(function () { hostSelects(Number(selector[1]), symbol); }, latency()); }
@@ -78,6 +79,7 @@
 
   function send(event) {
     if (event.symbol !== undefined) { portValues[event.symbol] = event.value; }
+    updateMeters();
     method(Object.assign({ data: data, icon: icon, settings: settings, api_version: 3 }, event), funcs);
   }
   Host.send = send;
@@ -116,6 +118,29 @@
     }
   }
 
+  // ------------------------------------------------------------------------------------------ voltage meters
+  // The manual (not MOD UI) writes the voltage of each CV output beside its jack, so it is clear when it is 0 V and when 10 V.
+  // spec (from interactive.json): { select: the jacks, on: "Preset_{active}_output_{n}", volts: 10 }. {n} is the place of the jack
+  // among the ones selected (1, 2...), {active} the preset the simulated host plays; the output is on when that port is 1
+  var metersSpec = null;
+  function activePreset() {
+    for (var i = 1; 'Preset_selector_' + i in portValues; i++) { if (portValues['Preset_selector_' + i] == 1) { return i; } }
+    return 1;
+  }
+  function updateMeters() {
+    if (!metersSpec) { return; }
+    [].forEach.call(doc.querySelectorAll(metersSpec.select), function (jack, index) {
+      var symbol = metersSpec.on.replace('{active}', activePreset()).replace('{n}', index + 1);
+      var on = portValues[symbol] == 1;
+      var chip = jack.querySelector('.ix-volt');
+      if (!chip) { chip = doc.createElement('span'); chip.className = 'ix-volt'; chip.setAttribute('role', 'img'); jack.appendChild(chip); }
+      chip.textContent = (on ? metersSpec.volts : 0) + ' V';
+      chip.classList.toggle('is-on', on);
+      chip.setAttribute('aria-label', 'Output ' + (index + 1) + ': ' + (on ? metersSpec.volts : 0) + ' volts');
+    });
+  }
+  Host.setMeters = function (spec) { metersSpec = spec; updateMeters(); measure(); fit(); };
+
   // ------------------------------------------------------------------------------------------ views
   function setView(name, quiet) {
     if (name === 'settings' && !settings.children().length) { return; }
@@ -141,7 +166,7 @@
     var el = icon[0];
     var base = el.getBoundingClientRect();
     var box = { left: 0, top: 0, right: base.width, bottom: base.height };
-    icon.find('.mod-pedal-input, .mod-pedal-output, .mod-actions').each(function () {
+    icon.find('.mod-pedal-input, .mod-pedal-output, .mod-actions, .ix-volt').each(function () {
       var r = this.getBoundingClientRect();
       box.left = Math.min(box.left, r.left - base.left);
       box.top = Math.min(box.top, r.top - base.top);

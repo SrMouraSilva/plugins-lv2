@@ -44,15 +44,11 @@ TEXT = {
     "allTours": "All tours",
     "back": "Back",
     "next": "Next",
-    "play": "Play all",
-    "playHint": "<strong>Play all</strong> runs the steps by itself, and <strong>Pause</strong> stops it where it is. Or go at your own pace with <strong>Next</strong> and <strong>Back</strong>.",
-    "pause": "Pause",
     "step": "Step",
     "steps": "steps",
     "of": "of",
-    "watching": "Watching the tour. Press Pause to take your time.",
     "finished": "That is the end of the tour.",
-    "replay": "Play again",
+    "replay": "Start again",
     "tryIt": "Try it yourself",
     "print": "This part of the manual is interactive: open the manual on a screen to try the plugin.",
 }
@@ -214,7 +210,7 @@ def load_config(docs: Path, model: dict) -> dict:
         steps = [{**step, "title": inline(step.get("title", "")), "text": markdown.markdown(step["text"])} for step in tour["steps"]]
         tours.append({**tour, "steps": steps})
 
-    return {"views": views, "areas": areas, "tours": tours, "text": {**TEXT, **raw.get("text", {})},
+    return {"views": views, "areas": areas, "tours": tours, "meters": raw.get("meters"), "text": {**TEXT, **raw.get("text", {})},
             "frameTitle": raw.get("frameTitle", f'{model["title"]}: the plugin, to try')}
 
 

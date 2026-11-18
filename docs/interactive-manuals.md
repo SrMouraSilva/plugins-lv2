@@ -6,7 +6,7 @@ interface, the same script, running in a frame of the page. The reader can
 * **Explore**: tap any part of the plugin and read what it is for, switch between the plugin **on the pedalboard** and its **settings
   page**, and outline everything that can be tapped (*Show areas*);
 * take a **guided tour** of a common task: a finger (a semi-transparent circle, like the one of the [animations](./making-animations.md))
-  glides to what must be tapped, taps it, and a description says what is happening. A tour can be **played**, or taken **one step at a time**
+  glides to what must be tapped, taps it, and a description says what is happening. A tour is taken **one step at a time**
   with *Next* and *Back*.
 
 It is drawn by JavaScript, not recorded: nothing is a GIF, and the plugin really answers (switches move, names are typed, the settings page
@@ -111,8 +111,14 @@ printed: it says that the part is interactive.
 | `views` | Optional. By default `pedalboard`, and `settings` when the bundle has a `modgui:settingsTemplate`. The labels are the buttons of the page |
 | `areas` | What a tap says (section 5). The **order matters**: a tap is given to the first area that matches, so write the specific ones before the general ones |
 | `tours` | The guided tours (section 6) |
+| `meters` | Optional: a small box beside each jack with its voltage (see below) |
 | `text` | Optional: any of the words of the page (`TEXT` in `interactive.py`), to translate or rephrase |
 | `frameTitle` | Optional: the title of the frame for a screen reader |
+
+`meters` makes the **manual** (not MOD UI) write the voltage of each CV output beside its jack, so it is clear when it is 0 V and when 10 V. It is
+`{"select": ".mod-output[mod-role=\"output-cv-port\"]", "on": "Preset_{active}_output_{n}", "volts": 10}`: `select` picks the jacks, `{n}` is the place of the
+jack (1, 2...), `{active}` the preset the simulated host is playing, and the output is on (`volts`) when that port is 1, else 0 V. It follows the ports
+as the plugin changes them. Say in the area of the jacks that the box is the manual's (the plugin does not draw it).
 
 `title`, `chip` and `kicker` are one line, and `text` is Markdown (it becomes HTML at build time). Inside any of them, `{name}` is replaced by the
 `data-name` of the part that was tapped (`{preset}` and `{output}` for `data-preset` and `data-output`), and `{title}` by its `title`
@@ -162,8 +168,8 @@ How the player works, so you can write for it:
 * **Next** shows the next step with the finger. **Back** and the numbers of the list **start from the clean plugin and do at once what the steps before did**
   (and the step itself, without the finger): the frame always agrees with the description. So the steps of a tour must be **replayable from the
   start**, and must not depend on something the reader did before.
-* **Play all** goes on by itself (and becomes **Pause**), waiting the time it takes to read each step (about 1.2 s plus 0.28 s a word, between 2.4 and 8 s). While a tour runs, a
-  shield covers the frame: only the tour taps. At the end the reader can play it again or *Try it yourself* (Explore, with the state the tour left).
+* The reader is always in control: nothing advances by itself, so a step can be read for as long as needed. While a tour is open a shield covers the
+  frame, so only the tour taps. On the last step the reader can *Start again* or *Try it yourself* (Explore, with the state the tour left).
 * A tour starts from the plugin as it loads: the defaults of the TTL. Write the first step for that state.
 * Prefer **idempotent-looking** taps (a switch that is up and must be down) and say in the text what the reader should see.
 * Do not show what the plugin does not do: an output that lights up, a pop-up. The host only simulates what section 7 lists.
@@ -187,7 +193,7 @@ Build, open `modgui/manual.html` in a browser (also from `file://`: it must work
 and desktop (1440) widths**, light and dark:
 
 * the frame loads, the two views show, *Show areas* outlines what the chips list, a tap on each part says the right thing;
-* every tour, with **Next** from step 1 to the end, then **Back** to the middle, then **Play**: the description always agrees with the frame;
+* every tour, with **Next** from step 1 to the end, then **Back** to the middle: the description always agrees with the frame;
 * with **prefers-reduced-motion** the finger does not glide and the ring does not pulse.
 
 Scratch scripts that drive the page with Chrome must use `launch()` of `tools/media/cdp.mjs` with `try/finally { page.close() }` (see

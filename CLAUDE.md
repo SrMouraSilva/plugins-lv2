@@ -318,7 +318,7 @@ A manual can have one section in which **the real plugin runs inside the page**:
   the simulated host of `Preset_selector_N`, the settings window, MOD UI's assignment dialog drawn in a simplified way). Rebuild the manual and it follows the
   interface. Do not put plugin-specific code in `host.js`: add what the TTL gives (ports), as `tools/modgui-preview/frame.html` does.
 * **A change to the interface can break it**: the selectors of `interactive.json` (`select`, `tap`, `ring`) are the classes of the modgui. When you rename a
-  class or move a control, search `docs/interactive.json` and run every tour (Next to the end, Back to the middle, Play). Rebuild the manual in the same commit,
+  class or move a control, search `docs/interactive.json` and run every tour (Next to the end, then Back to the middle). Rebuild the manual in the same commit,
   with the version bump of the manual.
 * **Tours must be replayable from the clean plugin**: Back and the step list reload the frame and redo what the steps before did, at once.
   Write the first step for the defaults of the TTL, and do not show what the plugin does not do.

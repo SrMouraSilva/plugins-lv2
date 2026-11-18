@@ -3,7 +3,7 @@
    The interactive part of a manual (docs/interactive-manuals.md): the page around the frame of the plugin. The plugin itself runs in
    the frame (host.js); this file builds what is beside it:
      * Explore: tap a part of the plugin and read what it is, or pick it from the list of parts;
-     * Guided tours: a list of common tasks. A tour can be played, or taken one step at a time, and in both a finger shows
+     * Guided tours: a list of common tasks. A tour is taken one step at a time (Next, Back), and a finger shows
        where to tap and the description of the step says what is happening.
    The page carries its data as JSON (areas and tours) and the document of the frame as a JSON string (see interactive.py). */
 (function () {
@@ -84,16 +84,14 @@
     var head = el('div', 'ix-player-head'); head.appendChild(playerTitle); head.appendChild(backToList);
     var bar = el('div', 'ix-bar'); var barFill = el('i'); bar.appendChild(barFill);
     var prevButton = button('ix-btn', '<span aria-hidden="true">&#9664;</span> ' + T.back);
-    var playButton = button('ix-btn ix-play', '');
     var nextButton = button('ix-btn', T.next + ' <span aria-hidden="true">&#9654;</span>');
     var count = el('span', 'ix-count');
     var controls = el('div', 'ix-controls');
-    [prevButton, playButton, nextButton, count].forEach(function (n) { controls.appendChild(n); });
+    [prevButton, nextButton, count].forEach(function (n) { controls.appendChild(n); });
     var say = el('div', 'ix-say'); say.setAttribute('aria-live', 'polite');
     var stepList = el('ul', 'ix-steps');
     var end = el('p', 'ix-end'); end.hidden = true;
-    var playHint = el('p', 'ix-playhint', T.playHint);
-    [head, bar, controls, playHint, say, stepList, end].forEach(function (n) { player.appendChild(n); });
+    [head, bar, controls, say, stepList, end].forEach(function (n) { player.appendChild(n); });
 
     var printNote = el('p', 'ix-print', '<em>' + esc(T.print) + '</em>');
     root.textContent = '';
@@ -119,6 +117,7 @@
           host.setAreas(areasOf(view));
           host.handlers.select = onSelect;
           host.handlers.view = function (name) { view = name; syncView(); };
+          if (cfg.meters && host.setMeters) { host.setMeters(cfg.meters); }
           host.showAreas(areasButton.getAttribute('aria-pressed') === 'true');
           host.view(view, true);
           syncView();
@@ -240,7 +239,6 @@
     // ---------------------------------------------------------------- tours
     var tour = null;          // the tour being shown
     var at = -1;              // the step shown
-    var playing = false;
     var token = 0;            // changes whenever the tour is stopped or moved: what waits for it gives up
     var busy = false;
 
@@ -256,8 +254,7 @@
     function showTourIntro() { tour = null; at = -1; picker.hidden = false; player.hidden = true; shield.hidden = true; setTools(true); }
 
     function stopTour(keepView) {
-      token++; playing = false; busy = false;
-      syncPlay();
+      token++; busy = false;
       if (host && host.hideFinger) { host.hideFinger(); }
       if (!keepView) { tour = null; at = -1; }
       if (keepView) { tour = null; at = -1; picker.hidden = mode !== 'tour'; player.hidden = true; }
@@ -271,19 +268,13 @@
       tour.steps.forEach(function (s, k) {
         var li = el('li');
         var b = button('', String(k + 1), { 'aria-label': T.step + ' ' + (k + 1) + ': ' + (s.title || '') });
-        b.addEventListener('click', function () { playing = false; syncPlay(); goTo(k, false); });
+        b.addEventListener('click', function () { goTo(k, false); });
         li.appendChild(b); stepList.appendChild(li);
       });
       shield.hidden = false;
       setTools(false);
-      playing = false;
       await goTo(0, true, true);
     }
-
-    function syncPlay() {
-      playButton.innerHTML = playing ? '<span aria-hidden="true">&#10074;&#10074;</span> ' + T.pause : '<span aria-hidden="true">&#9654;</span> ' + T.play;
-    }
-    syncPlay();
 
     // The part a step is about: what it says to ring, or else what its first action touches
     function ringOf(step) {
@@ -325,7 +316,7 @@
       });
       prevButton.disabled = k === 0;
       nextButton.disabled = k === tour.steps.length - 1;
-      end.hidden = true;
+      end.hidden = k !== tour.steps.length - 1;
     }
 
     // To step k. Going forward by one is shown with the finger; anything else starts from the clean plugin and does what the
@@ -346,40 +337,19 @@
       if (mine === token) { busy = false; }
     }
 
-    // How long a step stays on the screen before the player goes on: the time to read it
-    var reading = function (k) { var words = plain(tour.steps[k].text).split(/\s+/).length; return Math.min(8000, Math.max(2400, 1200 + words * 280)); };
+    // The end of a tour: say so, and offer to go again or to try it
+    var again = button('ix-btn', T.replay);
+    var own = button('ix-btn', T.tryIt);
+    end.appendChild(document.createTextNode(T.finished + ' ')); end.appendChild(again); end.appendChild(document.createTextNode(' ')); end.appendChild(own);
+    again.addEventListener('click', function () { goTo(0, true, true); });
+    own.addEventListener('click', function () { setMode('explore'); });
 
-    async function play() {
-      if (!tour) { return; }
-      playing = true; syncPlay();
-      var mine = token;
-      if (at === tour.steps.length - 1) { await goTo(0, true, true); mine = token; if (!playing) { return; } }
-      while (playing && mine === token) {
-        await sleep(reading(at));
-        if (!playing || mine !== token) { return; }
-        if (at >= tour.steps.length - 1) { break; }
-        await goTo(at + 1, true);
-        mine = token;
-      }
-      if (playing && mine === token) { playing = false; syncPlay(); finish(); }
-    }
-
-    function finish() {
-      end.hidden = false;
-      end.innerHTML = esc(T.finished) + ' ';
-      var again = button('ix-btn', T.replay); again.addEventListener('click', function () { goTo(0, true, true).then(function () { end.hidden = true; }); });
-      var own = button('ix-btn', T.tryIt); own.addEventListener('click', function () { var keep = host; setMode('explore'); void keep; });
-      end.appendChild(again); end.appendChild(document.createTextNode(' ')); end.appendChild(own);
-    }
-
-    playButton.addEventListener('click', function () { if (playing) { playing = false; syncPlay(); } else { play(); } });
-    nextButton.addEventListener('click', function () { playing = false; syncPlay(); if (at < tour.steps.length - 1) { goTo(at + 1, true); } });
-    prevButton.addEventListener('click', function () { playing = false; syncPlay(); if (at > 0) { goTo(at - 1, false); } });
+    nextButton.addEventListener('click', function () { if (at < tour.steps.length - 1) { goTo(at + 1, true); } });
+    prevButton.addEventListener('click', function () { if (at > 0) { goTo(at - 1, false); } });
     backToList.addEventListener('click', function () {
       stopTour(true); shield.hidden = true; setTools(true);
       if (host) { host.ring(null); }
     });
-    shield.addEventListener('click', function () { if (playing) { playing = false; syncPlay(); } });
 
     showIntro();
     resize();

@@ -146,8 +146,8 @@ anywhere, and **Reset** puts it back the way it starts.
 
 * **Explore**: tap any part of the plugin to read what it is for, or pick it from the list under the picture. **Show areas** outlines
   everything that can be tapped. Use the buttons at the top to switch between the plugin **on the pedalboard** and its **settings page**.
-* **Guided tours**: step-by-step walkthroughs of the common tasks. A finger shows where to tap. Press **Play all** to watch a tour from start to
-  end (and **Pause** to stop it), or go one step at a time with **Next** and **Back**: every step says what is happening.
+* **Guided tours**: step-by-step walkthroughs of the common tasks. A finger shows where to tap.
+  Go forward and back with **Next** and **Back**: every step says what is happening and shows it in the plugin.
 
 ```interactive
 ```
