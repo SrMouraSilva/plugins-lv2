@@ -12,6 +12,7 @@
   header b { color: #888; font-weight: 600; margin-right: 4px; }
   button, select, input { font: inherit; color: #ddd; background: #333; border: 1px solid #555; border-radius: 6px; padding: 4px 10px; }
   button { cursor: pointer; }
+  #manual-link { color: #7fdee5; text-decoration: none; padding: 0 4px; }
   button:hover { background: #444; }
   button[aria-pressed="true"] { background: #2a9fac; border-color: #7fdee5; color: #06232a; }
   button:disabled { opacity: 0.4; cursor: default; }
@@ -36,6 +37,8 @@
   <div><b>View</b>
     <button data-view="icon">Pedalboard</button>
     <button data-view="settings" id="settings">Settings page</button>
+    <button data-view="manual" id="manual" title="The manual the way MOD UI opens it (modgui:documentation)">Manual</button>
+    <a id="manual-link" href="#" target="_blank" rel="noopener" hidden title="Open the manual in its own tab, as MOD UI does">&#8599;</a>
   </div>
   <div><b>Screen</b>
     <button data-width="390">Phone 390</button>
@@ -72,6 +75,16 @@
   const $ = (id) => document.getElementById(id);
   const frame = $('frame');
   let model = null;
+  let documentation = '';  // URL of the manual of the chosen plugin ('' when it has none)
+
+  const setDocumentation = (meta) => {
+    const file = meta.gui && meta.gui.documentation;
+    documentation = file ? `/plugin/${state.plugin}/${file}` : '';
+    $('manual').disabled = !documentation;
+    $('manual-link').hidden = !documentation;
+    $('manual-link').href = documentation || '#';
+    if (!documentation && state.view === 'manual') state.view = 'icon';
+  };
 
   // Called by the frame
   window.frameReady = (loaded) => { model = loaded; renderPorts(); $('settings').disabled = !model.gui.settingsTemplate; };
@@ -96,13 +109,14 @@
     // Without a device the iframe is the box itself
     box.hidden = false;
     box.style.cssText = state.device ? box.style.cssText : 'display: contents';
-    frame.src = 'frame.html?' + query;
+    frame.src = state.view === 'manual' && documentation ? documentation : 'frame.html?' + query;
     document.querySelectorAll('[data-device]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.device === state.device));
     document.querySelectorAll('[data-view]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.view === state.view));
     document.querySelectorAll('[data-width]').forEach((b) => b.setAttribute('aria-pressed', !state.device && Number(b.dataset.width) === state.width));
   };
 
   const renderPorts = () => {
+    if (!frame.contentWindow.portValues || !model) return;  // the manual has no ports
     const filter = $('filter').value.toLowerCase();
     const list = $('port-list');
     list.textContent = '';
@@ -153,6 +167,8 @@
     fetch('/api/plugin/' + name).then((r) => r.json()).then((m) => {
       $('preset').innerHTML = '<option value="">Defaults</option>' + (m.presets || []).map((p, i) => `<option value="${i}">${p.label}</option>`).join('');
       $('preset').disabled = !(m.presets || []).length;
+      $('settings').disabled = !m.gui.settingsTemplate;
+      setDocumentation(m);
       reload();
     });
   };

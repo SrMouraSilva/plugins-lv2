@@ -299,7 +299,7 @@ def load_bundle(bundle):
         value = modgui.get(key)
         return None if value is None else str(value)[len(resources) + 1:] if str(value).startswith(resources + "/") else str(value)
 
-    gui = {key: relative(key) for key in ("iconTemplate", "settingsTemplate", "stylesheet", "javascript")}
+    gui = {key: relative(key) for key in ("iconTemplate", "settingsTemplate", "stylesheet", "javascript", "documentation")}
 
     return {
         "name": bundle.name[: -len(".lv2")],

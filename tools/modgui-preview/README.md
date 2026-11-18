@@ -17,6 +17,10 @@ every request, so edit `plugins/resources/<plugin>.lv2/modgui/*` and reload. Onl
   (`<plugin>.ttl`, `presets.ttl`, `modgui.ttl`), so a new plugin needs no change here
 * **View**: the plugin on the pedalboard, or its settings page, if it has its own (`modgui:settingsTemplate`).
   Plugins without one use the generic settings window of MOD UI, which is not previewed
+* **Manual**: the plugin's HTML manual (`modgui:documentation`, `modgui/manual.html`), in the same frame, so you can see it at
+  the widths of the Screen and As MOD UI shows it buttons. The arrow beside it opens it in a tab of its own, which is how
+  MOD UI shows it. The button is disabled for a plugin without a manual (`?view=manual` also picks it). Rebuild it with
+  `tools/manual/build_manual_html.py` and reload
 * **Screen**: the page is rendered inside a frame of that width, so a responsive layout can be checked
 * **As MOD UI shows it**: a phone, a phone on its side or a tablet the way MOD UI really appears on it. MOD UI's page has
   no `<meta name="viewport">` and its body is at least 1024px wide, so a touch device lays it out ~1024px wide and
