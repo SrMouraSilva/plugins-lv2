@@ -37,6 +37,11 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
 * Check the TTL with `lv2info <uri>` (`LV2_PATH=plugins/resources`) and, better, with MOD UI's own reader:
   `from modtools.utils import init, get_plugin_info` (needs a mod-ui checkout with `libmod_utils.so`). `lv2_validate`
   complains about `lv2:majorVersion` and the HMI URIs; that noise is expected.
+* **Testing on a Dwarf** (SSH as root; the plugins are in `/root/.lv2`): build the bundles with the Docker image
+  (`mpb`, see the Readme), take them out with `docker cp`, pack them with `COPYFILE_DISABLE=1 tar` (otherwise macOS adds `._*`
+  files that make lilv print errors), copy with `scp -O` and swap each bundle directory with `mv` (never overwrite a loaded
+  `.so`). Restart `mod-ui`, and `jack2` first when ports changed (see above). The firmware's `addressed` calls show in
+  `journalctl -b | grep mod-jackd`. Say that it was tested there, or that it was not.
 * Look at the interface with `python3 tools/modgui-preview/serve.py` (see its README). It does not replace a test
   on a real pedalboard or device: say so when you could not test there.
 
@@ -81,13 +86,27 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   for every LED, label and pop-up. The switches send only what a change of preset touches, only when the preset really
   changes (a momentary footswitch being released is not a change), and from the LV2 worker (`work:schedule`, optional:
   without it, from `run()`). `addressed()` shows the state on that one widget and never pops up.
-* **Hept7's `Current preset` is a cycle** (`Preset_N_in_cycle`). The device keeps its own position for an enumeration on
-  a footswitch, the B+C pair or a knob, and nobody updates it when the plugin changes the preset (`set_value` only
-  changes the text). So a move of one option is a step counted from the active preset, and the plugin only ever writes
-  the device's last value or the option opposite to it into the port (`Controller_may_show_in_combobox`): then a step
-  is never ambiguous and never lost, even after MOD UI gives the device the port's value again. The selectors and the
-  `Active_preset` output (`modgui:monitoredOutputs`) say which preset is on, not the combobox. Run the cycle test
-  (a host whose "device" keeps its own index) after touching this.
+* **Hept7 has three buttons where Tetr4 has one enumeration**: `Current preset` (the port `Preset_combobox`, index 15, which
+  loops forward), `Next preset` and `Previous preset`. All three are `lv2:toggled` with `mod:preferMomentaryOffByDefault` and
+  default 1, and they act when released (the port goes 0 to 1: `Controller.button_mask`, `pressed`). A step is taken in the
+  cycle (`Preset_N_in_cycle`) from the **active preset**, so nothing depends on where the device is. Why not an enumeration: the
+  firmware keeps its own step, draws the text of the value from the `scalePoint` of that step, refuses `set_value` on a
+  footswitch (`cb_change_assigment_value`), and only MOD UI's web side (`paramhmi_set`) tells it a new value, never a write
+  by the plugin; the B+C pair is one control per footswitch, each with its own label, of which mod-host hands the plugin only one
+  addressing. The B&C actuator accepts only `enumeration` and `colouredlist` (`/etc/mod-hardware-descriptor.json`), so the
+  buttons cannot be assigned to it, and nothing in MOD UI keeps a toggled port off a knob (it then works as a button).
+  Tetr4 keeps the enumeration (its scale points are "1" to "4": a one-character value leaves the label 6 characters).
+  The selectors and the `Active_preset` output (`modgui:monitoredOutputs`) say which preset is on.
+* **What the Dwarf draws is the firmware's** (`mod-audio/mod-dwarf-controller`, `app/src/screen.c`, `mode_control.c`,
+  `protocol.c`), so check it there before promising a look. A footer of a toggled or momentary control draws the name (at most 7
+  characters in that source) and inverts when the value is on; an enumeration shares 7 characters between name and value. The
+  firmware rewrites the LED of a **momentary** control on every press and release, over the plugin's colour and brightness
+  (`lock_led_actions` guards only enumerations): the plugin's LED and label go out after the release, which is why the three
+  buttons are momentary-off and why the plugin sends them again after each release (`labels_changed`). A name that was never
+  changed ("Preset 3") is written "Prst 3" (`format_display_name`).
+* **mod-host lives inside jackd** (the log says "Internal client mod-host"): restarting `mod-ui` does not reload the TTL it
+  reads. After a change of ports (or of the defaults of a port) restart `jack2` and then `mod-ui` on the device, or the host
+  never calls `addressed` for the new ports.
 * **Display widgets** (`src/hmi/`, section below) are drawn through the optional aLabs `ahw:WidgetDraw` feature. Never make a plugin
   depend on it (stock firmware and the Duo do not have it): `widgets_init` leaves `draw` NULL and everything else does nothing.
 * **Pop-ups (`popup_message`) only show on a device page that has an `Assign to notify` control addressed.** Keep
@@ -125,8 +144,8 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
   MOD UI sends **nothing** when a port already holds the value (`setPortValue`: `port.value == value`), so a click can
   go unanswered. Never let a late answer to an old click undo a newer one, and never ignore a press because the page
   thinks it is already in that state. MOD UI's copy of a selector stays at 1 until the host answers, so a quick click
-  back to it was dropped: Tetr4's buttons set `Preset_combobox`; Hept7's (whose combobox is a cycle) follow MOD UI's
-  copy of each selector and send 0 then 1 when it is already 1, and take the answer from `Active_preset`. The preview simulates this (host latency, dropped clicks): run
+  back to it was dropped: Tetr4's buttons set `Preset_combobox`; Hept7's follow MOD UI's
+  copy of each selector and send 0 then 1 when it is already 1, and take the answer from `Active_preset` (its `Preset_combobox` is a button the page never writes). The preview simulates this (host latency, dropped clicks): run
   `tools/modgui-preview/scenarios.html` after touching click handling. `event.icon` and `event.settings` are the two DOM roots.
 * **MOD UI covers the whole icon with `.mod-drag-handle` (absolute, `z-index: 20`)** so the plugin can be dragged.
   Every clickable element of the icon (buttons, inputs) needs `position: relative; z-index: 30`, or it cannot be
