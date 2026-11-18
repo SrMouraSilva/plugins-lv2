@@ -189,6 +189,9 @@ Plugins can draw on the display of a MOD Dwarf or Duo X where the device impleme
 * Drawing happens in `run()` through `widgets_run` (a *signature* of the state, redrawn when it changes, at most 20 Hz; the host
   merges and queues, it never blocks). `widget_shown` and `widget_hidden` come from another thread: use the seqlock slots of
   `hmi/widget-host.h`, do not keep the handle anywhere else.
+* **A widget cannot learn from the host what MIDI, CC or CV assignments there are**: mod-host calls `addressed` for the device's own controls only. Gossiper's
+  settings page watches the `addressed` class that MOD UI puts on its assign buttons and writes it into the `footswitch_in_use_N` ports (not on any page, not
+  `notOnGUI`: that would take them out of the script's `set_port_value`). The widget shows the union of both.
 * **Compare before and after** like any change to `run()` (`host.c` has `hash` for the audio and CV outputs), check with
   ASan/UBSan on every area size, and look at `tools/hmi-preview/preview.py gallery`. There is no device test here: say so.
 

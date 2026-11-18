@@ -163,22 +163,32 @@ Unlike the pop-up, a widget needs no `Assign to notify` control and does not go 
 
 #### Footswitches
 
-Shows **which of the seven footswitches are on**, as numbered boxes (filled: on), and the **name of the last one that changed** with ON or OFF. It is offered
-in every area, from a footer up.
+Shows **which of the seven footswitches are on**, as numbered boxes (filled: on), under the name *Gossiper* where there is room for it. When a footswitch
+changes, its **name and its new state (ON or OFF) appear over the widget for a moment**, like a pop-up, and then the boxes come back. It is offered in every area,
+from a footer up.
 
 | MOD Dwarf | MOD Duo X | What you see |
 |---|---|---|
 | ![Footswitches on the MOD Dwarf: one footer](images/gossiper-footswitches-dwarf-footC.webp)<small>One footer · 51 × 10</small> | ![Footswitches on the MOD Duo X: one footer](images/gossiper-footswitches-duox-foot1.webp)<small>One footer · 64 × 8</small> | A row of numbered boxes (filled: on). **Only the footswitches assigned to a control of the device** (all seven when none is). |
 | ![Footswitches on the MOD Dwarf: both footers](images/gossiper-footswitches-dwarf-footB-C.webp)<small>Both footers · 104 × 10</small> | ![Footswitches on the MOD Duo X: both footers](images/gossiper-footswitches-duox-foots.webp)<small>Both footers · 128 × 8</small> | The boxes in a row: **the assigned ones** (seven when none is). |
-| ![Footswitches on the MOD Dwarf: one column](images/gossiper-footswitches-dwarf-col1.webp)<small>One column · 40 × 37</small> | ![Footswitches on the MOD Duo X: two knobs, one above the other](images/gossiper-footswitches-duox-knobs1-2.webp)<small>Two knobs, one above the other · 64 × 30</small> | The boxes in rows and, where there is room, the **name of the last one that changed**, with ON or OFF. **Only the assigned ones** (all seven when none is). |
-| ![Footswitches on the MOD Dwarf: two columns](images/gossiper-footswitches-dwarf-col1-2.webp)<small>Two columns · 82 × 37</small> | ![Footswitches on the MOD Duo X: the four knobs](images/gossiper-footswitches-duox-knobs.webp)<small>The four knobs · 128 × 30</small> | The boxes in one row and the name of the last one that changed: **the assigned ones** (seven when none is). |
+| ![Footswitches on the MOD Dwarf: one column](images/gossiper-footswitches-dwarf-col1.webp)<small>One column · 40 × 37</small> | ![Footswitches on the MOD Duo X: two knobs, one above the other](images/gossiper-footswitches-duox-knobs1-2.webp)<small>Two knobs, one above the other · 64 × 30</small> | *Gossiper* and the boxes under it, in rows. **Only the assigned ones** (all seven when none is). |
+| ![Footswitches on the MOD Dwarf: two columns](images/gossiper-footswitches-dwarf-col1-2.webp)<small>Two columns · 82 × 37</small> | ![Footswitches on the MOD Duo X: the four knobs](images/gossiper-footswitches-duox-knobs.webp)<small>The four knobs · 128 × 30</small> | *Gossiper* and the boxes in one row: **the assigned ones** (seven when none is). |
 | ![Footswitches on the MOD Dwarf: three columns](images/gossiper-footswitches-dwarf-col1-3.webp)<small>Three columns · 124 × 37</small> | ![Footswitches on the MOD Duo X: encoder band and knobs](images/gossiper-footswitches-duox-enc-knobs.webp)<small>Encoder band and knobs · 128 × 47</small> | The same, with taller boxes. |
-| ![Footswitches on the MOD Dwarf: whole screen](images/gossiper-footswitches-dwarf-full.webp)<small>Whole screen · 128 × 64</small> | ![Footswitches on the MOD Duo X: whole screen](images/gossiper-footswitches-duox-full.webp)<small>Whole screen · 128 × 64</small> | A list of the footswitches, each with its name and ON or OFF: **the assigned ones** (seven when none is). |
+| ![Footswitches on the MOD Dwarf: whole screen](images/gossiper-footswitches-dwarf-full.webp)<small>Whole screen · 128 × 64</small> | ![Footswitches on the MOD Duo X: whole screen](images/gossiper-footswitches-duox-full.webp)<small>Whole screen · 128 × 64</small> | A list of **all seven**, each with its name and ON or OFF. A footswitch that is not assigned has a dotted box and says `UNASSIGNED` where the state would be (when none is assigned, all look alike). |
 | *No area of this kind* | ![Footswitches on the MOD Duo X: one knob](images/gossiper-footswitches-duox-knob1.webp)<small>One knob · 64 × 16</small> | A row of numbered boxes. **Only the assigned footswitches** (all seven when none is). |
 | *No area of this kind* | ![Footswitches on the MOD Duo X: two knobs side by side](images/gossiper-footswitches-duox-knobs1-3.webp)<small>Two knobs side by side · 128 × 16</small> | The boxes in a row: **the assigned ones** (seven when none is). |
 
-An area is not spent on footswitches you do not use: Gossiper learns which of its footswitches are assigned to a control of the device and shows
-only those, in every area. (Until you assign one, it shows all seven.) The names are the ones you gave them (see *Renaming a footswitch*).
+The pop-up fills the area (a footer shows it as one light bar: name on the left, state on the right). Changes in the first second after the plugin loads are not
+shown, so a pedalboard that comes up with footswitches on does not flash them all.
+
+An area (apart from the whole screen) is not spent on footswitches you do not use: the widget shows only the footswitches that are assigned to a control, in every area. (Until you
+assign one, it shows all seven.) The names are the ones you gave them (see *Renaming a footswitch*).
+
+How Gossiper knows which ones are assigned: the device only tells a plugin about its own controls (a footswitch or a knob of the device), not about a MIDI
+controller, a CC or a CV, so the settings page does it. Every time you assign or unassign a `Footswitch N` it writes the result into the plugin's hidden
+`Footswitch N in use` parameter (`footswitch_in_use_1` to `footswitch_in_use_7`, 1 = in use). They are saved with the pedalboard and are not on the settings page
+(nobody assigns them). So the widget works the same without a browser open, and you can set them yourself when you control the plugin from an API: with
+all seven at 0 the widget shows all seven. A footswitch assigned to a control of the device itself counts as in use even with its parameter at 0.
 
 ![The states of Footswitches](images/gossiper-footswitches-states.webp)
 
@@ -298,7 +308,7 @@ Yes. The label of each footswitch is saved with the pedalboard and with the plug
 | Field | Value |
 |---|---|
 | Plugin name | Gossiper |
-| Version | 1.1.15 (the version of the plugin this manual is for) |
+| Version | 1.1.17 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/gossiper` |
 | Audio I/O | None |

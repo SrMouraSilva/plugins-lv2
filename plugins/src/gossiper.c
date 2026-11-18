@@ -151,6 +151,21 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
         case ASSIGN_TO_NOTIFY_4:
             break;
 
+        case FOOTSWITCH_IN_USE_1:
+            self->switches[0].in_use = (float*) data; break;
+        case FOOTSWITCH_IN_USE_2:
+            self->switches[1].in_use = (float*) data; break;
+        case FOOTSWITCH_IN_USE_3:
+            self->switches[2].in_use = (float*) data; break;
+        case FOOTSWITCH_IN_USE_4:
+            self->switches[3].in_use = (float*) data; break;
+        case FOOTSWITCH_IN_USE_5:
+            self->switches[4].in_use = (float*) data; break;
+        case FOOTSWITCH_IN_USE_6:
+            self->switches[5].in_use = (float*) data; break;
+        case FOOTSWITCH_IN_USE_7:
+            self->switches[6].in_use = (float*) data; break;
+
         case EVENTS_IN:
             self->lv2->events_in = (const LV2_Atom_Sequence*) data; break;
         case EVENTS_OUT:

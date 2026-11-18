@@ -510,6 +510,90 @@ lv2:port
     lv2:name "Events Out" ;
     atom:bufferType atom:Sequence ;
     atom:supports patch:Message ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 36 ;
+    lv2:symbol "footswitch_in_use_1" ;
+    pg:group plug:group_footswitches ;
+    lv2:name "Footswitch 1 in use" ;
+    rdfs:comment "1 when Footswitch 1 is assigned to a control: the display widget then shows it (with none marked it shows all seven). The settings page sets it by itself as you assign and unassign; it is not meant to be assigned to a control. Set it yourself (API, saved state) when the controller is not one the page sees." ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 37 ;
+    lv2:symbol "footswitch_in_use_2" ;
+    pg:group plug:group_footswitches ;
+    lv2:name "Footswitch 2 in use" ;
+    rdfs:comment "1 when Footswitch 2 is assigned to a control: the display widget then shows it (with none marked it shows all seven). The settings page sets it by itself as you assign and unassign; it is not meant to be assigned to a control. Set it yourself (API, saved state) when the controller is not one the page sees." ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 38 ;
+    lv2:symbol "footswitch_in_use_3" ;
+    pg:group plug:group_footswitches ;
+    lv2:name "Footswitch 3 in use" ;
+    rdfs:comment "1 when Footswitch 3 is assigned to a control: the display widget then shows it (with none marked it shows all seven). The settings page sets it by itself as you assign and unassign; it is not meant to be assigned to a control. Set it yourself (API, saved state) when the controller is not one the page sees." ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 39 ;
+    lv2:symbol "footswitch_in_use_4" ;
+    pg:group plug:group_footswitches ;
+    lv2:name "Footswitch 4 in use" ;
+    rdfs:comment "1 when Footswitch 4 is assigned to a control: the display widget then shows it (with none marked it shows all seven). The settings page sets it by itself as you assign and unassign; it is not meant to be assigned to a control. Set it yourself (API, saved state) when the controller is not one the page sees." ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 40 ;
+    lv2:symbol "footswitch_in_use_5" ;
+    pg:group plug:group_footswitches ;
+    lv2:name "Footswitch 5 in use" ;
+    rdfs:comment "1 when Footswitch 5 is assigned to a control: the display widget then shows it (with none marked it shows all seven). The settings page sets it by itself as you assign and unassign; it is not meant to be assigned to a control. Set it yourself (API, saved state) when the controller is not one the page sees." ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 41 ;
+    lv2:symbol "footswitch_in_use_6" ;
+    pg:group plug:group_footswitches ;
+    lv2:name "Footswitch 6 in use" ;
+    rdfs:comment "1 when Footswitch 6 is assigned to a control: the display widget then shows it (with none marked it shows all seven). The settings page sets it by itself as you assign and unassign; it is not meant to be assigned to a control. Set it yourself (API, saved state) when the controller is not one the page sees." ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 42 ;
+    lv2:symbol "footswitch_in_use_7" ;
+    pg:group plug:group_footswitches ;
+    lv2:name "Footswitch 7 in use" ;
+    rdfs:comment "1 when Footswitch 7 is assigned to a control: the display widget then shows it (with none marked it shows all seven). The settings page sets it by itself as you assign and unassign; it is not meant to be assigned to a control. Set it yourself (API, saved state) when the controller is not one the page sees." ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
 ]
 ;
 
