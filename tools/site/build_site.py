@@ -260,7 +260,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--out", type=Path, default=ROOT / "_site")
     parser.add_argument("--repo", default=os.environ.get("GITHUB_REPOSITORY") or repo_from_git())
-    parser.add_argument("--ref", default=os.environ.get("GITHUB_REF_NAME") or git("branch", "--show-current") or "master")
+    parser.add_argument("--ref", default=os.environ.get("GITHUB_REF_NAME") or git("branch", "--show-current") or "main")
     parser.add_argument("--installs", type=Path, help="JSON {plugin: install page} from tools/store/cloud_build.py: adds the Install links")
     args = parser.parse_args()
     build(args.out.resolve(), args.repo, args.ref, json.loads(args.installs.read_text()) if args.installs else None)

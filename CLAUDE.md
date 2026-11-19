@@ -382,9 +382,9 @@ so they look like the manuals of the device.
   guides with relative links to files (`../CLAUDE.md`, `./making-animations.md`), never with absolute URLs of this repository.
 * Fenced code blocks inside a list item are turned into code blocks after the item (Python-Markdown does not nest them);
   prefer a fence at the left margin.
-* **The site is published from the development branch for now** (the TODO in the job `version` of `release.yml`: `MAIN_BRANCH`): when it is merged, replace it by
-  the main one (`main`). Settings needed once: *Pages > Source: GitHub Actions*, and the branch allowed in
-  *Environments > github-pages > Deployment branches*.
+* **The main branch is `main`** (`MAIN_BRANCH` in the job `version` of `release.yml`): the site is published from it, its releases are the "Latest" one and it builds on the
+  MOD Cloud Builder on every push. Settings needed once: *Pages > Source: GitHub Actions*, and `main` allowed in
+  *Environments > github-pages > Deployment branches* (GitHub only allows the default branch at first).
 
 ## Git
 

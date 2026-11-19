@@ -140,12 +140,12 @@ Binaries for **MOD Duo**, **MOD Duo X**, **MOD Dwarf** and, for [MOD Desktop](#u
 
 ```
 <commit date UTC>-<branch>-<commit hash>
-20261113-1530-master-87a3e32
+20261113-1530-main-87a3e32
 ```
 
 Each release has one archive per plugin and device (`gossiper-duo.lv2.tar.gz`, `tetr4-switch-duo-x.lv2.tar.gz`, `gossiper-dwarf.lv2.tar.gz`, ...) and one per plugin and computer system (`gossiper-macos.lv2.zip`, `kill-switch-windows.lv2.zip`, `hept7-switch-linux.lv2.zip`, ...); each one contains the `.lv2` bundle folder. The **Install on a MOD unit** links are added to the notes a few minutes after the release is published.
 
-The release marked **Latest** is the most recent build of `master`. Builds from other branches are published as pre-releases.
+The release marked **Latest** is the most recent build of `main`. Builds from other branches are published as pre-releases.
 
 ### Install on the device
 

@@ -12,7 +12,7 @@ name: Documentation site
 #
 # It is published by release.yml (job `site`, from the main branch only, on every push or run by hand: the install links
 # are made there and come in the artifact `installs`), which calls this workflow. The main branch is set in the job `version` of
-# release.yml (a TODO there: the development branch for now; remove it from the allowed branches of the environment when it is merged).
+# release.yml (`main`). The branch must be allowed in the environment github-pages (Settings > Environments > Deployment branches).
 on:
   workflow_call:
   pull_request:                 # only builds: a broken manual or guide is caught before merging

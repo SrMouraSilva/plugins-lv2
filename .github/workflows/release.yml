@@ -2,7 +2,7 @@ name: Build and release
 
 # Every push to a branch builds the bundles for MOD Duo, Duo X and Dwarf and
 # publishes a single release named after the commit: <date>-<branch>-<hash>
-# (e.g. 20261113-1530-master-87a3e32).
+# (e.g. 20261113-1530-main-87a3e32).
 # Pull requests only build, so broken builds are caught before merging.
 #
 # It also builds the plugins for the computer, for MOD Desktop (macOS, Windows, Linux: job `desktop`, tools/desktop/package.py), and
@@ -53,8 +53,8 @@ jobs:
           branch="$(printf '%s' "$branch" | tr -c 'A-Za-z0-9._\n-' '-' | sed 's/^-*//; s/-*$//')"
           sha="$(git rev-parse --short=7 HEAD)"
           date="$(git log -1 --format=%cd --date=format-local:'%Y%m%d-%H%M')"
-          # TODO: the main branch is the development branch for now. When it is merged, set it to main.
-          MAIN_BRANCH=feature/hept7-switch
+          # The main branch: its releases are the "Latest" one, and it builds on the MOD Cloud Builder and publishes the site
+          MAIN_BRANCH=main
           if [ "${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}" = "$MAIN_BRANCH" ]; then echo "main=true" >> "$GITHUB_OUTPUT"; else echo "main=false" >> "$GITHUB_OUTPUT"; fi
           echo "branch=$branch" >> "$GITHUB_OUTPUT"
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
@@ -225,13 +225,14 @@ jobs:
           GH_REPO: ${{ github.repository }}
           TAG: ${{ needs.version.outputs.tag }}
           BRANCH: ${{ needs.version.outputs.branch }}
+          MAIN: ${{ needs.version.outputs.main }}
           SHA: ${{ needs.version.outputs.sha }}
           DATE: ${{ needs.version.outputs.date }}
         run: |
-          # Only the default branch is a regular release ("Latest");
+          # Only the main branch is a regular release ("Latest");
           # other branches are pre-releases so they never replace it.
           flags="--prerelease"
-          if [ "$BRANCH" = "${{ github.event.repository.default_branch }}" ]; then
+          if [ "$MAIN" = "true" ]; then
             flags="--latest"
           fi
 
