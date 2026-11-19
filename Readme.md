@@ -143,7 +143,7 @@ Binaries for **MOD Duo**, **MOD Duo X** and **MOD Dwarf** are built by [GitHub A
 20261113-1530-master-87a3e32
 ```
 
-Each release has one archive per plugin and device (`gossiper-duo.lv2.tar.gz`, `tetr4-switch-duo-x.lv2.tar.gz`, `gossiper-dwarf.lv2.tar.gz`, ...); each one contains the `.lv2` bundle folder.
+Each release has one archive per plugin and device (`gossiper-duo.lv2.tar.gz`, `tetr4-switch-duo-x.lv2.tar.gz`, `gossiper-dwarf.lv2.tar.gz`, ...); each one contains the `.lv2` bundle folder. The **Install on a MOD unit** links are added to the notes a few minutes after the release is published.
 
 The release marked **Latest** is the most recent build of `master`. Builds from other branches are published as pre-releases.
 

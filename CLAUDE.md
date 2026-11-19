@@ -353,11 +353,13 @@ so they look like the manuals of the device.
 * **"Install on my MOD"** (a link on each card) goes to the page of the MOD Cloud Builder that installs a stored build on a unit plugged in over USB.
   `tools/store/cloud_build.py` makes it: it sends `store/<plugin>.mk` (pinned in memory to a commit that is on GitHub) to `builder.mod.audio` over socket.io
   (`build`, type `buildroot`, `persistent`: the Duo, Duo X and Dwarf builds are kept, minutes in all) and gets the id of the stored build, so the page is
-  `http://builder.mod.audio/install/<id>`. `release.yml` runs it (job `cloud`; a failure only leaves the links out) **on every push to the main branch, and on any other
+  `http://builder.mod.audio/install/<id>`. `release.yml` runs it (job `cloud`; a failure only leaves the links out, and the release does not wait for it: the job `links` adds them to its notes) **on every push to the main branch, and on any other
   branch only when started by hand** (Actions > Build and release > Run workflow, `cloud_build` on): the links go in the notes of the release and, from the main
   branch, to the site (`docs.yml` is called by the job `site` and gives `build_site.py` the JSON, `--installs`). The main branch is `MAIN_BRANCH` in the job `version`. The page must be that one: **mod-ui only accepts the `rplsocket` of pages of `*.mod.audio` and `localhost:8010`** (`check_origin`), so an
   install button of our own on the GitHub Pages site is refused with a 403. Never forge the `Origin` header to get round it. Every run stores a new build on
   the builder (about 20 MB per plugin): do not call it more often than a release of the main branch or a test version somebody asked for.
+  The job `cloud` keeps the links in a cache keyed by the hash of `plugins/` (without `docs/`), `store/` and `cloud_build.py`: when none changed (a push of only documentation)
+  it reuses them and builds nothing; only a build that succeeded is cached.
 * **A new plugin** appears on the site by being added to `PLUGINS` in `tools/site/build_site.py` and having `docs/manual.md`,
   `docs/manual.json` (title, tagline, badges, colours, links), `docs/alternative-thumbnail.webp` and the two animations (.webp and .gif). **A new guide**
   is added to `GUIDES` (and `GUIDE_TAGLINES`) in the same file.

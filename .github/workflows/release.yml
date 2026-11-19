@@ -5,6 +5,9 @@ name: Build and release
 # (e.g. 20261113-1530-master-87a3e32).
 # Pull requests only build, so broken builds are caught before merging.
 #
+# The release does not wait for the MOD Cloud Builder: it is published when the bundles are built (a minute or two) and the links are
+# added to its notes afterwards (job `links`).
+#
 # The release also carries the "Install on my MOD" links: the plugins are built on the MOD Cloud Builder (tools/store/cloud_build.py),
 # which keeps the build and gives the page that installs it on a unit. Each build stays on that server, so it is made
 #   - on every push to the main branch (MAIN_BRANCH below), and the documentation site (docs.yml) is published with those links;
@@ -112,15 +115,34 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # What the builder builds is the plugins/ and store/ of the commit (not the docs): when none of them changed, the links of the last
+      # build are still good, and a push of only documentation costs no build (and no space on the builder). The cache has the links of a
+      # build that succeeded only (below), and it is the one of this branch or of the default one: elsewhere it is built again.
+      - uses: actions/cache/restore@v6
+        id: cache
+        with:
+          path: installs.json
+          key: cloud-installs-${{ hashFiles('plugins/**', '!plugins/resources/*/docs/**', 'store/**', 'tools/store/cloud_build.py') }}
+
       - uses: actions/setup-python@v7
+        if: steps.cache.outputs.cache-hit != 'true'
         with:
           python-version: '3.12'
 
-      - run: pip install "python-socketio[client]"
+      - if: steps.cache.outputs.cache-hit != 'true'
+        run: pip install "python-socketio[client]"
 
       - name: Build the plugins on the MOD Cloud Builder
+        id: build
+        if: steps.cache.outputs.cache-hit != 'true'
         continue-on-error: true
         run: python3 tools/store/cloud_build.py all --commit "$GITHUB_SHA" --output installs.json
+
+      - uses: actions/cache/save@v6
+        if: steps.cache.outputs.cache-hit != 'true' && steps.build.outcome == 'success'
+        with:
+          path: installs.json
+          key: ${{ steps.cache.outputs.cache-primary-key }}
 
       - uses: actions/upload-artifact@v7
         with:
@@ -129,8 +151,7 @@ jobs:
           if-no-files-found: ignore
 
   release:
-    needs: [version, build, cloud]
-    # `cloud` is skipped on most branches, which would skip this job too
+    needs: [version, build]
     if: ${{ !cancelled() && needs.build.result == 'success' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     permissions:
@@ -141,12 +162,6 @@ jobs:
           pattern: bundles-*
           path: dist
           merge-multiple: true
-
-      - uses: actions/download-artifact@v8
-        continue-on-error: true       # no links: the branch did not build on the MOD Cloud Builder, or it failed
-        with:
-          name: installs
-          path: installs
 
       - name: Publish release
         env:
@@ -175,19 +190,40 @@ jobs:
           | Commit date | $DATE UTC |
           NOTES
 
-          if [ -s installs/installs.json ]; then
-            {
-              printf '\n### Install on a MOD unit\n\n'
-              printf 'Plug the unit into the computer with the USB cable and open the page of the plugin (builds kept by the [MOD Cloud Builder](https://builder.mod.audio)):\n\n'
-              python3 -c "import json; [print(f'- [{name}]({url})') for name, url in sorted(json.load(open('installs/installs.json')).items())]"
-            } >> notes.md
-          fi
-
           gh release create "$TAG" dist/*.tar.gz \
             --target "$GITHUB_SHA" \
             --title "$BRANCH @ $SHA ($DATE UTC)" \
             --notes-file notes.md \
             $flags
+
+  # The install pages are made while (or after) the release is published: they are added to its notes when they are ready
+  links:
+    needs: [version, release, cloud]
+    if: ${{ !cancelled() && needs.release.result == 'success' && needs.cloud.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # edit the release
+    steps:
+      - uses: actions/download-artifact@v8
+        continue-on-error: true       # no links: the builder failed
+        with:
+          name: installs
+          path: installs
+
+      - name: Add the links to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.version.outputs.tag }}
+        run: |
+          test -s installs/installs.json || { echo "no links to add"; exit 0; }
+          gh release view "$TAG" --json body --jq .body > notes.md
+          {
+            printf '\n### Install on a MOD unit\n\n'
+            printf 'Plug the unit into the computer with the USB cable and open the page of the plugin (builds kept by the [MOD Cloud Builder](https://builder.mod.audio)):\n\n'
+            python3 -c "import json; [print(f'- [{name}]({url})') for name, url in sorted(json.load(open('installs/installs.json')).items())]"
+          } >> notes.md
+          gh release edit "$TAG" --notes-file notes.md
 
   # The documentation site, with the install links, from the main branch only (docs.yml builds it; it deploys to GitHub Pages)
   site:
