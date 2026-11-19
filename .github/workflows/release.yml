@@ -105,7 +105,9 @@ jobs:
   # The install pages of the MOD Cloud Builder (see the top). Its failure never stops the release or the site: they go without the links.
   cloud:
     needs: version
-    if: github.event_name != 'pull_request' && (needs.version.outputs.main == 'true' || (github.event_name == 'workflow_dispatch' && inputs.cloud_build))
+    # TODO: TESTING, so it builds on every push. Restore the line below (main branch, or started by hand) when done:
+    # if: github.event_name != 'pull_request' && (needs.version.outputs.main == 'true' || (github.event_name == 'workflow_dispatch' && inputs.cloud_build))
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -190,7 +192,9 @@ jobs:
   # The documentation site, with the install links, from the main branch only (docs.yml builds it; it deploys to GitHub Pages)
   site:
     needs: [version, cloud]
-    if: ${{ !cancelled() && github.event_name != 'pull_request' && needs.version.outputs.main == 'true' }}
+    # TODO: TESTING, the site is not published for now. Restore the line below when done:
+    # if: ${{ !cancelled() && github.event_name != 'pull_request' && needs.version.outputs.main == 'true' }}
+    if: ${{ needs.version.outputs.main == 'testing-no-site' }}   # never true
     permissions:
       contents: read
       pages: write
