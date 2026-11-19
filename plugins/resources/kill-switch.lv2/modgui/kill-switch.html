@@ -1,0 +1,95 @@
+<div class="mod-pedal kill-switch-base mod-no-shadow">
+    <div mod-role="drag-handle" class="mod-drag-handle"></div>
+
+    <div class="kill-switch is-idle" data-mode="0">
+      <div class="ks-main">
+        <div class="ks-head">
+          <span class="ks-brand"><span class="ks-title">Kill Switch</span><span class="ks-vendor">{{brand}}</span></span>
+          <button type="button" class="ks-chip ks-mono" aria-pressed="false" title="Mono input: the left input feeds both sides">Mono</button>
+          <button type="button" class="ks-chip ks-open" title="Settings: write your own pattern, and assign the controls">Edit</button>
+          <span class="ks-state" aria-live="polite">Off</span>
+        </div>
+
+        <!-- What plays: its name, the buttons that change it and, for each side, its steps (the patterns) or its
+             level along the ending (the endings) -->
+        <div class="ks-display">
+          <div class="ks-pattern">
+            <button type="button" class="ks-step-button ks-prev" aria-label="Previous" title="Previous"><span aria-hidden="true">&#9664;</span></button>
+            <div class="ks-pattern-name" aria-live="polite">Ping-pong 8ths</div>
+            <button type="button" class="ks-step-button ks-next" aria-label="Next" title="Next"><span aria-hidden="true">&#9654;</span></button>
+          </div>
+          <div class="ks-lane" data-side="l"><b aria-hidden="true">L</b><div class="ks-steps" role="img" aria-label="The left side"></div></div>
+          <div class="ks-lane" data-side="r"><b aria-hidden="true">R</b><div class="ks-steps" role="img" aria-label="The right side"></div></div>
+        </div>
+
+        <div class="ks-controls">
+          <div class="ks-control ks-tempo">
+            <span class="ks-label">Tempo</span>
+            <div class="ks-stepper">
+              <button type="button" class="ks-step-button ks-bpm-down" aria-label="Slower" title="Slower"><span aria-hidden="true">&minus;</span></button>
+              <output class="ks-bpm" aria-label="Tempo in beats per minute"><b>120</b> BPM</output>
+              <button type="button" class="ks-step-button ks-bpm-up" aria-label="Faster" title="Faster"><span aria-hidden="true">+</span></button>
+            </div>
+          </div>
+
+          <!-- Patterns: the speed. Endings: how long they last -->
+          <div class="ks-control ks-speed">
+            <span class="ks-label">Speed</span>
+            <div class="ks-segments" role="radiogroup" aria-label="Speed of the pattern">
+              <button type="button" class="ks-segment" role="radio" aria-checked="false" data-speed="0">&frac12;x</button>
+              <button type="button" class="ks-segment" role="radio" aria-checked="true" data-speed="1">1x</button>
+              <button type="button" class="ks-segment" role="radio" aria-checked="false" data-speed="2">2x</button>
+              <button type="button" class="ks-segment" role="radio" aria-checked="false" data-speed="3">4x</button>
+            </div>
+          </div>
+          <div class="ks-control ks-length">
+            <span class="ks-label">Length</span>
+            <div class="ks-stepper">
+              <button type="button" class="ks-step-button ks-length-down" aria-label="Shorter" title="Shorter"><span aria-hidden="true">&minus;</span></button>
+              <output class="ks-length-value" aria-label="Length of the ending in beats"><b>8</b> beats</output>
+              <button type="button" class="ks-step-button ks-length-up" aria-label="Longer" title="Longer"><span aria-hidden="true">+</span></button>
+            </div>
+          </div>
+
+          <div class="ks-control ks-depth">
+            <div class="ks-label"><span>Depth</span><output class="ks-depth-value">100%</output></div>
+            <input type="range" class="ks-slider ks-depth-input" min="0" max="100" step="1" value="100" aria-label="Depth: how much of the signal a cut removes" />
+          </div>
+
+          <div class="ks-control ks-edge">
+            <div class="ks-label"><span>Edge</span><output class="ks-edge-value">1.5 ms</output></div>
+            <input type="range" class="ks-slider ks-edge-input" min="0" max="1000" step="1" value="511" aria-label="Edge: how long a cut takes to open and close" />
+          </div>
+        </div>
+      </div>
+
+      <!-- The footswitch is the Kill port: the effect is on while it is. What is drawn follows the class is-idle of
+           .kill-switch (the effect is off), which the script sets from the port `kill`. A hardware control assigned to Kill
+           is momentary by default (mod:preferMomentaryOnByDefault), so it chops only while it is held -->
+      <div class="ks-pedal">
+        <div class="ks-modes" role="radiogroup" aria-label="What plays">
+          <button type="button" class="ks-mode" role="radio" aria-checked="true" data-mode="0">Patterns</button>
+          <button type="button" class="ks-mode" role="radio" aria-checked="false" data-mode="1">Endings</button>
+        </div>
+        <span class="ks-led" aria-hidden="true"></span>
+        <button type="button" class="ks-foot" aria-pressed="false" aria-label="Kill: chop the signal" title="Kill: chop the signal"><span class="ks-cap" aria-hidden="true"></span></button>
+        <span class="ks-foot-label">Kill</span>
+      </div>
+    </div>
+
+    <div class="mod-pedal-input">
+        {{#effect.ports.audio.input}}
+        <div class="mod-input mod-input-disconnected" title="{{name}}" mod-role="input-audio-port" mod-port-symbol="{{symbol}}">
+            <div class="mod-pedal-input-image"></div>
+        </div>
+        {{/effect.ports.audio.input}}
+    </div>
+
+    <div class="mod-pedal-output">
+        {{#effect.ports.audio.output}}
+        <div class="mod-output mod-output-disconnected" title="{{name}}" mod-role="output-audio-port" mod-port-symbol="{{symbol}}">
+            <div class="mod-pedal-output-image"></div>
+        </div>
+        {{/effect.ports.audio.output}}
+    </div>
+</div>

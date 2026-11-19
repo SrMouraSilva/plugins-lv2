@@ -1,0 +1,33 @@
+{
+  "title": "Kill Switch",
+  "eyebrow": "SrMouraSilva · Plugin manual",
+  "tagline": "Chop your signal in rhythm, a different one in each ear.",
+  "subtitle": "A stereo rhythmic kill-switch effect with 20 patterns and endings for the end of a song, for MOD Dwarf, MOD Duo X and MOD Duo",
+  "badges": [
+    "20 patterns + your own",
+    "Stereo rows",
+    "5 endings",
+    "Momentary footswitch"
+  ],
+  "edition": "User manual · November 2026 edition",
+  "version": "v1.0.26",
+  "hero": "../modgui/screenshot.png",
+  "brand": "#272a31",
+  "brand2": "#0d0e11",
+  "accent": "#b30f2f",
+  "accentDark": "#ff7a8c",
+  "colors": [
+    "#f5f2ea",
+    "#ff3d58"
+  ],
+  "links": [
+    {
+      "label": "Store page",
+      "url": "https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9raWxsLXN3aXRjaA=="
+    },
+    {
+      "label": "Source code",
+      "url": "https://github.com/SrMouraSilva/plugins-lv2"
+    }
+  ]
+}

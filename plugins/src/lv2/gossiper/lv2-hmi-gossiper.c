@@ -14,6 +14,7 @@
 #include "../extension/lv2-hmi.h"
 #include "../../model/gossiper.h"
 #include "lv2-hmi-gossiper.h"
+#include "lv2-gossiper-widgets.h"
 
 
 bool LV2_HMI_Gossiper_is_extension_data_appliable(const char* uri) {
@@ -56,6 +57,17 @@ void assign(Gossiper* this, PortIndex index, LV2_HMI_Addressing addressing) {
             this->notifiers[i].hmi_addressing = addressing;
             break;
         }
+
+        // The widget of the display shows only the footswitches that are in use
+        case FOOTSWITCH_1:
+        case FOOTSWITCH_2:
+        case FOOTSWITCH_3:
+        case FOOTSWITCH_4:
+        case FOOTSWITCH_5:
+        case FOOTSWITCH_6:
+        case FOOTSWITCH_7:
+            LV2_Gossiper_Widgets_set_addressed(this, index - FOOTSWITCH_1, addressing != NULL);
+            break;
 
         default:
             break;

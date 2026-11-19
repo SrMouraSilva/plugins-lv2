@@ -1,0 +1,22 @@
+@prefix modgui: <http://moddevices.com/ns/modgui#> .
+@prefix lv2:    <http://lv2plug.in/ns/lv2core#> .
+
+<http://srmourasilva.github.io/plugins/kill-switch>
+    modgui:gui [
+        modgui:resourcesDirectory <modgui> ;
+        modgui:iconTemplate <modgui/kill-switch.html> ;
+        # Full-screen, touch-friendly settings page, instead of the generic one: the editor of the custom pattern
+        modgui:settingsTemplate <modgui/kill-switch-settings.html> ;
+        modgui:stylesheet <modgui/kill-switch.css> ;
+        modgui:javascript <modgui/kill-switch.js> ;
+        modgui:screenshot <modgui/screenshot.png> ;
+        modgui:thumbnail <modgui/thumbnail.png> ;
+        # The HTML manual (built from docs/manual.md by tools/manual/build_manual_html.py): self-contained, because MOD UI
+        # serves it from /effect/file/documentation, where relative links do not work
+        modgui:documentation <modgui/manual.html> ;
+        modgui:brand "SrMouraSilva" ;
+        modgui:label "Kill Switch" ;
+        modgui:model "boxy-small" ;
+        modgui:panel "1-footswitch" ;
+        modgui:color "#a30d2b" ;
+    ] .

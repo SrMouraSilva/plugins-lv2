@@ -5,11 +5,15 @@
     modgui:gui [
         modgui:resourcesDirectory <modgui> ;
         modgui:iconTemplate <modgui/tetr4-switch.html> ;
+        # Full-screen, touch-friendly settings page, instead of the generic one
+        modgui:settingsTemplate <modgui/tetr4-switch-settings.html> ;
         modgui:stylesheet <modgui/tetr4-switch.css> ;
         modgui:javascript <modgui/tetr4-switch.js> ;
         modgui:screenshot <modgui/screenshot.png> ;
         modgui:thumbnail <modgui/thumbnail.png> ;
-        modgui:documentation <modgui/manual.pdf> ;
+        # The HTML manual (built from docs/manual.md by tools/manual/build_manual_html.py); self-contained, because MOD UI
+        # serves it from /effect/file/documentation, where relative links do not work
+        modgui:documentation <modgui/manual.html> ;
         modgui:brand "SrMouraSilva" ;
         modgui:label "Tetr4 switch" ;
         modgui:model "boxy-small" ;

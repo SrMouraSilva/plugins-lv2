@@ -5,11 +5,26 @@
 include Makefile.mk
 
 TETR4_SWITCH = tetr4-switch
+HEPT7_SWITCH = hept7-switch
 GOSSIPER = gossiper
+KILL_SWITCH = kill-switch
+
+# Tetr4 Switch and Hept7 Switch are the same code base, sized by -DHEPT7_SWITCH (see src/config.h)
+SWITCH_SOURCES = src/utils/utils.c \
+		  src/lv2/controller/lv2-controller.c src/lv2/controller/lv2-hmi-extension.c src/lv2/controller/lv2-widgets.c \
+		  src/model/controller.c \
+		  src/tetr4-switch.c
 
 HEADERS=$(shell find -type f -name '*.h')
 SOURCES=$(shell find -type f -name '*.c')
 OBJECTS=$(shell find -type f -name '*.o')
+
+# --------------------------------------------------------------
+# The extension of the binary that is built. `.so` is what the bundles say (manifest.ttl) and what the MOD units load;
+# the desktop builds (tools/desktop/package.py, for MOD Desktop) build with BINARY_EXT=.dylib (macOS) or .dll (Windows)
+# and write the same extension in the manifest of their copy of the bundle.
+
+BINARY_EXT ?= .so
 
 # --------------------------------------------------------------
 # Installation path
@@ -26,31 +41,40 @@ INSTALL_PATH = /usr/local/lib/lv2
 all: build
 #build: build-gossiper
 #build: build-tetr4-switch
-build: build-gossiper build-tetr4-switch
+build: build-gossiper build-tetr4-switch build-hept7-switch build-kill-switch
 
 build-tetr4-switch:
-	$(CC) src/utils/utils.c \
-		  src/lv2/controller/lv2-controller.c src/lv2/controller/atom-extension.c src/lv2/controller/lv2-hmi-extension.c \
-		  src/model/controller.c \
-		  src/tetr4-switch.c \
-		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(TETR4_SWITCH).lv2/$(TETR4_SWITCH).so
+	$(CC) $(SWITCH_SOURCES) \
+		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(TETR4_SWITCH).lv2/$(TETR4_SWITCH)$(BINARY_EXT)
+
+build-hept7-switch:
+	$(CC) $(SWITCH_SOURCES) -DHEPT7_SWITCH \
+		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(HEPT7_SWITCH).lv2/$(HEPT7_SWITCH)$(BINARY_EXT)
 
 build-gossiper:
 	$(CC) src/utils/utils.c \
-		  src/lv2/gossiper/lv2-gossiper.c src/lv2/gossiper/lv2-hmi-gossiper.c \
+		  src/lv2/gossiper/lv2-gossiper.c src/lv2/gossiper/lv2-hmi-gossiper.c src/lv2/gossiper/lv2-gossiper-widgets.c \
 		  src/model/gossiper.c \
 		  src/gossiper.c \
-		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(GOSSIPER).lv2/$(GOSSIPER).so
+		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(GOSSIPER).lv2/$(GOSSIPER)$(BINARY_EXT)
+
+# Kill Switch shares no code with the others (only the display widgets' headers, src/hmi/): its own file, its widgets, and LV2's core header
+build-kill-switch:
+	$(CC) src/kill-switch.c src/hmi/kill-switch-widgets.c \
+		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(KILL_SWITCH).lv2/$(KILL_SWITCH)$(BINARY_EXT)
 
 # --------------------------------------------------------------
 
 clean:
 	rm -f $(TETR4_SWITCH).lv2/$(TETR4_SWITCH)$(LIB_EXT)
+	rm -f $(HEPT7_SWITCH).lv2/$(HEPT7_SWITCH)$(LIB_EXT)
 	rm -f $(GOSSIPER).lv2/$(GOSSIPER)$(LIB_EXT)
+	rm -f $(KILL_SWITCH).lv2/$(KILL_SWITCH)$(LIB_EXT)
 
 # --------------------------------------------------------------
 
-install: build
+# One target per plugin, so a package of the MOD store can install only its own bundle (the .so is built by build-<plugin>)
+install-tetr4-switch:
 	install -d $(DESTDIR)$(PREFIX)/lib/lv2/$(TETR4_SWITCH).lv2
 
 	install -m 644 resources/$(TETR4_SWITCH).lv2/*.so  $(DESTDIR)$(PREFIX)/lib/lv2/$(TETR4_SWITCH).lv2/
@@ -58,7 +82,15 @@ install: build
 
 	cp -r resources/$(TETR4_SWITCH).lv2/modgui $(DESTDIR)$(PREFIX)/lib/lv2/$(TETR4_SWITCH).lv2/
 
+install-hept7-switch:
+	install -d $(DESTDIR)$(PREFIX)/lib/lv2/$(HEPT7_SWITCH).lv2
 
+	install -m 644 resources/$(HEPT7_SWITCH).lv2/*.so  $(DESTDIR)$(PREFIX)/lib/lv2/$(HEPT7_SWITCH).lv2/
+	install -m 644 resources/$(HEPT7_SWITCH).lv2/*.ttl $(DESTDIR)$(PREFIX)/lib/lv2/$(HEPT7_SWITCH).lv2/
+
+	cp -r resources/$(HEPT7_SWITCH).lv2/modgui $(DESTDIR)$(PREFIX)/lib/lv2/$(HEPT7_SWITCH).lv2/
+
+install-gossiper:
 	install -d $(DESTDIR)$(PREFIX)/lib/lv2/$(GOSSIPER).lv2
 
 	install -m 644 resources/$(GOSSIPER).lv2/*.so  $(DESTDIR)$(PREFIX)/lib/lv2/$(GOSSIPER).lv2/
@@ -66,15 +98,31 @@ install: build
 
 	cp -r resources/$(GOSSIPER).lv2/modgui $(DESTDIR)$(PREFIX)/lib/lv2/$(GOSSIPER).lv2/
 
+install-kill-switch:
+	install -d $(DESTDIR)$(PREFIX)/lib/lv2/$(KILL_SWITCH).lv2
+
+	install -m 644 resources/$(KILL_SWITCH).lv2/*.so  $(DESTDIR)$(PREFIX)/lib/lv2/$(KILL_SWITCH).lv2/
+	install -m 644 resources/$(KILL_SWITCH).lv2/*.ttl $(DESTDIR)$(PREFIX)/lib/lv2/$(KILL_SWITCH).lv2/
+
+	cp -r resources/$(KILL_SWITCH).lv2/modgui $(DESTDIR)$(PREFIX)/lib/lv2/$(KILL_SWITCH).lv2/
+
+# (a sub-make, so that with -j nothing is installed before everything is built)
+install: build
+	$(MAKE) install-tetr4-switch install-hept7-switch install-gossiper install-kill-switch
+
 install-user: build
 	install -d ~/.lv2/
 	cp -r resources/$(TETR4_SWITCH).lv2/ ~/.lv2/$(TETR4_SWITCH).lv2
+	cp -r resources/$(HEPT7_SWITCH).lv2/ ~/.lv2/$(HEPT7_SWITCH).lv2
 	cp -r resources/$(GOSSIPER).lv2/ ~/.lv2/$(GOSSIPER).lv2
+	cp -r resources/$(KILL_SWITCH).lv2/ ~/.lv2/$(KILL_SWITCH).lv2
 
 # --------------------------------------------------------------
 
 uninstall-user:
 	rm -r ~/.lv2/$(TETR4_SWITCH).lv2
+	rm -r ~/.lv2/$(HEPT7_SWITCH).lv2
 	rm -r ~/.lv2/$(GOSSIPER).lv2
+	rm -r ~/.lv2/$(KILL_SWITCH).lv2
 
 # --------------------------------------------------------------

@@ -1,0 +1,75 @@
+<!doctype html>
+<!--
+  Copyright 2021-2026 Paulo Mateus
+  SPDX-License-Identifier: Apache-2.0
+
+  GitHub social preview of the repository (1280 x 640). Render with render.sh.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SrMouraSilva Plugins: social preview</title>
+<style>
+  :root {
+    --bg: #14161b;
+    --ink: #f3f5f8;
+    --muted: #9aa3b2;
+    --gossiper: #ffff67;
+    --tetr4: #7b8cff;
+    --hept7: #2ee6d6;
+    --kill: #ff5a5f;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1280px; height: 640px; overflow: hidden; }
+  body {
+    background:
+      radial-gradient(520px 360px at 1010px 120px, rgba(255, 90, 95, .16), transparent 70%),
+      radial-gradient(520px 360px at 1180px 560px, rgba(46, 230, 214, .14), transparent 70%),
+      radial-gradient(520px 360px at 820px 560px, rgba(91, 151, 255, .14), transparent 70%),
+      radial-gradient(420px 300px at 840px 80px, rgba(255, 255, 103, .10), transparent 70%),
+      var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+    position: relative;
+  }
+  .text {
+    position: absolute; left: 72px; top: 64px; bottom: 64px; width: 590px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .eyebrow {
+    font-size: 22px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 22px;
+  }
+  h1 { font-size: 84px; line-height: 1.0; font-weight: 800; letter-spacing: -.03em; }
+  h1 span { display: block; color: var(--muted); font-weight: 700; }
+  .lead { margin-top: 28px; font-size: 29px; line-height: 1.35; color: #cdd3de; max-width: 520px; }
+  ul { list-style: none; padding: 0; margin-top: 34px; display: grid; grid-template-columns: auto auto; justify-content: start; gap: 14px 44px; }
+  li { display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 600; }
+  li i { width: 14px; height: 14px; border-radius: 50%; background: var(--c); box-shadow: 0 0 14px var(--c); }
+  .grid {
+    position: absolute; right: 72px; top: 64px; width: 500px; height: 512px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
+  }
+  .grid img { width: 236px; height: 236px; display: block; filter: drop-shadow(0 14px 22px rgba(0, 0, 0, .55)); }
+</style>
+</head>
+<body>
+  <div class="text">
+    <div class="eyebrow">LV2 · MOD Dwarf, Duo, Duo X</div>
+    <h1>SrMouraSilva<span>Plugins</span></h1>
+    <p class="lead">Utility plugins with a full pedal face and a touch-first settings page.</p>
+    <ul>
+      <li style="--c: var(--gossiper)"><i></i>Gossiper</li>
+      <li style="--c: var(--kill)"><i></i>Kill Switch</li>
+      <li style="--c: var(--tetr4)"><i></i>Tetr4 Switch</li>
+      <li style="--c: var(--hept7)"><i></i>Hept7 Switch</li>
+    </ul>
+  </div>
+  <div class="grid">
+    <img src="../../plugins/resources/gossiper.lv2/docs/alternative-thumbnail.webp" alt="">
+    <img src="../../plugins/resources/kill-switch.lv2/docs/alternative-thumbnail.webp" alt="">
+    <img src="../../plugins/resources/tetr4-switch.lv2/docs/alternative-thumbnail.webp" alt="">
+    <img src="../../plugins/resources/hept7-switch.lv2/docs/alternative-thumbnail.webp" alt="">
+  </div>
+</body>
+</html>

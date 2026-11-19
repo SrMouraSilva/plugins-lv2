@@ -13,7 +13,9 @@
 @prefix state: <http://lv2plug.in/ns/ext/state#> .
 @prefix patch: <http://lv2plug.in/ns/ext/patch#> .
 @prefix pg:   <http://lv2plug.in/ns/ext/port-groups#> .
+@prefix work: <http://lv2plug.in/ns/ext/worker#> .
 @prefix plug: <http://srmourasilva.github.io/plugins/tetr4-switch#> .
+@prefix ahw:  <https://github.com/sejerpz/alabs-hmi-widgets#> .
 
 plug:preset_label_1
     a lv2:Parameter ;
@@ -54,6 +56,11 @@ plug:group_notifications
     lv2:symbol "notifications" ;
     lv2:name "Notifications" .
 
+plug:group_midi
+    a pg:Group ;
+    lv2:symbol "midi" ;
+    lv2:name "MIDI" .
+
 plug:group_preset_1
     a pg:Group ;
     lv2:symbol "preset_1" ;
@@ -91,13 +98,29 @@ doap:maintainer [
     foaf:mbox <mailto:mateus.moura@hotmail.com> ;
     ];
 
-    lv2:requiredFeature urid:map;
-    lv2:optionalFeature lv2:hardRTCapable, state:loadDefaultState, <http://moddevices.com/ns/hmi#WidgetControl>;
-    lv2:extensionData <http://moddevices.com/ns/hmi#PluginNotification>, state:interface;
+    lv2:requiredFeature urid:map, <http://kx.studio/ns/lv2ext/control-input-port-change-request>;
+    lv2:optionalFeature lv2:hardRTCapable, state:loadDefaultState, <http://moddevices.com/ns/hmi#WidgetControl>, work:schedule, ahw:WidgetDraw;
+    lv2:extensionData <http://moddevices.com/ns/hmi#PluginNotification>, state:interface, work:interface, ahw:WidgetNotification;
+
+    # Widgets for the display of devices with the aLabs HMI widgets extension (MOD Dwarf and Duo X on the Starless images):
+    # optional, a host without it never shows them. Keep the symbols in step with WIDGET_SYMBOLS in the source.
+    ahw:widget
+    [
+        a ahw:Widget ;
+        lv2:symbol "preset" ;
+        lv2:name "Active preset" ;
+        rdfs:comment "The preset that is on: its number and name, and which of the CV outputs it turns on. With room, every preset. Placing it offers to assign Current preset to a control of the device." ;
+        ahw:minWidth 40 ;
+        ahw:minHeight 8 ;
+        ahw:naturalWidth 82 ;
+        ahw:naturalHeight 37 ;
+        ahw:pixelFormat ahw:Mono1 ;
+        ahw:suggestedPorts ( "Preset_combobox" ) ;
+    ] ;
 
     lv2:majorVersion 1 ;
-    lv2:minorVersion 1 ;
-    lv2:microVersion 0 ;
+    lv2:minorVersion 2 ;
+    lv2:microVersion 16 ;
 
 rdfs:comment """
 Tetr4 switch is a loop switcher for CV. Store which of its four CV outputs are on in each of four presets, and change between them with a single footswitch.
@@ -478,6 +501,87 @@ lv2:port
     atom:bufferType atom:Sequence ;
     atom:supports patch:Message ;
     rdfs:comment "Internal port used to send patch:Set messages, such as replying with the current preset labels." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 31 ;
+    lv2:symbol "MIDI_CC_1" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 1" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 20 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 1 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 32 ;
+    lv2:symbol "MIDI_CC_2" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 2" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 21 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 2 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 33 ;
+    lv2:symbol "MIDI_CC_3" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 3" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 22 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 3 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 34 ;
+    lv2:symbol "MIDI_CC_4" ;
+    pg:group plug:group_midi ;
+    lv2:name "CC for output 4" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 23 ;
+    lv2:minimum 0 ;
+    lv2:maximum 127 ;
+    rdfs:comment "MIDI control change number sent for CV output 4 whenever the preset changes: 127 when the output is on in the new preset, 0 when it is off." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 35 ;
+    lv2:symbol "MIDI_channel" ;
+    pg:group plug:group_midi ;
+    lv2:name "MIDI channel" ;
+    lv2:portProperty lv2:integer ;
+    lv2:default 1 ;
+    lv2:minimum 1 ;
+    lv2:maximum 16 ;
+    rdfs:comment "MIDI channel (1 to 16) of the control changes." ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 36 ;
+    lv2:symbol "MIDI_changes_only" ;
+    pg:group plug:group_midi ;
+    lv2:name "MIDI changes only" ;
+    lv2:portProperty lv2:integer, lv2:toggled ;
+    lv2:default 1 ;
+    lv2:minimum 0 ;
+    lv2:maximum 1 ;
+    rdfs:comment "On: when the preset changes, send only the control changes whose value differs from the last one sent. Off: send one for every output." ;
+],
+[
+    a lv2:OutputPort, atom:AtomPort ;
+    lv2:index 37 ;
+    lv2:symbol "MIDI_out" ;
+    lv2:name "MIDI out" ;
+    atom:bufferType atom:Sequence ;
+    atom:supports midi:MidiEvent ;
+    rdfs:comment "Sends a MIDI control change for each CV output when the preset changes, so the outputs can also drive MIDI gear." ;
 ] ;
 
 patch:writable plug:preset_label_1 ,

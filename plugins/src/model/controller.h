@@ -8,137 +8,131 @@
 #define	CONTROLLER_H
 
 #include <stdbool.h>
+#include <stdint.h>
 #include "../config.h"
 
 #include "../lv2/controller/lv2-controller.h"
+
+/** The three buttons of Hept7 Switch, as bits of Controller.button_mask */
+#define BUTTON_CURRENT  (1u << 0)
+#define BUTTON_NEXT     (1u << 1)
+#define BUTTON_PREVIOUS (1u << 2)
 
 /** Tension when is on */
 #define MAX_TENSION 10 // volts
 
 
 typedef struct {
-    /** Preset changed at this cycle */
+    // Ports
+    float* output_cvs[TOTAL_OUTPUTS];
+    float* preset_selectors[TOTAL_PRESETS];
+    /**
+     * Tetr4 Switch: the enumeration "Current preset". Hept7 Switch: the button of that name, which loops forward
+     * through the cycle (the symbol is the same, its meaning is not)
+     */
+    float* current_preset_index;
+    /** Hept7 Switch only (NULL on Tetr4 Switch): the buttons that go to the next and to the previous preset in the cycle */
+    float* next_preset_button;
+    float* previous_preset_button;
+    float* preset_outputs[TOTAL_PRESETS][TOTAL_OUTPUTS];
+    /** NULL when the plugin has no such port (Tetr4 Switch): the preset is in the cycle */
+    float* presets_in_cycle[TOTAL_PRESETS];
+    /**
+     * Output (NULL when the plugin has no such port): the active preset. Unlike the selectors and "Current preset",
+     * the host reports it whenever it changes, whoever changed it, which makes it what the interface follows
+     */
+    float* active_preset_output;
+
+    /**
+     * MIDI (NULL when the host does not connect these ports, in which case nothing is sent). The control
+     * change number of each CV output, the channel (0-15) and whether to leave out the ones that did not change
+     */
+    float* midi_cc[TOTAL_OUTPUTS];
+    float* midi_channel;
+    float* midi_changes_only;
+
+    /** The values (0 or 127) last sent, for "changes only" */
+    uint8_t midi_last_sent[TOTAL_OUTPUTS];
+
+    /**
+     * Fixed size, so changing a label (a patch:Set, applied in run()) allocates nothing
+     */
+    char preset_labels[TOTAL_PRESETS][PRESET_LABEL_MAX_SIZE];
+
+    /** Active preset (0-based) */
+    unsigned int current_preset;
+
+    /** Preset that was active before the last change (0-based) */
+    unsigned int previous_preset;
+
+    /** A different preset became active on this cycle */
     bool preset_changed;
 
-    /** Preset activated on previous cycle */
-    unsigned int previous_preset_mask;
+    /**
+     * The selectors or the combobox moved on this cycle (from the host, or because the plugin asked for it), so they
+     * must be checked against the active preset. A momentary footswitch being released is one of these: the selector
+     * of the active preset goes off and has to be turned on again, but the preset did not change
+     */
+    bool inputs_changed;
 
-    unsigned int current_preset_mask;    
-} InternalState;
+    /**
+     * The selectors and the combobox as they were read on this cycle. The next cycle compares with them: a preset is
+     * chosen by a selector turning on or by the combobox moving, not by their level
+     */
+    unsigned int selector_mask;
+    unsigned int combobox;
 
+    /**
+     * Something the widgets show, other than the active preset, changed (a preset's name, by a patch:Set or a restored
+     * state; the cycle, which changes where "Next preset" and "Previous preset" lead) and the display has not been told
+     * yet: the HMI sends the labels again. Set by the model, cleared by the HMI code
+     */
+    bool labels_changed;
 
+    /** run() has not run yet: the first cycle reads the pedalboard being loaded */
+    bool started;
 
-typedef struct {
-    // Attributes
-    float* output_cvs[TOTAL_PRESETS];
-    float* preset_selectors[TOTAL_PRESETS];
+    /**
+     * Presets that "Current preset" goes through (bit N: preset N+1), read on every cycle. 0 when the plugin has no
+     * "In the cycle" ports (Tetr4 Switch): "Current preset" then simply selects the preset it names
+     * (see Controller_has_cycle). When every one of those ports is off, every preset is in the cycle
+     */
+    unsigned int cycle_mask;
 
-    float* current_preset_index;
+    /**
+     * Hept7 Switch: "Current preset", "Next preset" and "Previous preset" are buttons (BUTTON_* bits). The ones that
+     * were on when the previous cycle was read: a press is a button going on, not being on
+     */
+    unsigned int button_mask;
 
-    float* preset_outputs[TOTAL_PRESETS][TOTAL_OUTPUTS];
+    /** run() has run at least once and the cycle was read then: a change of the cycle after that is news */
+    bool started_once;
 
-    float* inverters[TOTAL_OUTPUTS];
-
-    char* preset_labels[TOTAL_PRESETS];
-
-    InternalState internal_state;
+    /** The combobox was moved from outside on this cycle (Tetr4 Switch): the device has drawn its own text, which the HMI draws over */
+    bool combobox_moved;
 
     LV2_Controller* lv2;
-
-    /**
-     * @param void * Controller
-     * 
-     * @return Is preset changed on the current cycle?
-     */
-    bool (* is_preset_changed)(void* self);
-
-    /**
-     * Calculate the index of previous preset
-     * 
-     * If self->preset_changed == true, previous preset != current preset
-     * else previous preset == current preset
-     * 
-     * Note: The first corresponds to '0' (zero)
-     * 
-     * @param void * Controller
-     * 
-     * @return Index of previous preset
-     */
-    unsigned int (* get_index_previous_preset)(void* self);
-
-    /**
-     * Calculate the index of current preset
-     * Note: The first corresponds to '0' (zero)
-     * 
-     * @param void * Controller
-     * 
-     * @return Index of current preset
-     */
-    unsigned int (* get_index_current_preset)(void* self);
-
-    /**
-     * Get the current preset as the masked way:
-     *   The least significative bit corresponds to the first plugin
-     *   The seconds least significative bit corresponds to the second plugin
-     *   and so on
-     * 
-     * @param void * Controller
-     * 
-     * @return Current preset as the masked way
-     */
-    unsigned int (* get_current_preset)(void* self);
-
-    /**
-     * Get the output signal as the masked way:
-     *   The least significative bit corresponds to the first output signal
-     *   The seconds least significative bit corresponds to the second output signal
-     *   and so on
-     * 
-     * The inverter state is unique: doesn't changes with the preset states
-     * 
-     * @param void * Controller
-     * 
-     * @return Current preset as the masked way
-     */
-    unsigned int (* get_output_signal)(void* self);
-
-    /**
-     * Get the label of the specified preset or NULL if send a invalid preset
-     * 
-     * @param void * Controller
-     * @param index: Index of the preset
-     * 
-     * @return Label of the specified preset or NULL if index is invalid
-     */
-    //char* (* get_preset_label)(void* self, unsigned int index);
-
-    /**
-     * Rename the label of the specified preset
-     * 
-     * @param void * Controller
-     * @param index Index of the patch where will be renamed
-     * @param new_label New label with max size PRESET_LABEL_MAX_SIZE-1
-     * 
-     * @return Current preset as the masked way
-     */
-    //char* (* set_preset_label)(void* self, unsigned int index, char* new_label);
-
-    /**
-     * Calculate necessary internal operations
-     * and update the output values
-     * 
-     * @param void * Controller
-     * 
-     * Run just once at cycle
-     */
-    void (* run)(void* self, uint32_t n_samples);
-
 } Controller;
 
 
-extern Controller* Controller_instantiate();
+extern Controller* Controller_instantiate(void);
 extern void Controller_cleanup(Controller* self);
 extern const char* Controller_get_preset_label(const Controller* self, unsigned int index);
 extern bool Controller_set_preset_label(Controller* self, unsigned int index, const char* new_label);
+
+/**
+ * Read the selectors and the combobox, choose the active preset and write the CV outputs.
+ * Run just once per cycle.
+ */
+extern void Controller_run(Controller* self, uint32_t n_samples);
+
+/**
+ * Hept7 Switch (it has the "In the cycle" ports): "Current preset", "Next preset" and "Previous preset" are buttons that
+ * step through the presets that are in the cycle, from the active preset
+ */
+extern bool Controller_has_cycle(const Controller* self);
+
+/** The preset a step of @p direction (+1: next, -1: previous) from the active preset leads to, in the cycle */
+extern unsigned int Controller_cycle_target(const Controller* self, int direction);
 
 #endif

@@ -14,6 +14,7 @@
 @prefix patch: <http://lv2plug.in/ns/ext/patch#> .
 @prefix pg:   <http://lv2plug.in/ns/ext/port-groups#> .
 @prefix plug: <http://srmourasilva.github.io/plugins/gossiper#> .
+@prefix ahw:  <https://github.com/sejerpz/alabs-hmi-widgets#> .
 
 plug:footswitch_label_1
     a lv2:Parameter ;
@@ -108,12 +109,40 @@ doap:maintainer [
     ];
 
     lv2:requiredFeature urid:map;
-    lv2:optionalFeature lv2:hardRTCapable, state:loadDefaultState, <http://moddevices.com/ns/hmi#WidgetControl>;
-    lv2:extensionData <http://moddevices.com/ns/hmi#PluginNotification>, state:interface;
+    lv2:optionalFeature lv2:hardRTCapable, state:loadDefaultState, <http://moddevices.com/ns/hmi#WidgetControl>, ahw:WidgetDraw;
+    lv2:extensionData <http://moddevices.com/ns/hmi#PluginNotification>, state:interface, ahw:WidgetNotification;
+
+    # Widgets for the display of devices with the aLabs HMI widgets extension (MOD Dwarf and Duo X on the Starless images):
+    # optional, a host without it never shows them. Keep the symbols in step with WIDGET_SYMBOLS in the source.
+    ahw:widget
+    [
+        a ahw:Widget ;
+        lv2:symbol "footswitches" ;
+        lv2:name "Footswitches" ;
+        rdfs:comment "Which of the seven footswitches are on, and the name of the last one that changed. Placing it offers to assign the footswitches to controls of the device." ;
+        ahw:minWidth 40 ;
+        ahw:minHeight 8 ;
+        ahw:naturalWidth 82 ;
+        ahw:naturalHeight 37 ;
+        ahw:pixelFormat ahw:Mono1 ;
+        ahw:suggestedPorts ( "Footswitch_1" "Footswitch_2" "Footswitch_3" "Footswitch_4" "Footswitch_5" "Footswitch_6" "Footswitch_7" ) ;
+    ],
+    [
+        a ahw:Widget ;
+        lv2:symbol "potentiometers" ;
+        lv2:name "Potentiometers" ;
+        rdfs:comment "The four potentiometers as bars with their value. Placing it offers to assign them to knobs of the device." ;
+        ahw:minWidth 40 ;
+        ahw:minHeight 8 ;
+        ahw:naturalWidth 82 ;
+        ahw:naturalHeight 37 ;
+        ahw:pixelFormat ahw:Mono1 ;
+        ahw:suggestedPorts ( "Potentiometer_1" "Potentiometer_2" "Potentiometer_3" "Potentiometer_4" ) ;
+    ] ;
 
     lv2:majorVersion 1 ;
     lv2:minorVersion 1 ;
-    lv2:microVersion 0 ;
+    lv2:microVersion 19 ;
 
 rdfs:comment """
 Gossiper shows a notification when a button is turned on or turned off.
@@ -481,6 +510,90 @@ lv2:port
     lv2:name "Events Out" ;
     atom:bufferType atom:Sequence ;
     atom:supports patch:Message ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 36 ;
+    lv2:symbol "footswitch_in_use_1" ;
+    pg:group plug:group_footswitches ;
+    lv2:name "Footswitch 1 in use" ;
+    rdfs:comment "1 when Footswitch 1 is assigned to a control: the display widget then shows it (with none marked it shows all seven). The settings page sets it by itself as you assign and unassign; it is not meant to be assigned to a control. Set it yourself (API, saved state) when the controller is not one the page sees." ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 37 ;
+    lv2:symbol "footswitch_in_use_2" ;
+    pg:group plug:group_footswitches ;
+    lv2:name "Footswitch 2 in use" ;
+    rdfs:comment "1 when Footswitch 2 is assigned to a control: the display widget then shows it (with none marked it shows all seven). The settings page sets it by itself as you assign and unassign; it is not meant to be assigned to a control. Set it yourself (API, saved state) when the controller is not one the page sees." ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 38 ;
+    lv2:symbol "footswitch_in_use_3" ;
+    pg:group plug:group_footswitches ;
+    lv2:name "Footswitch 3 in use" ;
+    rdfs:comment "1 when Footswitch 3 is assigned to a control: the display widget then shows it (with none marked it shows all seven). The settings page sets it by itself as you assign and unassign; it is not meant to be assigned to a control. Set it yourself (API, saved state) when the controller is not one the page sees." ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 39 ;
+    lv2:symbol "footswitch_in_use_4" ;
+    pg:group plug:group_footswitches ;
+    lv2:name "Footswitch 4 in use" ;
+    rdfs:comment "1 when Footswitch 4 is assigned to a control: the display widget then shows it (with none marked it shows all seven). The settings page sets it by itself as you assign and unassign; it is not meant to be assigned to a control. Set it yourself (API, saved state) when the controller is not one the page sees." ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 40 ;
+    lv2:symbol "footswitch_in_use_5" ;
+    pg:group plug:group_footswitches ;
+    lv2:name "Footswitch 5 in use" ;
+    rdfs:comment "1 when Footswitch 5 is assigned to a control: the display widget then shows it (with none marked it shows all seven). The settings page sets it by itself as you assign and unassign; it is not meant to be assigned to a control. Set it yourself (API, saved state) when the controller is not one the page sees." ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 41 ;
+    lv2:symbol "footswitch_in_use_6" ;
+    pg:group plug:group_footswitches ;
+    lv2:name "Footswitch 6 in use" ;
+    rdfs:comment "1 when Footswitch 6 is assigned to a control: the display widget then shows it (with none marked it shows all seven). The settings page sets it by itself as you assign and unassign; it is not meant to be assigned to a control. Set it yourself (API, saved state) when the controller is not one the page sees." ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:ControlPort ;
+    lv2:index 42 ;
+    lv2:symbol "footswitch_in_use_7" ;
+    pg:group plug:group_footswitches ;
+    lv2:name "Footswitch 7 in use" ;
+    rdfs:comment "1 when Footswitch 7 is assigned to a control: the display widget then shows it (with none marked it shows all seven). The settings page sets it by itself as you assign and unassign; it is not meant to be assigned to a control. Set it yourself (API, saved state) when the controller is not one the page sees." ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1 ;
+    lv2:portProperty lv2:toggled;
 ]
 ;
 

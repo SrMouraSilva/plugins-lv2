@@ -1,0 +1,24 @@
+@prefix modgui: <http://moddevices.com/ns/modgui#> .
+@prefix lv2:    <http://lv2plug.in/ns/lv2core#> .
+
+<http://srmourasilva.github.io/plugins/hept7-switch>
+    modgui:gui [
+        modgui:resourcesDirectory <modgui> ;
+        modgui:iconTemplate <modgui/hept7-switch.html> ;
+        # Full-screen, touch-friendly settings page, instead of the generic one
+        modgui:settingsTemplate <modgui/hept7-switch-settings.html> ;
+        modgui:stylesheet <modgui/hept7-switch.css> ;
+        modgui:javascript <modgui/hept7-switch.js> ;
+        modgui:screenshot <modgui/screenshot.png> ;
+        modgui:thumbnail <modgui/thumbnail.png> ;
+        # The HTML manual (built from docs/manual.md by tools/manual/build_manual_html.py): self-contained, because MOD UI
+        # serves it from /effect/file/documentation, where relative links do not work
+        modgui:documentation <modgui/manual.html> ;
+        modgui:brand "SrMouraSilva" ;
+        modgui:label "Hept7 switch" ;
+        modgui:model "boxy-small" ;
+        modgui:panel "1-footswitch" ;
+        modgui:color "#3fbac4" ;
+        # MOD UI reports this output to the javascript whenever it changes: it is what the display follows
+        modgui:monitoredOutputs [ lv2:symbol "Active_preset" ] ;
+    ] .

@@ -1,0 +1,269 @@
+/* Copyright 2021-2026 Paulo Mateus -- SPDX-License-Identifier: Apache-2.0
+
+   What MOD UI puts around a plugin, for the interactive manual (see docs/interactive-manuals.md): the pedalboard behind the
+   icon, the gear above it, the jacks at its sides (MOD UI's own pictures) and the window of the settings page. The stylesheet of the
+   plugin itself is loaded after this one, from the plugin's own bundle. */
+
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body { background: #14161d; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+
+/* ---------------------------------------------------------------- the pedalboard */
+.ix-board {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, .07) 1px, transparent 1.4px) 0 0 / 24px 24px,
+    radial-gradient(80% 90% at 50% 45%, #1d2030, #101219);
+}
+.ix-stage { position: absolute; left: 50%; top: 50%; transform-origin: 0 0; }
+
+/* A pedal: the icon of the plugin, with its jacks outside the body (as MOD UI lays them out) */
+.mod-pedal { position: relative; display: inline-block; z-index: 100; }
+.mod-pedal .mod-drag-handle { position: absolute; inset: 0; z-index: 20; cursor: default; }
+.mod-pedal .mod-pedal-input,
+.mod-pedal .mod-pedal-output { position: absolute; z-index: 30; width: 87px; }
+.mod-pedal .mod-pedal-input { left: -87px; top: 106px; }
+.mod-pedal .mod-pedal-output { right: -87px; top: 106px; }
+.mod-pedal .mod-pedal-output .mod-output,
+.mod-pedal .mod-pedal-input .mod-input { position: relative; height: 56px; margin-bottom: 13px; }
+
+/* The gear above the icon: MOD UI's "settings" action (the gear is the Material Design icon, Apache-2.0) */
+.mod-pedal .mod-actions { position: absolute; left: 0; right: 0; top: -38px; height: 32px; z-index: 40; display: flex; justify-content: center; }
+.mod-pedal .mod-actions .mod-settings {
+  position: relative;
+  width: 44px;
+  height: 32px;
+  cursor: pointer;
+  color: #8b8f9f;
+  border-radius: 10px;
+  transition: color .15s, background-color .15s;
+}
+.mod-pedal .mod-actions .mod-settings::before {
+  content: "";
+  position: absolute;
+  inset: 3px 10px;
+  background: currentColor;
+  -webkit-mask: var(--ix-gear) center / contain no-repeat;
+  mask: var(--ix-gear) center / contain no-repeat;
+}
+.mod-pedal .mod-actions .mod-settings:hover { color: #e6e8f2; background: rgba(255, 255, 255, .06); }
+:root {
+  --ix-gear: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z'/></svg>");
+}
+
+/* The jacks, with the pictures MOD UI uses (vendor/mod-ui, inlined by interactive.py as @name) laid out as its dashboard does.
+   The plug (.mod-output-jack) is the end of a cable that is not connected yet */
+.mod-pedal .mod-pedal-input { left: -88px; width: 88px; }
+.mod-pedal .mod-pedal-output { right: -87px; }
+.mod-pedal .mod-pedal-input .mod-input, .mod-pedal .mod-pedal-output .mod-output { position: relative; height: 56px; margin-bottom: 13px; background-repeat: no-repeat; z-index: 90; }
+.mod-pedal .mod-pedal-input .mod-midi-input { right: -12px; }
+.mod-pedal .mod-pedal-input .mod-cv-input { right: -8px; }
+.mod-audio-input { background-image: url(@audio-input); width: 88px; background-position: 50% 100%; }
+.mod-midi-input { background-image: url(@midi-input); width: 76px; background-position: 50% 100%; }
+.mod-cv-input { background-image: url(@cv-input); width: 80px; background-position: 50% 100%; }
+.mod-audio-output { background-image: url(@audio-output); width: 87px; }
+.mod-midi-output { background-image: url(@midi-output); width: 78px; }
+.mod-cv-output { background-image: url(@cv-output); width: 80px; }
+.mod-output .mod-output-jack { position: absolute; left: 0; top: 0; height: 56px; background-repeat: no-repeat; background-position: 0 0; }
+.mod-audio-output .mod-output-jack { background-image: url(@audio-jack-nconnect); width: 128px; }
+.mod-midi-output .mod-output-jack { background-image: url(@midi-jack-nconnect); width: 78px; }
+.mod-cv-output .mod-output-jack { background-image: url(@cv-jack-nconnect); width: 80px; }
+.mod-pedal-output-image, .mod-pedal-input-image { display: none; }
+
+/* The voltage of a CV output (written by the manual beside the jack: MOD UI does not draw it) */
+.ix-volt {
+  position: absolute;
+  left: 78px;
+  top: 14px;
+  box-sizing: border-box;
+  min-width: 54px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font: 700 13px/16px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  text-align: center;
+  color: #8f95b3;
+  background: #1a1d2b;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14);
+  pointer-events: none;
+  transition: background-color .2s, color .2s;
+}
+.ix-volt.is-on { color: #06280f; background: #5ee38a; box-shadow: 0 0 12px rgba(94, 227, 138, .45); }
+
+/* The messages of the MIDI out, in the order the plugin sends them (written by the manual beside the MIDI jack, like the voltages) */
+.ix-midi {
+  position: absolute;
+  left: 78px;
+  top: 14px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 136px;
+  padding: 7px 9px 8px;
+  border-radius: 8px;
+  font: 600 11.5px/15px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color: #7f86a6;
+  background: #1a1d2b;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14);
+  pointer-events: none;
+}
+.ix-midi-rows { display: flex; flex: 1; flex-direction: column; justify-content: flex-start; min-height: 0; overflow: hidden; }
+.ix-midi b { margin-bottom: 3px; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: #aab1d6; }
+.ix-midi span { white-space: nowrap; }
+.ix-midi .is-title { margin-top: 3px; color: #6e7599; }
+.ix-midi .is-new { color: #dfe3ff; }
+.ix-midi .is-title.is-new { color: #7cd6ff; }
+.ix-midi .is-none { font-style: italic; white-space: normal; }
+
+/* The external controller the manual draws under a plugin that only shows what a control did from outside */
+.ix-controller {
+  position: absolute;
+  left: 0;
+  box-sizing: border-box;
+  padding: 12px 18px 16px;
+  border-radius: 16px;
+  color: #cfd3ea;
+  background: #171a26;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14), 0 12px 30px rgba(0, 0, 0, .4);
+}
+.ix-ctl-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0 0 10px; font-size: 12px; }
+.ix-ctl-title b { letter-spacing: .12em; text-transform: uppercase; color: #aab1d6; }
+.ix-ctl-title small { color: #7f86a6; }
+.ix-ctl-buttons { display: flex; justify-content: space-between; gap: 8px; }
+.ix-ctl-button {
+  flex: 1 1 0;
+  max-width: 76px;
+  min-height: 46px;
+  border: 0;
+  border-radius: 50%/48%;
+  font: 800 17px/1 system-ui, sans-serif;
+  color: #8f95b3;
+  background: #232738;
+  box-shadow: inset 0 0 0 2px #2f3550, 0 3px 0 #0e1019;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.ix-ctl-button.is-on { color: #2a1d00; background: #ffc22e; box-shadow: inset 0 0 0 2px #ffdf8a, 0 0 16px rgba(255, 194, 46, .5), 0 3px 0 #8a6200; }
+.ix-ctl-knobs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px 18px; margin-top: 14px; }
+.ix-ctl-knob { display: flex; align-items: center; gap: 10px; font: 800 12px/1 system-ui, sans-serif; color: #aab1d6; }
+.ix-ctl-knob input { flex: 1; min-width: 0; min-height: 44px; margin: 0; accent-color: #ffc22e; cursor: pointer; touch-action: manipulation; }
+
+/* The buttons of the saved presets: MOD UI draws their icons from its own stylesheet */
+.mod-presets .btn { background-repeat: no-repeat; background-position: center center; }
+.mod-presets .btn.preset-btn-save { background-image: url(@save); }
+.mod-presets .btn.preset-btn-save-as { background-image: url(@save_as); }
+.mod-presets .btn.preset-btn-delete { background-image: url(@delete); }
+.btn.preset-btn-rename::after { content: "REN"; }
+
+/* ---------------------------------------------------------------- the window of the settings page */
+.ix-window {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(17, 17, 17, .92);
+}
+.ix-window[hidden], .ix-board[hidden] { display: none; }
+.ix-window > .mod-settings { position: absolute; inset: 0; }
+
+/* ---------------------------------------------------------------- what the manual draws on top (never part of the plugin) */
+.ix-overlay { position: fixed; inset: 0; z-index: 2147483000; pointer-events: none; }
+
+/* The part being explained */
+.ix-ring {
+  position: absolute;
+  border-radius: 12px;
+  outline: 3px solid #ffc22e;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 7px rgba(255, 194, 46, .22), 0 0 24px rgba(255, 194, 46, .35);
+  transition: left .2s, top .2s, width .2s, height .2s, opacity .2s;
+  opacity: 0;
+}
+.ix-ring.is-on { opacity: 1; animation: ix-pulse 1.6s ease-in-out infinite; }
+@keyframes ix-pulse { 50% { box-shadow: 0 0 0 11px rgba(255, 194, 46, .1), 0 0 28px rgba(255, 194, 46, .4); } }
+
+/* "Show areas": a dashed outline on everything that can be tapped, and a numbered pin on the first one of each kind */
+.ix-spot { position: absolute; border-radius: 10px; border: 2px dashed rgba(124, 214, 255, .75); background: rgba(124, 214, 255, .07); }
+.ix-pin {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  border-radius: 50%;
+  font: 800 12px/1 system-ui, sans-serif;
+  color: #08203a;
+  background: #7cd6ff;
+  box-shadow: 0 0 0 2px #08203a, 0 2px 6px rgba(0, 0, 0, .5);
+}
+
+/* The finger: a semi-transparent circle that glides to what is tapped, shrinks when it presses and sends out a ripple */
+.ix-finger {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .55);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, .9), 0 3px 12px rgba(0, 0, 0, .5);
+  opacity: 0;
+  transform: translate(var(--x, 50%), var(--y, 50%)) scale(1);
+  transition: transform var(--glide, .7s) cubic-bezier(.45, .05, .25, 1), opacity .25s;
+}
+.ix-finger.is-on { opacity: 1; }
+.ix-finger.is-down { transition: transform .1s ease-out, opacity .25s; transform: translate(var(--x), var(--y)) scale(.78); }
+.ix-ripple {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, .9);
+  animation: ix-ripple .55s ease-out forwards;
+}
+@keyframes ix-ripple { from { opacity: .9; transform: translate(var(--x), var(--y)) scale(.7); } to { opacity: 0; transform: translate(var(--x), var(--y)) scale(2.1); } }
+
+/* A target that is being pressed by the finger (the :active of a real touch cannot be set from a script) */
+.ix-pressed { transform: translateY(1px) scale(.97) !important; transition: transform .1s !important; }
+
+/* MOD UI's dialog for assigning a control, simplified: the manual only says what it is for */
+.ix-dialog-shade { position: fixed; inset: 0; z-index: 2000; display: grid; place-items: center; padding: 16px; background: rgba(0, 0, 0, .55); }
+.ix-dialog-shade[hidden] { display: none; }
+.ix-dialog {
+  box-sizing: border-box;
+  width: min(380px, 100%);
+  padding: 18px 20px 16px;
+  border-radius: 16px;
+  color: #eceef7;
+  background: #222534;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .6), inset 0 0 0 1px rgba(255, 255, 255, .1);
+}
+.ix-dialog b { display: block; font-size: 15px; letter-spacing: .02em; }
+.ix-dialog small { display: block; margin-top: 2px; font-size: 11.5px; color: #9aa0bd; }
+.ix-dialog p { margin: 12px 0 14px; font-size: 13.5px; line-height: 1.5; color: #c9cde2; }
+.ix-dialog .ix-fake { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.ix-dialog .ix-fake span { padding: 9px 10px; border-radius: 10px; font-size: 12.5px; text-align: center; background: #151826; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1); }
+.ix-dialog .ix-fake span.is-pick { color: #08203a; font-weight: 700; background: #7cd6ff; box-shadow: none; }
+.ix-dialog .ix-buttons { display: flex; justify-content: flex-end; gap: 8px; }
+.ix-dialog button {
+  min-width: 88px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  font: 700 14px system-ui, sans-serif;
+  color: #eceef7;
+  background: #343850;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.ix-dialog button.ix-ok { color: #08203a; background: #7cd6ff; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ix-finger, .ix-ring { transition: none; }
+  .ix-ring.is-on { animation: none; }
+}

@@ -1,0 +1,142 @@
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix pset: <http://lv2plug.in/ns/ext/presets#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://srmourasilva.github.io/plugins/kill-switch>
+    a lv2:Plugin , lv2:GatePlugin ;
+    lv2:binary <kill-switch.so> ;
+    rdfs:seeAlso <kill-switch.ttl> ,
+                 <modgui.ttl> ;
+    lv2:optionalFeature lv2:hardRTCapable .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-killing-in-the-name-solo-chop>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Killing in the Name - solo chop" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-bulls-on-parade-toggle-solo>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Bulls on Parade - toggle solo" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-creep-pre-chorus-chunk>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Creep - pre-chorus chunk" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-buckethead-machine-gun-burst>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Buckethead - machine-gun burst" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-chop-8ths>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Chop 8ths" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-chop-16ths>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Chop 16ths" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-triplet-chop>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Triplet chop" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-machine-gun>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Machine gun" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-syncopated-3-3-2>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Syncopated 3-3-2" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-gallop>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Gallop" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-soft-chop-half-depth>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Soft chop (half depth)" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-ping-pong-8ths>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Ping-pong 8ths" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-ping-pong-16ths>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Ping-pong 16ths" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-half-deaf-left>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Half deaf: left" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-half-deaf-right>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Half deaf: right" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-seesaw-swell>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Seesaw swell" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-stagger>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Stagger" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-bouncing-ball>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Bouncing ball" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-helicopter-landing>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Helicopter landing" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-stutter-out>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Stutter out" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-side-fade>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Side fade" ;
+    rdfs:seeAlso <presets.ttl> .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-ping-pong-out>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Ping-pong out" ;
+    rdfs:seeAlso <presets.ttl> .

@@ -14,7 +14,7 @@ static bool is_valid_label_char(char c);
 
 
 bool is_zero(float a) {
-    return fabs(a) <= 0.000001f;
+    return fabsf(a) <= 0.000001f;
 }
 
 unsigned int make_mask(float* vector[], unsigned int size) {
@@ -28,19 +28,8 @@ unsigned int make_mask(float* vector[], unsigned int size) {
     return mask;
 }
 
-unsigned int highest_on_bit(unsigned int number) {
-    return log2(number & -number);
-}
-
-
-// Based on https://stackoverflow.com/a/13361077/1524997
-char* integer_to_string(unsigned int number) {
-    //int len = number==0 ? 1 : floor(log10l(labs(number)))+1;
-    int len = number==0 ? 1 : floor(log10l(number))+1;
-
-    char    *buf = calloc(sizeof(char), len+1); // +1 for null
-    snprintf(buf, len+1, "%d", number);
-    return   buf;
+unsigned int lowest_on_bit(unsigned int number) {
+    return number == 0 ? 0 : (unsigned int) __builtin_ctz(number);
 }
 
 char* duplicate_string(const char* source) {
@@ -68,26 +57,35 @@ static bool is_valid_label_char(char c) {
         || c == ' ';
 }
 
-char* sanitize_label(const char* source, size_t max_length) {
+void sanitize_label_to(char* destination, const char* source, size_t max_length) {
     size_t length = strnlen(source, max_length);
-    char* sanitized = (char*) malloc(length + 1);
+
+    for (size_t i = 0; i < length; i++) {
+        destination[i] = is_valid_label_char(source[i]) ? source[i] : '_';
+    }
+
+    destination[length] = '\0';
+}
+
+char* sanitize_label(const char* source, size_t max_length) {
+    char* sanitized = (char*) malloc(strnlen(source, max_length) + 1);
 
     if (sanitized == NULL) {
         return NULL;
     }
 
-    for (size_t i = 0; i < length; i++) {
-        sanitized[i] = is_valid_label_char(source[i]) ? source[i] : '_';
-    }
-
-    sanitized[length] = '\0';
+    sanitize_label_to(sanitized, source, max_length);
 
     return sanitized;
 }
 
+void format_default_label(char* destination, size_t size, const char* prefix, unsigned int index) {
+    snprintf(destination, size, "%s %u", prefix, index + 1);
+}
+
 char* make_default_label(const char* prefix, unsigned int index) {
     char label[32];
-    snprintf(label, sizeof(label), "%s %u", prefix, index + 1);
+    format_default_label(label, sizeof(label), prefix, index);
 
     return duplicate_string(label);
 }

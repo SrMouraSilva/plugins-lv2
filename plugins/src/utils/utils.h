@@ -7,6 +7,9 @@
 #ifndef UTILS_H
 #define	UTILS_H
 
+#include <stdbool.h>
+#include <stddef.h>
+
 
 /**
  * @return is @param a (sufficient) equals to zero?
@@ -26,22 +29,12 @@ extern bool is_zero(float a);
 extern unsigned int make_mask(float* vector[], unsigned int size);
 
 /**
- * Returns the bit with the highest significative bit on
- * 
- * @param number 
- * @return unsigned int 
- */
-extern unsigned int highest_on_bit(unsigned int number);
-
-/**
- * Covert integer into string.
- * Remember to free it!
+ * Position of the least significant bit that is on (0 for the first bit)
  *
- * @param number that will be converted into string
- *
- * @return string generated
+ * @param number bits to look at
+ * @return position of its lowest bit on, or 0 when no bit is on
  */
-extern char* integer_to_string(unsigned int number);
+extern unsigned int lowest_on_bit(unsigned int number);
 
 /**
  * Duplicate a NUL-terminated string.
@@ -69,6 +62,12 @@ extern char* duplicate_string(const char* source);
 extern char* sanitize_label(const char* source, size_t max_length);
 
 /**
+ * Same as sanitize_label(), writing into @p destination, which must hold max_length + 1 characters.
+ * Allocates nothing, so it can be used from run().
+ */
+extern void sanitize_label_to(char* destination, const char* source, size_t max_length);
+
+/**
  * Builds a default label in the form "<prefix> <index+1>".
  * Remember to free it!
  *
@@ -78,4 +77,10 @@ extern char* sanitize_label(const char* source, size_t max_length);
  * @return generated label, or NULL if allocation fails
  */
 extern char* make_default_label(const char* prefix, unsigned int index);
+
+/**
+ * Same as make_default_label(), writing into @p destination (at most @p size bytes, NUL included)
+ */
+extern void format_default_label(char* destination, size_t size, const char* prefix, unsigned int index);
+
 #endif

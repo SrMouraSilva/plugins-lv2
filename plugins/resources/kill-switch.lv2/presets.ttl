@@ -1,0 +1,315 @@
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix pset: <http://lv2plug.in/ns/ext/presets#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Factory presets: every one sets the eight controls of the two families (mode, pattern, ending, tempo, speed, length, depth,
+# edge). The Kill footswitch, the mono input and the custom pattern are not part of a preset.
+# The rhythms named after a guitarist or a song are an approximation, not a transcription.
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-killing-in-the-name-solo-chop>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Killing in the Name - solo chop" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 6 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 89 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 1.5 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-bulls-on-parade-toggle-solo>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Bulls on Parade - toggle solo" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 7 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 85 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 1.5 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-creep-pre-chorus-chunk>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Creep - pre-chorus chunk" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 8 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 92 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 1.5 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-buckethead-machine-gun-burst>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Buckethead - machine-gun burst" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 9 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 120 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 0.8 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-chop-8ths>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Chop 8ths" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 0 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 120 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 1.5 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-chop-16ths>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Chop 16ths" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 1 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 120 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 1.5 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-triplet-chop>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Triplet chop" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 2 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 120 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 1.5 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-machine-gun>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Machine gun" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 3 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 120 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 0.8 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-syncopated-3-3-2>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Syncopated 3-3-2" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 4 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 120 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 1.5 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-gallop>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Gallop" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 5 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 120 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 1.5 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-soft-chop-half-depth>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Soft chop (half depth)" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 0 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 120 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 50 ],
+        [ lv2:symbol "edge" ; pset:value 8 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-ping-pong-8ths>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Ping-pong 8ths" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 10 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 120 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 1.5 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-ping-pong-16ths>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Ping-pong 16ths" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 11 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 120 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 1.5 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-half-deaf-left>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Half deaf: left" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 13 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 120 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 1.5 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-half-deaf-right>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Half deaf: right" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 14 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 120 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 1.5 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-seesaw-swell>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Seesaw swell" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 17 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 90 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 6 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-stagger>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Stagger" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 0 ],
+        [ lv2:symbol "pattern" ; pset:value 16 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 100 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 1.5 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-bouncing-ball>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Bouncing ball" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 1 ],
+        [ lv2:symbol "pattern" ; pset:value 0 ],
+        [ lv2:symbol "ending" ; pset:value 0 ],
+        [ lv2:symbol "bpm" ; pset:value 120 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 0.5 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-helicopter-landing>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Helicopter landing" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 1 ],
+        [ lv2:symbol "pattern" ; pset:value 0 ],
+        [ lv2:symbol "ending" ; pset:value 1 ],
+        [ lv2:symbol "bpm" ; pset:value 100 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 12 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 3 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-stutter-out>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Stutter out" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 1 ],
+        [ lv2:symbol "pattern" ; pset:value 0 ],
+        [ lv2:symbol "ending" ; pset:value 2 ],
+        [ lv2:symbol "bpm" ; pset:value 140 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 0.5 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-side-fade>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Side fade" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 1 ],
+        [ lv2:symbol "pattern" ; pset:value 0 ],
+        [ lv2:symbol "ending" ; pset:value 3 ],
+        [ lv2:symbol "bpm" ; pset:value 90 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 6 ] .
+
+<http://srmourasilva.github.io/plugins/kill-switch#preset-ping-pong-out>
+    a pset:Preset ;
+    lv2:appliesTo <http://srmourasilva.github.io/plugins/kill-switch> ;
+    rdfs:label "Ping-pong out" ;
+    lv2:port
+        [ lv2:symbol "mode" ; pset:value 1 ],
+        [ lv2:symbol "pattern" ; pset:value 0 ],
+        [ lv2:symbol "ending" ; pset:value 4 ],
+        [ lv2:symbol "bpm" ; pset:value 110 ],
+        [ lv2:symbol "speed" ; pset:value 1 ],
+        [ lv2:symbol "length" ; pset:value 8 ],
+        [ lv2:symbol "depth" ; pset:value 100 ],
+        [ lv2:symbol "edge" ; pset:value 3 ] .

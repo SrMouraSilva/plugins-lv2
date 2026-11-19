@@ -14,12 +14,12 @@
 #include <lv2/lv2plug.in/ns/ext/patch/patch.h>
 #include <lv2/lv2plug.in/ns/ext/state/state.h>
 
-#include "model/tetr4-switch.h"
+#include "model/ports.h"
 #include "model/controller.h"
 
 #include "lv2/controller/lv2-controller.h"
 #include "lv2/controller/lv2-hmi-extension.h"
-#include "lv2/controller/atom-extension.h"
+#include "lv2/controller/lv2-widgets.h"
 
 static void Controller_apply_patch_messages(Controller* self);
 static void Controller_apply_patch_set(Controller* self, const LV2_Atom_Object* obj);
@@ -40,6 +40,12 @@ static LV2_State_Status restore(LV2_Handle instance,
 static const LV2_State_Interface state = {
     save,
     restore,
+};
+
+static const LV2_Worker_Interface worker = {
+    LV2_HMI_work,
+    LV2_HMI_work_response,
+    NULL,
 };
 
 static LV2_Handle
@@ -71,7 +77,7 @@ instantiate(const LV2_Descriptor*     descriptor,
         return NULL;
     }
 
-    // Atom_instantiate(self);
+    LV2_Widgets_initialize(self, features, rate);
 
     return (LV2_Handle) self;
 }
@@ -79,81 +85,63 @@ instantiate(const LV2_Descriptor*     descriptor,
 static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
     Controller* self = (Controller*) instance;
 
-    switch ((PortIndex) port) {
-        case OUTPUT_CV_1:
-            self->output_cvs[0] = (float*) data; break;
-        case OUTPUT_CV_2:
-            self->output_cvs[1] = (float*) data; break;
-        case OUTPUT_CV_3:
-            self->output_cvs[2] = (float*) data; break;
-        case OUTPUT_CV_4:
-            self->output_cvs[3] = (float*) data; break;
-        
-        case PRESET_SELECTOR_1:
-            self->preset_selectors[0] = (float*) data; break;
-        case PRESET_SELECTOR_2:
-            self->preset_selectors[1] = (float*) data; break;
-        case PRESET_SELECTOR_3:
-            self->preset_selectors[2] = (float*) data; break;
-        case PRESET_SELECTOR_4:
-            self->preset_selectors[3] = (float*) data; break;
+    // The CV outputs are the first ports: nothing to compare against on the lower side (port is unsigned)
+    if (port < PORT_PRESET_SELECTOR_FIRST) {
+        self->output_cvs[port - PORT_OUTPUT_CV_FIRST] = (float*) data;
 
-        case PRESET_SELECT:
-            self->current_preset_index = (float*) data; break;
+    } else if (port >= PORT_PRESET_SELECTOR_FIRST && port < PORT_PRESET_SELECT) {
+        self->preset_selectors[port - PORT_PRESET_SELECTOR_FIRST] = (float*) data;
 
-        case ASSIGN_TO_NOTIFY_1:
-        case ASSIGN_TO_NOTIFY_2:
-        case ASSIGN_TO_NOTIFY_3:
-        case ASSIGN_TO_NOTIFY_4:
-            break;
+    } else if (port == PORT_PRESET_SELECT) {
+        self->current_preset_index = (float*) data;
 
-        case PRESET_1_OUTPUT_1:
-            self->preset_outputs[0][0] = (float*) data; break;
-        case PRESET_1_OUTPUT_2:
-            self->preset_outputs[0][1] = (float*) data; break;
-        case PRESET_1_OUTPUT_3:
-            self->preset_outputs[0][2] = (float*) data; break;
-        case PRESET_1_OUTPUT_4:
-            self->preset_outputs[0][3] = (float*) data; break;
+    } else if (port >= PORT_ASSIGN_TO_NOTIFY_FIRST && port < PORT_PRESET_OUTPUT_FIRST) {
+        // Only addressed to the device screen: the plugin doesn't read them
 
-        case PRESET_2_OUTPUT_1:
-            self->preset_outputs[1][0] = (float*) data; break;
-        case PRESET_2_OUTPUT_2:
-            self->preset_outputs[1][1] = (float*) data; break;
-        case PRESET_2_OUTPUT_3:
-            self->preset_outputs[1][2] = (float*) data; break;
-        case PRESET_2_OUTPUT_4:
-            self->preset_outputs[1][3] = (float*) data; break;
+    } else if (port >= PORT_PRESET_OUTPUT_FIRST && port < PORT_EVENTS_IN) {
+        unsigned int dip = port - PORT_PRESET_OUTPUT_FIRST;
+        self->preset_outputs[dip / TOTAL_OUTPUTS][dip % TOTAL_OUTPUTS] = (float*) data;
 
-        case PRESET_3_OUTPUT_1:
-            self->preset_outputs[2][0] = (float*) data; break;
-        case PRESET_3_OUTPUT_2:
-            self->preset_outputs[2][1] = (float*) data; break;
-        case PRESET_3_OUTPUT_3:
-            self->preset_outputs[2][2] = (float*) data; break;
-        case PRESET_3_OUTPUT_4:
-            self->preset_outputs[2][3] = (float*) data; break;
+    } else if (port == PORT_EVENTS_IN) {
+        self->lv2->events_in = (const LV2_Atom_Sequence*) data;
 
-        case PRESET_4_OUTPUT_1:
-            self->preset_outputs[3][0] = (float*) data; break;
-        case PRESET_4_OUTPUT_2:
-            self->preset_outputs[3][1] = (float*) data; break;
-        case PRESET_4_OUTPUT_3:
-            self->preset_outputs[3][2] = (float*) data; break;
-        case PRESET_4_OUTPUT_4:
-            self->preset_outputs[3][3] = (float*) data; break;
+    } else if (port == PORT_EVENTS_OUT) {
+        self->lv2->events_out = (LV2_Atom_Sequence*) data;
 
-        case EVENTS_IN:
-            self->lv2->events_in = (const LV2_Atom_Sequence*) data; break;
-        case EVENTS_OUT:
-            self->lv2->events_out = (LV2_Atom_Sequence*) data; break;
+#ifdef HEPT7_SWITCH
+    } else if (port >= PORT_PRESET_IN_CYCLE_FIRST && port < PORT_PRESET_IN_CYCLE_FIRST + TOTAL_PRESETS) {
+        // Hept7 Switch only: Tetr4 Switch has no such ports, so the host never connects them
+        self->presets_in_cycle[port - PORT_PRESET_IN_CYCLE_FIRST] = (float*) data;
+
+    } else if (port == PORT_ACTIVE_PRESET) {
+        // Hept7 Switch only, as above
+        self->active_preset_output = (float*) data;
+
+    } else if (port == PORT_NEXT_PRESET) {
+        self->next_preset_button = (float*) data;
+
+    } else if (port == PORT_PREVIOUS_PRESET) {
+        self->previous_preset_button = (float*) data;
+#endif
+
+    } else if (port >= PORT_MIDI_CC_FIRST && port < PORT_MIDI_CHANNEL) {
+        self->midi_cc[port - PORT_MIDI_CC_FIRST] = (float*) data;
+
+    } else if (port == PORT_MIDI_CHANNEL) {
+        self->midi_channel = (float*) data;
+
+    } else if (port == PORT_MIDI_CHANGES_ONLY) {
+        self->midi_changes_only = (float*) data;
+
+    } else if (port == PORT_MIDI_OUT) {
+        self->lv2->midi_out = (LV2_Atom_Sequence*) data;
     }
 }
 
 static void activate(LV2_Handle instance) {}
 
 
-void update_assignables(Controller* self);
+static void Controller_sync_selector_ports(Controller* self);
 
 static void Controller_start_atom_forge(Controller* self, LV2_Atom_Forge_Frame* notify_frame) {
     LV2_Atom_Sequence* out = self->lv2->events_out;
@@ -187,28 +175,53 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
 
     Controller_apply_patch_messages(self);
 
-    self->run(self, n_samples);
+    Controller_run(self, n_samples);
 
     LV2_HMI_run(self);
-    //Atom_run(self);
 
-    update_assignables(self);
+    Controller_sync_selector_ports(self);
+
+    LV2_Widgets_run(self, n_samples);
 
     Controller_finish_atom_forge(self, &notify_frame);
 }
 
-void update_assignables(Controller* self) {
-    unsigned int index = self->get_index_current_preset(self);
+/**
+ * The selectors work as radio buttons and the combobox follows them: ask the host to set the ones that disagree with
+ * the active preset (only those, and only when something moved). The plugin never writes into its input ports
+ * itself: the host does it, and tells MOD UI.
+ */
+static void Controller_sync_selector_ports(Controller* self) {
+    if (!self->preset_changed && !self->inputs_changed) {
+        return;
+    }
 
-    if (self->is_preset_changed(self)) {
-        unsigned int previous_index = self->get_index_previous_preset(self);
+    LV2_ControlInputPort_Change_Request* control_input_port = self->lv2->control_input_port;
+    const unsigned int current = self->current_preset;
 
-        LV2_ControlInputPort_Change_Request* control_input_port = self->lv2->control_input_port;
+    // What the host accepted is what the ports hold from now on (mod-host writes them at once): remember it as what
+    // was read, so the next cycle does not take the plugin's own changes for a selector turned on or the combobox
+    // moved, which would hide a real change arriving on that cycle
+    for (unsigned int i=0; i<TOTAL_PRESETS; i++) {
+        const bool on = i == current;
+        const bool is_on = (self->selector_mask >> i) & 1u;
 
-        control_input_port->request_change(control_input_port->handle, PRESET_SELECTOR_1 + previous_index, 0.0f);
-        control_input_port->request_change(control_input_port->handle, PRESET_SELECTOR_1 + index, 1.0f);
+        if (on != is_on
+            && control_input_port->request_change(control_input_port->handle, PORT_PRESET_SELECTOR_FIRST + i, on ? 1.0f : 0.0f) == LV2_CONTROL_INPUT_PORT_CHANGE_SUCCESS) {
+            self->selector_mask ^= 1u << i;
+        }
+    }
 
-        control_input_port->request_change(control_input_port->handle, PRESET_SELECT, index);
+    // Hept7 Switch has buttons where Tetr4 Switch has the enumeration: nothing to keep in step there. The selectors say
+    // which preset is on, and the widgets show it
+    if (Controller_has_cycle(self)) {
+        return;
+    }
+
+    // The raw value, so a value out of range is put right too
+    if (*self->current_preset_index != (float) current
+        && control_input_port->request_change(control_input_port->handle, PORT_PRESET_SELECT, (float) current) == LV2_CONTROL_INPUT_PORT_CHANGE_SUCCESS) {
+        self->combobox = current;
     }
 }
 
@@ -218,6 +231,7 @@ static void deactivate(LV2_Handle instance) {}
 static void cleanup(LV2_Handle instance) {
     Controller* self = (Controller*) instance;
 
+    free(self->lv2->widgets);
     free(self->lv2);
     self->lv2 = NULL;
 
@@ -232,6 +246,14 @@ static const void* extension_data(const char* uri) {
 
     if (!strcmp(uri, LV2_STATE__interface)) {
         return &state;
+    }
+
+    if (!strcmp(uri, LV2_WORKER__interface)) {
+        return &worker;
+    }
+
+    if (!strcmp(uri, ALABS_HMI__WidgetNotification)) {
+        return LV2_Widgets_notification();
     }
 
     return NULL;
@@ -268,12 +290,12 @@ static void Controller_apply_patch_set(Controller* self, const LV2_Atom_Object* 
     );
 
     if (property == NULL || property->type != self->lv2->uris.atom_URID) {
-        lv2_log_error(&self->lv2->logger, "Tetr4-switch: malformed patch:Set property\n");
+        lv2_log_error(&self->lv2->logger, PLUGIN_NAME ": malformed patch:Set property\n");
         return;
     }
 
     if (value == NULL || value->type != self->lv2->uris.atom_String) {
-        lv2_log_error(&self->lv2->logger, "Tetr4-switch: invalid preset label value\n");
+        lv2_log_error(&self->lv2->logger, PLUGIN_NAME ": invalid preset label value\n");
         return;
     }
 
@@ -286,13 +308,13 @@ static void Controller_apply_patch_set(Controller* self, const LV2_Atom_Object* 
         }
 
         if (!Controller_set_preset_label(self, i, label)) {
-            lv2_log_error(&self->lv2->logger, "Tetr4-switch: could not store preset label\n");
+            lv2_log_error(&self->lv2->logger, PLUGIN_NAME ": could not store preset label\n");
         }
 
         return;
     }
 
-    lv2_log_error(&self->lv2->logger, "Tetr4-switch: unknown patch property\n");
+    lv2_log_error(&self->lv2->logger, PLUGIN_NAME ": unknown patch property\n");
 }
 
 static void Controller_reply_patch_get(Controller* self, const LV2_Atom_Object* obj, int64_t frames) {
@@ -317,7 +339,7 @@ static void Controller_reply_patch_get(Controller* self, const LV2_Atom_Object* 
     }
 
     if (property->type != self->lv2->uris.atom_URID) {
-        lv2_log_error(&self->lv2->logger, "Tetr4-switch: malformed patch:Get property\n");
+        lv2_log_error(&self->lv2->logger, PLUGIN_NAME ": malformed patch:Get property\n");
         return;
     }
 
@@ -332,7 +354,7 @@ static void Controller_reply_patch_get(Controller* self, const LV2_Atom_Object* 
         return;
     }
 
-    lv2_log_error(&self->lv2->logger, "Tetr4-switch: unknown patch:Get property\n");
+    lv2_log_error(&self->lv2->logger, PLUGIN_NAME ": unknown patch:Get property\n");
 }
 
 static void Controller_send_restored_labels(Controller* self) {
@@ -418,12 +440,12 @@ static LV2_State_Status restore(LV2_Handle instance,
         }
 
         if (type != self->lv2->uris.atom_String) {
-            lv2_log_error(&self->lv2->logger, "Tetr4-switch: invalid stored preset label type\n");
+            lv2_log_error(&self->lv2->logger, PLUGIN_NAME ": invalid stored preset label type\n");
             continue;
         }
 
         if (!Controller_set_preset_label(self, i, (const char*) value)) {
-            lv2_log_error(&self->lv2->logger, "Tetr4-switch: could not restore preset label\n");
+            lv2_log_error(&self->lv2->logger, PLUGIN_NAME ": could not restore preset label\n");
             continue;
         }
 
@@ -434,7 +456,7 @@ static LV2_State_Status restore(LV2_Handle instance,
 }
 
 static const LV2_Descriptor descriptor = {
-    PLUGIN_URI,
+    SWITCH_PLUGIN_URI,
     instantiate,
     connect_port,
     activate,

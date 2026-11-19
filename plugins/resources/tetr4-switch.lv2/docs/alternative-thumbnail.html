@@ -1,0 +1,31 @@
+<!doctype html>
+<!-- Copyright 2021-2026 Paulo Mateus -- SPDX-License-Identifier: Apache-2.0
+     An abstract picture of Tetr4 Switch (4 DIP switches, 4 footswitches), 400x400, for internal use.
+     Rendered to alternative-thumbnail.png by tools/media/thumbnails.mjs -->
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; background: transparent; }
+  .card { position: relative; box-sizing: border-box; width: 400px; height: 400px; border-radius: 88px; overflow: hidden;
+    background: radial-gradient(90% 70% at 15% 0%, rgba(130, 150, 255, 0.16), rgba(130, 150, 255, 0) 60%), linear-gradient(170deg, #0a1380, #02094e);
+    box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.08); }
+  .col { position: absolute; top: 74px; width: 62px; text-align: center; --c: #ff6667; }
+  .track { position: relative; height: 150px; border-radius: 22px; background: #040a40; box-shadow: inset 0 5px 9px rgba(0, 0, 0, .7); }
+  .track::before { content: ""; position: absolute; left: 7px; right: 7px; height: 58px; border-radius: 16px; background: linear-gradient(#fff, #c9cffc);
+    box-shadow: 0 5px 7px rgba(0, 0, 0, .5); top: var(--top); }
+  .on .track { background: var(--c); box-shadow: inset 0 5px 9px rgba(0, 0, 0, .3), 0 0 30px -4px var(--c); }
+  .foot { width: 62px; height: 62px; margin-top: 38px; border-radius: 50%; background: #5d67bd; position: relative; box-shadow: inset 0 3px 5px rgba(0, 0, 20, .4); }
+  .foot::after { content: ""; position: absolute; inset: 9px; border-radius: 50%; background: radial-gradient(circle at 50% 34%, #fff 0 34%, #dfe3ff 62%, #b4bcf3); box-shadow: 0 5px 0 #7e88d6, 0 8px 9px rgba(0, 0, 20, .55); }
+  .lit .foot { background: var(--c); box-shadow: inset 0 3px 5px rgba(0, 0, 20, .3), 0 0 30px 2px var(--c); }
+  .c1 { left: 40px;  --c: #ff6667; --top: 8px; }
+  .c2 { left: 124px; --c: #ffff67; --top: 84px; }
+  .c3 { left: 208px; --c: #66ffff; --top: 84px; }
+  .c4 { left: 292px; --c: #bb7cd2; --top: 8px; }
+  .c1.on, .c4.on { }
+  .c2 .track, .c3 .track { }
+</style>
+<div class="card">
+  <div class="col c1 on lit"><div class="track"></div><div class="foot"></div></div>
+  <div class="col c2"><div class="track"></div><div class="foot"></div></div>
+  <div class="col c3"><div class="track"></div><div class="foot"></div></div>
+  <div class="col c4 on"><div class="track"></div><div class="foot"></div></div>
+</div>

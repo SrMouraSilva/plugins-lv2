@@ -1,0 +1,247 @@
+/* Copyright 2021-2026 Paulo Mateus -- SPDX-License-Identifier: Apache-2.0
+   The interactive part of a manual (docs/interactive-manuals.md): the plugin in a frame, the way to look at it
+   (pedalboard or settings), what a tap on a part says, and the guided tours. It uses the colours of the manual (--brand, --accent...). */
+
+.ix { --ix-radius: 16px; margin: 28px 0 8px; }
+.ix :where(button) { font: inherit; color: inherit; }
+
+/* ---------------------------------------------------------------- the two ways to use it, and what is looked at */
+.ix-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.ix-seg { display: inline-flex; gap: 4px; padding: 4px; border-radius: 14px; background: var(--code); box-shadow: inset 0 0 0 1px var(--line); }
+.ix-seg button {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color .15s, color .15s;
+}
+.ix-seg button:hover { color: var(--head); }
+.ix-seg button[aria-pressed="true"], .ix-seg button[aria-selected="true"] { color: var(--head); background: var(--sheet); box-shadow: 0 1px 2px rgba(20, 28, 70, .12), inset 0 0 0 1px var(--line); }
+.ix-seg button:focus-visible, .ix-btn:focus-visible, .ix-chip:focus-visible, .ix-tour:focus-visible, .ix-steps button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.ix-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.ix-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--head);
+  background: var(--sheet);
+  box-shadow: inset 0 0 0 1px var(--line);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.ix-btn:hover { background: var(--tint); }
+.ix-btn[aria-pressed="true"] { color: #fff; background: var(--accent); box-shadow: none; }
+.ix-btn:disabled { opacity: .45; cursor: default; }
+
+/* ---------------------------------------------------------------- the frame */
+.ix-stage {
+  position: relative;
+  border-radius: var(--ix-radius);
+  overflow: hidden;
+  background: #14161d;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .06), var(--shadow);
+}
+.ix-frame { display: block; width: 100%; height: 360px; border: 0; background: #14161d; transition: height .3s ease, opacity .18s; }
+.ix-frame.is-loading { opacity: 0; }
+/* While a tour plays nothing in the frame answers a finger: the tour is the one tapping */
+.ix-shield { position: absolute; inset: 0; z-index: 2; cursor: default; }
+.ix-shield[hidden] { display: none; }
+.ix-note { position: absolute; left: 12px; top: 12px; z-index: 3; max-width: calc(100% - 24px); padding: 7px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 600; color: #e9ecff; background: rgba(8, 10, 24, .78); backdrop-filter: blur(6px); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); pointer-events: none; }
+.ix-loading { position: absolute; inset: 0; display: grid; place-items: center; font-size: 14px; color: #9aa3c7; pointer-events: none; }
+.ix-loading[hidden] { display: none; }
+
+
+
+/* ---------------------------------------------------------------- explore: what a tap says */
+.ix-card {
+  margin-top: 14px;
+  padding: 18px 20px;
+  border-radius: var(--ix-radius);
+  background: var(--tint);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.ix-card h3 { margin: 0 0 6px; font-size: 19px; line-height: 1.25; color: var(--head); }
+.ix-card .ix-kicker { margin: 0 0 4px; font-size: 11.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--link); }
+.ix-card p { margin: 0 0 8px; font-size: 16px; line-height: 1.6; }
+.ix-card p:last-child { margin-bottom: 0; }
+.ix-card ul { margin: 6px 0 0; padding-left: 20px; }
+.ix-card.is-empty { color: var(--muted); }
+
+.ix-chips-title { margin: 22px 0 8px; font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.ix-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.ix-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 0 14px 0 8px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--sheet);
+  box-shadow: inset 0 0 0 1px var(--line);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.ix-chip:hover { background: var(--tint); }
+.ix-chip[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--accent); }
+.ix-chip b { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font-size: 13px; color: #fff; background: var(--accent); }
+
+/* ---------------------------------------------------------------- tours */
+.ix-tours { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin: 14px 0 0; padding: 0; list-style: none; }
+.ix-tour {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  min-height: 44px;
+  padding: 16px 18px;
+  border: 0;
+  border-radius: var(--ix-radius);
+  text-align: left;
+  color: var(--text);
+  background: var(--sheet);
+  box-shadow: inset 0 0 0 1px var(--line);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: box-shadow .15s, transform .15s;
+}
+.ix-tour:hover { box-shadow: inset 0 0 0 2px var(--accent), var(--shadow); transform: translateY(-1px); }
+.ix-tour b { font-size: 17px; line-height: 1.25; color: var(--head); }
+.ix-tour span { font-size: 14.5px; line-height: 1.5; color: var(--muted); }
+.ix-tour small { margin-top: auto; padding-top: 6px; font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--link); }
+
+.ix-player { margin-top: 14px; padding: 16px 18px 18px; border-radius: var(--ix-radius); background: var(--tint); box-shadow: inset 0 0 0 1px var(--line); }
+.ix-player[hidden], .ix-picker[hidden], .ix-explore[hidden] { display: none; }
+.ix-player-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.ix-player-head h3 { margin: 0; font-size: 18px; color: var(--head); }
+.ix-bar { position: relative; height: 6px; margin: 14px 0 12px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.ix-bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 3px; background: var(--accent); transition: width .35s ease; }
+.ix-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ix-controls .ix-btn { justify-content: center; min-width: 96px; padding: 0 18px; }
+.ix-controls .ix-btn:not(:disabled):last-of-type { color: #fff; background: var(--accent); box-shadow: none; }
+.ix-count { margin-left: auto; font-size: 13px; font-weight: 700; color: var(--muted); }
+.ix-say { margin-top: 14px; padding: 16px 18px; border-radius: 14px; background: var(--sheet); box-shadow: inset 0 0 0 1px var(--line); }
+.ix-say h4 { margin: 0 0 6px; font-size: 17px; color: var(--head); }
+.ix-say p { margin: 0 0 8px; font-size: 16px; line-height: 1.6; }
+.ix-say p:last-child { margin-bottom: 0; }
+.ix-steps { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; }
+.ix-steps button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--muted);
+  background: var(--sheet);
+  box-shadow: inset 0 0 0 1px var(--line);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.ix-steps button.is-done { color: var(--head); box-shadow: inset 0 0 0 1px var(--accent); }
+.ix-steps button[aria-current="step"] { color: #fff; background: var(--accent); box-shadow: none; }
+.ix-end { margin-top: 12px; font-size: 14.5px; color: var(--muted); }
+
+.ix-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+@media (max-width: 640px) {
+  .ix-seg button { padding: 0 14px; font-size: 14.5px; }
+  .ix-tools { width: 100%; }
+  .ix-tools .ix-btn { flex: 1 1 auto; justify-content: center; }
+  .ix-card, .ix-player { padding: 14px 14px 16px; }
+  .ix-count { width: 100%; margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ix-frame, .ix-bar i, .ix-tour { transition: none; }
+}
+
+/* ---------------------------------------------------------------- the preview in the page, and the full screen
+   In the page the section is only the plugin with a button over it. The button opens .ix-app over the whole window: the frame fills the
+   left, what to read and do (what a tap says, the tours) is in a column at the right, and a phone puts it under the frame. */
+.ix-title { margin: 0; font-size: 16px; font-weight: 800; letter-spacing: .02em; color: var(--head); }
+.ix-close { margin-left: auto; }
+.ix-app:not(.is-full) .ix-top, .ix-app:not(.is-full) .ix-side { display: none; }
+.ix-app:not(.is-full) .ix-close { display: none; }
+.ix-launch {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: end center;
+  padding: 0 0 18px;
+  border: 0;
+  background: linear-gradient(180deg, rgba(8, 10, 24, 0) 45%, rgba(8, 10, 24, .62));
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.ix-launch-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font: 800 16px/1 var(--font);
+  color: #fff;
+  background: var(--accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .45), inset 0 0 0 1px rgba(255, 255, 255, .22);
+  transition: transform .15s, filter .15s;
+}
+.ix-launch:hover .ix-launch-label { transform: translateY(-2px); filter: brightness(1.1); }
+.ix-launch:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+.ix-app.is-full .ix-launch { display: none; }
+.ix-caption { margin: 12px 2px 0; font-size: 14.5px; color: var(--muted); }
+html.ix-lock { overflow: hidden; }
+
+.ix-app.is-full {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+.ix-app.is-full .ix-top { flex: none; gap: 10px 14px; justify-content: flex-start; margin: 0; padding: 10px 16px; background: var(--sheet); box-shadow: 0 1px 0 var(--line); }
+.ix-app.is-full .ix-tools { align-items: center; }
+.ix-app.is-full .ix-main { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) clamp(340px, 30vw, 460px); }
+.ix-app.is-full .ix-stage { min-height: 0; border-radius: 0; box-shadow: none; }
+.ix-app.is-full .ix-frame { height: 100%; }
+.ix-app.is-full .ix-side { min-height: 0; overflow: auto; padding: 18px 18px 28px; background: var(--sheet); box-shadow: -1px 0 0 var(--line); }
+.ix-app.is-full .ix-explore > .ix-card:first-child, .ix-app.is-full .ix-picker > .ix-chips-title:first-child { margin-top: 0; }
+.ix-app.is-full .ix-tours { grid-template-columns: 1fr; }
+@media (max-width: 900px), (max-aspect-ratio: 1/1) {
+  .ix-app.is-full .ix-main { grid-template-columns: 1fr; grid-template-rows: minmax(240px, 52%) minmax(0, 1fr); }
+  .ix-app.is-full .ix-side { box-shadow: 0 -1px 0 var(--line); }
+  .ix-app.is-full .ix-title { display: none; }
+  /* One row that scrolls sideways, so the frame keeps the room; Close is the first thing in it */
+  .ix-app.is-full .ix-top { flex-wrap: nowrap; gap: 8px; padding: 8px 12px; overflow-x: auto; scrollbar-width: none; }
+  .ix-app.is-full .ix-top::-webkit-scrollbar { display: none; }
+  .ix-app.is-full .ix-top > *, .ix-app.is-full .ix-tools { flex: none; flex-wrap: nowrap; width: auto; }
+  .ix-app.is-full .ix-tools .ix-btn { flex: none; }
+  .ix-app.is-full .ix-close { order: -1; margin-left: 0; }
+}
+
+/* On paper there is nothing to touch */
+.ix-print { display: none; }
+@media print {
+  .ix { display: none; }
+  .ix-print { display: block; }
+}

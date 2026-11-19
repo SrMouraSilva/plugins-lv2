@@ -1,4 +1,4 @@
-SrMouraSilva Plugins (Gossiper, Tetr4 Switch)
+SrMouraSilva Plugins (Gossiper, Tetr4 Switch, Hept7 Switch, Kill Switch)
 Copyright 2021-2026 Paulo Mateus
 
 This product is licensed under the Apache License, Version 2.0 (see LICENSE).
@@ -11,5 +11,22 @@ original license:
     Copyright 2020-2021 Filipe Coelho <falktx@falktx.com>
     ISC License (see the notice at the top of each file).
 
-  * plugins/src/utils/state_map.h
-    Adapted from the LV2 Book examples, https://lv2plug.in/book/#_state_map_h
+  * plugins/src/hmi/alabs-hmi-widgets.h
+    Copyright 2026 Andrea Del Signore (https://github.com/sejerpz/alabs-hmi-widgets)
+    ISC License (see the notice at the top of the file).
+
+  * tools/manual/interactive/vendor/jquery-1.9.1.min.js
+    jQuery v1.9.1, (c) 2005, 2012 jQuery Foundation, Inc. MIT License (see the notice at the top of the file).
+    The interactive manuals run the scripts of the plugins with the version MOD UI itself uses.
+
+  * tools/manual/interactive/vendor/mod-ui/*.png
+    The jacks and the icons of the preset buttons of MOD UI (https://github.com/moddevices/mod-ui), Copyright MOD Audio.
+    GNU Affero General Public License v3 (see the LICENSE of that repository). Used so that the interactive manuals draw
+    a plugin the way MOD UI does.
+
+  * tools/manual/interactive/host.css (the gear icon)
+    The "settings" icon of Material Design Icons, Copyright Google LLC. Apache License 2.0.
+
+  * plugins/src/hmi/widget-font.h (FONT_BIG)
+    The classic 5 x 7 column font that many LCD libraries carry. TODO before a release: confirm which
+    source it should be credited to; the 3 x 5 font in the same file was drawn for this project.

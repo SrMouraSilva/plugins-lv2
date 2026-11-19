@@ -1,0 +1,238 @@
+<div class="kss" mod-role="kill-switch-settings">
+  <div class="kss-shell">
+    <div class="kss-screen">
+      <div class="kss-bar">
+        <div class="kss-title">
+          <span class="kss-logo" aria-hidden="true"></span>
+          <div class="kss-name" role="heading" aria-level="1">Kill Switch</div>
+        </div>
+
+        <!-- What the pedal has in its face and must be at hand on every page: on/off and Mono (the left input feeds both sides) -->
+        <div class="kss-switches">
+          <!-- Each switch is joined to the button that assigns it to a footswitch of the device, so it is clear what that button is for -->
+          <div class="kss-pill kss-monopill" role="group" aria-label="Mono">
+            <button type="button" class="kss-button kss-mono" aria-pressed="false" title="Mono input: the left input feeds both sides">Mono</button>
+            <button type="button" class="mod-address kss-address kss-address-small" mod-role="input-control-address" mod-port-symbol="mono" title="Assign Mono to a hardware control (a footswitch)" aria-label="Assign Mono to a hardware control (a footswitch)"><span class="kss-assign-state" aria-hidden="true"></span></button>
+          </div>
+          <div class="kss-pill kss-onoff" role="group" aria-label="Kill">
+            <button type="button" class="kss-button kss-power" aria-pressed="false" title="Turn the effect on or off (the footswitch of the pedal)">Kill off</button>
+            <!-- Momentary by default: it chops only while the footswitch is held. Toggle in its dialog keeps it on after a tap -->
+            <button type="button" class="mod-address kss-address kss-address-small" mod-role="input-control-address" mod-port-symbol="kill" title="Assign Kill to a hardware control (a footswitch): it chops while you hold it" aria-label="Assign Kill to a hardware control (a footswitch)"><span class="kss-assign-state" aria-hidden="true"></span></button>
+          </div>
+        </div>
+
+        <!-- The page being shown: always visible, whatever the input device (a swipe also changes it) -->
+        <nav class="kss-nav" aria-label="Pages">
+          <button type="button" class="kss-step kss-prev" aria-label="Previous page" title="Previous page">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="kss-dots" aria-hidden="true"></div>
+          <button type="button" class="kss-step kss-next" aria-label="Next page" title="Next page">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <span class="kss-sr kss-page-status" aria-live="polite"></span>
+        </nav>
+
+        <button type="button" class="js-close kss-close">Close</button>
+      </div>
+
+      <!-- What plays, small, whatever the page: read-only, so it has no fill, no shadow and no box (a rule at its side, the
+           caption in small capitals and the name as text) -->
+      <div class="kss-glance" role="img" aria-label="What plays">
+        <div class="kss-glance-what">
+          <small class="kss-glance-kind">Pattern</small>
+          <span class="kss-glance-name">Chop 8ths</span>
+        </div>
+        <div class="kss-glance-lanes">
+          <div class="kss-lane" data-side="l"><b aria-hidden="true">L</b><div class="kss-glance-steps"></div></div>
+          <div class="kss-lane" data-side="r"><b aria-hidden="true">R</b><div class="kss-glance-steps"></div></div>
+        </div>
+      </div>
+
+      <!-- Never scrolls vertically. The script (layoutSettings) spreads the panels below over as many pages as the
+           screen needs, and puts them back here whenever the size changes -->
+      <main class="kss-pager"></main>
+
+      <div class="kss-stock" hidden>
+        <!-- What is playing: the choice of pattern or ending, and what each side does with it, as big as the page allows -->
+        <section class="kss-panel kss-play-panel" data-panel="play">
+          <div class="kss-panel-head kss-play-head">
+            <div class="kss-play-title">
+              <div>
+                <span class="kss-eyebrow kss-play-kind">Pattern</span>
+                <h2 class="kss-play-name">Ping-pong 8ths</h2>
+              </div>
+              <!-- The one that matches what plays: Pattern for the patterns, Ending for the endings -->
+              <button type="button" class="mod-address kss-address kss-address-small kss-assign-pattern" mod-role="input-control-address" mod-port-symbol="pattern" title="Assign Pattern to a hardware control (a knob or a footswitch)" aria-label="Assign Pattern to a hardware control (a knob or a footswitch)"><span class="kss-assign-state" aria-hidden="true"></span></button>
+              <button type="button" class="mod-address kss-address kss-address-small kss-assign-ending" mod-role="input-control-address" mod-port-symbol="ending" title="Assign Ending to a hardware control (a knob or a footswitch)" aria-label="Assign Ending to a hardware control (a knob or a footswitch)"><span class="kss-assign-state" aria-hidden="true"></span></button>
+            </div>
+            <div class="kss-pill kss-modepill">
+              <div class="kss-modes" role="radiogroup" aria-label="What plays">
+                <button type="button" class="kss-mode" role="radio" aria-checked="true" data-mode="0">Patterns</button>
+                <button type="button" class="kss-mode" role="radio" aria-checked="false" data-mode="1">Endings</button>
+              </div>
+              <button type="button" class="mod-address kss-address kss-address-small" mod-role="input-control-address" mod-port-symbol="mode" title="Assign Mode to a hardware control (a footswitch that jumps between patterns and endings)" aria-label="Assign Mode to a hardware control (a footswitch that jumps between patterns and endings)"><span class="kss-assign-state" aria-hidden="true"></span></button>
+            </div>
+          </div>
+          <p class="kss-play-hint"></p>
+
+          <!-- Everything that can play: all at hand while they fit, or one at a time with the arrows (data-choice of .kss) -->
+          <div class="kss-choices" role="radiogroup" aria-label="Pick what plays"></div>
+          <div class="kss-pick" role="group" aria-label="Pick what plays">
+            <button type="button" class="kss-button kss-pick-prev" aria-label="Previous" title="Previous"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <div class="kss-pick-name" aria-live="polite"><span class="kss-pick-label">Chop 8ths</span><small class="kss-pick-count">1 of 20</small></div>
+            <button type="button" class="kss-button kss-pick-next" aria-label="Next" title="Next"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+
+
+          <!-- What each side does, as LEDs, right under the choice. A tap on a step of Custom changes its level; a tap on a
+               built-in pattern asks whether to define a Custom one from it. An ending is only drawn (it has no steps to change) -->
+          <div class="kss-led-block">
+            <div class="kss-led-head">
+              <div class="kss-led-what">
+                <span class="kss-led-caption"><span class="kss-led-title">Preview</span><small class="kss-led-beat"></small></span>
+                <span class="kss-led-hint"></span>
+              </div>
+              <!-- Only while Custom plays: how many steps it has and how many of them make a beat -->
+              <div class="kss-tools">
+                <div class="kss-field">
+                  <span>Length</span>
+                  <div class="kss-stepper">
+                    <button type="button" class="kss-button kss-length-down" aria-label="Fewer steps" title="Fewer steps">&minus;</button>
+                    <output class="kss-length" aria-label="Number of steps">8</output>
+                    <button type="button" class="kss-button kss-length-up" aria-label="More steps" title="More steps">+</button>
+                  </div>
+                </div>
+                <div class="kss-field">
+                  <span>Steps per beat</span>
+                  <div class="kss-stepper">
+                    <button type="button" class="kss-button kss-beat-down" aria-label="Fewer steps per beat" title="Fewer steps per beat">&minus;</button>
+                    <output class="kss-beat" aria-label="Steps per beat">2<small>8ths</small></output>
+                    <button type="button" class="kss-button kss-beat-up" aria-label="More steps per beat" title="More steps per beat">+</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="kss-led" aria-label="What each side does">
+              <div class="kss-led-steps">
+                <div class="kss-lane" data-side="l"><b aria-hidden="true">L</b><div class="kss-led-cells" data-side="l" role="group" aria-label="The steps of the left side"></div></div>
+                <div class="kss-lane" data-side="r"><b aria-hidden="true">R</b><div class="kss-led-cells" data-side="r" role="group" aria-label="The steps of the right side"></div></div>
+              </div>
+              <div class="kss-led-ending">
+                <div class="kss-lane" data-side="l"><b aria-hidden="true">L</b><div class="kss-ending-steps" role="img"></div></div>
+                <div class="kss-lane" data-side="r"><b aria-hidden="true">R</b><div class="kss-ending-steps" role="img"></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tempo and feel: what the pedal has under its display -->
+        <section class="kss-panel kss-sound-panel" data-panel="sound">
+          <div class="kss-panel-head">
+            <span class="kss-eyebrow">Sound</span>
+            <h2>Tempo and feel</h2>
+          </div>
+          <div class="kss-sound">
+            <div class="kss-knob kss-tempo">
+              <div class="kss-knob-head"><span>Tempo</span>
+                <button type="button" class="mod-address kss-address kss-address-small" mod-role="input-control-address" mod-port-symbol="bpm" title="Assign Tempo to a hardware control (a knob or an expression pedal)" aria-label="Assign Tempo to a hardware control (a knob or an expression pedal)"><span class="kss-assign-state" aria-hidden="true"></span></button></div>
+              <div class="kss-stepper kss-stepper-big">
+                <button type="button" class="kss-button kss-bpm-down" aria-label="Slower" title="Slower">&minus;</button>
+                <output class="kss-bpm" aria-label="Tempo in beats per minute"><b>120</b><small>BPM</small></output>
+                <button type="button" class="kss-button kss-bpm-up" aria-label="Faster" title="Faster">+</button>
+              </div>
+              <input type="range" class="kss-slider kss-bpm-input" min="40" max="240" step="1" value="120" aria-label="Tempo" />
+            </div>
+
+            <!-- Patterns: how fast they run. Endings: how long they last -->
+            <div class="kss-knob kss-speed">
+              <div class="kss-knob-head"><span>Speed</span><small>how fast the pattern runs</small>
+                <button type="button" class="mod-address kss-address kss-address-small" mod-role="input-control-address" mod-port-symbol="speed" title="Assign Speed to a hardware control (a footswitch)" aria-label="Assign Speed to a hardware control (a footswitch)"><span class="kss-assign-state" aria-hidden="true"></span></button></div>
+              <div class="kss-segments" role="radiogroup" aria-label="Speed of the pattern">
+                <button type="button" class="kss-segment" role="radio" aria-checked="false" data-speed="0">&frac12;x</button>
+                <button type="button" class="kss-segment" role="radio" aria-checked="true" data-speed="1">1x</button>
+                <button type="button" class="kss-segment" role="radio" aria-checked="false" data-speed="2">2x</button>
+                <button type="button" class="kss-segment" role="radio" aria-checked="false" data-speed="3">4x</button>
+              </div>
+            </div>
+            <div class="kss-knob kss-length-knob">
+              <div class="kss-knob-head"><span>Length</span><small>how long the ending lasts</small>
+              <button type="button" class="mod-address kss-address kss-address-small" mod-role="input-control-address" mod-port-symbol="length" title="Assign Length to a hardware control (a knob)" aria-label="Assign Length to a hardware control (a knob)"><span class="kss-assign-state" aria-hidden="true"></span></button></div>
+              <div class="kss-stepper kss-stepper-big">
+                <button type="button" class="kss-button kss-ending-length-down" aria-label="Shorter" title="Shorter">&minus;</button>
+                <output class="kss-ending-length" aria-label="Length of the ending in beats"><b>8</b><small>beats</small></output>
+                <button type="button" class="kss-button kss-ending-length-up" aria-label="Longer" title="Longer">+</button>
+              </div>
+            </div>
+
+            <div class="kss-knob kss-depth">
+              <div class="kss-knob-head"><span>Depth</span><output class="kss-depth-value">100%</output>
+                <button type="button" class="mod-address kss-address kss-address-small" mod-role="input-control-address" mod-port-symbol="depth" title="Assign Depth to a hardware control (a knob or an expression pedal)" aria-label="Assign Depth to a hardware control (a knob or an expression pedal)"><span class="kss-assign-state" aria-hidden="true"></span></button></div>
+              <input type="range" class="kss-slider kss-depth-input" min="0" max="100" step="1" value="100" aria-label="Depth: how much of the signal a cut removes" />
+              <div class="kss-ends"><small>a cut barely dips</small><small>a cut is silence</small></div>
+            </div>
+            <div class="kss-knob kss-edge">
+              <div class="kss-knob-head"><span>Edge</span><output class="kss-edge-value">1.5 ms</output>
+                <button type="button" class="mod-address kss-address kss-address-small" mod-role="input-control-address" mod-port-symbol="edge" title="Assign Edge to a hardware control (a knob)" aria-label="Assign Edge to a hardware control (a knob)"><span class="kss-assign-state" aria-hidden="true"></span></button></div>
+              <input type="range" class="kss-slider kss-edge-input" min="0" max="1000" step="1" value="511" aria-label="Edge: how long a cut takes to open and close" />
+              <div class="kss-ends"><small>hard, percussive chop</small><small>soft swell</small></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="kss-panel kss-presets-panel" data-panel="presets">
+          <div class="kss-panel-head">
+            <h2>Saved presets</h2>
+          </div>
+
+          <!-- PRESET LIST: same markup as the generic settings page, so MOD UI keeps wiring it up -->
+            <div class="mod-enumerated mod-presets">
+              <span class="mod-enumerated-title">
+                <form>
+                  <span>
+                    <label><input type="radio" name="preset_type" autocomplete="off" class="radio-preset radio-preset-factory" value="factory" checked="checked"> Factory</label>
+                  </span>
+                  <span>
+                    <label><input type="radio" name="preset_type" autocomplete="off" class="radio-preset radio-preset-user" value="user"> User</label>
+                  </span>
+                </form>
+              </span>
+              <div class="mod-enumerated-list mod-preset-factory" mod-widget="custom-select">
+                {{#presets.factory}}
+                <div mod-role="enumeration-option" mod-uri="{{uri}}">{{label}}</div>
+                {{/presets.factory}}
+              </div>
+              <div class="mod-enumerated-list mod-preset-user mod-hidden" mod-widget="custom-select">
+                {{#presets.user}}
+                <div mod-role="enumeration-option" mod-uri="{{uri}}" mod-path="{{path}}">{{label}}</div>
+                {{/presets.user}}
+              </div>
+              <footer>
+                <button class="btn btn-xs btn-primary preset-btn-save disabled" title="Save"></button>
+                <button class="btn btn-xs btn-primary preset-btn-save-as" title="Save as"></button>
+                <button class="btn btn-xs btn-primary preset-btn-rename disabled" title="Rename"></button>
+                <button class="btn btn-xs btn-primary preset-btn-delete disabled" title="Delete"></button>
+                <button class="btn btn-xs btn-primary preset-btn-assign-sel disabled mod-hidden">Assign selected</button>
+                <span class="assign-all">
+                  <button class="btn btn-xs btn-primary preset-btn-assign-all" mod-role="presets-address">Assign all</button>
+                </span>
+              </footer>
+            </div>
+            <!-- END PRESET LIST -->
+        </section>
+      </div>
+    </div>
+  </div>
+  <!-- Asks before a built-in pattern becomes a Custom one. Inside the page, so it keeps the theme (and works in the Performance view) -->
+  <div class="kss-modal" hidden>
+    <div class="kss-modal-scrim"></div>
+    <div class="kss-modal-card" role="dialog" aria-modal="true" aria-label="Make your own pattern?">
+      <div class="kss-modal-title" role="heading" aria-level="2">Make your own pattern?</div>
+      <p class="kss-modal-text"></p>
+      <div class="kss-modal-actions">
+        <button type="button" class="kss-button kss-modal-cancel">Not now</button>
+        <button type="button" class="kss-button kss-modal-ok">Define custom pattern</button>
+      </div>
+    </div>
+  </div>
+</div>

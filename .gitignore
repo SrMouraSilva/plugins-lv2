@@ -1,4 +1,9 @@
 *.so
+*.dylib
+*.dll
 .DS_Store
 binaries/
 out/
+__pycache__/
+*.pyc
+_site/
