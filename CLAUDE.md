@@ -14,6 +14,7 @@ tools/hmi-preview/           pictures of the display widgets on the Dwarf and th
 tools/media/                 animations (animated WebP + GIF) and alternative thumbnails (from the preview); see "Animations and alternative thumbnails"
 tools/manual/                builds modgui/manual.html from docs/manual.md; see "HTML manuals" (tools/manual/interactive/: the plugin inside the manual)
 docs/                        guides for other developers: custom-settings-pages, making-animations, alternative-thumbnails, html-manuals, interactive-manuals
+docs/social-preview/         the repository's GitHub social preview (1280x640 PNG, made from an HTML page); see "Social preview"
 .github/workflows/release.yml  builds Duo, Duo X and Dwarf; PLUGINS lists what is packaged
 ```
 
@@ -56,6 +57,7 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
 4. `.github/workflows/release.yml`: add it to `PLUGINS`.
 5. `Readme.md` section, `NOTICE` title, a user manual (below), screenshot and thumbnail, the two animations and the alternative
    thumbnail (and the plugin in `PLUGINS` of `tools/site/build_site.py`, so it is on the documentation site) (section "Animations and alternative thumbnails": add the plugin to `tools/media/scenarios.mjs` and `thumbnails.mjs`).
+6. **Social preview**: make the repository's cover again so it shows the new plugin (section "Social preview"). It is uploaded by hand on GitHub.
 
 ## C code and LV2
 
@@ -280,6 +282,21 @@ node tools/media/shots.mjs kill-switch screenshot.png   # one picture of one plu
   scenario.
 * The alternative thumbnail is plain HTML/CSS using the colours of the plugin (copy the variables from its stylesheet);
   render it with `thumbnails.mjs` and look at it small, next to the others.
+
+## Social preview
+
+`docs/social-preview/social-preview.html` is the repository's cover on GitHub and in links shared on social networks (1280 x 640): the name of the
+project, a line about it, the plugins' `alternative-thumbnail.webp` in a grid and the list of plugin names, each with the colour of its plugin.
+`render.sh` turns it into `social-preview.png` with headless Chrome (a temporary profile, removed at the end). It stays **PNG**: GitHub only accepts
+PNG, JPG or GIF there.
+
+* **When a plugin is added (or removed or renamed), update it in the same commit**: add its `<img>` to the grid and its `<li>` to the list (colour as a
+  variable on `:root`, taken from the plugin's `alternative-thumbnail.html`), keep the list in the order of the grid, run `docs/social-preview/render.sh`
+  and **look at the PNG** (Read it). Resize the grid (the thumbnails, `gap`, `grid-template-columns`) so it still fits the box of
+  500 x 512 px and nothing comes within 64 px of the edge: GitHub crops the card in some places. Five plugins fit as 3 + 2; do not shrink the
+  thumbnails below about 150 px.
+* The colour of a plugin's dot is the dominant colour of its thumbnail, not necessarily the one of its LEDs.
+* GitHub has no API for this: tell the user to upload the new PNG (Settings > General > Social preview > Edit). Never say it was updated there.
 
 ## HTML manuals
 
