@@ -33,9 +33,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
@@ -43,7 +43,7 @@ jobs:
         run: pip install markdown pillow
 
       # The "Install on my MOD" links, made by release.yml (tools/store/cloud_build.py); absent on a pull request, which builds without them
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         continue-on-error: true
         with:
           name: installs
@@ -57,13 +57,14 @@ jobs:
       - name: List what was built
         run: find _site -type f | sort | xargs ls -la | awk '{print $5, $9}'
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
         if: github.event_name != 'pull_request'
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         if: github.event_name != 'pull_request'
         with:
           path: _site
+          include-hidden-files: true      # the site has a .nojekyll (since v4 the action leaves dotfiles out)
 
   deploy:
     needs: build
@@ -74,4 +75,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

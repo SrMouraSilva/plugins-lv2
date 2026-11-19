@@ -38,7 +38,7 @@ jobs:
       date: ${{ steps.v.outputs.date }}
       main: ${{ steps.v.outputs.main }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Compute version
         id: v
@@ -71,7 +71,7 @@ jobs:
           - { device: duo x, platform: modduox, home: /home/builder }
           - { device: dwarf, platform: moddwarf, home: /root }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build for ${{ matrix.device }}
         run: |
@@ -97,7 +97,7 @@ jobs:
             tar -czf "dist/$plugin-${{ matrix.device }}.lv2.tar.gz" -C out "$plugin.lv2"
           done
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: bundles-${{ matrix.device }}
           path: dist/*.tar.gz
@@ -110,9 +110,9 @@ jobs:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
@@ -122,7 +122,7 @@ jobs:
         continue-on-error: true
         run: python3 tools/store/cloud_build.py all --commit "$GITHUB_SHA" --output installs.json
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: installs
           path: installs.json
@@ -136,13 +136,13 @@ jobs:
     permissions:
       contents: write # create releases and tags
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: bundles-*
           path: dist
           merge-multiple: true
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         continue-on-error: true       # no links: the branch did not build on the MOD Cloud Builder, or it failed
         with:
           name: installs
