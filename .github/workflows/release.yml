@@ -5,8 +5,9 @@ name: Build and release
 # (e.g. 20261113-1530-master-87a3e32).
 # Pull requests only build, so broken builds are caught before merging.
 #
-# The release does not wait for the MOD Cloud Builder: it is published when the bundles are built (a minute or two) and the links are
-# added to its notes afterwards (job `links`).
+# It also builds the plugins for the computer, for MOD Desktop (macOS, Windows, Linux: job `desktop`, tools/desktop/package.py), and
+# the release has those archives next to the ones of the units. The release does not wait for the MOD Cloud Builder: it is published
+# when the bundles are built (a minute or two) and the links are added to its notes afterwards (job `links`).
 #
 # The release also carries the "Install on my MOD" links: the plugins are built on the MOD Cloud Builder (tools/store/cloud_build.py),
 # which keeps the build and gives the page that installs it on a unit. Each build stays on that server, so it is made
@@ -105,6 +106,62 @@ jobs:
           name: bundles-${{ matrix.device }}
           path: dist/*.tar.gz
 
+  # The plugins for the computer, for MOD Desktop: a native binary of each system (a unit's is ARM Linux, which it cannot load), packed by
+  # tools/desktop/package.py into <plugin>-<system>.lv2.zip. A failure here does not stop the release of the units.
+  desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { system: macos, runner: macos-latest }
+          - { system: windows, runner: windows-latest }
+          # the oldest runner there is: a binary asks for the glibc of the machine that built it, and the oldest one runs everywhere
+          - { system: linux, runner: ubuntu-22.04 }
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Build for Linux
+        if: matrix.system == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lv2-dev
+          make -C plugins build
+
+      # Universal (Apple Silicon and Intel) and for macOS 10.15 on, as MOD Desktop is
+      - name: Build for macOS
+        if: matrix.system == 'macos'
+        run: |
+          brew install lv2
+          make -C plugins build MACOS=true BINARY_EXT=.dylib \
+            CFLAGS="-I$(brew --prefix)/include -arch arm64 -arch x86_64 -mmacosx-version-min=10.15" \
+            LDFLAGS="-arch arm64 -arch x86_64 -mmacosx-version-min=10.15"
+
+      # 64 bits, with the C runtime of the system only (no DLL of ours to ship)
+      - uses: msys2/setup-msys2@v2
+        if: matrix.system == 'windows'
+        with:
+          msystem: MINGW64
+          update: false
+          install: make mingw-w64-x86_64-gcc mingw-w64-x86_64-lv2
+
+      - name: Build for Windows
+        if: matrix.system == 'windows'
+        shell: msys2 {0}
+        run: make -C plugins build CC=gcc WIN32=true BINARY_EXT=.dll LDFLAGS="-static-libgcc"
+
+      - name: Package
+        run: python tools/desktop/package.py ${{ matrix.system }} --out dist
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: bundles-desktop-${{ matrix.system }}
+          path: dist/*.zip
+
   # The install pages of the MOD Cloud Builder (see the top). Its failure never stops the release or the site: they go without the links.
   cloud:
     needs: version
@@ -151,7 +208,8 @@ jobs:
           if-no-files-found: ignore
 
   release:
-    needs: [version, build]
+    # `desktop` is waited for but not required: a failure of a build for the computer leaves its files out
+    needs: [version, build, desktop]
     if: ${{ !cancelled() && needs.build.result == 'success' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     permissions:
@@ -190,7 +248,16 @@ jobs:
           | Commit date | $DATE UTC |
           NOTES
 
-          gh release create "$TAG" dist/*.tar.gz \
+          if ls dist/*.lv2.zip >/dev/null 2>&1; then
+            cat >> notes.md <<NOTES
+
+          For **MOD Desktop**: \`<plugin>-macos\` (Apple Silicon and Intel), \`<plugin>-windows\` and \`<plugin>-linux\` (\`.lv2.zip\`).
+          Unzip the folder into \`Documents/MOD Desktop/lv2/\` and press Stop and Start in MOD Desktop. On macOS, run
+          \`xattr -cr <plugin>.lv2\` on it first (MOD Desktop 0.14.2 or later).
+          NOTES
+          fi
+
+          gh release create "$TAG" dist/* \
             --target "$GITHUB_SHA" \
             --title "$BRANCH @ $SHA ($DATE UTC)" \
             --notes-file notes.md \

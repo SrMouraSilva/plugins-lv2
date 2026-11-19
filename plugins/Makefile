@@ -20,6 +20,13 @@ SOURCES=$(shell find -type f -name '*.c')
 OBJECTS=$(shell find -type f -name '*.o')
 
 # --------------------------------------------------------------
+# The extension of the binary that is built. `.so` is what the bundles say (manifest.ttl) and what the MOD units load;
+# the desktop builds (tools/desktop/package.py, for MOD Desktop) build with BINARY_EXT=.dylib (macOS) or .dll (Windows)
+# and write the same extension in the manifest of their copy of the bundle.
+
+BINARY_EXT ?= .so
+
+# --------------------------------------------------------------
 # Installation path
 
 PREFIX  ?= /usr/local
@@ -38,23 +45,23 @@ build: build-gossiper build-tetr4-switch build-hept7-switch build-kill-switch
 
 build-tetr4-switch:
 	$(CC) $(SWITCH_SOURCES) \
-		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(TETR4_SWITCH).lv2/$(TETR4_SWITCH).so
+		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(TETR4_SWITCH).lv2/$(TETR4_SWITCH)$(BINARY_EXT)
 
 build-hept7-switch:
 	$(CC) $(SWITCH_SOURCES) -DHEPT7_SWITCH \
-		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(HEPT7_SWITCH).lv2/$(HEPT7_SWITCH).so
+		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(HEPT7_SWITCH).lv2/$(HEPT7_SWITCH)$(BINARY_EXT)
 
 build-gossiper:
 	$(CC) src/utils/utils.c \
 		  src/lv2/gossiper/lv2-gossiper.c src/lv2/gossiper/lv2-hmi-gossiper.c src/lv2/gossiper/lv2-gossiper-widgets.c \
 		  src/model/gossiper.c \
 		  src/gossiper.c \
-		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(GOSSIPER).lv2/$(GOSSIPER).so
+		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(GOSSIPER).lv2/$(GOSSIPER)$(BINARY_EXT)
 
 # Kill Switch shares no code with the others (only the display widgets' headers, src/hmi/): its own file, its widgets, and LV2's core header
 build-kill-switch:
 	$(CC) src/kill-switch.c src/hmi/kill-switch-widgets.c \
-		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(KILL_SWITCH).lv2/$(KILL_SWITCH).so
+		  $(BUILD_C_FLAGS) $(LINK_FLAGS) -lm $(SHARED) -o resources/$(KILL_SWITCH).lv2/$(KILL_SWITCH)$(BINARY_EXT)
 
 # --------------------------------------------------------------
 

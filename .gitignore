@@ -1,4 +1,6 @@
 *.so
+*.dylib
+*.dll
 .DS_Store
 binaries/
 out/

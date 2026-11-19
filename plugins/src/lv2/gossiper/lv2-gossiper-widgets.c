@@ -89,7 +89,7 @@ void LV2_Gossiper_Widgets_cleanup(Gossiper* self) {
 
 /** A footswitch as a box with its number (the big font where the box has room for it): filled when it is on */
 static void draw_switch_box(Canvas* canvas, int x, int y, int width, int height, int number, bool on) {
-    char text[4];
+    char text[12];     // room for any int: a footswitch number never needs it, but gcc cannot know
     const FontStyle style = width >= 8 && height >= 9 ? FONT_STYLE_BIG : FONT_STYLE_SMALL;
     const int text_height = canvas_font_height(style);
 
@@ -112,7 +112,7 @@ static void draw_switch_box(Canvas* canvas, int x, int y, int width, int height,
  * the two would run together.
  */
 static void draw_dotted_box(Canvas* canvas, int x, int y, int width, int height, int number) {
-    char text[4];
+    char text[12];     // room for any int: a footswitch number never needs it, but gcc cannot know
     const FontStyle style = width >= 8 && height >= 9 ? FONT_STYLE_BIG : FONT_STYLE_SMALL;
     const int text_height = canvas_font_height(style);
 

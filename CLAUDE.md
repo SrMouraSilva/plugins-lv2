@@ -15,7 +15,8 @@ tools/media/                 animations (animated WebP + GIF) and alternative th
 tools/manual/                builds modgui/manual.html from docs/manual.md; see "HTML manuals" (tools/manual/interactive/: the plugin inside the manual)
 docs/                        guides for other developers: custom-settings-pages, making-animations, alternative-thumbnails, html-manuals, interactive-manuals
 docs/social-preview/         the repository's GitHub social preview (1280x640 PNG, made from an HTML page); see "Social preview"
-.github/workflows/release.yml  builds Duo, Duo X and Dwarf; PLUGINS lists what is packaged
+.github/workflows/release.yml  builds Duo, Duo X and Dwarf (PLUGINS lists what is packaged) and, for MOD Desktop, macOS, Windows and Linux
+tools/desktop/               package.py: the native builds into <plugin>-<system>.lv2.zip; see "MOD Desktop builds"
 ```
 
 New files carry `Copyright 2021-2026 Paulo Mateus` and `SPDX-License-Identifier: Apache-2.0`. Third-party code keeps
@@ -229,6 +230,20 @@ Plugins can draw on the display of a MOD Dwarf or Duo X where the device impleme
   and, where a PDF is still wanted, into `modgui/manual.pdf` by `docs/build_manual.py` (needs `pip install markdown` and Chrome).
   `modgui:documentation` points to the HTML where it exists.
   `docs/` is not installed on the device, only `modgui/` is. Images come from the preview tool.
+
+## MOD Desktop builds
+
+The releases also hold the plugins built for the computer (job `desktop` of `release.yml`; guide: https://github.com/mod-audio/mod-desktop/blob/main/docs/plugins.md). A unit's
+`.so` is ARM Linux and MOD Desktop cannot load it, so each system gets a native binary in `<plugin>-<system>.lv2.zip` (macOS: universal arm64 + x86_64, minimum 10.15, `.dylib`,
+signed ad hoc; Windows: 64 bits `.dll` from MSYS2 MINGW64; Linux: x86_64 `.so` on the oldest runner, for the oldest glibc).
+
+* `plugins/Makefile` builds `<plugin>$(BINARY_EXT)` (`.so` by default, which is what the manifests say and what the units load); the desktop jobs pass `BINARY_EXT=.dylib`/`.dll`
+  and `MACOS=true`/`WIN32=true`. `tools/desktop/package.py` copies the bundle without `docs/`, writes the extension in the manifest of the copy (`lv2:binary`) and zips it.
+  The bundles of the repository are never changed: the manifests keep saying `.so`.
+* **Keep the binaries self-contained**: only the system's C runtime (`otool -L`, `ldd`, `objdump -p` show it). No library from Homebrew or MSYS2, no `libgcc_s` DLL (`-static-libgcc`).
+* To try it here: build with the flags of `release.yml`, run `package.py`, check `lipo -archs` / `file`, and `dlopen` the binary in a tiny host and call `lv2_descriptor(0)`.
+  macOS and Linux were checked that way; the Windows build was cross-compiled with mingw-w64 (Docker) and never run on Windows. Say so.
+* The build must have no warnings on gcc as well (Linux CI): `-Wformat-truncation` found a `char text[4]` for an `int` once.
 
 ## Animations and alternative thumbnails
 

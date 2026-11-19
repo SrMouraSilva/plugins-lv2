@@ -136,14 +136,14 @@ A rhythmic signal-cut effect, like the momentary kill switch some guitars have: 
 
 ## Download
 
-Binaries for **MOD Duo**, **MOD Duo X** and **MOD Dwarf** are built by [GitHub Actions](./.github/workflows/release.yml) on every push and published on the [Releases](../../releases) page. The releases of the main branch (and of any other branch started by hand, *Actions > Build and release > Run workflow*) also list an **Install on a MOD unit** page for each plugin, made by the [MOD Cloud Builder](https://builder.mod.audio). Releases have no version number; they are named after the commit they were built from:
+Binaries for **MOD Duo**, **MOD Duo X**, **MOD Dwarf** and, for [MOD Desktop](#use-it-in-mod-desktop), **macOS**, **Windows** and **Linux** are built by [GitHub Actions](./.github/workflows/release.yml) on every push and published on the [Releases](../../releases) page. The releases of the main branch (and of any other branch started by hand, *Actions > Build and release > Run workflow*) also list an **Install on a MOD unit** page for each plugin, made by the [MOD Cloud Builder](https://builder.mod.audio). Releases have no version number; they are named after the commit they were built from:
 
 ```
 <commit date UTC>-<branch>-<commit hash>
 20261113-1530-master-87a3e32
 ```
 
-Each release has one archive per plugin and device (`gossiper-duo.lv2.tar.gz`, `tetr4-switch-duo-x.lv2.tar.gz`, `gossiper-dwarf.lv2.tar.gz`, ...); each one contains the `.lv2` bundle folder. The **Install on a MOD unit** links are added to the notes a few minutes after the release is published.
+Each release has one archive per plugin and device (`gossiper-duo.lv2.tar.gz`, `tetr4-switch-duo-x.lv2.tar.gz`, `gossiper-dwarf.lv2.tar.gz`, ...) and one per plugin and computer system (`gossiper-macos.lv2.zip`, `kill-switch-windows.lv2.zip`, `hept7-switch-linux.lv2.zip`, ...); each one contains the `.lv2` bundle folder. The **Install on a MOD unit** links are added to the notes a few minutes after the release is published.
 
 The release marked **Latest** is the most recent build of `master`. Builds from other branches are published as pre-releases.
 
@@ -173,6 +173,22 @@ For the Duo or Duo X, download `$plugin-duo.lv2.tar.gz` or `$plugin-duo-x.lv2.ta
 * The plugin is unloaded while it is replaced, so do not install it while a pedalboard that uses it is playing. After an update of the interface, reload the MOD UI page.
 * Tested on a MOD Dwarf; the Duo and Duo X run the same MOD UI endpoint, but this was not tried there.
 * Another plugin version in the same folder is replaced by the one installed. To go back, install an older release the same way.
+
+### Use it in MOD Desktop
+
+A bundle of a unit holds an ARM Linux binary, which MOD Desktop cannot load, so the releases have one built for each system ([how MOD Desktop loads plugins](https://github.com/mod-audio/mod-desktop/blob/main/docs/plugins.md)):
+
+| Archive | Binary | Built for |
+| --- | --- | --- |
+| `<plugin>-macos.lv2.zip` | `.dylib` | macOS 10.15 or later, universal (Apple Silicon and Intel), signed ad hoc |
+| `<plugin>-windows.lv2.zip` | `.dll` | Windows, 64 bits |
+| `<plugin>-linux.lv2.zip` | `.so` | Linux, x86_64 (glibc 2.35 or later) |
+
+1. Unzip it: the folder is the bundle (`hept7-switch.lv2`). On **macOS**, remove the quarantine flag first: `xattr -cr hept7-switch.lv2` (needs MOD Desktop **0.14.2 or later**, which loads plugins that MOD did not sign).
+2. Put the folder in `Documents/MOD Desktop/lv2/` (create the `lv2` folder: MOD Desktop does not).
+3. Press **Stop** and then **Start** in the MOD Desktop window, and reload its web interface.
+
+The binaries use only the C runtime of the system (nothing else to install). If a plugin does not load, MOD Desktop writes why in `Documents/MOD Desktop/launcher.log`. Only the Linux and macOS builds were opened here (`dlopen`, in a tiny host); the Windows one was cross-compiled and not run, and none of them was tried inside MOD Desktop itself. To build them yourself: `make build` with `BINARY_EXT=.dylib` (and `MACOS=true`) or `.dll` (and `WIN32=true`), then `python3 tools/desktop/package.py <macos|windows|linux>`; the flags are in `.github/workflows/release.yml`.
 
 ## Development
 
