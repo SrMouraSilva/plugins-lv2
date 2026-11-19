@@ -10,7 +10,7 @@
     "Touch settings page"
   ],
   "edition": "User manual · November 2026 edition",
-  "version": "v1.0.35",
+  "version": "v1.0.37",
   "hero": "../modgui/screenshot.png",
   "brand": "#0c4550",
   "brand2": "#052a31",
@@ -26,6 +26,10 @@
     "#c9d6d8"
   ],
   "links": [
+    {
+      "label": "Forum thread",
+      "url": "https://forum.mod.audio/t/hept7-switch/13716"
+    },
     {
       "label": "Store page",
       "url": "https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9oZXB0Ny1zd2l0Y2g="
