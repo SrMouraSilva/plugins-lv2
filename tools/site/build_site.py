@@ -6,7 +6,7 @@
 """
 Builds the documentation site (static HTML, for GitHub Pages) into a folder:
 
-    python3 tools/site/build_site.py --out _site [--repo OWNER/NAME] [--ref BRANCH]
+    python3 tools/site/build_site.py --out _site [--repo OWNER/NAME] [--ref BRANCH] [--installs installs.json]
 
     _site/index.html                    the landing page: the plugins, the guides, the downloads
     _site/plugins/<plugin>/manual.html  the user manual of each plugin (built from its docs/manual.md)
@@ -16,6 +16,9 @@ Builds the documentation site (static HTML, for GitHub Pages) into a folder:
 The manuals and the guides are rendered by tools/manual/build_manual_html.py, so they look like the manuals the device
 serves. A link from a guide to another guide becomes a link to its page; a link to any other file of the repository
 becomes a link to that file on GitHub (at --ref). Needs `pip install markdown pillow`.
+
+--installs is the JSON that tools/store/cloud_build.py writes, {plugin: the page of the MOD Cloud Builder that installs that build on a
+unit}: each card with an entry gets an "Install on my MOD" link. Without it (or without the plugin in it) the card has no such link.
 """
 import argparse
 import html
@@ -121,7 +124,7 @@ def plugin_data(name: str) -> dict:
     return {"name": name, "bundle": bundle, **config}
 
 
-def build(out: Path, repo: str, ref: str) -> None:
+def build(out: Path, repo: str, ref: str, installs: dict | None = None) -> None:
     if out.exists():
         shutil.rmtree(out)
     (out / "plugins").mkdir(parents=True)
@@ -157,11 +160,11 @@ def build(out: Path, repo: str, ref: str) -> None:
         (out / "guides" / f"{page}.html").write_text(document, encoding="utf-8")
         print(f"guides/{page}.html: {len(document) // 1024} KB")
 
-    (out / "index.html").write_text(index(plugins, repo, ref), encoding="utf-8")
+    (out / "index.html").write_text(index(plugins, repo, ref, installs or {}), encoding="utf-8")
     print("index.html")
 
 
-def index(plugins: list, repo: str, ref: str) -> str:
+def index(plugins: list, repo: str, ref: str, installs: dict) -> str:
     sha, date = git("rev-parse", "--short=7", "HEAD"), git("log", "-1", "--format=%cd", "--date=short")
     css = (ROOT / "tools/manual/manual.css").read_text() + (HERE / "site.css").read_text()
 
@@ -171,6 +174,8 @@ def index(plugins: list, repo: str, ref: str) -> str:
         chips = "".join(f"<span>{esc(b)}</span>" for b in p.get("badges", []))
         actions = f'<a class="btn primary" href="plugins/{name}/manual.html">User manual</a>' + "".join(
             f'<a class="btn" href="{esc(l["url"])}" target="_blank" rel="noopener">{esc(l["label"])}</a>' for l in p.get("links", []))
+        if name in installs:
+            actions += f'<a class="btn" href="{esc(installs[name])}" target="_blank" rel="noopener">Install on my MOD</a>'
         strip = ", ".join(f"{c} {i * 100 // len(p['colors'])}% {(i + 1) * 100 // len(p['colors'])}%" for i, c in enumerate(p["colors"]))
         demo = ""
         if (ROOT / "plugins/resources" / f"{name}.lv2/docs/images/{name}-demo.gif").exists():
@@ -255,6 +260,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--out", type=Path, default=ROOT / "_site")
     parser.add_argument("--repo", default=os.environ.get("GITHUB_REPOSITORY") or repo_from_git())
-    parser.add_argument("--ref", default=os.environ.get("GITHUB_REF_NAME") or git("branch", "--show-current") or "master")
+    parser.add_argument("--ref", default=os.environ.get("GITHUB_REF_NAME") or git("branch", "--show-current") or "main")
+    parser.add_argument("--installs", type=Path, help="JSON {plugin: install page} from tools/store/cloud_build.py: adds the Install links")
     args = parser.parse_args()
-    build(args.out.resolve(), args.repo, args.ref)
+    build(args.out.resolve(), args.repo, args.ref, json.loads(args.installs.read_text()) if args.installs else None)

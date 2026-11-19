@@ -14,7 +14,9 @@ tools/hmi-preview/           pictures of the display widgets on the Dwarf and th
 tools/media/                 animations (animated WebP + GIF) and alternative thumbnails (from the preview); see "Animations and alternative thumbnails"
 tools/manual/                builds modgui/manual.html from docs/manual.md; see "HTML manuals" (tools/manual/interactive/: the plugin inside the manual)
 docs/                        guides for other developers: custom-settings-pages, making-animations, alternative-thumbnails, html-manuals, interactive-manuals
-.github/workflows/release.yml  builds Duo, Duo X and Dwarf; PLUGINS lists what is packaged
+docs/social-preview/         the repository's GitHub social preview (1280x640 PNG, made from an HTML page); see "Social preview"
+.github/workflows/release.yml  builds Duo, Duo X and Dwarf (PLUGINS lists what is packaged) and, for MOD Desktop, macOS, Windows and Linux
+tools/desktop/               package.py: the native builds into <plugin>-<system>.lv2.zip; see "MOD Desktop builds"
 ```
 
 New files carry `Copyright 2021-2026 Paulo Mateus` and `SPDX-License-Identifier: Apache-2.0`. Third-party code keeps
@@ -56,6 +58,7 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
 4. `.github/workflows/release.yml`: add it to `PLUGINS`.
 5. `Readme.md` section, `NOTICE` title, a user manual (below), screenshot and thumbnail, the two animations and the alternative
    thumbnail (and the plugin in `PLUGINS` of `tools/site/build_site.py`, so it is on the documentation site) (section "Animations and alternative thumbnails": add the plugin to `tools/media/scenarios.mjs` and `thumbnails.mjs`).
+6. **Social preview**: make the repository's cover again so it shows the new plugin (section "Social preview"). It is uploaded by hand on GitHub.
 
 ## C code and LV2
 
@@ -228,6 +231,20 @@ Plugins can draw on the display of a MOD Dwarf or Duo X where the device impleme
   `modgui:documentation` points to the HTML where it exists.
   `docs/` is not installed on the device, only `modgui/` is. Images come from the preview tool.
 
+## MOD Desktop builds
+
+The releases also hold the plugins built for the computer (job `desktop` of `release.yml`; guide: https://github.com/mod-audio/mod-desktop/blob/main/docs/plugins.md). A unit's
+`.so` is ARM Linux and MOD Desktop cannot load it, so each system gets a native binary in `<plugin>-<system>.lv2.zip` (macOS: universal arm64 + x86_64, minimum 10.15, `.dylib`,
+signed ad hoc; Windows: 64 bits `.dll` from MSYS2 MINGW64; Linux: x86_64 `.so` on the oldest runner, for the oldest glibc).
+
+* `plugins/Makefile` builds `<plugin>$(BINARY_EXT)` (`.so` by default, which is what the manifests say and what the units load); the desktop jobs pass `BINARY_EXT=.dylib`/`.dll`
+  and `MACOS=true`/`WIN32=true`. `tools/desktop/package.py` copies the bundle without `docs/`, writes the extension in the manifest of the copy (`lv2:binary`) and zips it.
+  The bundles of the repository are never changed: the manifests keep saying `.so`.
+* **Keep the binaries self-contained**: only the system's C runtime (`otool -L`, `ldd`, `objdump -p` show it). No library from Homebrew or MSYS2, no `libgcc_s` DLL (`-static-libgcc`).
+* To try it here: build with the flags of `release.yml`, run `package.py`, check `lipo -archs` / `file`, and `dlopen` the binary in a tiny host and call `lv2_descriptor(0)`.
+  macOS and Linux were checked that way; the Windows build was cross-compiled with mingw-w64 (Docker) and never run on Windows. Say so.
+* The build must have no warnings on gcc as well (Linux CI): `-Wformat-truncation` found a `char text[4]` for an `int` once.
+
 ## Animations and alternative thumbnails
 
 Every plugin has, in `plugins/resources/<name>.lv2/docs/` (not installed on the device), and all of them are shown in the
@@ -281,6 +298,21 @@ node tools/media/shots.mjs kill-switch screenshot.png   # one picture of one plu
 * The alternative thumbnail is plain HTML/CSS using the colours of the plugin (copy the variables from its stylesheet);
   render it with `thumbnails.mjs` and look at it small, next to the others.
 
+## Social preview
+
+`docs/social-preview/social-preview.html` is the repository's cover on GitHub and in links shared on social networks (1280 x 640): the name of the
+project, a line about it, the plugins' `alternative-thumbnail.webp` in a grid and the list of plugin names, each with the colour of its plugin.
+`render.sh` turns it into `social-preview.png` with headless Chrome (a temporary profile, removed at the end). It stays **PNG**: GitHub only accepts
+PNG, JPG or GIF there.
+
+* **When a plugin is added (or removed or renamed), update it in the same commit**: add its `<img>` to the grid and its `<li>` to the list (colour as a
+  variable on `:root`, taken from the plugin's `alternative-thumbnail.html`), keep the list in the order of the grid, run `docs/social-preview/render.sh`
+  and **look at the PNG** (Read it). Resize the grid (the thumbnails, `gap`, `grid-template-columns`) so it still fits the box of
+  500 x 512 px and nothing comes within 64 px of the edge: GitHub crops the card in some places. Five plugins fit as 3 + 2; do not shrink the
+  thumbnails below about 150 px.
+* The colour of a plugin's dot is the dominant colour of its thumbnail, not necessarily the one of its LEDs.
+* GitHub has no API for this: tell the user to upload the new PNG (Settings > General > Social preview > Edit). Never say it was updated there.
+
 ## HTML manuals
 
 `modgui:documentation` points to `modgui/manual.html`, built from `docs/manual.md` (+ `docs/manual.json`, the cover and the
@@ -329,10 +361,20 @@ A manual can have one section in which **the real plugin runs inside the page**:
 ## Documentation site
 
 `tools/site/build_site.py` builds a static site (landing page, the user manual of each plugin, the guides of `docs/` and
-the preview's README) that `.github/workflows/docs.yml` publishes on GitHub Pages: `python3 tools/site/build_site.py --out _site`
+the preview's README) that `.github/workflows/docs.yml` builds and `release.yml` (job `site`) publishes on GitHub Pages: `python3 tools/site/build_site.py --out _site`
 (`pip install markdown pillow`; Python 3.12+). It renders the manuals and the guides with `tools/manual/build_manual_html.py`,
 so they look like the manuals of the device.
 
+* **"Install on my MOD"** (a link on each card) goes to the page of the MOD Cloud Builder that installs a stored build on a unit plugged in over USB.
+  `tools/store/cloud_build.py` makes it: it sends `store/<plugin>.mk` (pinned in memory to a commit that is on GitHub) to `builder.mod.audio` over socket.io
+  (`build`, type `buildroot`, `persistent`: the Duo, Duo X and Dwarf builds are kept, minutes in all) and gets the id of the stored build, so the page is
+  `http://builder.mod.audio/install/<id>`. `release.yml` runs it (job `cloud`; a failure only leaves the links out, and the release does not wait for it: the job `links` adds them to its notes) **on every push to the main branch, and on any other
+  branch only when started by hand** (Actions > Build and release > Run workflow, `cloud_build` on): the links go in the notes of the release and, from the main
+  branch, to the site (`docs.yml` is called by the job `site` and gives `build_site.py` the JSON, `--installs`). The main branch is `MAIN_BRANCH` in the job `version`. The page must be that one: **mod-ui only accepts the `rplsocket` of pages of `*.mod.audio` and `localhost:8010`** (`check_origin`), so an
+  install button of our own on the GitHub Pages site is refused with a 403. Never forge the `Origin` header to get round it. Every run stores a new build on
+  the builder (about 20 MB per plugin): do not call it more often than a release of the main branch or a test version somebody asked for.
+  The job `cloud` keeps the links in a cache keyed by the hash of `plugins/` (without `docs/`), `store/` and `cloud_build.py`: when none changed (a push of only documentation)
+  it reuses them and builds nothing; only a build that succeeded is cached.
 * **A new plugin** appears on the site by being added to `PLUGINS` in `tools/site/build_site.py` and having `docs/manual.md`,
   `docs/manual.json` (title, tagline, badges, colours, links), `docs/alternative-thumbnail.webp` and the two animations (.webp and .gif). **A new guide**
   is added to `GUIDES` (and `GUIDE_TAGLINES`) in the same file.
@@ -340,9 +382,9 @@ so they look like the manuals of the device.
   guides with relative links to files (`../CLAUDE.md`, `./making-animations.md`), never with absolute URLs of this repository.
 * Fenced code blocks inside a list item are turned into code blocks after the item (Python-Markdown does not nest them);
   prefer a fence at the left margin.
-* **The workflow publishes from the development branch for now** (a TODO at its top): when the branch is merged, replace it by
-  the main one in `docs.yml`. Settings needed once: *Pages > Source: GitHub Actions*, and the branch allowed in
-  *Environments > github-pages > Deployment branches*.
+* **The main branch is `main`** (`MAIN_BRANCH` in the job `version` of `release.yml`): the site is published from it, its releases are the "Latest" one and it builds on the
+  MOD Cloud Builder on every push. Settings needed once: *Pages > Source: GitHub Actions*, and `main` allowed in
+  *Environments > github-pages > Deployment branches* (GitHub only allows the default branch at first).
 
 ## Git
 

@@ -10,14 +10,12 @@ name: Documentation site
 #   2. Settings > Environments > github-pages > Deployment branches: allow the branches listed below (GitHub only
 #      allows the default branch at first, and the deploy job is refused on any other until it is added)
 #
-# TODO: the site is published from the development branch for now. When it is merged, replace the branch below by the
-# main one (master) and remove the development branch from the allowed branches of the environment.
+# It is published by release.yml (job `site`, from the main branch only, on every push or run by hand: the install links
+# are made there and come in the artifact `installs`), which calls this workflow. The main branch is set in the job `version` of
+# release.yml (`main`). The branch must be allowed in the environment github-pages (Settings > Environments > Deployment branches).
 on:
-  push:
-    branches:
-      - feature/hept7-switch
+  workflow_call:
   pull_request:                 # only builds: a broken manual or guide is caught before merging
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -35,28 +33,38 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
       - name: Install the tools
         run: pip install markdown pillow
 
+      # The "Install on my MOD" links, made by release.yml (tools/store/cloud_build.py); absent on a pull request, which builds without them
+      - uses: actions/download-artifact@v8
+        continue-on-error: true
+        with:
+          name: installs
+          path: installs
+
       - name: Build the site
-        run: python3 tools/site/build_site.py --out _site --repo "$GITHUB_REPOSITORY" --ref "${{ github.head_ref || github.ref_name }}"
+        env:
+          REF: ${{ github.head_ref || github.ref_name }}
+        run: python3 tools/site/build_site.py --out _site $(test -f installs/installs.json && echo "--installs installs/installs.json") --repo "$GITHUB_REPOSITORY" --ref "$REF"
 
       - name: List what was built
         run: find _site -type f | sort | xargs ls -la | awk '{print $5, $9}'
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
         if: github.event_name != 'pull_request'
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         if: github.event_name != 'pull_request'
         with:
           path: _site
+          include-hidden-files: true      # the site has a .nojekyll (since v4 the action leaves dotfiles out)
 
   deploy:
     needs: build
@@ -67,4 +75,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
