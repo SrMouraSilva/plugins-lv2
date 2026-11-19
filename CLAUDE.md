@@ -14,7 +14,7 @@ tools/hmi-preview/           pictures of the display widgets on the Dwarf and th
 tools/media/                 animations (animated WebP + GIF) and alternative thumbnails (from the preview); see "Animations and alternative thumbnails"
 tools/manual/                builds modgui/manual.html from docs/manual.md; see "HTML manuals" (tools/manual/interactive/: the plugin inside the manual)
 docs/                        guides for other developers: custom-settings-pages, making-animations, alternative-thumbnails, html-manuals, interactive-manuals
-.github/workflows/build-bundles.yml  builds Duo, Duo X and Dwarf (PLUGINS lists what is packaged); release.yml publishes it, docs.yml puts it on the site
+.github/workflows/release.yml  builds Duo, Duo X and Dwarf; PLUGINS lists what is packaged
 ```
 
 New files carry `Copyright 2021-2026 Paulo Mateus` and `SPDX-License-Identifier: Apache-2.0`. Third-party code keeps
@@ -53,7 +53,7 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
 3. `plugins/srmourasilva-plugins.mk`: add `<name>.lv2` to `SRMOURASILVA_PLUGINS_BUNDLES` and **bump
    `SRMOURASILVA_PLUGINS_VERSION`** (otherwise the builder does not rebuild). Add `install-<name>` to the Makefile and a recipe
    `store/<name>.mk` (copy another one: the MOD store takes **one bundle per package**), then run `python3 tools/store/pin.py`.
-4. `.github/workflows/build-bundles.yml`: add it to `PLUGINS`.
+4. `.github/workflows/release.yml`: add it to `PLUGINS`.
 5. `Readme.md` section, `NOTICE` title, a user manual (below), screenshot and thumbnail, the two animations and the alternative
    thumbnail (and the plugin in `PLUGINS` of `tools/site/build_site.py`, so it is on the documentation site) (section "Animations and alternative thumbnails": add the plugin to `tools/media/scenarios.mjs` and `thumbnails.mjs`).
 
@@ -329,17 +329,18 @@ A manual can have one section in which **the real plugin runs inside the page**:
 ## Documentation site
 
 `tools/site/build_site.py` builds a static site (landing page, the user manual of each plugin, the guides of `docs/` and
-the preview's README) that `.github/workflows/docs.yml` publishes on GitHub Pages: `python3 tools/site/build_site.py --out _site`
+the preview's README) that `.github/workflows/docs.yml` builds and `release.yml` (job `site`) publishes on GitHub Pages: `python3 tools/site/build_site.py --out _site`
 (`pip install markdown pillow`; Python 3.12+). It renders the manuals and the guides with `tools/manual/build_manual_html.py`,
 so they look like the manuals of the device.
 
-* **"Install on my MOD"** (a button on each card, `tools/site/install.js`, drawn only when `--bundles` is given). `docs.yml` builds the bundles
-  (`build-bundles.yml`, shared with `release.yml`) and the site carries them as `plugins/<plugin>/<device>.lv2.tar.gz`: a page cannot read the
-  assets of a GitHub release (no CORS headers). The script speaks to the unit's mod-ui as the MOD Cloud Builder does (`ws://192.168.51.1/rplsocket`:
-  send `''` for `{platform, version}`, then base64 of the `.tar.gz`; the answer is `{ok, installed | error}`). **mod-ui only accepts that socket from pages of
-  `*.mod.audio` and `localhost:8010` (`check_origin`)**: from the GitHub Pages address the handshake is a 403, which the page can only report as "could not
-  connect" (it says why before trying). To try it on a device: build with `--bundles` (the `.tar.gz` of a release will do), serve the folder with
-  `python3 -m http.server 8010 --bind 127.0.0.1 -d _site` and open `http://localhost:8010`. It replaces the bundle of the same name on the unit.
+* **"Install on my MOD"** (a link on each card) goes to the page of the MOD Cloud Builder that installs a stored build on a unit plugged in over USB.
+  `tools/store/cloud_build.py` makes it: it sends `store/<plugin>.mk` (pinned in memory to a commit that is on GitHub) to `builder.mod.audio` over socket.io
+  (`build`, type `buildroot`, `persistent`: the Duo, Duo X and Dwarf builds are kept, minutes in all) and gets the id of the stored build, so the page is
+  `http://builder.mod.audio/install/<id>`. `release.yml` runs it (job `cloud`; a failure only leaves the links out) **on every push to the main branch, and on any other
+  branch only when started by hand** (Actions > Build and release > Run workflow, `cloud_build` on): the links go in the notes of the release and, from the main
+  branch, to the site (`docs.yml` is called by the job `site` and gives `build_site.py` the JSON, `--installs`). The main branch is `MAIN_BRANCH` in the job `version`. The page must be that one: **mod-ui only accepts the `rplsocket` of pages of `*.mod.audio` and `localhost:8010`** (`check_origin`), so an
+  install button of our own on the GitHub Pages site is refused with a 403. Never forge the `Origin` header to get round it. Every run stores a new build on
+  the builder (about 20 MB per plugin): do not call it more often than a release of the main branch or a test version somebody asked for.
 * **A new plugin** appears on the site by being added to `PLUGINS` in `tools/site/build_site.py` and having `docs/manual.md`,
   `docs/manual.json` (title, tagline, badges, colours, links), `docs/alternative-thumbnail.webp` and the two animations (.webp and .gif). **A new guide**
   is added to `GUIDES` (and `GUIDE_TAGLINES`) in the same file.
@@ -347,8 +348,8 @@ so they look like the manuals of the device.
   guides with relative links to files (`../CLAUDE.md`, `./making-animations.md`), never with absolute URLs of this repository.
 * Fenced code blocks inside a list item are turned into code blocks after the item (Python-Markdown does not nest them);
   prefer a fence at the left margin.
-* **The workflow publishes from the development branch for now** (a TODO at its top): when the branch is merged, replace it by
-  the main one in `docs.yml`. Settings needed once: *Pages > Source: GitHub Actions*, and the branch allowed in
+* **The site is published from the development branch for now** (the TODO in the job `version` of `release.yml`: `MAIN_BRANCH`): when it is merged, replace it by
+  the main one (`main`). Settings needed once: *Pages > Source: GitHub Actions*, and the branch allowed in
   *Environments > github-pages > Deployment branches*.
 
 ## Git

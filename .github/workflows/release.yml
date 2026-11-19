@@ -4,15 +4,29 @@ name: Build and release
 # publishes a single release named after the commit: <date>-<branch>-<hash>
 # (e.g. 20261113-1530-master-87a3e32).
 # Pull requests only build, so broken builds are caught before merging.
+#
+# The release also carries the "Install on my MOD" links: the plugins are built on the MOD Cloud Builder (tools/store/cloud_build.py),
+# which keeps the build and gives the page that installs it on a unit. Each build stays on that server, so it is made
+#   - on every push to the main branch (MAIN_BRANCH below), and the documentation site (docs.yml) is published with those links;
+#   - on any other branch only when started by hand: Actions > Build and release > Run workflow, pick the branch (cloud_build on),
+#     to give a test version to somebody. The release of every other push has the bundles only.
 on:
   push:
     branches: ['**']
   pull_request:
   workflow_dispatch:
+    inputs:
+      cloud_build:
+        description: 'Build on the MOD Cloud Builder and put the install links in the release'
+        type: boolean
+        default: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+env:
+  PLUGINS: gossiper tetr4-switch hept7-switch kill-switch
 
 jobs:
   version:
@@ -22,6 +36,7 @@ jobs:
       branch: ${{ steps.v.outputs.branch }}
       sha: ${{ steps.v.outputs.sha }}
       date: ${{ steps.v.outputs.date }}
+      main: ${{ steps.v.outputs.main }}
     steps:
       - uses: actions/checkout@v4
 
@@ -34,18 +49,87 @@ jobs:
           branch="$(printf '%s' "$branch" | tr -c 'A-Za-z0-9._\n-' '-' | sed 's/^-*//; s/-*$//')"
           sha="$(git rev-parse --short=7 HEAD)"
           date="$(git log -1 --format=%cd --date=format-local:'%Y%m%d-%H%M')"
+          # TODO: the main branch is the development branch for now. When it is merged, set it to main.
+          MAIN_BRANCH=feature/hept7-switch
+          if [ "${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}" = "$MAIN_BRANCH" ]; then echo "main=true" >> "$GITHUB_OUTPUT"; else echo "main=false" >> "$GITHUB_OUTPUT"; fi
           echo "branch=$branch" >> "$GITHUB_OUTPUT"
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
           echo "tag=$date-$branch-$sha" >> "$GITHUB_OUTPUT"
           echo "date=$(git log -1 --format=%cd --date=format-local:'%Y-%m-%d %H:%M')" >> "$GITHUB_OUTPUT"
 
-  # The build itself is shared with the documentation site (docs.yml): build-bundles.yml
   build:
-    uses: ./.github/workflows/build-bundles.yml
+    needs: version
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # device: name used on the release assets
+          # platform: mod-plugin-builder platform (also the cbix/mod-plugin-builder image tag)
+          # home: home of the user the image runs as (the Duo/Duo X images use `builder`, the Dwarf one root)
+          - { device: duo, platform: modduo, home: /home/builder }
+          - { device: duo x, platform: modduox, home: /home/builder }
+          - { device: dwarf, platform: moddwarf, home: /root }
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build for ${{ matrix.device }}
+        run: |
+          # The Duo/Duo X images run as a non-root user, which must be able to write to /out
+          mkdir -p out && chmod 777 out
+          docker run --rm \
+            -v "$PWD/plugins:${{ matrix.home }}/mod-plugin-builder/plugins/package/srmourasilva-plugins" \
+            -v "$PWD/out:/out" \
+            "cbix/mod-plugin-builder:${{ matrix.platform }}" bash -euxc '
+              # `build` needs ping to reach a device, which is not needed here
+              SUDO=$(test "$(id -u)" = 0 || echo sudo)
+              printf "#!/bin/bash\nexit 0\n" | $SUDO tee /usr/bin/ping >/dev/null
+              $SUDO chmod +x /usr/bin/ping
+              ./build ${{ matrix.platform }} srmourasilva-plugins
+              cp -r "$HOME/mod-workdir/${{ matrix.platform }}/target/usr/local/lib/lv2/"*.lv2 /out/
+            '
+
+      - name: Package bundles
+        run: |
+          mkdir -p dist
+          for plugin in $PLUGINS; do
+            test -f "out/$plugin.lv2/$plugin.so"
+            tar -czf "dist/$plugin-${{ matrix.device }}.lv2.tar.gz" -C out "$plugin.lv2"
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bundles-${{ matrix.device }}
+          path: dist/*.tar.gz
+
+  # The install pages of the MOD Cloud Builder (see the top). Its failure never stops the release or the site: they go without the links.
+  cloud:
+    needs: version
+    if: github.event_name != 'pull_request' && (needs.version.outputs.main == 'true' || (github.event_name == 'workflow_dispatch' && inputs.cloud_build))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install "python-socketio[client]"
+
+      - name: Build the plugins on the MOD Cloud Builder
+        continue-on-error: true
+        run: python3 tools/store/cloud_build.py all --commit "$GITHUB_SHA" --output installs.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installs
+          path: installs.json
+          if-no-files-found: ignore
 
   release:
-    needs: [version, build]
-    if: github.event_name != 'pull_request'
+    needs: [version, build, cloud]
+    # `cloud` is skipped on most branches, which would skip this job too
+    if: ${{ !cancelled() && needs.build.result == 'success' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write # create releases and tags
@@ -55,6 +139,12 @@ jobs:
           pattern: bundles-*
           path: dist
           merge-multiple: true
+
+      - uses: actions/download-artifact@v4
+        continue-on-error: true       # no links: the branch did not build on the MOD Cloud Builder, or it failed
+        with:
+          name: installs
+          path: installs
 
       - name: Publish release
         env:
@@ -83,8 +173,26 @@ jobs:
           | Commit date | $DATE UTC |
           NOTES
 
+          if [ -s installs/installs.json ]; then
+            {
+              printf '\n### Install on a MOD unit\n\n'
+              printf 'Plug the unit into the computer with the USB cable and open the page of the plugin (builds kept by the [MOD Cloud Builder](https://builder.mod.audio)):\n\n'
+              python3 -c "import json; [print(f'- [{name}]({url})') for name, url in sorted(json.load(open('installs/installs.json')).items())]"
+            } >> notes.md
+          fi
+
           gh release create "$TAG" dist/*.tar.gz \
             --target "$GITHUB_SHA" \
             --title "$BRANCH @ $SHA ($DATE UTC)" \
             --notes-file notes.md \
             $flags
+
+  # The documentation site, with the install links, from the main branch only (docs.yml builds it; it deploys to GitHub Pages)
+  site:
+    needs: [version, cloud]
+    if: ${{ !cancelled() && github.event_name != 'pull_request' && needs.version.outputs.main == 'true' }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/docs.yml

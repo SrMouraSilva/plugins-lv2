@@ -52,31 +52,3 @@
 
 .site-footer { padding: 24px 16px 56px; text-align: center; color: var(--muted); font-size: 13px; }
 .site-footer .footer-strip { height: 4px; max-width: 200px; margin: 0 auto 14px; border-radius: 2px; background: var(--strip); }
-
-/* "Install on my MOD" (tools/site/install.js) */
-button.btn { border: 0; font-family: inherit; cursor: pointer; touch-action: manipulation; }
-button.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
-.btn.install-open { color: var(--head); }
-.install { width: min(560px, calc(100% - 32px)); max-height: calc(100% - 32px); overflow: auto; margin: auto; padding: 28px; border: 0; border-radius: var(--radius); color: var(--text, inherit); background: var(--sheet); box-shadow: 0 30px 80px -20px rgba(0, 0, 20, .7); }
-.install::backdrop { background: rgba(8, 10, 30, .62); }
-.install .install-title { margin: 0 0 8px; font-size: 24px; }
-.install p { margin: 0 0 12px; }
-.install .install-intro { color: var(--muted); }
-.install-steps { margin: 18px 0; padding: 0; list-style: none; }
-.install-steps li { position: relative; padding: 8px 0 8px 36px; color: var(--muted); }
-.install-steps li::before { content: ""; position: absolute; left: 4px; top: 50%; width: 14px; height: 14px; margin-top: -7px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--line); }
-.install-steps li[data-state="doing"] { color: var(--head); font-weight: 700; }
-.install-steps li[data-state="doing"]::before { box-shadow: inset 0 0 0 2px var(--link); animation: install-pulse 1s ease-in-out infinite; }
-.install-steps li[data-state="done"] { color: var(--head); }
-.install-steps li[data-state="done"]::before { background: var(--link); box-shadow: none; }
-.install-steps li[data-state="failed"] { color: var(--head); font-weight: 700; }
-.install-steps li[data-state="failed"]::before { background: #d33a3a; box-shadow: none; }
-@keyframes install-pulse { 50% { transform: scale(1.35); } }
-@media (prefers-reduced-motion: reduce) { .install-steps li[data-state="doing"]::before { animation: none; } }
-.install-status { min-height: 1.5em; font-weight: 700; color: var(--head); }
-.install-status[data-kind="error"] { color: #c0262d; }
-@media (prefers-color-scheme: dark) { .install-status[data-kind="error"] { color: #ff8a8f; } }
-.install-hint { margin: 0 0 4px; padding-left: 14px; border-left: 3px solid var(--line); color: var(--muted); font-size: 15px; }
-.install-hint p { margin: 0 0 8px; }
-.install .actions { margin-top: 16px; }
-.install [hidden] { display: none !important; }

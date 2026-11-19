@@ -136,7 +136,7 @@ A rhythmic signal-cut effect, like the momentary kill switch some guitars have: 
 
 ## Download
 
-Binaries for **MOD Duo**, **MOD Duo X** and **MOD Dwarf** are built by [GitHub Actions](./.github/workflows/release.yml) on every push and published on the [Releases](../../releases) page. Releases have no version number; they are named after the commit they were built from:
+Binaries for **MOD Duo**, **MOD Duo X** and **MOD Dwarf** are built by [GitHub Actions](./.github/workflows/release.yml) on every push and published on the [Releases](../../releases) page. The releases of the main branch (and of any other branch started by hand, *Actions > Build and release > Run workflow*) also list an **Install on a MOD unit** page for each plugin, made by the [MOD Cloud Builder](https://builder.mod.audio). Releases have no version number; they are named after the commit they were built from:
 
 ```
 <commit date UTC>-<branch>-<commit hash>
