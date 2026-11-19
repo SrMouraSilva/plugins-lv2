@@ -14,7 +14,7 @@ tools/hmi-preview/           pictures of the display widgets on the Dwarf and th
 tools/media/                 animations (animated WebP + GIF) and alternative thumbnails (from the preview); see "Animations and alternative thumbnails"
 tools/manual/                builds modgui/manual.html from docs/manual.md; see "HTML manuals" (tools/manual/interactive/: the plugin inside the manual)
 docs/                        guides for other developers: custom-settings-pages, making-animations, alternative-thumbnails, html-manuals, interactive-manuals
-.github/workflows/release.yml  builds Duo, Duo X and Dwarf; PLUGINS lists what is packaged
+.github/workflows/build-bundles.yml  builds Duo, Duo X and Dwarf (PLUGINS lists what is packaged); release.yml publishes it, docs.yml puts it on the site
 ```
 
 New files carry `Copyright 2021-2026 Paulo Mateus` and `SPDX-License-Identifier: Apache-2.0`. Third-party code keeps
@@ -53,7 +53,7 @@ make build MACOS=true CFLAGS="-I/opt/homebrew/include"   # macOS (homebrew lv2);
 3. `plugins/srmourasilva-plugins.mk`: add `<name>.lv2` to `SRMOURASILVA_PLUGINS_BUNDLES` and **bump
    `SRMOURASILVA_PLUGINS_VERSION`** (otherwise the builder does not rebuild). Add `install-<name>` to the Makefile and a recipe
    `store/<name>.mk` (copy another one: the MOD store takes **one bundle per package**), then run `python3 tools/store/pin.py`.
-4. `.github/workflows/release.yml`: add it to `PLUGINS`.
+4. `.github/workflows/build-bundles.yml`: add it to `PLUGINS`.
 5. `Readme.md` section, `NOTICE` title, a user manual (below), screenshot and thumbnail, the two animations and the alternative
    thumbnail (and the plugin in `PLUGINS` of `tools/site/build_site.py`, so it is on the documentation site) (section "Animations and alternative thumbnails": add the plugin to `tools/media/scenarios.mjs` and `thumbnails.mjs`).
 
@@ -333,6 +333,13 @@ the preview's README) that `.github/workflows/docs.yml` publishes on GitHub Page
 (`pip install markdown pillow`; Python 3.12+). It renders the manuals and the guides with `tools/manual/build_manual_html.py`,
 so they look like the manuals of the device.
 
+* **"Install on my MOD"** (a button on each card, `tools/site/install.js`, drawn only when `--bundles` is given). `docs.yml` builds the bundles
+  (`build-bundles.yml`, shared with `release.yml`) and the site carries them as `plugins/<plugin>/<device>.lv2.tar.gz`: a page cannot read the
+  assets of a GitHub release (no CORS headers). The script speaks to the unit's mod-ui as the MOD Cloud Builder does (`ws://192.168.51.1/rplsocket`:
+  send `''` for `{platform, version}`, then base64 of the `.tar.gz`; the answer is `{ok, installed | error}`). **mod-ui only accepts that socket from pages of
+  `*.mod.audio` and `localhost:8010` (`check_origin`)**: from the GitHub Pages address the handshake is a 403, which the page can only report as "could not
+  connect" (it says why before trying). To try it on a device: build with `--bundles` (the `.tar.gz` of a release will do), serve the folder with
+  `python3 -m http.server 8010 --bind 127.0.0.1 -d _site` and open `http://localhost:8010`. It replaces the bundle of the same name on the unit.
 * **A new plugin** appears on the site by being added to `PLUGINS` in `tools/site/build_site.py` and having `docs/manual.md`,
   `docs/manual.json` (title, tagline, badges, colours, links), `docs/alternative-thumbnail.webp` and the two animations (.webp and .gif). **A new guide**
   is added to `GUIDES` (and `GUIDE_TAGLINES`) in the same file.

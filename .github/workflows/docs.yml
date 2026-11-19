@@ -32,10 +32,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # The "Install on my MOD" buttons install the bundles of this very commit, so the site carries them (a page cannot read
+  # the assets of a GitHub release: they are served without CORS headers). The build is shared with release.yml.
+  bundles:
+    uses: ./.github/workflows/build-bundles.yml
+
   build:
+    needs: bundles
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: bundles-*
+          path: bundles
+          merge-multiple: true
 
       - uses: actions/setup-python@v5
         with:
@@ -45,7 +57,7 @@ jobs:
         run: pip install markdown pillow
 
       - name: Build the site
-        run: python3 tools/site/build_site.py --out _site --repo "$GITHUB_REPOSITORY" --ref "${{ github.head_ref || github.ref_name }}"
+        run: python3 tools/site/build_site.py --out _site --bundles bundles --repo "$GITHUB_REPOSITORY" --ref "${{ github.head_ref || github.ref_name }}"
 
       - name: List what was built
         run: find _site -type f | sort | xargs ls -la | awk '{print $5, $9}'

@@ -6,16 +6,21 @@
 """
 Builds the documentation site (static HTML, for GitHub Pages) into a folder:
 
-    python3 tools/site/build_site.py --out _site [--repo OWNER/NAME] [--ref BRANCH]
+    python3 tools/site/build_site.py --out _site [--repo OWNER/NAME] [--ref BRANCH] [--bundles DIR]
 
     _site/index.html                    the landing page: the plugins, the guides, the downloads
     _site/plugins/<plugin>/manual.html  the user manual of each plugin (built from its docs/manual.md)
     _site/plugins/<plugin>/*.webp|gif   the picture and the GIFs shown on the landing page
+    _site/plugins/<plugin>/<device>.lv2.tar.gz   the bundle for duo, duox and dwarf (with --bundles): "Install on my MOD"
     _site/guides/<guide>.html           the guides for developers (docs/*.md and the preview's README)
 
 The manuals and the guides are rendered by tools/manual/build_manual_html.py, so they look like the manuals the device
 serves. A link from a guide to another guide becomes a link to its page; a link to any other file of the repository
 becomes a link to that file on GitHub (at --ref). Needs `pip install markdown pillow`.
+
+--bundles is the folder with the <plugin>-<device>.lv2.tar.gz of the build (the artifacts of .github/workflows/build-bundles.yml).
+The site carries them because a page cannot read the assets of a GitHub release (no CORS headers); the "Install on my MOD" button
+(tools/site/install.js) sends the one for the unit it finds to the unit. Without --bundles the buttons are not drawn.
 """
 import argparse
 import html
@@ -121,7 +126,26 @@ def plugin_data(name: str) -> dict:
     return {"name": name, "bundle": bundle, **config}
 
 
-def build(out: Path, repo: str, ref: str) -> None:
+# The name of a device in the file of a bundle ("duo x" from the workflow, "duo.x" once GitHub renamed it) -> what mod-ui calls its platform
+DEVICES = {"duo": "duo", "duo x": "duox", "duo.x": "duox", "duo-x": "duox", "duox": "duox", "dwarf": "dwarf"}
+BUNDLE_FILE = re.compile(r"^(?P<plugin>.+)-(?P<device>duo[ .\-]?x|duo|dwarf)\.lv2\.tar\.gz$")
+
+
+def collect_bundles(source: Path, out: Path) -> dict:
+    """Copies the bundles of `source` into the folders of their plugins: {plugin: {platform: {"url", "size"}}}"""
+    found: dict = {}
+    for file in sorted(source.rglob("*.lv2.tar.gz")):
+        match = BUNDLE_FILE.match(file.name)
+        if not match or match["plugin"] not in PLUGINS:
+            continue
+        platform = DEVICES[match["device"]]
+        name = f"{platform}.lv2.tar.gz"
+        shutil.copy(file, out / "plugins" / match["plugin"] / name)
+        found.setdefault(match["plugin"], {})[platform] = {"url": f"plugins/{match['plugin']}/{name}", "size": file.stat().st_size}
+    return found
+
+
+def build(out: Path, repo: str, ref: str, bundles: Path | None = None) -> None:
     if out.exists():
         shutil.rmtree(out)
     (out / "plugins").mkdir(parents=True)
@@ -157,13 +181,20 @@ def build(out: Path, repo: str, ref: str) -> None:
         (out / "guides" / f"{page}.html").write_text(document, encoding="utf-8")
         print(f"guides/{page}.html: {len(document) // 1024} KB")
 
-    (out / "index.html").write_text(index(plugins, repo, ref), encoding="utf-8")
+    installable = collect_bundles(bundles, out) if bundles else {}
+    for name, files in installable.items():
+        print(f"plugins/{name}: bundles for {', '.join(files)}")
+    (out / "index.html").write_text(index(plugins, repo, ref, installable), encoding="utf-8")
     print("index.html")
 
 
-def index(plugins: list, repo: str, ref: str) -> str:
+def index(plugins: list, repo: str, ref: str, installable: dict) -> str:
     sha, date = git("rev-parse", "--short=7", "HEAD"), git("log", "-1", "--format=%cd", "--date=short")
     css = (ROOT / "tools/manual/manual.css").read_text() + (HERE / "site.css").read_text()
+    install_data = json.dumps({
+        "build": {"ref": ref, "sha": sha, "date": date},
+        "plugins": {p["name"]: {"title": p["title"], "files": installable[p["name"]]} for p in plugins if p["name"] in installable},
+    }).replace("</", "<\\/")
 
     def card(p: dict) -> str:
         name = p["name"]
@@ -171,6 +202,8 @@ def index(plugins: list, repo: str, ref: str) -> str:
         chips = "".join(f"<span>{esc(b)}</span>" for b in p.get("badges", []))
         actions = f'<a class="btn primary" href="plugins/{name}/manual.html">User manual</a>' + "".join(
             f'<a class="btn" href="{esc(l["url"])}" target="_blank" rel="noopener">{esc(l["label"])}</a>' for l in p.get("links", []))
+        if name in installable:
+            actions += f'<button class="btn install-open" type="button" data-install="{name}">Install on my MOD</button>'
         strip = ", ".join(f"{c} {i * 100 // len(p['colors'])}% {(i + 1) * 100 // len(p['colors'])}%" for i, c in enumerate(p["colors"]))
         demo = ""
         if (ROOT / "plugins/resources" / f"{name}.lv2/docs/images/{name}-demo.gif").exists():
@@ -229,6 +262,7 @@ def index(plugins: list, repo: str, ref: str) -> str:
     <h2>The plugins</h2>
     <p class="lead">Each one has a user manual, written for someone who has never used it.</p>
     <div class="plugins">{"".join(card(p) for p in plugins)}</div>
+{install_dialog(install_data) if installable else ""}
   </section>
   <section class="block" id="guides">
     <h2>Build your own</h2>
@@ -251,10 +285,34 @@ def index(plugins: list, repo: str, ref: str) -> str:
 """
 
 
+def install_dialog(install_data: str) -> str:
+    """The window of "Install on my MOD" (tools/site/install.js) and the data it reads"""
+    script = (HERE / "install.js").read_text()
+    return f"""<dialog id="install" class="install" aria-labelledby="install-title">
+  <form method="dialog">
+    <h3 class="install-title" id="install-title">Install</h3>
+    <p class="install-intro">Plug the MOD into this computer with its USB cable, then follow the steps.</p>
+    <ol class="install-steps"></ol>
+    <p class="install-status" role="status" aria-live="polite"></p>
+    <div class="install-hint" hidden></div>
+    <p class="actions">
+      <button class="btn primary install-go" type="button" disabled>Install</button>
+      <button class="btn install-again" type="button" hidden>Connect again</button>
+      <button class="btn install-close" value="close">Close</button>
+    </p>
+  </form>
+</dialog>
+<script type="application/json" id="install-data">{install_data}</script>
+<script>
+{script}
+</script>"""
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--out", type=Path, default=ROOT / "_site")
     parser.add_argument("--repo", default=os.environ.get("GITHUB_REPOSITORY") or repo_from_git())
     parser.add_argument("--ref", default=os.environ.get("GITHUB_REF_NAME") or git("branch", "--show-current") or "master")
+    parser.add_argument("--bundles", type=Path, help="folder with the <plugin>-<device>.lv2.tar.gz of the build: adds the Install buttons")
     args = parser.parse_args()
-    build(args.out.resolve(), args.repo, args.ref)
+    build(args.out.resolve(), args.repo, args.ref, args.bundles.resolve() if args.bundles else None)
