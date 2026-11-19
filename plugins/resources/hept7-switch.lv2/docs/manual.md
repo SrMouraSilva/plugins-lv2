@@ -461,7 +461,7 @@ They are saved with the pedalboard and with the plugin presets.
 | Field | Value |
 |---|---|
 | Plugin name | Hept7 switch |
-| Version | 1.0.35 (the version of the plugin this manual is for) |
+| Version | 1.0.37 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/hept7-switch` |
 | Audio I/O | None |
@@ -474,6 +474,7 @@ They are saved with the pedalboard and with the plugin presets.
 | Developer | Paulo Mateus (SrMouraSilva) |
 | License | Apache-2.0 |
 | Source code | [github.com/SrMouraSilva/plugins-lv2](https://github.com/SrMouraSilva/plugins-lv2) |
+| Forum thread | [forum.mod.audio – Hept7 switch](https://forum.mod.audio/t/hept7-switch/13716) |
 | Store page | [Hept7 switch](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9oZXB0Ny1zd2l0Y2g=) |
 
 Hept7 Switch is a community plugin. Feedback, bug reports and pull requests are welcome on GitHub.

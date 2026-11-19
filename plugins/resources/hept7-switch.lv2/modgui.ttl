@@ -19,6 +19,7 @@
         modgui:model "boxy-small" ;
         modgui:panel "1-footswitch" ;
         modgui:color "#3fbac4" ;
+        modgui:discussionURL <https://forum.mod.audio/t/hept7-switch/13716> ;
         # MOD UI reports this output to the javascript whenever it changes: it is what the display follows
         modgui:monitoredOutputs [ lv2:symbol "Active_preset" ] ;
     ] .
