@@ -45,14 +45,27 @@ any drive plugin and any delay plugin in the chain.
 
 ## 2. The plugin on the pedalboard
 
+<figure class="annotated">
+<div class="stage">
+<img src="images/panel.webp" alt="The Hept7 Switch panel">
+<span class="pin" style="--x:29.1%;--y:28.4%">1</span>
+<span class="pin" style="--x:74.3%;--y:31.2%">2</span>
+<span class="pin" style="--x:76.5%;--y:73.1%">3</span>
+<span class="pin" style="--x:76.7%;--y:13.8%">4</span>
+<span class="pin" style="--x:86.3%;--y:77.3%">5</span>
+<span class="pin" style="--x:96.0%;--y:93.8%">6</span>
+</div>
+<figcaption>Preset 3 is active (<em>Crunch</em>), with outputs 2 and 8 on.</figcaption>
+</figure>
+
 | Item | What it does |
 |---|---|
-| **Display, big number and name** | The active preset. **The name is editable**: click it and type (up to 15 characters). It is also the text the device screen pop-up shows (see section 6). |
-| **Display, eight squares** | The CV outputs that are on in the active preset. **They are buttons**: click one to turn that output on or off in the active preset, without opening the settings page (the other presets are edited on the settings page). |
-| **Seven buttons** | Select the preset. The button of the active preset lights up in its colour. There are seven because the device footswitch LEDs have seven colours (red, yellow, green, cyan, blue, magenta, white): each preset has its own, here and on the device. A button with its number **crossed out** is a preset left out of the cycle of the buttons `Current preset`, `Next preset` and `Previous preset` (section 5); the button still selects it. |
-| **Edit scenes** | Opens the settings page (section 4). The gear icon above the plugin opens it too. |
-| **Eight CV jacks** | `CV Output 1`–`8`, on the back plate at the right, in two columns (1–4 and 5–8). |
-| **MIDI out** (jack) | The ninth jack, under the second column. It sends a MIDI control change for each output when the preset changes (section 7). |
+| <span class="num">1</span>**Display, big number and name** | The active preset. **The name is editable**: click it and type (up to 15 characters). It is also the text the device screen pop-up shows (see section 6). |
+| <span class="num">2</span>**Display, eight squares** | The CV outputs that are on in the active preset. **They are buttons**: click one to turn that output on or off in the active preset, without opening the settings page (the other presets are edited on the settings page). |
+| <span class="num">3</span>**Seven buttons** | Select the preset. The button of the active preset lights up in its colour. There are seven because the device footswitch LEDs have seven colours (red, yellow, green, cyan, blue, magenta, white): each preset has its own, here and on the device. A button with its number **crossed out** is a preset left out of the cycle of the buttons `Current preset`, `Next preset` and `Previous preset` (section 5); the button still selects it. |
+| <span class="num">4</span>**Edit scenes** | Opens the settings page (section 4). The gear icon above the plugin opens it too. |
+| <span class="num">5</span>**Eight CV jacks** | `CV Output 1`–`8`, on the back plate at the right, in two columns (1–4 and 5–8). |
+| <span class="num">6</span>**MIDI out** (jack) | The ninth jack, under the second column. It sends a MIDI control change for each output when the preset changes (section 7). |
 
 ### The display announces every change of preset
 
@@ -175,8 +188,8 @@ the active preset is shown in a pop-up whenever the preset changes. As with
 Gossiper, the device only allows a pop-up on a page that has a control addressed
 to the plugin, so:
 
-1. Assign one of `Assign to notify 1`–`4` to a control of the device page where
-   you want to see the pop-up (use a second, third or fourth one for other pages).
+1. Tap **Assign** on one of the four **Notify** tiles (*Screen pop-ups*, on the settings page) and pick a control of the device page where
+   you want to see the pop-up (use a second, third or fourth one for other pages). They are the parameters `Assign to notify 1`–`4`, the names MOD UI lists.
 
     ![The Notify tiles of the settings page](images/step-assign-notify.webp)
 
@@ -233,7 +246,7 @@ output that is on and a dot one that is off. The names are the ones you gave the
 
 ![The states of Active preset](images/hept7-switch-preset-states.webp)
 
-The widget needs no `Assign to notify` control: it is drawn where you place it, and stays there, unlike the pop-up, which goes away after a moment.
+The widget needs no **Notify** tile assigned: it is drawn where you place it, and stays there, unlike the pop-up, which goes away after a moment.
 
 ## 7. MIDI out
 
@@ -421,7 +434,7 @@ assignment to another mode (toggle, or momentary on), keep in mind that only a r
 
 ### I set up the pop-up, but nothing appears.
 
-The pop-up only appears while the control you assigned to an **Assign to notify** parameter is visible on the device
+The pop-up only appears while the control you assigned to a **Notify** tile (the parameter `Assign to notify N`) is visible on the device
 screen. Move it to the page you play from. On a MOD Duo there are no plugin pop-ups at all (its settings page shows
 those tiles disabled): use the display of the plugin.
 
@@ -461,19 +474,20 @@ They are saved with the pedalboard and with the plugin presets.
 | Field | Value |
 |---|---|
 | Plugin name | Hept7 switch |
-| Version | 1.0.35 (the version of the plugin this manual is for) |
+| Version | 1.0.37 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/hept7-switch` |
 | Audio I/O | None |
 | CV outputs | 8 × CV, 0 V (off) / 10 V (on) |
 | MIDI | MIDI out: a control change (channel 1–16) per output when the preset changes |
 | Presets × outputs | 7 × 8 (56 toggle switches) |
-| Assignable parameters | Preset 1–7 (toggle) · Current, Next and Previous preset (buttons) · Assign to notify 1–4 (toggle) · 56 dip switches · 7 Cycle switches · MIDI channel, CC 1–8 and changes only |
+| Assignable parameters | Preset 1–7 (toggle) · Current, Next and Previous preset (buttons) · Assign to notify 1–4 (toggle; the Notify tiles) · 56 dip switches · 7 Cycle switches · MIDI channel, CC 1–8 and changes only |
 | Device feedback | Footswitch LED colour + label, pop-up notifications (MOD HMI) · display on the plugin |
+| Additional features | Display widgets with the [Starless HMI Widget Extensions](https://forum.mod.audio/t/starless-hmi-widgets-extension-for-plugins/13703) (MOD Dwarf and Duo X) |
 | Platforms | MOD Dwarf · MOD Duo X · MOD Duo |
 | Developer | Paulo Mateus (SrMouraSilva) |
 | License | Apache-2.0 |
 | Source code | [github.com/SrMouraSilva/plugins-lv2](https://github.com/SrMouraSilva/plugins-lv2) |
 | Store page | [Hept7 switch](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9oZXB0Ny1zd2l0Y2g=) |
 
-Hept7 Switch is a community plugin. Feedback, bug reports and pull requests are welcome on GitHub.
+Hept7 Switch is a community plugin. Feedback, bug reports and pull requests are welcome on [GitHub](https://github.com/SrMouraSilva/plugins-lv2).

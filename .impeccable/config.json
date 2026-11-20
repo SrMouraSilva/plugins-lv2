@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "plugins/resources/gossiper.lv2/docs/notification-flow.html"
+        ],
+        "createdAt": "2026-11-20T12:43:52.788Z",
+        "reason": "own decision: the glows are the lit LEDs of the plugin and of the pedal being illustrated (domain-appropriate), not decoration; user did not confirm"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "plugins/resources/gossiper.lv2/docs/notification-flow.html"
+        ],
+        "createdAt": "2026-11-20T12:59:02.143Z",
+        "reason": "own decision: the tight text inside borders is the magnified 128x64 screen of the Dwarf (tabs, footers and cells hug their borders on the real display, see the photos); the manual text and the buttons around it have normal padding; user did not confirm"
+      }
+    ]
+  }
+}

@@ -87,7 +87,7 @@ Then write `docs/interactive.json` (next section) and build as usual: `python3 t
 A section with a number changes the numbers of the sections after it, and the manual may refer to them by number (`section 4`): search the
 text before inserting one. Put the section after the one that describes the controls: whoever has just read about them wants to try.
 
-The manual costs about 170 KB more (jQuery, the stylesheet and the script of the plugin, the data). On paper (and in the PDF) the block is not
+The manual costs about 170 KB more (jQuery, the stylesheet and the script of the plugin, the data). On paper (when the page is printed) the block is not
 printed: it says that the part is interactive.
 
 ## 4. `interactive.json`

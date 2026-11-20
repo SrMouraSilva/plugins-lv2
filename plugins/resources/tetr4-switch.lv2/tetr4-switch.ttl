@@ -120,7 +120,7 @@ doap:maintainer [
 
     lv2:majorVersion 1 ;
     lv2:minorVersion 2 ;
-    lv2:microVersion 16 ;
+    lv2:microVersion 17 ;
 
 rdfs:comment """
 Tetr4 switch is a loop switcher for CV. Store which of its four CV outputs are on in each of four presets, and change between them with a single footswitch.
@@ -242,7 +242,7 @@ lv2:port
     lv2:index 9;
     lv2:symbol "Assign_to_notify_1";
     pg:group plug:group_notifications ;
-    lv2:name "Assign to notfy1";
+    lv2:name "Assign to notify 1";
     lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
     lv2:default 0;
     lv2:minimum 0;
@@ -254,7 +254,7 @@ lv2:port
     lv2:index 10;
     lv2:symbol "Assign_to_notify_2";
     pg:group plug:group_notifications ;
-    lv2:name "Assign to notfy2";
+    lv2:name "Assign to notify 2";
     lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
     lv2:default 0;
     lv2:minimum 0;
@@ -266,7 +266,7 @@ lv2:port
     lv2:index 11;
     lv2:symbol "Assign_to_notify_3";
     pg:group plug:group_notifications ;
-    lv2:name "Assign to notfy3";
+    lv2:name "Assign to notify 3";
     lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
     lv2:default 0;
     lv2:minimum 0;
@@ -278,7 +278,7 @@ lv2:port
     lv2:index 12;
     lv2:symbol "Assign_to_notify_4";
     pg:group plug:group_notifications ;
-    lv2:name "Assign to notfy4";
+    lv2:name "Assign to notify 4";
     lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
     lv2:default 0;
     lv2:minimum 0;

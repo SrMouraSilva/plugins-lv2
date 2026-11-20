@@ -10,9 +10,10 @@ Assign one of its parameters to receive the MIDI (or CV, or device control), and
 signal *and* a pop-up notification on the device screen.
 
 It is an "educated gossiper": it only gossips about a control if you're actually looking at it. A pop-up appears only
-on a device screen page that has one of Gossiper's four `Assign to notify` slots addressed to it, because MOD devices
-only show a pop-up for a plugin whose parameter is linked to a control (a knob or a footswitch) that is currently
-visible on the screen.
+on a device screen page that has one of Gossiper's four **pop-up slots** linked to a control of it (a knob or a footswitch),
+because MOD devices only show a pop-up for a plugin whose parameter is linked to a control that is currently visible on the
+screen. (The settings page calls them *Pop-up slot 1–4*; the parameters behind them are named `Assign to notify 1–4`, as MOD
+UI lists them.)
 
 > [!NOTE] Good to know
 > Gossiper has no audio inputs or outputs, so it doesn't sit in your signal chain. Place it anywhere on the pedalboard.
@@ -25,16 +26,27 @@ visible on the screen.
 
 ![Gossiper at work: footswitches and potentiometers move from outside, as a MIDI controller would, and the display says which one was used last](images/gossiper-demo.webp)
 
-![The Gossiper panel](images/gossiper-overview.webp)
+<figure class="annotated">
+<div class="stage">
+<img src="images/gossiper-overview.webp" alt="The Gossiper panel">
+<span class="pin" style="--x:78.0%;--y:19.5%">1</span>
+<span class="pin" style="--x:12.6%;--y:51.4%">2</span>
+<span class="pin" style="--x:12.4%;--y:70.3%">3</span>
+<span class="pin" style="--x:21.6%;--y:77.3%">4</span>
+<span class="pin" style="--x:79.4%;--y:4.7%">5</span>
+<span class="pin" style="--x:86.6%;--y:90.7%">6</span>
+</div>
+<figcaption>The Gossiper panel: Footswitch 2 was used last and is on, Pot 1 is at 20% and Pot 3 at 63%.</figcaption>
+</figure>
 
 | Item | Description | Interactivity |
 |---|---|---|
-| **A — Display** | Says **which control was used last** and what it did: `Footswitch 2 — ON`, or `Pot 3 — 63%`. It stays on, and lights up for a moment each time a control is used. This is how you see a message on a device that has no screen for plugin pop-ups, such as the MOD Duo. | Only visualization status |
-| **B — Footswitch indicator** | A disc in a colour of its own for each footswitch. Lit while the footswitch is ON, and mirrored on `CV Output N` (0 V / 10 V). The one used last is outlined. | Only visualization status. Clicking on it does nothing. |
-| **C — Footswitch label** | Click and type a name (up to 15 characters): this is the text the pop-up and the display show for that footswitch. | Editable field |
-| **D — Potentiometer** | The position of the knob (0–100 %) as a meter, and the CV range (`Minimum`–`Maximum`, in volts) its 0–10 V output is scaled into. The one used last is outlined. | Only visualization status. To change the range, open the settings. |
-| **E — Settings** | Opens the settings page (section 4). The gear icon above the plugin opens it too. | Button |
-| **F — CV outputs** | `1`–`7` are the footswitches and `P1`–`P4` the potentiometers. | Jacks |
+| <span class="num">1</span>**Display** | Says **which control was used last** and what it did: the name of the footswitch and `ON` or `OFF`, or `Pot 3` and its percentage. It stays on, and lights up for a moment each time a control is used. This is how you see a message on a device that has no screen for plugin pop-ups, such as the MOD Duo. | Only visualization status |
+| <span class="num">2</span>**Footswitch indicator** | A disc in a colour of its own for each footswitch. Lit while the footswitch is ON, and mirrored on its CV jack (0 V / 10 V). The one used last is outlined. | Only visualization status. Clicking on it does nothing. |
+| <span class="num">3</span>**Footswitch label** | Click and type a name (up to 15 characters): this is the text the pop-up and the display show for that footswitch. | Editable field |
+| <span class="num">4</span>**Potentiometer** | The position of the knob (0–100 %) as a meter, and the CV range (`Minimum`–`Maximum`, in volts) its 0–10 V output is scaled into. The one used last is outlined. | Only visualization status. To change the range, open the settings. |
+| <span class="num">5</span>**Settings** | Opens the settings page (section 4). The gear icon above the plugin opens it too. | Button |
+| <span class="num">6</span>**CV outputs** | `1`–`7` are the footswitches and `P1`–`P4` the potentiometers. | Jacks |
 
 ## 2. Interactive manual
 
@@ -64,8 +76,8 @@ that loop:
 
 1. **Assign** a `Footswitch N` or `Potentiometer N` parameter to receive
    that MIDI message (or a CV signal, or a device knob/footswitch).
-2. **Assign** one of the 4 `Assign to notify N` parameters to a page/knob or
-   footswitch slot on the device screen.
+2. **Link** one of the 4 **pop-up slots** (*Screen pop-ups* on the settings page) to a knob or
+   footswitch of the device page you play from.
 3. **Use the CV output.** `CV Foot - Out N` (footswitches) or
    `CV Pot - Out N` (potentiometers) now carries a plain, calibrated CV
    signal you can route into any other plugin's CV-addressable parameter —
@@ -132,21 +144,22 @@ potentiometer, and keeps your own presets (**Saved presets**).
 ![Min and Max: the CV range of a potentiometer, in volts](images/step-min-max.webp)
 
 > **No screen for pop-ups?** The MOD Duo (and any device without the HMI) cannot show pop-ups: the display on the
-> plugin itself (item A, section 1) is the feedback there. Open the pedalboard and look at it. On the MOD Duo the
+> plugin itself (item 1, section 1) is the feedback there. Open the pedalboard and look at it. On the MOD Duo the
 > *Screen pop-ups* slots of the settings page are disabled, with a note that says why.
 
 ## 5. How the pop-up decides when to appear
 
-![Flow: a control changes, Gossiper checks for an assigned notify slot, then pops up only there](images/notification-flow.svg)
+```embed:notification-flow.html
+```
 
-* **Footswitches gossip immediately** — the pop-up shows the footswitch's
+* **Footswitches gossip immediately** — the pop-up is titled *Gossiper* and shows the footswitch's
   custom label the instant it flips, styled *inverted* when turning ON and
-  *normal* when turning OFF.
-* **Potentiometers gossip once you stop** — the pop-up shows `Pot N — xx%`
+  *normal* when turning OFF. If two footswitches flip in the very same instant, only the lowest-numbered one gets its pop-up.
+* **Potentiometers gossip once you stop** — the pop-up is titled `Gossiper - Pot N` and shows the position, like `63.00%`,
   a short moment after the value settles, so sweeping a knob doesn't spam a
   message on every intermediate step.
-* **No assignment, no pop-up.** If none of the 4 notify slots is currently
-  addressed to a visible page, Gossiper stays silent.
+* **No linked slot, no pop-up.** If none of the 4 pop-up slots is linked to a control of the page showing on the screen,
+  Gossiper stays silent. The disc, the display and the CV outputs of the plugin do not depend on it.
 
 > **Requires MOD Dwarf firmware v1.13 or newer** for the pop-up mechanism.
 > On older firmware the CV outputs still work; you just won't get the
@@ -178,7 +191,7 @@ controls you assigned to the plugin, as always; the widget follows them.
 
 Each draws what fits in the area it gets: a footer shows the bare essentials, the whole screen shows everything.
 
-Unlike the pop-up, a widget needs no `Assign to notify` control and does not go away: it stays on the screen where you placed it.
+Unlike the pop-up, a widget needs no pop-up slot linked to a control and does not go away: it stays on the screen where you placed it.
 
 #### Footswitches
 
@@ -239,14 +252,61 @@ footswitch, and it's saved with the pedalboard/preset.
 
 ![Renaming Footswitch 2 on the pedal](images/step-rename.webp)
 
-## 7. Why bother: one real example
+## 7. Recipes
 
-Gossiper can also replace stacks of "Control to CV" utility plugins: one Gossiper with several
-footswitches and potentiometers assigned does the job of many single-purpose CV converters, at a fraction of the CPU
-cost.
+Each recipe says which Gossiper control your MIDI controller drives, what to type in the settings page and where the CV output goes. Do the steps of
+section 4 first (assign the control, link a **Pop-up slot**). Then, on the pedalboard, click **Manage CV ports** (Pedalboard actions bar of MOD UI) and check the Gossiper
+outputs you use, so they can be chosen as a CV source. There is no cable to draw: you open the addressing of each parameter you want to control, choose **CV** and pick the
+Gossiper output in the list. A potentiometer's voltage is its **Min** – **Max** range.
 
-For instance, [a forum user reported that, after replacing those plugins with Gossiper, the Dwarf's CPU usage went down
+### Four-switch controller
+
+| Gossiper control | Name (type it) | CV output → |
+|---|---|---|
+| <span class="dot" style="--c:#ff6667"></span>**Footswitch 1** | Drive | On/Off of the drive |
+| <span class="dot" style="--c:#ffff67"></span>**Footswitch 2** | Chorus | On/Off of the chorus |
+| <span class="dot" style="--c:#66ffff"></span>**Footswitch 3** | Delay | On/Off of the delay |
+| <span class="dot" style="--c:#bb7cd2"></span>**Footswitch 4** | Reverb | On/Off of the reverb |
+
+The classic use. A four-switch controller, like the M-VAVE Chocolate, turns effects on and off, and the device tells you which one just changed, **by name**.
+Link **Pop-up slot 1** to a control of the page you play from, so the news is always in view.
+
+*Setup: controller switches A–D → Footswitch 1–4 (MIDI) · on each effect, address its On/Off to **CV** and pick `CV Foot - Out 1`–`4`.*
+
+### Expression pedal with a readout
+
+| Gossiper control | Range | CV output → |
+|---|---|---|
+| **Pot 1** | 0 V – 10 V | position of a wah, or the volume |
+
+A MIDI expression pedal on **Pot 1** drives a wah or a volume plugin. When you stop moving the pedal, the device shows where you left it, `Gossiper - Pot 1` and
+`63.00%`, which helps when the pedal has no markings. The display on the plugin follows it while you move.
+
+*Setup: expression pedal → Pot 1 (MIDI) · on the wah (or the volume), address the knob to **CV** and pick `CV Pot - Out 1`.*
+
+### Safe-range sweep
+
+| Gossiper control | Range | CV output → |
+|---|---|---|
+| **Pot 2** | 3 V – 7 V | feedback of a delay |
+
+The whole sweep of the pedal now covers only the middle of the target knob (30% to 70% of a 0–10 V range), so you can stomp it all the way down without the delay
+running away into endless feedback. Set **Min** to 3 and **Max** to 7 on the settings page, and adjust them until the extremes sound right (see *Tame the range of a knob*, section 8).
+
+*Setup: second pedal or knob → Pot 2 (MIDI) · on the delay, address the feedback knob to **CV** and pick `CV Pot - Out 2`.*
+
+### One plugin instead of many
+
+| Gossiper control | Replaces |
+|---|---|
+| **Footswitch 1**–**7** | Seven on/off "Control to CV" plugins |
+| **Pot 1**–**4** | Four continuous "Control to CV" plugins |
+
+If your pedalboard uses many "Control to CV" plugins to turn MIDI into CV, move them into one Gossiper: it does the job of all of them, at a fraction of the CPU cost,
+and you get the pop-ups and the display for free. For instance, [a forum user reported that, after replacing those plugins with Gossiper, the Dwarf's CPU usage went down
 from 81% to 72%](https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happening-when-you-are-looking-it/9660/20?u=srmourasilva).
+
+*Setup: re-address each MIDI mapping to a Gossiper footswitch or pot · on each parameter that was controlled by a "Control to CV" plugin, change its CV addressing to the matching Gossiper output.*
 
 ## 8. Tips
 
@@ -255,10 +315,10 @@ from 81% to 72%](https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happen
 The pop-up shows the label, so `Drive` or `Solo` says more on a screen than `Footswitch 3`. Rename them before you
 assign the controller, and you will recognise the message without counting buttons.
 
-### One notify slot per page you play from
+### One pop-up slot per page you play from
 
-A pop-up shows only while the control you addressed to a slot is visible. If you play from two pages of the device,
-address a second slot to a control on the other page, and so on up to four.
+A pop-up shows only while the control you linked to a slot is visible. If you play from two pages of the device,
+link a second slot to a control on the other page, and so on up to four.
 
 ### Footswitch and CV in one go
 
@@ -279,36 +339,93 @@ value change continuously. Use the display on the plugin for that.
 
 ## 9. Questions & answers
 
-### The pop-up never appears.
+### I move my controller but no pop-up appears.
 
-Check, in this order: (1) the control that sent the message is assigned to a `Footswitch N` or `Pot N` parameter;
-(2) one `Assign to notify` slot is addressed to a control of the device; (3) **that control is visible on the screen**
-right now (it is the page the device is showing); (4) the firmware is MOD Dwarf v1.13 or newer. The CV outputs and the
-display on the plugin work without any of these.
+Check, in this order:
+
+1. The control that sends the message is linked to a `Footswitch N` or `Pot N` parameter (the **Assign** tile of its row on the settings page shows a check mark).
+2. One of the four **pop-up slots** (*Screen pop-ups* on the settings page) is linked to a control of the device: a knob or a footswitch.
+3. **That control is visible on the screen right now.** It is the page the device is showing; on another page, Gossiper stays silent (see section 5).
+4. The device is a MOD Dwarf with firmware v1.13 or newer.
+5. For a potentiometer, you stopped moving it: its pop-up comes a moment after the value settles, not during the sweep.
+
+The disc and the display on the plugin and the CV outputs work without any of these. If they react, only the pop-up setup is missing.
+
+### I move my controller but the plugin I want to control does not react.
+
+The parameter you want to control has to be addressed to **CV**. Click **Manage CV ports** on the Pedalboard actions bar and check the Gossiper outputs you use, then open the
+addressing of the On/Off parameter (or the knob), choose **CV** and pick the matching Gossiper output in the list (`CV Foot - Out N` / `CV Output N` for a footswitch,
+`CV Pot - Out N` for a potentiometer). There is no cable to draw. Also check that
+your controller is MIDI-learned to the right Gossiper row: the **Assign** tile of `Footswitch N` on the settings page has a check mark when it is.
+
+### I press the pop-up slot control on my device and nothing happens.
+
+That is by design. The pop-up slots (the parameters `Assign to notify 1–4`) are placeholders: they only give Gossiper a control of the device to show its messages
+on. They do not switch anything.
+
+### The settings page says "Pop-up slot" and I also see "Assign to notify". Is it the same?
+
+Yes. The settings page names the four tiles *Pop-up slot 1–4*, in the panel *Screen pop-ups*. The parameter behind each one is `Assign to notify N`, which is the
+name MOD UI lists in its own assignment dialog and the port reference of this manual uses. A *Footswitch N* row is the parameter `Footswitch N`, and a *Potentiometer* row is
+`Pot N`; the **Min** and **Max** fields are `Minimum N` and `Maximum N`.
+
+### How many pages can show a pop-up?
+
+As many as you link slots: one slot for each page you play from, up to four. A slot is linked to **one** control; if two pages need it, use two slots.
 
 ### Does it work on the MOD Duo and the MOD Duo X?
 
 The plugin loads and the CV outputs work on both. The MOD Duo has no screen for plugin pop-ups, so the **display on the
 plugin** (open the pedalboard in the browser) is where you see the last control used, and the *Screen pop-ups* slots of
-the settings page are disabled there. Pop-ups need the HMI of the Dwarf.
+the settings page are disabled there. Pop-ups need the HMI of the Dwarf. The Dwarf and the Duo X can also show Gossiper as a **widget** that stays on the screen
+(see *On the screen of the device*, in section 5).
 
-### Is it stereo? Does it add latency?
+### Can I have it on the screen all the time instead of a pop-up?
 
-Neither question applies: Gossiper has no audio ports. It only turns what it receives into control voltages.
+Yes, with the display widgets: **Footswitches** shows which of the seven are on, and **Potentiometers** shows the four bars. They need the aLabs Starless image
+(Starless 19 or later), and no pop-up slot. On the stock firmware there are no widgets: the plugin works the same, without them.
 
-### Can I invert a knob with Min and Max?
+### Does it process audio? Is it stereo? Does it add latency?
 
-No. The two values are put in order, so `Minimum` 8 V and `Maximum` 2 V give the same range as 2 V and 8 V. To invert a
-control, use a plugin that does it on the CV.
+No to all three: Gossiper has no audio ports. It only reads its parameters and sends control voltages, so you can put it anywhere on the pedalboard.
 
-### Why can't I turn the footswitch indicator on by clicking it?
+### Can I control the same effect from a device footswitch and from my MIDI controller?
 
-The disc only shows what the footswitch received. Gossiper reports on a control that lives elsewhere; to change it, use
-the controller, or the parameter in the plugin's own addressing.
+Not directly: a parameter can only have one addressing. A workaround shared on the forum is to send both signals as CV to a CV logic plugin set to XOR, and
+connect its output to the effect.
+
+### Can the potentiometer pop-up show a custom name?
+
+No. Custom names are for footswitches. The pop-up of a potentiometer is always `Gossiper - Pot N` with the position of the knob, from 0 to 100%
+(not the voltage, which also depends on **Min** and **Max**).
+
+### Why does the potentiometer pop-up appear late?
+
+Gossiper waits until the value stops changing for a short moment, so a sweep of a knob gives one message at the end instead of dozens on the way. For the same
+reason the pop-up is for confirming a position, not for watching a value change: use the display on the plugin for that.
+
+### I changed two footswitches at the same time and only one pop-up appeared.
+
+If two footswitches flip in the very same instant, Gossiper shows the pop-up of the lowest-numbered one. The disc, the display and the CV output of each
+one still follow.
+
+### Why do some characters in my label turn into "_"?
+
+A name accepts letters, digits, spaces and `+ - : _ .` only, up to 15 characters. Anything else is replaced with an underscore.
 
 ### Are the names saved?
 
-Yes. The label of each footswitch is saved with the pedalboard and with the plugin presets.
+Yes. The name of each footswitch is saved with the pedalboard and with the plugin presets.
+
+### Can I invert a knob with Min and Max?
+
+No. The two values are put in order, so a **Min** of 8 V and a **Max** of 2 V give the same range as 2 V and 8 V. To invert a control, use a plugin that does it
+on the CV.
+
+### Why can't I turn the footswitch indicator on by clicking it?
+
+The disc only shows what the footswitch received. Gossiper reports on a control that lives elsewhere; to change it, use the controller, or the parameter in the
+plugin's own addressing.
 
 ## 10. Port reference
 
@@ -316,7 +433,7 @@ Yes. The label of each footswitch is saved with the pedalboard and with the plug
 |---|---|---|
 | `CV Foot - Out 1`–`4`, `CV Output 5`–`7` | CV output | 0 V / 10 V, mirrors `Footswitch N` (the first four have the longer name). |
 | `Footswitch 1`–`7` | Control input (toggle) | Assign this to receive MIDI/CV/device input. |
-| `Assign to notify 1`–`4` | Control input | No audio/CV effect; assign to a device page/control so pop-ups show there. |
+| `Assign to notify 1`–`4` | Control input | The **Pop-up slot 1–4** of the settings page. No audio/CV effect; link it to a control of a device page so pop-ups show there. |
 | `Pot 1`–`4` | Control input (0–1) | Assign this to receive MIDI/CV/device input. |
 | `Minimum N` / `Maximum N` | Control input (volts) | The CV range `Potentiometer N`'s 0–1 value is scaled into. |
 | `CV Pot - Out 1`–`4` | CV output | `Potentiometer N` scaled into `[Minimum N, Maximum N]` volts. |
@@ -327,14 +444,15 @@ Yes. The label of each footswitch is saved with the pedalboard and with the plug
 | Field | Value |
 |---|---|
 | Plugin name | Gossiper |
-| Version | 1.1.19 (the version of the plugin this manual is for) |
+| Version | 1.1.21 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/gossiper` |
 | Audio I/O | None |
 | CV outputs | 7 × footswitch (0 V off / 10 V on) · 4 × potentiometer (scaled into `Minimum`–`Maximum`, 0–10 V) |
 | MIDI | None (the controller's messages arrive through the device's assignment) |
-| Assignable parameters | Footswitch 1–7 (toggle) · Pot 1–4 · Minimum / Maximum 1–4 · Assign to notify 1–4 |
+| Assignable parameters | Footswitch 1–7 (toggle) · Pot 1–4 · Minimum / Maximum 1–4 · Assign to notify 1–4 (the pop-up slots) |
 | Device feedback | Pop-up notifications (MOD HMI, Dwarf firmware v1.13 or newer) · display and indicators on the plugin |
+| Additional features | Display widgets with the [Starless HMI Widget Extensions](https://forum.mod.audio/t/starless-hmi-widgets-extension-for-plugins/13703) (MOD Dwarf and Duo X) |
 | Platforms | MOD Dwarf · MOD Duo X · MOD Duo |
 | Developer | Paulo Mateus (SrMouraSilva) |
 | License | Apache-2.0 |
@@ -342,4 +460,4 @@ Yes. The label of each footswitch is saved with the pedalboard and with the plug
 | Store page | [Gossiper](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9nb3NzaXBlcg==) |
 | Forum thread | [forum.mod.audio – Gossiper](https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happening-when-you-are-looking-it/9660) |
 
-Gossiper is a community plugin. Feedback, bug reports and pull requests are welcome in the forum thread and on GitHub.
+Gossiper is a community plugin. Feedback, bug reports and pull requests are welcome in the [forum thread](https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happening-when-you-are-looking-it/9660) and on [GitHub](https://github.com/SrMouraSilva/plugins-lv2).

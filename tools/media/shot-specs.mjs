@@ -16,6 +16,8 @@
 //   transparent  nothing behind the plugin (the dark of a pedalboard is the default); margin  pixels around the crop
 //   scale      device pixel ratio (1.5 by default); wait  ms after setup before the picture (a toast stays about 2 s)
 //   out        a path in the bundle instead of docs/images (modgui/screenshot.png), format 'png', width in pixels of the picture
+//   pins       [[selector, fx, fy], ...]: prints the numbered pins of an annotated picture (html-manuals.md), at that fraction of each
+//              element (its upper-right corner by default), as percentages of the picture: a starting point, to move by hand where a pin hides what it points at
 //   crop 'window' is the whole window (a settings page as the user sees it)
 //
 // Run: node tools/media/shots.mjs all | <plugin>
@@ -49,6 +51,11 @@ const KS_ON = `send({ type: 'change', symbol: 'kill', value: 1 })`;
 const KS_CUSTOM = `send({ type: 'change', symbol: 'pattern', value: 19 })`;
 const GOSSIPER_PEDAL = [gossiper('Potentiometer_1', 0.2), gossiper('Potentiometer_3', 0.63), gossiper('Footswitch_2', 1)];
 const GOSSIPER_SETTINGS = [gossiper('Potentiometer_1', 0.2), gossiper('Footswitch_2', 1), gossiper('Potentiometer_3', 0.63)];
+
+// Where the numbers of the tables of the manuals point (section "The plugin on the pedalboard"): the upper-right corner of each part
+const GOSSIPER_PINS = [['.gp-display'], ['.gp-fs[data-n="1"]'], ['.gp-fs[data-n="1"] .gp-label', 1, .5], ['.gp-pot[data-n="1"]'], ['.gp-open'], ['.gp-jacks']];
+const HEPT7_PINS = [['.h7-info', 1.05, 0], ['.h7-outs', 1.02, 0], ['.h7-pad.p7'], ['.h7-open'], ['.h7-jacks'], ['.mod-output:last-child', .45, .12]];
+const KILL_PINS = [['.ks-mono'], ['.ks-open'], ['.ks-pattern-name', 1, 0], ['.ks-lane[data-side="r"]', 1, 1], ['.ks-mode[data-mode="0"]'], ['.ks-tempo'], ['.ks-speed'], ['.ks-depth'], ['.ks-edge'], ['.ks-foot', .9, .1], ['.mod-input', .9, 1.4], ['.mod-output', .35, 1.4]];
 
 export const shots = {
   'tetr4-switch': [
@@ -84,6 +91,8 @@ export const shots = {
     ...store('.hept7', 'jacks=1'),
     // "Seven-scene guitar rig" with preset 3 on: the display, the buttons and the jacks as the user sees them
     alone('hept7-pedalboard.webp', '.hept7', { query: 'jacks=1&preset=2', setup: ['hostSelects(3)'], wait: 2800 }),
+    // The same, sharper, for the annotated picture of section 2
+    alone('panel.webp', '.hept7', { query: 'jacks=1&preset=2', setup: ['hostSelects(3)'], wait: 2800, margin: 0, scale: 2, pins: HEPT7_PINS }),
     // ... and the display a moment after the change: it announces the preset (the toast stays for about two seconds)
     alone('hept7-announce.webp', '.hept7', { query: 'jacks=1&preset=2', setup: ['hostSelects(3)'], wait: 300 }),
     window_('hept7-settings.webp', 1366, 800, { query: 'preset=1' }),
@@ -112,7 +121,7 @@ export const shots = {
   'kill-switch': [
     ...store('.kill-switch', 'jacks=1', [KS_ON]),
     // The cover of the manual (2x)
-    alone('panel.webp', '.kill-switch', { margin: 0, scale: 2, query: 'jacks=1', setup: [KS_ON] }),
+    alone('panel.webp', '.kill-switch', { margin: 0, scale: 2, query: 'jacks=1', setup: [KS_ON], pins: KILL_PINS }),
     // Quick start, step 4: the arrows and the two rows
     icon('step-pattern.webp', '.kill-switch', {
       setup: [KS_ON, 'send({type:"change",symbol:"pattern",value:17})', 'send({type:"change",symbol:"bpm",value:90})'],
@@ -156,7 +165,9 @@ export const shots = {
   'gossiper': [
     ...store('.gossiper', 'jacks=1'),
     // Footswitch 2 is on, Pot 1 at 20% and Pot 3 at 63%: the display says which control moved last
-    alone('gossiper-overview.webp', '.gossiper', { query: 'jacks=1', setup: GOSSIPER_PEDAL, wait: 1200 }),
+    alone('gossiper-overview.webp', '.gossiper', {
+      query: 'jacks=1', setup: GOSSIPER_PEDAL, wait: 1200, margin: 0, scale: 2, pins: GOSSIPER_PINS,
+    }),
     window_('plugin-settings.webp', 1366, 800, { setup: GOSSIPER_SETTINGS, wait: 1200 }),
     settings('settings-step1-assign-footswitch.webp', tile('Footswitch_1')),
     settings('settings-step2-assign-to-notify.webp', tile('Assign_to_notify_1')),

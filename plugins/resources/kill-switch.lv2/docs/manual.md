@@ -56,20 +56,38 @@ You need a pedalboard with an audio input and an output, and a guitar (or any so
 
 ## 2. The plugin on the pedalboard
 
+<figure class="annotated">
+<div class="stage">
+<img src="images/panel.webp" alt="The Kill Switch panel">
+<span class="pin" style="--x:44.0%;--y:1.6%">1</span>
+<span class="pin" style="--x:53.8%;--y:1.6%">2</span>
+<span class="pin" style="--x:49.4%;--y:19.7%">3</span>
+<span class="pin" style="--x:65.0%;--y:45.6%">4</span>
+<span class="pin" style="--x:83.2%;--y:16.4%">5</span>
+<span class="pin" style="--x:15.9%;--y:50.6%">6</span>
+<span class="pin" style="--x:51.8%;--y:49.7%">7</span>
+<span class="pin" style="--x:19.9%;--y:78.3%">8</span>
+<span class="pin" style="--x:50.2%;--y:78.3%">9</span>
+<span class="pin" style="--x:81.3%;--y:56.9%">10</span>
+<span class="pin" style="--x:3.2%;--y:58.2%">11</span>
+<span class="pin" style="--x:93.3%;--y:60.5%">11</span>
+</div>
+<figcaption>Kill Switch with Kill on and the pattern <em>Chop 8ths</em> playing.</figcaption>
+</figure>
+
 | Item | What it does |
 |---|---|
-| **Patterns / Endings** | The family that plays. The tabs are in the column of the footswitch. |
-| **The arrows and the name** | Choose the pattern (section 4) or, in Endings, the ending (section 5). The arrows go round. In Patterns the last one is **Custom**, the one you write. |
-| **The two rows, L and R** | What each side does. In Patterns, a bright square lets the signal through, a dark one cuts it, a darker colour is the middle level; a pattern shorter than sixteen steps is repeated, the first run bright and the repetitions dimmer. In Endings, the whole ending along its time: the brighter the column, the more open the side. They go dim while Kill is off. |
-| **Tempo: − and +** | From 40 to 240 BPM. Hold a button to keep going. Endings use it too: their length is counted in beats. |
-| **Speed** (Patterns) | ½x, 1x, 2x or 4x: multiplies the speed of the pattern without changing the tempo. |
-| **Length** (Endings) | How long the ending lasts, in beats, from 2 to 32. At 120 BPM, 8 beats are 4 seconds. |
-| **Depth** | From 0% to 100%: how much of the signal a cut removes. 100% is silence; lower values only dip the level. |
-| **Edge** | From 0.1 ms to 20 ms, on a logarithmic scale: how long a cut takes to close and to open again. |
-| **Mono** | On: the left input feeds both sides. Off: each side has its own input. |
-| **Edit** | Opens the settings page: everything on the plugin with more room, the steps of your own pattern and the controls to assign (section 6). |
-| **The footswitch and its light** | **Kill**. The ring and the light above it are red while the effect is on, and the label at the top says *On* or *Off*. A tap on it on the screen toggles it; a device footswitch assigned to it is momentary by default. |
-| **Audio jacks** | `In L` and `In R` on the left, `Out L` and `Out R` on the right. |
+| <span class="num">1</span>**Mono** | On: the left input feeds both sides. Off: each side has its own input. |
+| <span class="num">2</span>**Edit** | Opens the settings page: everything on the plugin with more room, the steps of your own pattern and the controls to assign (section 6). |
+| <span class="num">3</span>**The arrows and the name** | Choose the pattern (section 4) or, in Endings, the ending (section 5). The arrows go round. In Patterns the last one is **Custom**, the one you write. |
+| <span class="num">4</span>**The two rows, L and R** | What each side does. In Patterns, a bright square lets the signal through, a dark one cuts it, a darker colour is the middle level; a pattern shorter than sixteen steps is repeated, the first run bright and the repetitions dimmer. In Endings, the whole ending along its time: the brighter the column, the more open the side. They go dim while Kill is off. |
+| <span class="num">5</span>**Patterns / Endings** | The family that plays. The tabs are in the column of the footswitch. |
+| <span class="num">6</span>**Tempo: − and +** | From 40 to 240 BPM. Hold a button to keep going. Endings use it too: their length is counted in beats. |
+| <span class="num">7</span>**Speed** (Patterns) · **Length** (Endings) | ½x, 1x, 2x or 4x: multiplies the speed of the pattern without changing the tempo. In Endings the same place holds **Length**: how long the ending lasts, in beats, from 2 to 32 (at 120 BPM, 8 beats are 4 seconds). |
+| <span class="num">8</span>**Depth** | From 0% to 100%: how much of the signal a cut removes. 100% is silence; lower values only dip the level. |
+| <span class="num">9</span>**Edge** | From 0.1 ms to 20 ms, on a logarithmic scale: how long a cut takes to close and to open again. |
+| <span class="num">10</span>**The footswitch and its light** | **Kill**. The ring and the light above it are red while the effect is on, and the label at the top says *On* or *Off*. A tap on it on the screen toggles it; a device footswitch assigned to it is momentary by default. |
+| <span class="num">11</span>**Audio jacks** | `In L` and `In R` on the left, `Out L` and `Out R` on the right. |
 
 ## 3. Interactive manual
 
@@ -450,16 +468,17 @@ the players or with their songs.
 | Field | Value |
 |---|---|
 | Plugin name | Kill Switch |
-| Version | 1.0.26 (the version of the plugin this manual is for) |
+| Version | 1.0.27 (the version of the plugin this manual is for) |
 | Category | Dynamics · Gate |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/kill-switch` |
 | Audio I/O | Stereo: 2 inputs, 2 outputs (no latency) |
 | Effects | 19 built-in patterns and Custom (your own) · 5 endings |
 | Device feedback | Display widget "Stereo pattern" (MOD Dwarf and Duo X with the aLabs HMI widgets) · the pedal itself |
+| Additional features | Display widgets with the [Starless HMI Widget Extensions](https://forum.mod.audio/t/starless-hmi-widgets-extension-for-plugins/13703) (MOD Dwarf and Duo X) |
 | Platforms | MOD Dwarf · MOD Duo X · MOD Duo |
 | Developer | Paulo Mateus (SrMouraSilva) |
 | License | Apache-2.0 |
 | Source code | [github.com/SrMouraSilva/plugins-lv2](https://github.com/SrMouraSilva/plugins-lv2) |
 | Store page | [Kill Switch](https://pedalboards.mod.audio/plugins/aHR0cDovL3NybW91cmFzaWx2YS5naXRodWIuaW8vcGx1Z2lucy9raWxsLXN3aXRjaA==) |
 
-Kill Switch is a community plugin. Feedback, bug reports and pull requests are welcome on GitHub.
+Kill Switch is a community plugin. Feedback, bug reports and pull requests are welcome on [GitHub](https://github.com/SrMouraSilva/plugins-lv2).

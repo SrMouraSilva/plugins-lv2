@@ -226,9 +226,8 @@ Plugins can draw on the display of a MOD Dwarf or Duo X where the device impleme
 ## Documentation
 
 * `Readme.md`: one section per plugin (what it is, features, links); update the build/`docker cp` lists.
-* User manual: `plugins/resources/<name>.lv2/docs/manual.md` (+ `images/`), built into `modgui/manual.html` (section "HTML manuals")
-  and, where a PDF is still wanted, into `modgui/manual.pdf` by `docs/build_manual.py` (needs `pip install markdown` and Chrome).
-  `modgui:documentation` points to the HTML where it exists.
+* User manual: `plugins/resources/<name>.lv2/docs/manual.md` (+ `images/`), built into `modgui/manual.html` (section "HTML manuals").
+  There are no PDF manuals: do not generate or commit them. `modgui:documentation` points to the HTML.
   `docs/` is not installed on the device, only `modgui/` is. Images come from the preview tool.
 
 ## MOD Desktop builds
@@ -292,7 +291,7 @@ node tools/media/shots.mjs kill-switch screenshot.png   # one picture of one plu
   show what a controller did (Gossiper) are driven from outside with `send({type: 'change', symbol, value})`. Taps on
   hardware-assignment tiles mark them as `addressed`, which is what MOD UI does once its dialog is confirmed; do not
   show anything the real plugin does not do.
-* **Re-record in the commit that changes the interface** (like the screenshot and the PDF of the manual), and look at
+* **Re-record in the commit that changes the interface** (like the screenshot and the pictures of the manual), and look at
   the result: pull some frames out with Pillow before committing. When a selector of the interface changes, update the
   scenario.
 * The alternative thumbnail is plain HTML/CSS using the colours of the plugin (copy the variables from its stylesheet);
@@ -391,4 +390,4 @@ so they look like the manuals of the device.
 * Never commit build output or editor/Python leftovers: `*.so`, `__pycache__/`, `*.pyc`, `.DS_Store`, `out/`,
   `binaries/` (all in `.gitignore`). Run `git status` before every commit and add files deliberately.
 * Commit messages: `<plugin or area>: what changed` in the subject, the why in the body. Small, reviewable commits;
-  generated files (PDF, PNG) go in the commit of the change that produced them.
+  generated files (PNG, WebP, manual.html) go in the commit of the change that produced them.

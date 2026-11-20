@@ -152,7 +152,10 @@ out above the text instead of beside it.
 ### A picture with numbered pins
 
 Raw HTML, with the position of each pin in percent of the picture. Describe the numbers in a table with
-`<span class="num">1</span>` in the first cell:
+`<span class="num">1</span>` in the first cell. Every plugin has one in the section about the plugin on the pedalboard, made from its
+`panel.webp` (Gossiper: `gossiper-overview.webp`). `pins` in `tools/media/shot-specs.mjs` lists a selector for each part, and
+`node tools/media/shots.mjs <plugin> panel.webp` prints the `<span class="pin">` lines for it; that is only a starting point: look at
+the page and move a pin by hand where it hides the label or the control it points at (a pin is 28 px, 20 px on a phone).
 
 ```html
 <figure class="annotated">
@@ -163,6 +166,21 @@ Raw HTML, with the position of each pin in percent of the picture. Describe the 
 <figcaption>What the numbers mean.</figcaption>
 </figure>
 ```
+
+### A piece of HTML of its own (an animated diagram)
+
+When a diagram is better as live HTML than as a picture, keep it in `docs/<file>.html` (CSS in a `<style>`, markup, and a `<script>`
+that serves every copy of it on the page) and put it in with a fenced block at the left margin:
+
+````markdown
+```embed:notification-flow.html
+```
+````
+
+The builder inserts the file as it is. Namespace every class (Gossiper's uses `nf-`), keep its colours in its own variables (it sits on its own dark
+stage, so it looks the same in the light and the dark theme), make it work from 320 px to desktop, and respect `prefers-reduced-motion` (no autoplay;
+the chapters are shown at their end). `plugins/resources/gossiper.lv2/docs/notification-flow.html` is the example. On GitHub's own view of
+`manual.md` it shows as a code block, like the `interactive` one.
 
 ### A picture of a pedalboard
 
@@ -210,11 +228,8 @@ modgui:documentation <modgui/manual.html> ;
 Raise `lv2:microVersion` when the manual changes: MOD UI caches the files of a modgui for a year, keyed by the version of
 the plugin. Keep `docs/manual.md` as the source: do not edit `manual.html` by hand (it says so in its first comment).
 
-The page prints well (A4, the cover on its own, navigation hidden, the questions open). To make a PDF from it:
-
-```bash
-google-chrome --headless=new --print-to-pdf=manual.pdf --no-pdf-header-footer plugins/resources/my-plugin.lv2/modgui/manual.html
-```
+The page prints well (A4, the cover on its own, navigation hidden, the questions open). The project does not keep PDF
+manuals: the HTML is the only built form.
 
 ## 8. Checking
 

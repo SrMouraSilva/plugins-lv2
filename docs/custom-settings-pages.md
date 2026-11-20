@@ -358,7 +358,7 @@ MOD UI serves modgui files with `Cache-Control: max-age=31536000` and its URL on
 changes**, or the device keeps running the old page: that is the usual reason a fix "does nothing". During
 development use odd numbers (LV2 reads them as nightly).
 
-Also: regenerate the screenshots and the manual PDF in the commit that changes the page, and describe in the manual
+Also: regenerate the screenshots and the manual in the commit that changes the page, and describe in the manual
 what the user sees (pages, swipe, the arrows).
 
 ## 12. Checklist
@@ -390,5 +390,5 @@ what the user sees (pages, swipe, the arrows).
 
 **Release**
 
-- [ ] `lv2:microVersion` raised; screenshot, manual and PDF updated
+- [ ] `lv2:microVersion` raised; screenshot and manual updated
 - [ ] Tried on a real pedalboard, or said that it was not

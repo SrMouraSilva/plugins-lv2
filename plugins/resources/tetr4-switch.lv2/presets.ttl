@@ -4,7 +4,7 @@
 @prefix state: <http://lv2plug.in/ns/ext/state#> .
 @prefix plug:  <http://srmourasilva.github.io/plugins/tetr4-switch#> .
 
-# Factory presets: the four recipes from the user manual (modgui/manual.pdf, "Recipes").
+# Factory presets: the four recipes from the user manual (docs/manual.md, "Recipes").
 # Each one starts on preset 1 and names the four presets after the scenes.
 
 <http://srmourasilva.github.io/plugins/tetr4-switch#preset-four-scene-guitar-rig>
