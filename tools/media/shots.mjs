@@ -83,6 +83,15 @@ async function take(plugin, spec) {
     return { x: Math.max(0, r.left - m), y: Math.max(0, r.top - m), width: r.width + 2 * m, height: r.height + 2 * m };
   })()`);
   await sleep(spec.wait ?? 400);
+  // pins: where the numbered pins of the manual's annotated picture go, as percentages of this picture (see html-manuals.md)
+  if (spec.pins) {
+    const boxes = await page.eval(`${JSON.stringify(spec.pins)}.map(([sel, fx = 1, fy = 0]) => {
+      const b = document.querySelector(sel).getBoundingClientRect();
+      return [b.left + b.width * fx, b.top + b.height * fy];
+    })`);
+    console.log(`${plugin}: pins of ${spec.file}\n` + boxes.map(([x, y], i) =>
+      `<span class="pin" style="--x:${((x - rect.x) / rect.width * 100).toFixed(1)}%;--y:${((y - rect.y) / rect.height * 100).toFixed(1)}%">${i + 1}</span>`).join('\n'));
+  }
   const bundle = path.join(ROOT, 'plugins/resources', `${plugin}.lv2`);
   const out = path.join(bundle, spec.out || path.join('docs/images', spec.file));
   // width: the picture is exactly that many pixels wide (the screenshot and the thumbnail that MOD UI reads)

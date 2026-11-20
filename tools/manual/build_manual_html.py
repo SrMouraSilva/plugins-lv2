@@ -113,6 +113,9 @@ def preprocess(source: str, colors: list) -> str:
             code = [line[indent:] if line.startswith(" " * indent) else line.lstrip() for line in lines[i + 1:j]]
             if margin and info == "recipe":
                 out.append(recipe_block("\n".join(code), colors))
+            elif margin and info.startswith("embed:"):
+                # A piece of HTML of its own (CSS, markup and script, e.g. an animated diagram) kept in docs/<file>; put in place by render()
+                out += ["", f'<div class="embed-slot" data-file="{html.escape(info[6:])}"></div>', ""]
             elif margin and info == "interactive":
                 # The plugin in a frame, with its areas and tours (docs/interactive.json); put in place by render()
                 out += ["", '<div class="ix-slot"></div>', ""]
@@ -274,6 +277,9 @@ def render(source: str, docs: Path, config: dict, fallback_title: str = "Manual"
     body = markdown.markdown(source, extensions=["tables", "fenced_code", "attr_list", "def_list", "sane_lists", "md_in_html", "toc"],
                              extension_configs={"toc": {"slugify": lambda value, sep: github_slug(value)}})
     body = alerts(videos(figures(body, docs)))
+    # An embedded piece of HTML (```embed:file.html): inserted as it is, scripts included
+    body = re.sub(r'<div class="embed-slot" data-file="([^"]+)"></div>',
+                  lambda m: (docs / html.unescape(m.group(1))).read_text(), body)
     # The interactive block (the plugin in a frame): its page and its data are built from the files of the bundle
     has_interactive = '<div class="ix-slot"></div>' in body
     if has_interactive:

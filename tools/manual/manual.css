@@ -177,6 +177,8 @@ p > img { max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 0 0 
 .num { display: inline-grid; place-items: center; width: 22px; height: 22px; margin-right: 6px; border-radius: 50%; font-size: 12px; font-weight: 800; color: #fff; background: var(--brand); vertical-align: 1px; }
 @media (prefers-color-scheme: dark) { .num { background: var(--accent); } }
 .annotated .pin { position: absolute; left: var(--x); top: var(--y); display: grid; place-items: center; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; font-size: 14px; font-weight: 800; color: #fff; background: var(--brand); box-shadow: 0 0 0 3px #fff, 0 4px 10px rgba(0, 0, 0, .4); }
+/* On a phone the picture is small and a plugin with a dozen parts would be hidden under its own pins */
+@media (max-width: 600px) { .annotated .pin { width: 20px; height: 20px; margin: -10px 0 0 -10px; font-size: 11px; box-shadow: 0 0 0 2px #fff, 0 3px 8px rgba(0, 0, 0, .4); } .annotated.dark-pins .pin { box-shadow: 0 0 0 2px var(--brand), 0 3px 8px rgba(0, 0, 0, .4); } }
 .annotated.dark-pins .pin { background: #fff; color: var(--brand); box-shadow: 0 0 0 3px var(--brand), 0 4px 10px rgba(0, 0, 0, .4); }
 
 /* videos and links to elsewhere */
