@@ -210,11 +210,8 @@ modgui:documentation <modgui/manual.html> ;
 Raise `lv2:microVersion` when the manual changes: MOD UI caches the files of a modgui for a year, keyed by the version of
 the plugin. Keep `docs/manual.md` as the source: do not edit `manual.html` by hand (it says so in its first comment).
 
-The page prints well (A4, the cover on its own, navigation hidden, the questions open). To make a PDF from it:
-
-```bash
-google-chrome --headless=new --print-to-pdf=manual.pdf --no-pdf-header-footer plugins/resources/my-plugin.lv2/modgui/manual.html
-```
+The page prints well (A4, the cover on its own, navigation hidden, the questions open). The project does not keep PDF
+manuals: the HTML is the only built form.
 
 ## 8. Checking
 
