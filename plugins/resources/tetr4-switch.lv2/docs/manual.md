@@ -123,6 +123,8 @@ USE
 
 #### Assign to notify 1 – 4
 
+(The **Notify 1–4** tiles of the settings page.)
+
 VALUES
 : Off / On. Changing the value does not affect the sound.
 
@@ -207,15 +209,15 @@ Controllers such as the M-VAVE Chocolate have no LED per switch, so it's easy to
 notifier parameters to get feedback:
 
 1. MIDI-learn **Preset 1–4** (or **Current preset**) to your controller's switches.
-2. Assign one of the **Assign to notify** parameters to a control on your MOD device, for example, a knob or footswitch on
-   the screen you play from.
+2. Tap **Assign** on one of the four **Notify** tiles (*Screen pop-ups*, on the settings page) and pick a control on your MOD device, for example, a knob or footswitch on
+   the screen you play from. (They are the parameters `Assign to notify 1–4`, the names MOD UI lists.)
 
     ![The Notify tiles of the settings page](images/step-assign-notify.webp)
 
 3. Change presets from the controller. Your MOD device shows a pop-up with the new preset number.
 
 > [!WARNING] Heads-up
-> The pop-up only appears while the parameter you assigned to a notifier is **visible on the device screen**. If you switch
+> The pop-up only appears while the control you assigned to a **Notify** tile is **visible on the device screen**. If you switch
 > to another page, the notifications stop. Keep that control on the page you play from. The MOD Duo has no widgets on its
 > screen, so the pop-ups are not available on it.
 
@@ -264,7 +266,7 @@ output that is on and a dot one that is off. The names are the ones you gave the
 
 ![The states of Active preset](images/tetr4-switch-preset-states.webp)
 
-The widget needs no `Assign to notify` control: it is drawn where you place it, and stays there, unlike the pop-up, which goes away after a moment.
+The widget needs no **Notify** tile assigned: it is drawn where you place it, and stays there, unlike the pop-up, which goes away after a moment.
 
 ## 7. MIDI out
 
@@ -456,7 +458,7 @@ Yes, in addition to CV. The **MIDI out** sends a control change for each output 
 
 ### I set up notifications, but no pop-up appears.
 
-The pop-up only appears while the control you assigned to an **Assign to notify** parameter is visible on the device screen.
+The pop-up only appears while the control you assigned to a **Notify** tile (the parameter `Assign to notify N`) is visible on the device screen.
 Move it to the page you play from. On the MOD Duo there are no pop-ups at all: its screen has no widgets for them.
 
 ## 11. Specifications
@@ -464,15 +466,16 @@ Move it to the page you play from. On the MOD Duo there are no pop-ups at all: i
 | Field | Value |
 |---|---|
 | Plugin name | Tetr4 switch |
-| Version | 1.2.16 (the version of the plugin this manual is for) |
+| Version | 1.2.17 (the version of the plugin this manual is for) |
 | Category | Control Voltage · Utility |
 | Format | LV2 · URI `http://srmourasilva.github.io/plugins/tetr4-switch` |
 | Audio I/O | None |
 | CV outputs | 4 × CV, 0 V (off) / 10 V (on) |
 | MIDI | MIDI out: a control change (channel 1–16) per output when the preset changes |
 | Presets × outputs | 4 × 4 (16 toggle switches) |
-| Assignable parameters | Preset 1–4 (toggle) · Current preset (list) · Assign to notify 1–4 (toggle) · 16 Config switches · MIDI channel, CC 1–4 and changes only |
+| Assignable parameters | Preset 1–4 (toggle) · Current preset (list) · Assign to notify 1–4 (toggle; the Notify tiles) · 16 Config switches · MIDI channel, CC 1–4 and changes only |
 | Device feedback | Footswitch LED colour + label, preset number on display, pop-up notifications (MOD HMI) |
+| Additional features | Display widgets with the [Starless HMI Widget Extensions](https://forum.mod.audio/t/starless-hmi-widgets-extension-for-plugins/13703) (MOD Dwarf and Duo X) |
 | Platforms | MOD Dwarf · MOD Duo X · MOD Duo |
 | Developer | Paulo Mateus (SrMouraSilva) |
 | License | Apache-2.0 |
@@ -481,4 +484,4 @@ Move it to the page you play from. On the MOD Duo there are no pop-ups at all: i
 | Forum thread | [forum.mod.audio – Tetr4 Switch plugin in Beta Store](https://forum.mod.audio/t/tetr4-switch-plugin-in-beta-store/8998) |
 | Example pedalboard | [MOD Pedalboards Feed](https://pedalboards.moddevices.com/pedalboards/66f8238d5e57562fcb26b0f3) |
 
-Tetr4 Switch is a community plugin. Feedback, bug reports and pull requests are welcome in the forum thread and on GitHub.
+Tetr4 Switch is a community plugin. Feedback, bug reports and pull requests are welcome in the [forum thread](https://forum.mod.audio/t/tetr4-switch-plugin-in-beta-store/8998) and on [GitHub](https://github.com/SrMouraSilva/plugins-lv2).
