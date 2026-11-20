@@ -41,7 +41,7 @@
       "view": "pedalboard",
       "select": ".gp-display",
       "title": "A — Display",
-      "text": "Says **which control was used last** and what it did: `Footswitch 2 — ON`, or `Pot 3 — 63%`. It stays on, and lights up for a moment each time a control is used. On a device with no screen for plugin pop-ups, such as the **MOD Duo**, this is how you see a message.",
+      "text": "Says **which control was used last** and what it did: the name of the footswitch and `ON` or `OFF`, or `Pot 3` and its percentage. It stays on, and lights up for a moment each time a control is used. On a device with no screen for plugin pop-ups, such as the **MOD Duo**, this is how you see a message.",
       "kicker": "On the pedalboard"
     },
     {
@@ -243,7 +243,7 @@
         },
         {
           "title": "Press a footswitch",
-          "text": "Press footswitch **2** of the controller. The display says **Footswitch 2 — ON**, its disc lights up, and `CV Foot - Out 2` goes to 10 V.",
+          "text": "Press footswitch **2** of the controller. The display says **Footswitch 2** and **ON**, its disc lights up, and `CV Foot - Out 2` goes to 10 V.",
           "ring": ".ix-ctl-button[data-n=\"2\"]",
           "do": [
             {
@@ -263,7 +263,7 @@
         },
         {
           "title": "Turn a knob",
-          "text": "Turn knob **P3** to about two thirds. The display says **Pot 3 — 63%**, the meter fills and the CV output of the pot follows, scaled between Minimum and Maximum volts.",
+          "text": "Turn knob **P3** to about two thirds. The display says **Pot 3** and **63%**, the meter fills and the CV output of the pot follows, scaled between Minimum and Maximum volts.",
           "ring": ".ix-ctl-knob[data-n=\"3\"] input",
           "do": [
             {
@@ -314,7 +314,7 @@
         },
         {
           "title": "Use it",
-          "text": "Press footswitch **1** of the controller: the display, and the pop-up on a device with a screen, say **Verse — ON**. The names are saved with the pedalboard.",
+          "text": "Press footswitch **1** of the controller: the display, and the pop-up on a device with a screen, say **Verse** and **ON**. The names are saved with the pedalboard.",
           "ring": ".ix-ctl-button[data-n=\"1\"]",
           "do": [
             {
