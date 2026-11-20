@@ -1199,7 +1199,9 @@ footswitch, and it's saved with the pedalboard/preset.</p>
 </section>
 <section class="sheet" id="recipes"><header class="sheet-head"><span id="7-recipes"></span><span class="eyebrow">07</span><h2>Recipes</h2></header>
 <p>Each recipe says which Gossiper control your MIDI controller drives, what to type in the settings page and where the CV output goes. Do the steps of
-section 4 first (assign the control, link a <strong>Pop-up slot</strong>), then connect the cables on the pedalboard. A potentiometer's voltage is its <strong>Min</strong> – <strong>Max</strong> range.</p>
+section 4 first (assign the control, link a <strong>Pop-up slot</strong>). Then, on the pedalboard, click <strong>Manage CV ports</strong> (Pedalboard actions bar of MOD UI) and check the Gossiper
+outputs you use, so they can be chosen as a CV source. There is no cable to draw: you open the addressing of each parameter you want to control, choose <strong>CV</strong> and pick the
+Gossiper output in the list. A potentiometer's voltage is its <strong>Min</strong> – <strong>Max</strong> range.</p>
 <h3 id="four-switch-controller">Four-switch controller</h3>
 <div class="table-wrap"><table>
 <thead>
@@ -1234,7 +1236,7 @@ section 4 first (assign the control, link a <strong>Pop-up slot</strong>), then 
 </table></div>
 <p>The classic use. A four-switch controller, like the M-VAVE Chocolate, turns effects on and off, and the device tells you which one just changed, <strong>by name</strong>.
 Link <strong>Pop-up slot 1</strong> to a control of the page you play from, so the news is always in view.</p>
-<p><em>Wiring: controller switches A–D → Footswitch 1–4 (MIDI) · <code>CV Foot - Out 1</code>–<code>4</code> → the CV input of the On/Off of each effect.</em></p>
+<p><em>Setup: controller switches A–D → Footswitch 1–4 (MIDI) · on each effect, address its On/Off to </em><em>CV</em><em> and pick <code>CV Foot - Out 1</code>–<code>4</code>.</em></p>
 <h3 id="expression-pedal-with-a-readout">Expression pedal with a readout</h3>
 <div class="table-wrap"><table>
 <thead>
@@ -1254,7 +1256,7 @@ Link <strong>Pop-up slot 1</strong> to a control of the page you play from, so t
 </table></div>
 <p>A MIDI expression pedal on <strong>Pot 1</strong> drives a wah or a volume plugin. When you stop moving the pedal, the device shows where you left it, <code>Gossiper - Pot 1</code> and
 <code>63.00%</code>, which helps when the pedal has no markings. The display on the plugin follows it while you move.</p>
-<p><em>Wiring: expression pedal → Pot 1 (MIDI) · <code>CV Pot - Out 1</code> → the CV input of the knob of the wah or the volume.</em></p>
+<p><em>Setup: expression pedal → Pot 1 (MIDI) · on the wah (or the volume), address the knob to </em><em>CV</em><em> and pick <code>CV Pot - Out 1</code>.</em></p>
 <h3 id="safe-range-sweep">Safe-range sweep</h3>
 <div class="table-wrap"><table>
 <thead>
@@ -1274,7 +1276,7 @@ Link <strong>Pop-up slot 1</strong> to a control of the page you play from, so t
 </table></div>
 <p>The whole sweep of the pedal now covers only the middle of the target knob (30% to 70% of a 0–10 V range), so you can stomp it all the way down without the delay
 running away into endless feedback. Set <strong>Min</strong> to 3 and <strong>Max</strong> to 7 on the settings page, and adjust them until the extremes sound right (see <em>Tame the range of a knob</em>, section 8).</p>
-<p><em>Wiring: second pedal or knob → Pot 2 (MIDI) · <code>CV Pot - Out 2</code> → the CV input of the feedback knob.</em></p>
+<p><em>Setup: second pedal or knob → Pot 2 (MIDI) · on the delay, address the feedback knob to </em><em>CV</em><em> and pick <code>CV Pot - Out 2</code>.</em></p>
 <h3 id="one-plugin-instead-of-many">One plugin instead of many</h3>
 <div class="table-wrap"><table>
 <thead>
@@ -1297,7 +1299,7 @@ running away into endless feedback. Set <strong>Min</strong> to 3 and <strong>Ma
 <p>If your pedalboard uses many "Control to CV" plugins to turn MIDI into CV, move them into one Gossiper: it does the job of all of them, at a fraction of the CPU cost,
 and you get the pop-ups and the display for free. For instance, <a href="https://forum.mod.audio/t/gossiper-plugin-to-say-what-is-happening-when-you-are-looking-it/9660/20?u=srmourasilva">a forum user reported that, after replacing those plugins with Gossiper, the Dwarf's CPU usage went down
 from 81% to 72%</a>.</p>
-<p><em>Wiring: re-address each MIDI mapping to a Gossiper footswitch or pot · move each CV cable to the matching Gossiper output.</em></p>
+<p><em>Setup: re-address each MIDI mapping to a Gossiper footswitch or pot · on each parameter that was controlled by a "Control to CV" plugin, change its CV addressing to the matching Gossiper output.</em></p>
 </section>
 <section class="sheet" id="tips"><header class="sheet-head"><span id="8-tips"></span><span class="eyebrow">08</span><h2>Tips</h2></header>
 <h3 id="name-the-footswitches-after-what-they-do">Name the footswitches after what they do</h3>
@@ -1330,8 +1332,9 @@ value change continuously. Use the display on the plugin for that.</p>
 </ol>
 <p>The disc and the display on the plugin and the CV outputs work without any of these. If they react, only the pop-up setup is missing.</p>
 </div></details><details><summary>I move my controller but the plugin I want to control does not react.</summary><div class="answer">
-<p>The plugin you control needs a <strong>CV input</strong> on that parameter. Open its addressing for the On/Off parameter (or the knob), choose <strong>CV</strong>, and connect a cable from
-the matching Gossiper output (<code>CV Foot - Out N</code> / <code>CV Output N</code> for a footswitch, <code>CV Pot - Out N</code> for a potentiometer) to the new jack. Also check that
+<p>The parameter you want to control has to be addressed to <strong>CV</strong>. Click <strong>Manage CV ports</strong> on the Pedalboard actions bar and check the Gossiper outputs you use, then open the
+addressing of the On/Off parameter (or the knob), choose <strong>CV</strong> and pick the matching Gossiper output in the list (<code>CV Foot - Out N</code> / <code>CV Output N</code> for a footswitch,
+<code>CV Pot - Out N</code> for a potentiometer). There is no cable to draw. Also check that
 your controller is MIDI-learned to the right Gossiper row: the <strong>Assign</strong> tile of <code>Footswitch N</code> on the settings page has a check mark when it is.</p>
 </div></details><details><summary>I press the pop-up slot control on my device and nothing happens.</summary><div class="answer">
 <p>That is by design. The pop-up slots (the parameters <code>Assign to notify 1–4</code>) are placeholders: they only give Gossiper a control of the device to show its messages
@@ -1374,11 +1377,6 @@ on the CV.</p>
 </div></details><details><summary>Why can't I turn the footswitch indicator on by clicking it?</summary><div class="answer">
 <p>The disc only shows what the footswitch received. Gossiper reports on a control that lives elsewhere; to change it, use the controller, or the parameter in the
 plugin's own addressing.</p>
-</div></details><details><summary>I get "Error adding effect" when I drag Gossiper onto the pedalboard.</summary><div class="answer">
-<p>This was reported with early test builds installed by hand. Remove any manually installed copy and install Gossiper from the MOD store.</p>
-</div></details><details><summary>Will Gossiper become unnecessary one day?</summary><div class="answer">
-<p>Possibly. The developer has said that if MOD OS adds system-wide pop-ups for parameter changes, the notification part of Gossiper may no longer be needed. Its CV
-outputs would still be useful.</p>
 </div></details></section>
 <section class="sheet" id="port-reference"><header class="sheet-head"><span id="10-port-reference"></span><span class="eyebrow">10</span><h2>Port reference</h2></header>
 <div class="table-wrap"><table>
